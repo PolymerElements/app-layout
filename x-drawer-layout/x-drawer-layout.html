@@ -41,6 +41,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       box-shadow: 1px 0 2px 1px rgba(0,0,0,0.18);
     }
 
+    :host([narrow][opened]) x-drawer[position=right] {
+      box-shadow: -1px 0 2px 1px rgba(0,0,0,0.18);
+    }
+
     #main {
       position: relative;
       height: 100%;
@@ -74,7 +78,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template>
 
-    <x-drawer id="drawer" opened="[[_drawerOpened(narrow, opened)]]" style$="[[_computeDrawerStyle(drawerWidth)]]">
+    <x-drawer id="drawer" position="[[_drawerPosition(rightDrawer)]]"
+        opened="[[_drawerOpened(narrow, opened)]]" style$="[[_computeDrawerStyle(drawerWidth)]]"
+        on-iron-activate="_drawerActivate">
       <content select="[drawer]"></content>
     </x-drawer>
 
@@ -132,6 +138,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Boolean,
           reflectToAttribute: true,
           value: false
+        },
+
+        rightDrawer: {
+          type: Boolean,
+          value: false
+        },
+
+        disableDrawerActivate: {
+          type: Boolean,
+          value: false
         }
 
       },
@@ -161,6 +177,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _drawerOpened: function(narrow, opened) {
         return !narrow || opened;
+      },
+
+      _drawerPosition: function(rightDrawer) {
+        return rightDrawer ? 'right' : 'left';
+      },
+
+      _drawerActivate: function() {
+        if (!this.disableDrawerActivate && this.narrow) {
+          this.async(function() {
+            this.opened = false;
+          }.bind(this));
+        }
       },
 
       _responsiveChange: function(narrow) {
