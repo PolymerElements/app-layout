@@ -103,7 +103,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </x-toolbar>
         </x-header>
 
-        <paper-menu selected="{{selected}}" on-iron-activate="closeDrawer">
+        <paper-menu selected="{{selected}}">
           <paper-item>Art</paper-item>
           <paper-item>Film</paper-item>
           <paper-item>Photography</paper-item>
@@ -145,10 +145,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     document.addEventListener('WebComponentsReady', function() {
       app.selected = 0;
     });
-
-    app.closeDrawer = function() {
-      app.$.drawerLayout.opened = false;
-    };
 
     app.positionNavTitle = function() {
       var rect = app.$.mainTitle.getBoundingClientRect();
