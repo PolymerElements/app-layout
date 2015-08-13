@@ -22,6 +22,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         selected: {
           observer: '_selectedChanged'
+        },
+
+        reset: {
+          type: Boolean
         }
 
       },
@@ -32,10 +36,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _selectedChanged: function(selected, old) {
         if (old != null) {
-          this._scrollposMap[old] = {x: window.scrollX, y: window.scrollY};
+          this._scrollposMap[old] = {x: window.pageXOffset, y: window.pageYOffset};
         }
         var pos = this._scrollposMap[selected];
-        if (pos != null) {
+        if (pos != null && !this.reset) {
           window.scrollTo(pos.x, pos.y);
         } else {
           window.scrollTo(0, 0);
