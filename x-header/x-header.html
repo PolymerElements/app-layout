@@ -52,7 +52,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         fixed: {
           type: Boolean,
-          value: false
+          value: false,
+          observer: '_fixedChanged'
         },
 
         alwaysVisible: {
@@ -126,10 +127,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
 
           if (y !== this._oldY) {
-            this._transformY(-y);
-            if (this.condenses) {
-              this._transformY(Math.min(y, this._deltaHeight), this._topbar);
-            }
+            this._transformHeader(y);
             this.fire('header-transform');
           }
 
@@ -142,8 +140,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.fire('header-scroll', {scrollTop: top});
       },
 
+      _transformHeader: function(y) {
+        this._transformY(-y);
+        if (this.condenses) {
+          this._transformY(Math.min(y, this._deltaHeight), this._topbar);
+        }
+      },
+
       _transformY: function(y, node) {
         this.transform('translate3d(0,' + y + 'px,0)', node);
+      },
+
+      _fixedChanged: function(fixed) {
+        if (fixed) {
+          this._transformHeader(0);
+        }
       }
 
     });
