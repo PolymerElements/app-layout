@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../x-overlay/overlay-behavior.html">
 
 <dom-module id="x-drawer">
 
@@ -21,13 +22,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       bottom: 0;
       left: 0;
       width: 256px;
-      z-index: 1;
       overflow: hidden;
       background-color: var(--x-drawer-background-color, #fff);
+      
       -webkit-transform: translate3d(-100%, 0, 0);
       transform: translate3d(-100%, 0, 0);
-      transition: -webkit-transform 200ms ease-in;
-      transition: transform 200ms ease-in;
+
+      -webkit-transition: -webkit-transform 0.4s cubic-bezier(0.42, 0, 0.33, 1.01);
+      transition: transform 0.4s cubic-bezier(0.42, 0, 0.33, 1.01);
     }
 
     :host([position=right]) {
@@ -79,13 +81,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       is: 'x-drawer',
 
+      behaviors: [
+        Polymer.OverlayBehavior
+      ],
+
       properties: {
 
         opened: {
           type: Boolean,
           value: false,
           notify: true,
-          reflectToAttribute: true
+          reflectToAttribute: true,
+          observer: '_hasOpenedChanged'
         },
 
         position: {
@@ -96,8 +103,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       toggle: function() {
         this.opened = !this.opened;
-      }
+      },
 
+      _hasOpenedChanged: function(opened) {
+        this.shouldEnableScroll(true);
+      }
     });
 
   </script>

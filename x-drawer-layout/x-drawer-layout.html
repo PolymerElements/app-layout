@@ -12,6 +12,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../iron-media-query/iron-media-query.html">
 <link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../x-drawer/x-drawer.html">
+<link rel="import" href="../x-overlay/x-scrim.html">
+
 
 <dom-module id="x-drawer-layout">
 
@@ -19,6 +21,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     :host {
       display: block;
+      /* stacking context */
+      /* 1. isolation: isolate; */
+      /* 1. z-index:0 & position:relative or position:absolute; */
+      isolation: isolate;
 
       --drawer-layout-trbl: {
         top: 0;
@@ -35,6 +41,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     x-drawer {
       position: fixed;
+      overflow-y: auto;
+
+    }
+
+    :host([narrow]) x-drawer {
+      z-index: 2;
     }
 
     :host([narrow][opened]) x-drawer {
@@ -48,6 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     #main {
       position: relative;
       height: 100%;
+      z-index: 1;
     }
 
     :host([fullbleed]) > #main > ::content > * {
@@ -59,34 +72,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       display: none;
     }
 
-    #scrim {
-      position: fixed;
-      @apply(--drawer-layout-trbl);
-      visibility: hidden;
-      opacity: 0;
-      background-color: rgba(0, 0, 0, 0.35);
-      transition: 200ms ease-in-out;
-      transition-property: opacity, visibility;
-    }
-
-    #scrim[visible] {
-      visibility: visible;
-      opacity: 1;
-    }
-
   </style>
 
   <template>
 
-    <x-drawer id="drawer" position="[[_drawerPosition(rightDrawer)]]"
+    <x-drawer id="drawerContainer" position="[[_drawerPosition(rightDrawer)]]"
         opened="[[_drawerOpened(narrow, opened)]]" style$="[[_computeDrawerStyle(drawerWidth)]]"
         on-iron-activate="_drawerActivate">
-      <content select="[drawer]"></content>
+      <content id="drawer" select="[drawer]"></content>
     </x-drawer>
 
     <div id="main" style$="[[_computeMainStyle(narrow, drawerWidth)]]">
       <content></content>
-      <div id="scrim" visible$="[[_scrimVisible(narrow, opened)]]" on-tap="toggleDrawer"></div>
+      <x-scrim id="scrim" visible$="[[_scrimVisible(narrow, opened)]]" on-tap="toggleDrawer"></x-scrim>
     </div>
 
     <iron-media-query query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]"
@@ -149,12 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Boolean,
           value: false
         }
-
       },
-
-      observers: [
-        '_disableBodyScroll(narrow, opened)'
-      ],
 
       listeners: {
         tap: '_tapHandler'
@@ -166,6 +159,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       toggleDrawer: function() {
         this.opened = !this.opened;
+      },
+
+      get drawer() {
+        return Polymer.dom(this.$.drawer).getDistributedNodes()[0];
       },
 
       _tapHandler: function(e) {
@@ -209,15 +206,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _computeDrawerStyle: function(drawerWidth) {
-        return 'width: ' + drawerWidth;
+        var css = 'width: ' + drawerWidth;
+        return css;
       },
 
       _computeMainStyle: function(narrow, drawerWidth) {
         return 'margin-left: ' + (narrow ? '' : drawerWidth);
-      },
-
-      _disableBodyScroll: function(narrow, opened) {
-        document.body.style.overflow = (narrow && opened) ? 'hidden' : '';
       }
 
     });
