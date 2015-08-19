@@ -38,6 +38,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     x-drawer {
       position: fixed;
       background-color: #fff;
+      z-index: 2;
     }
 
     #leftDrawer[opened] {
@@ -68,7 +69,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template is="dom-bind" id="app">
 
-    <x-drawer id="leftDrawer" on-tap="toggleLeft"></x-drawer>
+    <x-drawer id="leftDrawer" position="left" on-tap="toggleLeft"></x-drawer>
     <x-drawer id="rightDrawer" position="right" on-tap="toggleRight"></x-drawer>
 
     <x-header condenses>

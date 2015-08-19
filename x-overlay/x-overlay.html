@@ -1,0 +1,151 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../paper-styles/paper-styles.html">
+<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="scrim-behavior.html">
+<link rel="import" href="overlay-behavior.html">
+
+<dom-module id="x-overlay">
+
+  <style>
+
+    :host {
+      @apply(--shadow-elevation-16dp);
+
+      position: fixed;
+      background-color: white;
+      display: none;
+      z-index: 2;
+
+      -webkit-transition-property: -webkit-transform, opacity;
+      transition-property: transform, opacity;
+    }
+
+    :host([visible]) {
+      -webkit-transition-duration: 0.5s;
+      -webkit-transition-timing-function: cubic-bezier(0, 0.88, 0, 1.02);
+      -webkit-transform: scale3d(0, 0, 1);
+
+      transition-duration: 0.5s;
+      transition-timing-function: cubic-bezier(0, 0.88, 0, 1.02);
+      transform: scale3d(0, 0, 1);
+    }
+
+    :host(:not([visible])) {
+      opacity: 0;
+
+      -webkit-transition-duration: 0.2s;
+      -webkit-transition-timing-function: cubic-bezier(0.81, 0.01, 1, 0.09);
+      -webkit-transform: scale3d(0.8, 0.8, 1);
+
+      transition-duration: 0.2s;
+      transition-timing-function: cubic-bezier(0.81, 0.01, 1, 0.09);
+      transform: scale3d(0.8, 0.8, 1);
+    }
+
+  </style>
+
+  <template>
+    <content></content>
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'x-overlay',
+
+      behaviors: [
+        Polymer.IronResizableBehavior,
+        Polymer.OverlayBehavior,
+        Polymer.ScrimBehavior
+      ],
+
+      properties: {
+        visible: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        }
+      },
+
+      listeners: {
+        'iron-resize': '_onIronResize',
+        'transitionend': '_onTransitionEnd'
+      },
+
+      observers: [
+        '_visibleChanged(visible)'
+      ],
+
+      attached: function() {
+        var parent = Polymer.dom(this).parentNode;
+        if (parent.localName != 'body') {
+          document.body.appendChild(this);
+        }
+      },
+
+      show: function() {
+        this.visible = true;
+      },
+
+      hide: function() {
+        this.visible = false;
+      },
+
+      _visibleChanged: function(visible) {
+        var parent = Polymer.dom(this).parentNode;
+
+        this.shouldEnableScroll(visible);
+        this.shouldShowScrim(visible, this.hide.bind(this));
+        
+        if (visible) {
+          this.style.display = 'block';
+        }
+        
+        this.layoutIfNeeded();
+        this._repos();
+        this.transform(visible ? 'scale3d(1, 1, 1)' : '', this);
+      },
+
+      _repos: function() {
+        if (!this.visible) {
+          return;
+        }
+        var fitInto =  window;
+        var fitWidth = fitInto.innerWidth;
+        var fitHeight = fitInto.innerHeight;
+        var width = this.offsetWidth;
+        var height = this.offsetHeight;
+
+        var left = fitWidth/2 - width/2;
+        var top = fitHeight/2 - height/2;
+
+        this.style.top = top + 'px';
+        this.style.left = left + 'px';
+      },
+
+      _onIronResize: function() {
+        this._repos();
+      },
+
+      _onTransitionEnd: function(e) {
+        if (!this.visible && e.currentTarget == this) {
+          this.style.display = '';
+        }
+      }
+
+    });
+
+  </script>
+
+</dom-module>

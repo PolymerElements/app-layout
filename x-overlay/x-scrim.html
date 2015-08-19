@@ -1,0 +1,122 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../paper-styles/paper-styles.html">
+<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="overlay-behavior.html">
+
+<dom-module id="x-scrim">
+
+  <style>
+
+    :host {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      opacity: 0;
+      background-color: black;
+      display: none;
+      pointer-events: none;
+
+      -webkit-transition: opacity 0.5s ease-out;
+      transition: opacity 0.5s ease-out;
+    }
+
+    :host([visible]) {
+      pointer-events: auto;
+      display: block;
+      opacity: 0;
+    }
+
+  </style>
+
+  <template></template>
+
+  <script>
+
+    Polymer({
+
+      is: 'x-scrim',
+
+      properties: {
+        visible: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        tapHandler: {
+          type: Function,
+          value: function() {}
+        }
+      },
+
+      behaviors: [
+        Polymer.OverlayBehavior
+      ],
+
+      observers: [
+        '_visibleChanged(visible)',
+      ],
+
+      listeners: {
+        'transitionend': '_onTransitionEnd',
+        'tap': '_onTap'
+      },
+
+      shouldShow: function(yes, tapHandler) {
+        if (yes) {
+          this.show();
+        } else {
+          this.hide();
+        }
+        this.tapHandler = tapHandler;
+      },
+
+      show: function() {
+        this.visible = true;
+      },
+
+      hide: function() {
+        this.visible = false;
+      },
+
+      _visibleChanged: function(visible) {
+        if (visible) {
+          this.style.display = 'block';
+        }
+
+        this.shouldEnableDocScroll(!visible);
+        this.layoutIfNeeded();
+        this.style.opacity = visible ? 0.5 : 0;
+      },
+
+      _onTransitionEnd: function(e) {
+        if (!this.visible && e.currentTarget == this) {
+          this.style.display = '';
+        }
+      },
+
+      _onTap: function(e) {
+        if (this.tapHandler) {
+          this.tapHandler(e);
+        }
+      }
+
+    });
+
+  </script>
+
+</dom-module>

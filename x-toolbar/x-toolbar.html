@@ -20,10 +20,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       @apply(--layout-center);
       height: 64px;
       padding: 0 16px;
+      position: relative;
+      pointer-events: none;
+    }
+
+    :host > ::content > * {
+      pointer-events: auto;
     }
 
     :host > ::content > [title] {
+      @apply(--layout-flex);
       font-size: 24px;
+      pointer-events: none;
+    }
+
+    :host > ::content > [left-item] {
+      margin-right: 16px;
+    }
+
+    :host > ::content > [right-item] {
+      margin-left: 16px;
+    }
+
+    :host > ::content > [bottom-item] {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    :host > ::content > [top-item] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
     }
 
     :host > ::content > [spacer] {

@@ -17,5 +17,8 @@
     "paper-item": "polymerelements/paper-item#^1.0.0",
     "paper-menu": "polymerelements/paper-menu#^1.0.0",
     "paper-styles": "polymerelements/paper-styles#^1.0.0"
+  },
+  "devDependencies": {
+    "paper-progress": "polymerelements/paper-progress#~1.0.2"
   }
 }
