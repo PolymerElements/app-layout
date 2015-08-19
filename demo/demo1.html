@@ -70,7 +70,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template is="dom-bind" id="app">
 
     <x-drawer id="leftDrawer" position="left" on-tap="toggleLeft"></x-drawer>
-    <x-drawer id="rightDrawer" position="right" on-tap="toggleRight"></x-drawer>
+    <x-drawer id="rightDrawer" position="right" on-tap="toggleRight">
+      <input type="text" tabindex="1">
+    </x-drawer>
 
     <x-header condenses>
       <x-toolbar>

@@ -24,7 +24,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       width: 256px;
       overflow: hidden;
       background-color: var(--x-drawer-background-color, #fff);
-      
+      visibility: hidden;
+
       -webkit-transform: translate3d(-100%, 0, 0);
       transform: translate3d(-100%, 0, 0);
 
@@ -63,6 +64,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     :host([opened]),
     :host([position][opened]) {
+      visibility: visible;
+
       -webkit-transform: translate3d(0, 0, 0);
       transform: translate3d(0, 0, 0);
     }
@@ -101,12 +104,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       },
 
+      listeners: {
+        'transitionend': '_onTransitionEnd'
+      },
+
       toggle: function() {
         this.opened = !this.opened;
       },
 
-      _hasOpenedChanged: function(opened) {
+      _hasOpenedChanged: function(opened, prev) {
+        if (prev !== undefined) {
+          this.style.visibility = 'visible';
+        }
         this.shouldEnableScroll(true);
+      },
+
+      _onTransitionEnd: function(e) {
+        if (e.currentTarget == this) {
+          this.style.visibility = '';
+        }
       }
     });
 
