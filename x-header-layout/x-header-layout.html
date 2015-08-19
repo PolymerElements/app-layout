@@ -29,6 +29,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       top: 0;
       right: 0;
       left: 0;
+      z-index: 1;
     }
 
     :host([has-scroller]) > ::content > x-header {
@@ -48,11 +49,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template>
 
+    <content id="header" select="x-header"></content>
+
     <div id="contentContainer">
       <content select=":not(x-header)"></content>
     </div>
-
-    <content id="header" select="x-header"></content>
 
   </template>
 
