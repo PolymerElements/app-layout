@@ -21,10 +21,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     :host {
       display: block;
+
       /* stacking context */
-      /* 1. isolation: isolate; */
-      /* 1. z-index:0 & position:relative or position:absolute; */
-      isolation: isolate;
+      /* isolation: isolate;*/
+       position: relative;
+       z-index: 0;
 
       --drawer-layout-trbl: {
         top: 0;
@@ -39,13 +40,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       @apply(--drawer-layout-trbl);
     }
 
-    x-drawer {
+    #drawerContainer {
       position: fixed;
       overflow-y: auto;
-
     }
 
     :host([narrow]) x-drawer {
+      z-index: 3;
+    }
+
+    #scrim {
       z-index: 2;
     }
 

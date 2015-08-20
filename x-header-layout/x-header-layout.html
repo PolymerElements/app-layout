@@ -17,6 +17,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     :host {
       display: block;
+
+      /* stacking context */
+      /* isolation: isolate;*/
+      position: relative;
+      z-index: 0;
     }
 
     :host([has-scroller]) {
@@ -29,6 +34,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       top: 0;
       right: 0;
       left: 0;
+      z-index: 2;
+    }
+
+    #contentContainer {
+      position: relative;
       z-index: 1;
     }
 

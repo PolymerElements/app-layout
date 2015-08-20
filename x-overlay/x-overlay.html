@@ -28,10 +28,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       position: fixed;
       background-color: white;
-      z-index: 2;
 
       -webkit-transition-property: -webkit-transform, opacity;
       transition-property: transform, opacity;
+
+      z-index: 2;
+    }
+
+    #scrim {
+      z-index: 1;
     }
 
     :host([visible]) #content {
@@ -145,7 +150,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _onTransitionEnd: function(e) {
-        if (!this.visible && e.target == this.$.content) {
+        if (!this.visible && e.path[0] == this.$.content) {
           this.style.display = '';
         }
       }
