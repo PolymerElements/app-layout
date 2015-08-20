@@ -20,38 +20,49 @@ Polymer.OverlayBehavior = (function() {
 
     shouldEnableDocScroll: function(yes) {
       if (yes) {
-        this.unlisten(window, 'wheel', '_preventScroll');
-        this.unlisten(window, 'mousewheel', '_preventScroll');
-        this.unlisten(this, 'touchmove', '_preventScroll');
+        window.removeEventListener('wheel', this._preventScroll);
+        window.removeEventListener('mousewheel', this._preventScroll);
+        window.removeEventListener('touchmove', this._preventScroll);
       } else {
-        this.listen(window, 'wheel', '_preventScroll');
-        this.listen(window, 'mousewheel', '_preventScroll');
-        this.listen(this, 'touchmove', '_preventScroll');
+        window.addEventListener('wheel', this._preventScroll);
+        window.addEventListener('mousewheel', this._preventScroll);
+        window.addEventListener('touchmove', this._preventScroll);
       }
     },
 
-    shouldEnableScroll: function(yes) {
-       if (!this._hasListeners) {
-        this.listen(this, 'wheel', '_handleScroll');
-        this.listen(this, 'mousewheel', '_handleScroll');
-        this.listen(this, 'touchmove', '_handleScroll');
-        this._hasListeners = true;
+    shouldEnableScroll: function(yes, el) {
+      el = el || this;
+       if (!el._hasListeners) {
+        el.addEventListener('wheel', this._handleScroll.bind(el));
+        el.addEventListener('mousewheel', this._handleScroll.bind(el));
+        el.addEventListener('touchstart', this._handleStart.bind(el));
+        el.addEventListener('touchmove', this._handleScroll.bind(el));
+        el._hasListeners = true;
       }
-      this._isScrollEnabled = yes;
+    },
+
+    _handleStart: function(e) {
+      this._touchStartY = e.touches[0].clientY;
     },
 
     _handleScroll: function(e) {
-      if (this._isScrollEnabled) {
-        if (e.wheelDeltaY > 0 && this.scrollTop <= 0) {
-          e.preventDefault();
-        } else if (e.wheelDeltaY < 0 && this.scrollTop === this.scrollHeight - this.offsetHeight) {
-          e.preventDefault();
-        } else {
-          e.stopPropagation();
-        }
-      } else {
+      var deltaY = (e.touches) ? e.touches[0].clientY - this._touchStartY : e.wheelDeltaY;
+
+
+      if (this.scrollHeight === this.offsetHeight) {
         e.preventDefault();
+
+      } else if (deltaY > 0 && this.scrollTop <= 0) {
+        e.preventDefault();
+
+      } else if (deltaY < 0 && this.scrollTop === this.scrollHeight - this.offsetHeight) {
+        e.preventDefault();
+
+      } else {
+        e.stopPropagation();
+
       }
+
     },
 
     _preventScroll: function(e) {

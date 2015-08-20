@@ -42,13 +42,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     x-overlay {
-      font-family: 'Roboto', 'Noto', sans-serif;
-      width: 100%;
-      max-width: 600px;
-      max-height: 300px;
-      padding: 50px;
-      box-sizing: border-box;
-      overflow-y: auto;
+      --overlay-content: {
+        font-family: 'Roboto', 'Noto', sans-serif;
+        width: 100%;
+        max-width: 600px;
+        max-height: 300px;
+        padding: 50px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      };
     }
 
   </style>
@@ -61,9 +64,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <div drawer>
       <x-toolbar>MY APP</x-toolbar>
-      <div style="height: 2000px; width: 10px;"></div>
+      <div style="height: 1000px; width: 100px;"></div>
+      bottom
     </div>
-
  
     <x-header-layout main>
       <x-header condenses>
