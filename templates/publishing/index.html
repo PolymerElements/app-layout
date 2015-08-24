@@ -48,7 +48,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       border-bottom: 1px solid #ddd;
     }
 
-    [title] {
+    .title {
       font-size: 50px;
       font-weight: bold;
       padding-bottom: 40px;
@@ -79,7 +79,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     @media (max-width: 500px) {
 
-      [title] {
+      .title {
         font-size: 40px;
       }
 
@@ -99,7 +99,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <x-header fixed>
           <x-toolbar></x-toolbar>
           <x-toolbar>
-            <div id="navTitle" title>ZUPERK&Uuml;LBLOG</div>
+            <div id="navTitle" class="title">ZUPERK&Uuml;LBLOG</div>
           </x-toolbar>
         </x-header>
 
@@ -119,16 +119,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
           </x-toolbar>
           <x-toolbar class="horizontal center-center layout">
-            <div id="mainTitle" title>ZUPERK&Uuml;LBLOG</div>
+            <div id="mainTitle" class="title">ZUPERK&Uuml;LBLOG</div>
           </x-toolbar>
         </x-header>
 
         <iron-pages selected="{{selected}}">
 
-          <sample-content size="20"></sample-content>
-          <sample-content size="20"></sample-content>
-          <sample-content size="20"></sample-content>
-          <sample-content size="20"></sample-content>
+          <sample-content size="20" label="Art"></sample-content>
+          <sample-content size="20" label="Film"></sample-content>
+          <sample-content size="20" label="Photography"></sample-content>
+          <sample-content size="20" label="Design"></sample-content>
 
         </iron-pages>
 
@@ -147,10 +147,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
 
     app.positionNavTitle = function() {
-      var rect = app.$.mainTitle.getBoundingClientRect();
       var style = app.$.navTitle.style;
-      style.top = rect.top + 'px';
-      style.left = rect.left + 'px';
+      style.top = app.$.mainTitle.offsetTop + 'px';
+      style.left = app.$.mainTitle.offsetLeft + 'px';
     };
 
   </script>
