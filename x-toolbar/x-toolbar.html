@@ -13,56 +13,57 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="x-toolbar">
 
-  <style>
-
-    :host {
-      @apply(--layout-horizontal);
-      @apply(--layout-center);
-      height: 64px;
-      padding: 0 16px;
-      position: relative;
-      pointer-events: none;
-    }
-
-    :host > ::content > * {
-      pointer-events: auto;
-    }
-
-    :host > ::content > [title] {
-      @apply(--layout-flex);
-      font-size: 24px;
-      pointer-events: none;
-    }
-
-    :host > ::content > [left-item] {
-      margin-right: 16px;
-    }
-
-    :host > ::content > [right-item] {
-      margin-left: 16px;
-    }
-
-    :host > ::content > [bottom-item] {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-    }
-
-    :host > ::content > [top-item] {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-    }
-
-    :host > ::content > [spacer] {
-      margin-left: 64px;
-    }
-
-  </style>
-
   <template>
+
+    <style>
+
+      :host {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        height: 64px;
+        padding: 0 16px;
+        position: relative;
+        pointer-events: none;
+        font-size: 24px;
+      }
+
+      :host > ::content > * {
+        pointer-events: auto;
+      }
+
+      :host > ::content > [title] {
+        @apply(--layout-flex);
+        pointer-events: none;
+        @apply(--x-toolbar-title);
+      }
+
+      :host > ::content > [left-item] {
+        margin-right: 16px;
+      }
+
+      :host > ::content > [right-item] {
+        margin-left: 16px;
+      }
+
+      :host > ::content > [bottom-item] {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+
+      :host > ::content > [top-item] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+      }
+
+      :host > ::content > [spacer] {
+        margin-left: 64px;
+      }
+
+    </style>
 
     <content></content>
 
