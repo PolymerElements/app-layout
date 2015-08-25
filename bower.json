@@ -7,6 +7,7 @@
   "private": true,
   "dependencies": {
     "polymer": "polymer/polymer#^1.0.0",
+    "font-roboto": "polymerelements/font-roboto#^1.0.0",
     "iron-flex-layout": "polymerelements/iron-flex-layout#^1.0.0",
     "iron-icon": "polymerelements/iron-icon#^1.0.0",
     "iron-icons": "polymerelements/iron-icons#^1.0.0",
