@@ -18,19 +18,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../../iron-flex-layout/classes/iron-flex-layout.html">
-  <link rel="import" href="../../../iron-pages/iron-pages.html">
-  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../../../paper-menu/paper-menu.html">
-  <link rel="import" href="../../../paper-item/paper-item.html">
-  <link rel="import" href="../../x-header/x-header.html">
-  <link rel="import" href="../../x-toolbar/x-toolbar.html">
-  <link rel="import" href="../../x-drawer-layout/x-drawer-layout.html">
-  <link rel="import" href="../../x-header-layout/x-header-layout.html">
-  <link rel="import" href="../../demo/sample-content.html">
+  <link rel="import" href="../../../font-roboto/roboto.html">
+  <link rel="import" href="x-app.html">
 
-  <style is="custom-style">
+  <style>
 
     body {
       margin: 0;
@@ -38,121 +29,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-color: #fafafa;
     }
 
-    x-drawer-layout {
-      --x-drawer-background-color: #555;
-    }
-
-    [main] x-header {
-      background-color: #fff;
-      color: #555;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .title {
-      font-size: 50px;
-      font-weight: bold;
-      padding-bottom: 40px;
-    }
-
-    [drawer] paper-menu {
-      background-color: #555;
-      color: #fff;
-    }
-
-    [drawer] paper-item {
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    [drawer] paper-item.iron-selected {
-      background-color: #888;
-    }
-
-    #navTitle {
-      position: absolute;
-      color: #fff;
-    }
-
-    #drawerLayout:not([narrow]) #navTitle {
-      display: none;
-    }
-
-    @media (max-width: 500px) {
-
-      .title {
-        font-size: 40px;
-      }
-
-    }
-
   </style>
 
 </head>
 <body>
 
-  <template is="dom-bind" id="app">
-
-    <x-drawer-layout id="drawerLayout" drawer-width="288px" on-iron-resize="positionNavTitle">
-
-      <x-header-layout class="fit" drawer has-scroller>
-
-        <x-header fixed>
-          <x-toolbar></x-toolbar>
-          <x-toolbar>
-            <div id="navTitle" class="title">ZUPERK&Uuml;LBLOG</div>
-          </x-toolbar>
-        </x-header>
-
-        <paper-menu selected="{{selected}}">
-          <paper-item>Art</paper-item>
-          <paper-item>Film</paper-item>
-          <paper-item>Photography</paper-item>
-          <paper-item>Design</paper-item>
-        </paper-menu>
-
-      </x-header-layout>
-
-      <x-header-layout main>
-
-        <x-header fixed waterfall>
-          <x-toolbar>
-            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-          </x-toolbar>
-          <x-toolbar class="horizontal center-center layout">
-            <div id="mainTitle" class="title">ZUPERK&Uuml;LBLOG</div>
-          </x-toolbar>
-        </x-header>
-
-        <iron-pages selected="{{selected}}">
-
-          <sample-content size="20" label="Art"></sample-content>
-          <sample-content size="20" label="Film"></sample-content>
-          <sample-content size="20" label="Photography"></sample-content>
-          <sample-content size="20" label="Design"></sample-content>
-
-        </iron-pages>
-
-      </x-header-layout>
-
-    </x-drawer-layout>
-
-  </template>
-
-  <script>
-
-    var app = document.querySelector('#app');
-
-    document.addEventListener('WebComponentsReady', function() {
-      app.selected = 0;
-    });
-
-    app.positionNavTitle = function() {
-      var style = app.$.navTitle.style;
-      style.top = app.$.mainTitle.offsetTop + 'px';
-      style.left = app.$.mainTitle.offsetLeft + 'px';
-    };
-
-  </script>
+  <x-app></x-app>
 
 </body>
 </html>
