@@ -78,11 +78,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           observer: '_scrollerChanged'
         },
 
-        threadhold: {
+        threshold: {
           type: Number
         },
 
-        threadholdMatches: {
+        thresholdMatches: {
           type: Boolean,
           reflectToAttribute: true,
           value: false
@@ -134,8 +134,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this._oldY = y;
           this._oldTop = top;
         }
-        if (this.threadhold != null) {
-          this.threadholdMatches = top > this.threadhold;
+        if (this.threshold != null) {
+          this.thresholdMatches = top > this.threshold;
         }
         this.fire('header-scroll', {scrollTop: top});
       },
