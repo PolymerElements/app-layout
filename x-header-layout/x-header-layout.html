@@ -19,7 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       display: block;
 
       /* stacking context */
-      /* isolation: isolate;*/
+      /* isolation: isolate; */
       position: relative;
       z-index: 0;
     }
@@ -52,7 +52,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       right: 0;
       bottom: 0;
       left: 0;
-      overflow: auto;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
   </style>

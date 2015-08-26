@@ -14,7 +14,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../x-drawer/x-drawer.html">
 <link rel="import" href="../x-overlay/x-scrim.html">
 
-
 <dom-module id="x-drawer-layout">
 
   <style>
@@ -23,9 +22,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       display: block;
 
       /* stacking context */
-      /* isolation: isolate;*/
-       position: relative;
-       z-index: 0;
+      /* isolation: isolate; */
+      position: relative;
+      z-index: 0;
 
       --drawer-layout-trbl: {
         top: 0;
@@ -43,6 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     #drawerContainer {
       position: fixed;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     :host([narrow]) x-drawer {
