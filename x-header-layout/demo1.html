@@ -18,15 +18,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../iron-icons/iron-icons.html">
+  <link rel="import" href="../../font-roboto/roboto.html">
   <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
+  <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../x-header/x-header.html">
   <link rel="import" href="../x-toolbar/x-toolbar.html">
   <link rel="import" href="x-header-layout.html">
   <link rel="import" href="../demo/sample-content.html">
 
-  <style is="custom-style">
+  <style>
 
     body {
       margin: 0;
@@ -37,9 +38,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     x-header {
       background-color: #4285f4;
       color: #fff;
-
-      --initial-title-size: 40px;
-      --final-title-size: 12px;
     }
 
   </style>
@@ -56,9 +54,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="flex"></div>
         <paper-icon-button icon="search"></paper-icon-button>
       </x-toolbar>
-      <x-toolbar>
-         <div spacer title>My Drive</div>
-      </x-toolbar>
+      <x-toolbar></x-toolbar>
       <x-toolbar>
         <div spacer title>My Drive</div>
       </x-toolbar>
