@@ -1,0 +1,109 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+  <title>demo2</title>
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
+  <link rel="import" href="../../iron-icons/iron-icons.html">
+  <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../x-header/x-header.html">
+  <link rel="import" href="../x-toolbar/x-toolbar.html">
+  <link rel="import" href="../x-drawer-layout/x-drawer-layout.html">
+  <link rel="import" href="../x-header-layout/x-header-layout.html">
+  <link rel="import" href="../x-overlay/x-overlay.html">
+  <link rel="import" href="../demo/sample-content.html">
+
+  <style is="custom-style">
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', 'Noto', sans-serif;
+      background-color: #eee;
+    }
+
+    x-header {
+      background-color: #4285f4;
+      color: #fff;
+    }
+
+    x-overlay {
+      --overlay-content: {
+        font-family: 'Roboto', 'Noto', sans-serif;
+        width: 100%;
+        max-width: 600px;
+        max-height: 300px;
+        padding: 50px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      };
+    }
+
+  </style>
+
+</head>
+<body unresolved>
+
+<template is="dom-bind">
+
+
+  <x-drawer-layout>
+    <div drawer>
+      <x-toolbar>MY APP</x-toolbar>
+      <div style="height: 1000px; width: 100px;"></div>
+      bottom
+    </div>
+    <x-header-layout main>
+      <x-header condenses>
+        <x-toolbar>
+          <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+          <div class="flex"></div>
+          <paper-icon-button icon="icons:more-vert" on-tap="openOverlay"></paper-icon-button>
+        </x-toolbar>
+        <x-toolbar></x-toolbar>
+        <x-toolbar>
+          <div spacer title>My Drive</div>
+        </x-toolbar>
+      </x-header>
+      <sample-content size="100"></sample-content>
+    </x-header-layout>
+  </x-drawer-layout>
+
+  <x-overlay id="helloWorld">
+    <p>Iisque perfecto dissentiet cum et, sit ut quot mandamus, ut vim tibique splendide instructior.</p>
+    <p>Has at minim mucius aliquam, est id tempor laoreet. Ut labores minimum atomorum pro. Laudem tibique ut has. Usu eu novum principes, vel quodsi aliquip ea.</p>
+    <p>Iisque perfecto dissentiet cum et, sit ut quot mandamus, ut vim tibique splendide instructior.</p>
+    <p>Has at minim mucius aliquam, est id tempor laoreet. Ut labores minimum atomorum pro. Laudem tibique ut has. Usu eu novum principes, vel quodsi aliquip ea.</p>
+    <p>Iisque perfecto dissentiet cum et, sit ut quot mandamus, ut vim tibique splendide instructior.</p>
+    <p>Has at minim mucius aliquam, est id tempor laoreet. Ut labores minimum atomorum pro. Laudem tibique ut has. Usu eu novum principes, vel quodsi aliquip ea.</p>
+  </x-overlay>
+
+</template>
+
+<script>
+  (function(scope) {
+
+    scope.openOverlay = function() {
+      this.$.helloWorld.show();
+    };
+
+  })(document.querySelector('template[is=dom-bind]'));
+</script>
+
+</body>
+</html>

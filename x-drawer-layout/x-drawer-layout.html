@@ -11,8 +11,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-media-query/iron-media-query.html">
 <link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../document-scroll-behavior/document-scroll-behavior.html">
 <link rel="import" href="../x-drawer/x-drawer.html">
-<link rel="import" href="../x-overlay/x-scrim.html">
+<link rel="import" href="../x-scrim/x-scrim.html">
 
 <dom-module id="x-drawer-layout">
 
@@ -104,6 +105,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       behaviors: [
         Polymer.IronResizableBehavior,
+        Polymer.DocumentScrollBehavior
       ],
 
       properties: {
@@ -159,6 +161,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       attached: function() {
         this.fire('iron-resize');
+        this.shouldEnableScroll(true, this.$.drawerContainer);
       },
 
       toggleDrawer: function() {
@@ -206,7 +209,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _scrimVisible: function(narrow, opened) {
-        return narrow && opened;
+        var shouldHaveScrim = narrow && opened;
+        this.shouldEnableDocScroll(!shouldHaveScrim);
+        return shouldHaveScrim;
       },
 
       _computeDrawerStyle: function(drawerWidth) {

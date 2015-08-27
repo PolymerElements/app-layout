@@ -11,7 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../paper-styles/paper-styles.html">
 <link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="overlay-behavior.html">
+<link rel="import" href="../document-scroll-behavior/document-scroll-behavior.html">
 
 <dom-module id="x-scrim">
 
@@ -63,7 +63,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       behaviors: [
-        Polymer.OverlayBehavior
+        Polymer.DocumentScrollBehavior
       ],
 
       observers: [
@@ -73,6 +73,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       listeners: {
         'transitionend': '_onTransitionEnd',
         'tap': '_onTap'
+      },
+
+      layoutIfNeeded: function() {
+        return this.offsetWidth;
       },
 
       shouldShow: function(yes, tapHandler) {
@@ -96,8 +100,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (visible) {
           this.style.display = 'block';
         }
-
-        this.shouldEnableDocScroll(!visible);
         this.layoutIfNeeded();
         this.style.opacity = visible ? 0.5 : 0;
       },

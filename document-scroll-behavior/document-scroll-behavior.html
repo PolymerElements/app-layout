@@ -11,12 +11,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer.html">
 
 <script>
-Polymer.OverlayBehavior = (function() {
+Polymer.DocumentScrollBehavior = (function() {
 
   return {
-    layoutIfNeeded: function() {
-      return this.offsetWidth;
-    },
 
     shouldEnableDocScroll: function(yes) {
       if (yes) {
@@ -48,7 +45,6 @@ Polymer.OverlayBehavior = (function() {
     _handleScroll: function(e) {
       var deltaY = (e.touches) ? e.touches[0].clientY - this._touchStartY : e.wheelDeltaY;
 
-
       if (this.scrollHeight === this.offsetHeight) {
         e.preventDefault();
 
@@ -60,9 +56,7 @@ Polymer.OverlayBehavior = (function() {
 
       } else {
         e.stopPropagation();
-
       }
-
     },
 
     _preventScroll: function(e) {
