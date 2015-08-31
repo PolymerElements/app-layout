@@ -20,6 +20,7 @@
     "paper-styles": "polymerelements/paper-styles#^1.0.0"
   },
   "devDependencies": {
-    "paper-progress": "polymerelements/paper-progress#~1.0.2"
+    "paper-progress": "polymerelements/paper-progress#~1.0.2",
+    "iron-list": "polymerelements/iron-list#custom-scroller"
   }
 }

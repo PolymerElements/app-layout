@@ -14,18 +14,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-  <title>demo2</title>
+  <title>demo4</title>
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
   <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
   <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../../iron-list/iron-list.html">
+  <link rel="import" href="../../iron-ajax/iron-ajax.html">
   <link rel="import" href="../x-header/x-header.html">
   <link rel="import" href="../x-toolbar/x-toolbar.html">
   <link rel="import" href="../x-drawer-layout/x-drawer-layout.html">
   <link rel="import" href="../x-header-layout/x-header-layout.html">
-  <link rel="import" href="../x-overlay/x-overlay.html">
   <link rel="import" href="../demo/sample-content.html">
 
   <style is="custom-style">
@@ -41,17 +42,47 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       color: #fff;
     }
 
-    x-overlay {
-      --overlay-content: {
-        font-family: 'Roboto', 'Noto', sans-serif;
-        width: 100%;
-        max-width: 600px;
-        max-height: 300px;
-        padding: 50px;
-        box-sizing: border-box;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-      };
+    iron-list {
+      background-color: var(--paper-grey-200, #eee);
+      padding-bottom: 16px;
+    }
+
+    .item {
+      @apply(--layout-horizontal);
+
+      margin: 16px 16px 0 16px;
+      padding: 20px;
+
+      border-radius: 8px;
+      background-color: white;
+      border: 1px solid #ddd;
+    }
+
+    .avatar {
+      height: 40px;
+      width: 40px;
+      border-radius: 20px;
+      box-sizing: border-box;
+      background-color: #DDD;
+    }
+
+    .pad {
+      padding: 0 16px;
+      @apply(--layout-flex);
+      @apply(--layout-vertical);
+    }
+
+    .primary {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .secondary {
+      font-size: 14px;
+    }
+
+    .dim {
+      color: gray;
     }
 
   </style>
@@ -60,8 +91,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body unresolved>
 
 <template is="dom-bind">
-
-
   <x-drawer-layout>
     <div drawer>
       <x-toolbar>MY APP</x-toolbar>
@@ -80,18 +109,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div spacer title>My Drive</div>
         </x-toolbar>
       </x-header>
-      <sample-content size="100"></sample-content>
+
+      <iron-list items="[[data]]" as="item" scroller="window" class="flex">
+        <template>
+          <div>
+            <div class="item">
+              <img class="avatar" src="[[item.image]]">
+              <div class="pad">
+                <div class="primary">[[item.name]]</div>
+                <div class="secondary">[[item.shortText]]</div>
+                <div class="secondary dim">[[item.longText]]</div>
+              </div>
+              <iron-icon icon$="[[iconForItem(item)]]"></iron-icon>
+            </div>
+          </div>
+        </template>
+      </iron-list>
+
+      <iron-ajax url="contacts.json" last-response="{{data}}" auto></iron-ajax>
+
     </x-header-layout>
   </x-drawer-layout>
-
-  <x-overlay id="helloWorld">
-    <p>Iisque perfecto dissentiet cum et, sit ut quot mandamus, ut vim tibique splendide instructior.</p>
-    <p>Has at minim mucius aliquam, est id tempor laoreet. Ut labores minimum atomorum pro. Laudem tibique ut has. Usu eu novum principes, vel quodsi aliquip ea.</p>
-    <p>Iisque perfecto dissentiet cum et, sit ut quot mandamus, ut vim tibique splendide instructior.</p>
-    <p>Has at minim mucius aliquam, est id tempor laoreet. Ut labores minimum atomorum pro. Laudem tibique ut has. Usu eu novum principes, vel quodsi aliquip ea.</p>
-    <p>Iisque perfecto dissentiet cum et, sit ut quot mandamus, ut vim tibique splendide instructior.</p>
-    <p>Has at minim mucius aliquam, est id tempor laoreet. Ut labores minimum atomorum pro. Laudem tibique ut has. Usu eu novum principes, vel quodsi aliquip ea.</p>
-  </x-overlay>
 
 </template>
 
@@ -100,6 +138,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     scope.openOverlay = function() {
       this.$.helloWorld.show();
+    };
+
+    scope.iconForItem = function(item) {
+      return item ? (item.integer < 50 ? 'star-border' : 'star') : '';
     };
 
   })(document.querySelector('template[is=dom-bind]'));
