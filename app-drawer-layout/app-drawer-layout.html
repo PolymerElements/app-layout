@@ -11,21 +11,67 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-media-query/iron-media-query.html">
 <link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="../document-scroll-behavior/document-scroll-behavior.html">
-<link rel="import" href="../x-drawer/x-drawer.html">
-<link rel="import" href="../x-scrim/x-scrim.html">
+<link rel="import" href="../scroll-behaviors/document-scroll-behavior.html">
+<link rel="import" href="../app-drawer/app-drawer.html">
+<link rel="import" href="../app-scrim/app-scrim.html">
 
-<dom-module id="x-drawer-layout">
+<!--
+`app-drawer-layout` is a layout element that contains a drawer and a main content.
+When the viewport width is smaller than `responsiveWidth`, this element changes
+to narrow layout. In narrow layout, the drawer will be stacked on top of the main content.
+The drawer will slide in/out to hide/reveal the main content.
+
+Example:
+
+By default the drawer is in the left side of the screen
+
+    <app-drawer-layout>
+      <div drawer>
+        <!\-\- drawer content \-\->
+      </div>
+      <div main>
+        <!\-\- main content \-\->
+      </div>
+    </app-drawer>
+
+A drawer in right side of the screen
+
+    <app-drawer-layout drawer-position="right">
+      <div drawer>
+        <!\-\- drawer content \-\->
+      </div>
+      <div main>
+        <!\-\- main content \-\->
+      </div>
+    </app-drawer>
+
+Add an app-header-layout
+
+    <app-drawer-layout>
+      <div drawer>
+        <!\-\- drawer content \-\->
+      </div>
+      <app-header-layout main>
+        <app-header>
+          <app-toolbar>
+            <div title>App name</div>
+          </app-toolbar>
+        </app-header>
+
+        <!\-\- main content \-\->
+
+      </app-header-layout>
+    </app-drawer>
+
+@demo demo.html
+-->
+
+<dom-module id="app-drawer-layout">
 
   <style>
 
     :host {
       display: block;
-
-      /* stacking context */
-      /* isolation: isolate; */
-      position: relative;
-      z-index: 0;
 
       --drawer-layout-trbl: {
         top: 0;
@@ -46,26 +92,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       -webkit-overflow-scrolling: touch;
     }
 
-    :host([narrow]) x-drawer {
-      z-index: 3;
-    }
-
     #scrim {
       z-index: 2;
-    }
-
-    :host([narrow][opened]) x-drawer {
-      box-shadow: 1px 0 2px 1px rgba(0,0,0,0.18);
-    }
-
-    :host([narrow][opened]) x-drawer[position=right] {
-      box-shadow: -1px 0 2px 1px rgba(0,0,0,0.18);
     }
 
     #main {
       position: relative;
       height: 100%;
       z-index: 1;
+    }
+
+    :host([narrow]) app-drawer {
+      z-index: 3;
+    }
+
+    :host([narrow]) app-drawer {
+      box-shadow: 1px 0 2px 1px rgba(0,0,0,0.18);
+    }
+
+    :host([narrow]) app-drawer[position=right] {
+      box-shadow: -1px 0 2px 1px rgba(0,0,0,0.18);
     }
 
     :host([fullbleed]) > #main > ::content > * {
@@ -81,15 +127,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template>
 
-    <x-drawer id="drawerContainer" position="[[_drawerPosition(rightDrawer)]]"
+    <app-drawer id="drawerContainer" position="[[drawerPosition]]"
         opened="[[_drawerOpened(narrow, opened)]]" style$="[[_computeDrawerStyle(drawerWidth)]]"
         on-iron-activate="_drawerActivate">
       <content id="drawer" select="[drawer]"></content>
-    </x-drawer>
+    </app-drawer>
 
     <div id="main" style$="[[_computeMainStyle(narrow, drawerWidth)]]">
       <content></content>
-      <x-scrim id="scrim" visible$="[[_scrimVisible(narrow, opened)]]" on-tap="toggleDrawer"></x-scrim>
+      <app-scrim id="scrim" visible$="[[_isScrimVisible(narrow, opened)]]" on-tap="toggleDrawer"></app-scrim>
     </div>
 
     <iron-media-query query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]"
@@ -101,7 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     Polymer({
 
-      is: 'x-drawer-layout',
+      is: 'app-drawer-layout',
 
       behaviors: [
         Polymer.IronResizableBehavior,
@@ -110,6 +156,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       properties: {
 
+        /**
+         * Returns true if the panel is in narrow layout. This is useful if you
+         * need to show/hide elements based on the layout.
+         */
         narrow: {
           type: Boolean,
           readOnly: true,
@@ -117,20 +167,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: false
         },
 
+        /**
+         * If true, ignore `responsiveWidth` setting and force the narrow layout.
+         */
         forceNarrow: {
           type: Boolean,
           value: false,
           observer: '_responsiveChange'
         },
 
+        /**
+         * If the viewport's width is smaller than this value, the panel will change to narrow layout.
+         * In the mode the drawer will be closed.
+         */
         responsiveWidth: {
+          type: String,
           value: '640px'
         },
 
+        /**
+         * The width of the drawer panel.
+         */
         drawerWidth: {
+          type: String,
           value: '256px'
         },
-
+        
+        /**
+         * Specifies whether or not the drawer is opened.
+         */
         opened: {
           type: Boolean,
           notify: true,
@@ -138,15 +203,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: false
         },
 
+        /**
+         * If true, the current element will take the whole canvas of the nearast positioned element.
+         */
         fullbleed: {
           type: Boolean,
           reflectToAttribute: true,
           value: false
         },
 
-        rightDrawer: {
-          type: Boolean,
-          value: false
+        /**
+         * Indicates position of the drawer on the screen. Options are left, right, top, bottom.
+         */
+        drawerPosition: {
+          type: String,
+          value: 'left'
         },
 
         disableDrawerActivate: {
@@ -164,10 +235,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.shouldEnableScroll(true, this.$.drawerContainer);
       },
 
+      /**
+       * Toggles the drawer panel open and closed.
+       *
+       * @method toggleDrawer
+       */
       toggleDrawer: function() {
         this.opened = !this.opened;
       },
 
+      /**
+       * Gets the drawer element.
+       *
+       * @property drawer
+       */
       get drawer() {
         return Polymer.dom(this.$.drawer).getDistributedNodes()[0];
       },
@@ -181,10 +262,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _drawerOpened: function(narrow, opened) {
         return !narrow || opened;
-      },
-
-      _drawerPosition: function(rightDrawer) {
-        return rightDrawer ? 'right' : 'left';
       },
 
       _drawerActivate: function() {
@@ -208,15 +285,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return forceNarrow ? '' : '(max-width: ' + responsiveWidth + ')';
       },
 
-      _scrimVisible: function(narrow, opened) {
+      _isScrimVisible: function(narrow, opened) {
         var shouldHaveScrim = narrow && opened;
         this.shouldEnableDocScroll(!shouldHaveScrim);
         return shouldHaveScrim;
       },
 
       _computeDrawerStyle: function(drawerWidth) {
-        var css = 'width: ' + drawerWidth;
-        return css;
+        return 'width: ' + drawerWidth;
       },
 
       _computeMainStyle: function(narrow, drawerWidth) {

@@ -10,7 +10,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 
-<dom-module id="x-drawer">
+<!--
+`app-drawer` is a navigation drawers that can slide in from the left, right, bottom or top.
+
+Example:
+
+Add a drawer in the left side of the screen:
+
+    <app-drawer position="left" opened></app-drawer>
+
+Add a drawer in the right side of the screen:
+
+    <app-drawer position="right" opened></app-drawer>
+
+### Styling
+
+app-drawer has the following custom properties for styling:
+
+Custom property                         | Description                            | Default
+----------------------------------------|----------------------------------------|---------
+`--app-drawer-background-color`         | Background color                       | white
+`--app-drawer-duration`                 | The duration of the transition         | 0.2s
+`--app-drawer-timing-function`          | The timing function of the transition  | linear
+
+@demo demo.html
+-->
+
+<dom-module id="app-drawer">
 
   <style>
 
@@ -22,12 +48,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       left: 0;
       width: 256px;
       overflow: hidden;
-      background-color: var(--x-drawer-background-color, #fff);
+      background-color: var(--app-drawer-background-color, white);
       visibility: hidden;
+
       -webkit-transform: translate3d(-100%, 0, 0);
       transform: translate3d(-100%, 0, 0);
-      -webkit-transition: -webkit-transform 0.4s cubic-bezier(0.42, 0, 0.33, 1.01);
-      transition: transform 0.4s cubic-bezier(0.42, 0, 0.33, 1.01);
+
+      -webkit-transition-property: -webkit-transform, visibility;
+      transition-property: transform, visibility;
+
+      -webkit-transition-duration: var(--app-drawer-duration, 0.2s);
+      transition-duration: var(--app-drawer-duration, 0.2s);
+
+      -webkit-transition-timing-function: var(--app-drawer-timing-function, linear);
+      transition-timing-function: var(--app-drawer-timing-function, linear);
     }
 
     :host([position=right]) {
@@ -61,9 +95,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     :host([opened]),
     :host([position][opened]) {
-      visibility: visible;
+      -webkit-transition-property: -webkit-transform;
+      transition-property: transform;
+
       -webkit-transform: translate3d(0, 0, 0);
       transform:  translate3d(0, 0, 0);
+
+      visibility: visible;
     }
 
   </style>
@@ -78,42 +116,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     Polymer({
 
-      is: 'x-drawer',
+      is: 'app-drawer',
 
       properties: {
 
+        /**
+         * Specifies whether or not the drawer is opened.
+         */
         opened: {
           type: Boolean,
           value: false,
           notify: true,
-          reflectToAttribute: true,
-          observer: '_hasOpenedChanged'
+          reflectToAttribute: true
         },
 
+        /**
+         * Determinates the position of the drawer on the screen.
+         * Options are left, right, top, bottom.
+         */
         position: {
+          type: String,
+          value: 'left',
           reflectToAttribute: true
         }
 
       },
 
-      listeners: {
-        'transitionend': '_onTransitionEnd'
-      },
-
+      /**
+       * Toggles the drawer in and out.
+       *
+       * @method toggle
+       */
       toggle: function() {
         this.opened = !this.opened;
-      },
-
-      _hasOpenedChanged: function(opened, prev) {
-        if (prev !== undefined) {
-          this.style.visibility = 'visible';
-        }
-      },
-
-      _onTransitionEnd: function(e) {
-        if (e.currentTarget == this) {
-          this.style.visibility = '';
-        }
       }
 
     });

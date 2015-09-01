@@ -11,10 +11,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer.html">
 
 <script>
+
+/**
+ * `Polymer.DocumentScrollBehavior` provides helper methods to cancel the document 
+ * scroll while allowing certain elements to scroll. This can be useful when you 
+ * have a fixed positioned element that has its own scrolling region.
+ * 
+ * For example:
+ *
+ * If the current element has `overflow-y: auto` and its nearest positioned element is fixed:
+ *
+ *    this.shouldEnableDocScroll(false);
+ *    this.shouldEnableScroll(true);
+ *
+ * @polymerBehavior
+ */
 Polymer.DocumentScrollBehavior = (function() {
 
   return {
 
+    /**
+     * Enables or disables document scroll.
+     *
+     * @method shouldEnableDocScroll
+     * @param {boolean} yes whether or not to enable document scroll.
+     */
     shouldEnableDocScroll: function(yes) {
       if (yes) {
         window.removeEventListener('wheel', this._preventScroll);
@@ -27,14 +48,32 @@ Polymer.DocumentScrollBehavior = (function() {
       }
     },
 
+    /**
+     * Enables or disables the scroll in a given element.
+     *
+     * @method shouldEnableScroll
+     * @param {boolean} yes whether or not it should allow scrolling in the current element
+     * @param {HTMLElement} el The target element. By default, it is equal to the current element.
+     */
     shouldEnableScroll: function(yes, el) {
       el = el || this;
-       if (!el._hasListeners) {
-        el.addEventListener('wheel', this._handleScroll.bind(el));
-        el.addEventListener('mousewheel', this._handleScroll.bind(el));
-        el.addEventListener('touchstart', this._handleStart.bind(el));
-        el.addEventListener('touchmove', this._handleScroll.bind(el));
-        el._hasListeners = true;
+
+      if (yes && !el._hasListeners) {
+
+        el._boundHandleScroll = this._handleScroll.bind(el);
+        el.addEventListener('wheel', el._boundHandleScroll);
+        el.addEventListener('mousewheel', el._boundHandleScroll);
+        el.addEventListener('touchstart', el._boundHandleScroll);
+        el.addEventListener('touchmove', el._boundHandleScroll);
+
+      } else if (!yes && el._hasListeners) {
+
+        el.removeEventListener('wheel', el._boundHandleScroll);
+        el.removeEventListener('mousewheel', el._boundHandleScroll);
+        el.removeEventListener('touchstart', el._boundHandleScroll);
+        el.removeEventListener('touchmove', el._boundHandleScroll);
+        el._boundHandleScroll = null;
+
       }
     },
 
@@ -55,6 +94,7 @@ Polymer.DocumentScrollBehavior = (function() {
         e.preventDefault();
 
       } else {
+        // allow scrolling
         e.stopPropagation();
       }
     },
@@ -67,3 +107,4 @@ Polymer.DocumentScrollBehavior = (function() {
 
 })();
 </script>
+

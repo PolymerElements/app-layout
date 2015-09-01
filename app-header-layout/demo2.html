@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-  <title>demo1</title>
+  <title>app-header-layout demo</title>
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
@@ -22,38 +22,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
   <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../app-drawer/app-drawer.html">
   <link rel="import" href="../app-header/app-header.html">
   <link rel="import" href="../app-toolbar/app-toolbar.html">
+  <link rel="import" href="app-header-layout.html">
   <link rel="import" href="../demo/sample-content.html">
 
   <style is="custom-style">
 
+    html, body {
+      height: 100%;
+    }
+
     body {
       margin: 0;
       font-family: 'Roboto', 'Noto', sans-serif;
+    }
+
+    app-header-layout {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       background-color: #eee;
     }
 
-    app-drawer {
-      position: fixed;
-      background-color: #fff;
-      z-index: 2;
-    }
-
-    #leftDrawer {
-      box-shadow: 1px 0 2px 1px rgba(0,0,0,0.18);
-    }
-
-    #rightDrawer {
-      box-shadow: -1px 0 2px 1px rgba(0,0,0,0.18);
-    }
-
     app-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
       background-color: #4285f4;
       color: #fff;
     }
@@ -62,50 +56,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       --paper-icon-button-ink-color: white;
     }
 
-    sample-content {
-      padding-top: 192px;
-    }
-
   </style>
 
 </head>
 <body>
 
-  <template is="dom-bind" id="app">
+  <!-- app-header-layout provides a scroller -->
+  <app-header-layout has-scrolling-region>
 
-    <app-drawer id="leftDrawer" position="left" on-tap="toggleLeft"></app-drawer>
-
-    <app-drawer id="rightDrawer" position="right" on-tap="toggleRight"></app-drawer>
-
-    <app-header condenses>
+    <app-header condenses waterfall>
       <app-toolbar>
-        <paper-icon-button icon="menu" on-tap="toggleLeft"></paper-icon-button>
+        <paper-icon-button icon="menu"></paper-icon-button>
         <div class="flex"></div>
-        <paper-icon-button icon="shopping-cart" on-tap="toggleRight"></paper-icon-button>
+        <paper-icon-button icon="search"></paper-icon-button>
       </app-toolbar>
       <app-toolbar></app-toolbar>
       <app-toolbar>
-        <div spacer title>My App</div>
+        <div spacer title>My Drive</div>
       </app-toolbar>
     </app-header>
 
     <sample-content size="100"></sample-content>
 
-  </template>
-
-  <script>
-
-  (function(scope) {
-    scope.toggleLeft = function() {
-      this.$.leftDrawer.toggle();
-    };
-
-    scope.toggleRight = function() {
-      this.$.rightDrawer.toggle();
-    };
-  })(document.querySelector('#app'));
-
-  </script>
+  </app-header-layout>
 
 </body>
 </html>

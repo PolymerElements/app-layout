@@ -10,10 +10,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../paper-styles/paper-styles.html">
-<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="../document-scroll-behavior/document-scroll-behavior.html">
 
-<dom-module id="x-scrim">
+<!--
+`app-scrim` is a transparent layer behind overlays that helps to create focus on the content.
+
+Example:
+
+    <app-scrim visible></app-toolbar>
+
+### Styling
+
+app-scrim has the following custom properties for styling:
+
+Custom property             | Description            | Default
+----------------------------|------------------------|----------------------
+`--app-scrim-color`         | Scrim color            | black
+`--app-scrim-opacity`       | Scrim opacity          | 0.5
+
+
+@demo demo.html
+-->
+
+<dom-module id="app-scrim">
 
   <style>
 
@@ -25,7 +43,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       right: 0;
       bottom: -120px;
       opacity: 0;
-      background-color: black;
+      background-color: var(--app-scrim-color, black);
       display: none;
       pointer-events: none;
 
@@ -33,10 +51,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       transition: opacity 0.5s ease-out;
     }
 
+    :host(.visible) {
+      opacity: var(--app-scrim-opacity, 0.5);
+    }
+
     :host([visible]) {
       pointer-events: auto;
       display: block;
-      opacity: 0;
     }
 
   </style>
@@ -47,72 +68,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     Polymer({
 
-      is: 'x-scrim',
+      is: 'app-scrim',
 
       properties: {
+
+        /**
+         * Specifies whether or not the scrim is visible.
+         */
         visible: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true
-        },
-
-        tapHandler: {
-          type: Function,
-          value: function() {}
+          reflectToAttribute: true,
+          observer: '_visibleChanged'
         }
       },
-
-      behaviors: [
-        Polymer.DocumentScrollBehavior
-      ],
-
-      observers: [
-        '_visibleChanged(visible)',
-      ],
 
       listeners: {
-        'transitionend': '_onTransitionEnd',
-        'tap': '_onTap'
+        'transitionend': '_onTransitionEnd'
       },
 
-      layoutIfNeeded: function() {
+      _layoutIfNeeded: function() {
         return this.offsetWidth;
-      },
-
-      shouldShow: function(yes, tapHandler) {
-        if (yes) {
-          this.show();
-        } else {
-          this.hide();
-        }
-        this.tapHandler = tapHandler;
-      },
-
-      show: function() {
-        this.visible = true;
-      },
-
-      hide: function() {
-        this.visible = false;
       },
 
       _visibleChanged: function(visible) {
         if (visible) {
           this.style.display = 'block';
         }
-        this.layoutIfNeeded();
-        this.style.opacity = visible ? 0.5 : 0;
+        this._layoutIfNeeded();
+        this.toggleClass('visible', visible);
       },
 
       _onTransitionEnd: function(e) {
         if (!this.visible && e.currentTarget == this) {
           this.style.display = '';
-        }
-      },
-
-      _onTap: function(e) {
-        if (this.tapHandler) {
-          this.tapHandler(e);
         }
       }
 
