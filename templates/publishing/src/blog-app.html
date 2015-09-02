@@ -1,0 +1,278 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../../polymer/polymer.html">
+
+<link rel="import" href="../../../../iron-icons/iron-icons.html">
+<link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../iron-pages/iron-pages.html">
+<link rel="import" href="../../../../iron-selector/iron-selector.html">
+
+<link rel="import" href="../../../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../paper-item/paper-item.html">
+<link rel="import" href="../../../../paper-menu/paper-menu.html">
+<link rel="import" href="../../../../paper-styles/shadow.html">
+<link rel="import" href="../../../../paper-slider/paper-slider.html">
+
+<link rel="import" href="../../../x-drawer-layout/x-drawer-layout.html">
+<link rel="import" href="../../../x-header/x-header.html">
+<link rel="import" href="../../../x-header-layout/x-header-layout.html">
+<link rel="import" href="../../../x-toolbar/x-toolbar.html">
+<link rel="import" href="../../../x-scrollpos-control/x-scrollpos-control.html">
+
+<link rel="import" href="article-headline.html">
+<link rel="import" href="article-detail.html">
+<link rel="import" href="two-columns-grid.html">
+
+<dom-module id="blog-app">
+
+  <template>
+
+    <style>
+
+      :host {
+        --app-primary-color: #404040;
+      }
+
+      x-drawer-layout {
+        /* set the nav drawer background color */
+        --x-drawer-background-color: var(--app-primary-color);
+      }
+
+      [drawer] paper-menu {
+        background-color: var(--app-primary-color);
+        color: #fff;
+      }
+
+      [drawer] paper-item {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      [drawer] paper-item.iron-selected {
+        background-color: #888;
+      }
+
+      [main] x-header {
+        border-bottom: 1px solid #ddd;
+        background-color: #fff;
+        color: #444;
+      }
+
+      .main-title-toolbar {
+        @apply(--layout-center-center);
+      }
+
+      .title {
+        padding-bottom: 40px;
+        font-size: 60px;
+        font-weight: 800;
+      }
+
+      #navTitle {
+        position: absolute;
+        color: #fff;
+      }
+
+      /* hide nav title when is not in narrow layout */
+      x-drawer-layout:not([narrow]) #navTitle {
+        display: none;
+      }
+
+      article-headline {
+        height: 400px;
+        @apply(--shadow-transition);
+        @apply(--shadow-elevation-2dp);
+        cursor: pointer;
+      }
+
+      article-headline:hover {
+        @apply(--shadow-elevation-6dp);
+      }
+
+      article-detail {
+        max-width: 736px;
+        margin: 64px auto;
+        background-color: #fff;
+        @apply(--shadow-elevation-2dp);
+      }
+
+      .no-contents {
+        height: calc(100vh - 129px);
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        font-size: 30px;
+        color: #bbb;
+      }
+
+      @media (max-width: 580px) {
+
+        /* make title smaller to fit on screen */
+        .title {
+          font-size: 40px;
+          padding-bottom: 16px;
+        }
+
+      }
+
+      /* narrow layout */
+      @media (max-width: 752px) {
+
+        article-detail {
+          max-width: none;
+          margin: 0;
+        }
+
+      }
+
+    </style>
+
+    <x-drawer-layout drawer-width="288px" responsive-width="1280px" on-iron-resize="_positionNavTitle">
+
+      <!-- nav panel -->
+      <x-header-layout drawer has-scroller>
+
+        <x-header fixed>
+
+          <x-toolbar></x-toolbar>
+
+          <x-toolbar>
+            <div id="navTitle" class="title">ZUPERK&Uuml;LBLOG</div>
+          </x-toolbar>
+
+        </x-header>
+
+        <paper-menu selected="{{category}}" attr-for-selected="name" on-iron-activate="_backAction">
+          <paper-item name="art">Art</paper-item>
+          <paper-item name="film">Film</paper-item>
+          <paper-item name="photography">Photography</paper-item>
+          <paper-item name="design">Design</paper-item>
+          <paper-item name="topten">Top Ten</paper-item>
+          <paper-item name="aday">A Day in the Life</paper-item>
+        </paper-menu>
+
+      </x-header-layout>
+
+      <!-- main panel -->
+      <x-header-layout main>
+
+        <x-header fixed waterfall>
+
+          <x-toolbar>
+            <paper-icon-button icon="menu" drawer-toggle hidden$="{{_equal(page, 'detail')}}"></paper-icon-button>
+            <paper-icon-button icon="arrow-back" hidden$="{{_equal(page, 'list')}}" on-tap="_backAction"></paper-icon-button>
+          </x-toolbar>
+
+          <x-toolbar class="main-title-toolbar">
+            <div id="mainTitle" class="title">ZUPERK&Uuml;LBLOG</div>
+          </x-toolbar>
+
+        </x-header>
+
+        <!-- list/detail pages -->
+        <iron-pages selected="{{page}}" attr-for-selected="name">
+
+          <!-- list page -->
+          <iron-pages name="list" selected="{{category}}" attr-for-selected="name">
+
+            <!-- 'Art' category page -->
+            <section name="art">
+
+              <!-- 2-columns grid -->
+              <two-columns-grid column-width="360" gutter="8">
+                <template is="dom-repeat" items="{{articles}}">
+                  <article-headline article="{{item}}" on-tap="_headlineAction"></article-headline>
+                </template>
+              </two-columns-grid>
+
+            </section>
+
+            <!-- other categories -->
+            <section name="film" class="no-contents">No Contents</section>
+            <section name="photography" class="no-contents">No Contents</section>
+            <section name="design" class="no-contents">No Contents</section>
+            <section name="topten" class="no-contents">No Contents</section>
+            <section name="aday" class="no-contents">No Contents</section>
+
+          </iron-pages>
+
+          <!-- detail page -->
+          <div name="detail">
+            <article-detail article="{{article}}"></article-detail>
+          </div>
+
+        </iron-pages>
+
+      </x-header-layout>
+
+    </x-drawer-layout>
+
+    <!-- manages page's scroll position -->
+    <x-scrollpos-control selected="{{category}}"></x-scrollpos-control>
+    <x-scrollpos-control selected="{{page}}" reset></x-scrollpos-control>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'blog-app',
+
+      properties: {
+
+        /**
+         * The selected category.
+         */
+        category: {
+          value: 'art'
+        },
+
+        /**
+         * The selected page (either `list` or `detail`).
+         */
+        page: {
+          value: 'list'
+        },
+
+        /**
+         * An array of articles data.
+         */
+        articles: {
+          type: Array
+        }
+
+      },
+
+      _equal: function(value1, value2) {
+        return value1 === value2;
+      },
+
+      _backAction: function() {
+        this.page = 'list';
+      },
+
+      _headlineAction: function(e) {
+        this.article = Polymer.dom(e).localTarget.article;
+        this.page = 'detail';
+      },
+
+      // position nav title to be on top of the main title.
+      _positionNavTitle: function() {
+        var style = this.$.navTitle.style;
+        style.top = this.$.mainTitle.offsetTop + 'px';
+        style.left = this.$.mainTitle.offsetLeft + 'px';
+      }
+
+    });
+
+  </script>
+
+</dom-module>
