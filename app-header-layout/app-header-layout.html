@@ -169,10 +169,12 @@ Using an own scrolling region:
       },
 
       _updateScroller: function() {
-        var header = this.header;
-        if (header) {
-          header.scroller = this.hasScrollingRegion ? this.$.contentContainer : window;
-          this._updateHeaderPosition();
+        if (this.isAttached) {
+          var header = this.header;
+          if (header) {
+            header.scroller = this.hasScrollingRegion ? this.$.contentContainer : window;
+            this._updateHeaderPosition();
+          }
         }
       }
 
