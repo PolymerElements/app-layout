@@ -94,59 +94,57 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body unresolved>
 
-<template is="dom-bind">
-  <app-drawer-layout>
-    <div drawer>
-      <app-toolbar class="nav-toolbar">App name</app-toolbar>
-      <div style="height: 1000px; width: 100px;"></div>
-      bottom
-    </div>
-    <app-header-layout main>
-      <app-header condenses waterfall>
-        <app-toolbar>
-          <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-          <div class="flex"></div>
-          <paper-icon-button icon="search"></paper-icon-button>
-          <paper-icon-button icon="more-vert"></paper-icon-button>
-        </app-toolbar>
-        <app-toolbar></app-toolbar>
-        <app-toolbar>
-          <div spacer title>My Drive</div>
-        </app-toolbar>
-      </app-header>
+  <template is="dom-bind">
+    <app-drawer-layout>
+      <div drawer>
+        <app-toolbar class="nav-toolbar">App name</app-toolbar>
+      </div>
+      <app-header-layout main>
+        <app-header condenses waterfall>
+          <app-toolbar>
+            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <div class="flex"></div>
+            <paper-icon-button icon="search"></paper-icon-button>
+            <paper-icon-button icon="more-vert"></paper-icon-button>
+          </app-toolbar>
+          <app-toolbar></app-toolbar>
+          <app-toolbar>
+            <div spacer title>My Drive</div>
+          </app-toolbar>
+        </app-header>
 
-      <iron-list items="[[data]]" as="item" scroller="window" class="flex">
-        <template>
-          <div>
-            <div class="item">
-              <img class="avatar" src="[[item.image]]">
-              <div class="pad">
-                <div class="primary">[[item.name]]</div>
-                <div class="secondary">[[item.shortText]]</div>
-                <div class="secondary dim">[[item.longText]]</div>
+        <iron-list items="[[data]]" as="item" scroller="window" class="flex">
+          <template>
+            <div>
+              <div class="item">
+                <img class="avatar" src="[[item.image]]">
+                <div class="pad">
+                  <div class="primary">[[item.name]]</div>
+                  <div class="secondary">[[item.shortText]]</div>
+                  <div class="secondary dim">[[item.longText]]</div>
+                </div>
+                <iron-icon icon$="[[iconForItem(item)]]"></iron-icon>
               </div>
-              <iron-icon icon$="[[iconForItem(item)]]"></iron-icon>
             </div>
-          </div>
-        </template>
-      </iron-list>
+          </template>
+        </iron-list>
 
-      <iron-ajax url="contacts.json" last-response="{{data}}" auto></iron-ajax>
+        <iron-ajax url="contacts.json" last-response="{{data}}" auto></iron-ajax>
 
-    </app-header-layout>
-  </app-drawer-layout>
+      </app-header-layout>
+    </app-drawer-layout>
 
-</template>
+  </template>
 
-<script>
-  (function(scope) {
+  <script>
+    (function(scope) {
 
-    scope.iconForItem = function(item) {
-      return item ? (item.integer < 50 ? 'star-border' : 'star') : '';
-    };
+      scope.iconForItem = function(item) {
+        return item ? (item.integer < 50 ? 'star-border' : 'star') : '';
+      };
 
-  })(document.querySelector('template[is=dom-bind]'));
-</script>
+    })(document.querySelector('template[is=dom-bind]'));
+  </script>
 
 </body>
 </html>
