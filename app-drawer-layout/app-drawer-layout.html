@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../iron-media-query/iron-media-query.html">
 <link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../scroll-behaviors/document-scroll-behavior.html">
@@ -72,18 +73,10 @@ Add an app-header-layout
 
     :host {
       display: block;
-
-      --drawer-layout-trbl: {
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-      };
     }
 
     :host([fullbleed]) {
-      position: absolute;
-      @apply(--drawer-layout-trbl);
+      @apply(--layout-fit);
     }
 
     #drawerContainer {
@@ -115,8 +108,7 @@ Add an app-header-layout
     }
 
     :host([fullbleed]) > #main > ::content > * {
-      position: absolute;
-      @apply(--drawer-layout-trbl);
+      @apply(--layout-fit);
     }
 
     :host(:not([narrow])) ::content [drawer-toggle] {
@@ -192,7 +184,7 @@ Add an app-header-layout
           type: String,
           value: '256px'
         },
-        
+
         /**
          * Specifies whether or not the drawer is opened.
          */
