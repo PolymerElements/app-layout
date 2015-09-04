@@ -14,40 +14,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-  <title>x-header-layout demo</title>
+  <title>app-drawer-layout demo</title>
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
   <link rel="import" href="../../font-roboto/roboto.html">
-  <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
   <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../x-header/x-header.html">
-  <link rel="import" href="../x-toolbar/x-toolbar.html">
-  <link rel="import" href="x-header-layout.html">
+  <link rel="import" href="../app-header/app-header.html">
+  <link rel="import" href="../app-toolbar/app-toolbar.html">
+  <link rel="import" href="app-drawer-layout.html">
   <link rel="import" href="../demo/sample-content.html">
 
   <style>
 
-    html, body {
-      height: 100%;
-    }
-
     body {
       margin: 0;
       font-family: 'Roboto', 'Noto', sans-serif;
-    }
-
-    x-header-layout {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
       background-color: #eee;
     }
 
-    x-header {
+    app-toolbar {
       background-color: #4285f4;
       color: #fff;
     }
@@ -57,24 +44,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <!-- x-header-layout provides a scroller -->
-  <x-header-layout has-scroller>
+  <app-drawer-layout>
 
-    <x-header condenses>
-      <x-toolbar>
-        <paper-icon-button icon="menu"></paper-icon-button>
-        <div class="flex"></div>
-        <paper-icon-button icon="search"></paper-icon-button>
-      </x-toolbar>
-      <x-toolbar></x-toolbar>
-      <x-toolbar>
-        <div spacer title>My Drive</div>
-      </x-toolbar>
-    </x-header>
+    <div drawer></div>
 
-    <sample-content size="100"></sample-content>
+    <div main>
+      <app-toolbar>
+        <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+      </app-toolbar>
+      <sample-content size="100"></sample-content>
+    </div>
 
-  </x-header-layout>
+  </app-drawer-layout>
 
 </body>
 </html>

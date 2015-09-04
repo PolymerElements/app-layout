@@ -7,8 +7,11 @@
   "private": true,
   "dependencies": {
     "polymer": "polymer/polymer#^1.0.0",
-    "font-roboto": "polymerelements/font-roboto#^1.0.0",
     "iron-flex-layout": "polymerelements/iron-flex-layout#^1.0.0",
+    "paper-styles": "polymerelements/paper-styles#^1.0.0"
+  },
+  "devDependencies": {
+    "font-roboto": "polymerelements/font-roboto#^1.0.0",
     "iron-icon": "polymerelements/iron-icon#^1.0.0",
     "iron-icons": "polymerelements/iron-icons#^1.0.0",
     "iron-media-query": "polymerelements/iron-media-query#^1.0.0",
@@ -17,10 +20,11 @@
     "paper-icon-button": "polymerelements/paper-icon-button#^1.0.0",
     "paper-item": "polymerelements/paper-item#^1.0.0",
     "paper-menu": "polymerelements/paper-menu#^1.0.0",
-    "paper-styles": "polymerelements/paper-styles#^1.0.0"
-  },
-  "devDependencies": {
+    "paper-checkbox": "polymerelements/paper-checkbox#^1.0.0",
     "paper-progress": "polymerelements/paper-progress#~1.0.2",
-    "iron-list": "polymerelements/iron-list#custom-scroller"
+    "iron-list": "polymerelements/iron-list#custom-scroller",
+    "test-fixture": "polymerelements/test-fixture#^1.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.2",
+    "web-component-tester": "*"
   }
 }

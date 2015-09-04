@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-  <title>x-toolbar demo</title>
+  <title>app-toolbar demo</title>
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
@@ -22,7 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../../paper-progress/paper-progress.html">
-  <link rel="import" href="x-toolbar.html">
+  <link rel="import" href="app-toolbar.html">
 
   <style is="custom-style">
 
@@ -30,10 +30,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       font-family: Roboto, Noto, sans-serif;
     }
 
-    x-toolbar {
+    app-toolbar {
       background-color: #4285f4;
       color: #fff;
       margin: 20px 0;
+    }
+
+    paper-icon-button {
+      --paper-icon-button-ink-color: white;
     }
 
     paper-progress {
@@ -52,42 +56,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <x-toolbar>
+  <app-toolbar>Random Text</app-toolbar>
+
+  <app-toolbar>
     <paper-icon-button icon="delete"></paper-icon-button>
     <paper-icon-button icon="search"></paper-icon-button>
-  </x-toolbar>
+  </app-toolbar>
 
-  <x-toolbar>
+  <app-toolbar>
     <div title spacer>App name</div>
-  </x-toolbar>
+  </app-toolbar>
 
-  <x-toolbar>
+  <app-toolbar>
     <div title>App name</div>
-  </x-toolbar>
+  </app-toolbar>
 
-  <x-toolbar>
+  <app-toolbar>
     <paper-icon-button icon="menu"></paper-icon-button>
     <div title>App name</div>
-  </x-toolbar>
+  </app-toolbar>
 
-  <x-toolbar>
+  <app-toolbar>
     <paper-icon-button icon="menu"></paper-icon-button>
     <div title>App name</div>
     <paper-icon-button icon="search"></paper-icon-button>
-  </x-toolbar>
+  </app-toolbar>
 
-  <x-toolbar>
+  <app-toolbar>
     <paper-icon-button icon="close"></paper-icon-button>
     <div title>App name</div>
-  </x-toolbar>
+  </app-toolbar>
 
-  <x-toolbar>
+  <app-toolbar>
     <paper-icon-button icon="close"></paper-icon-button>
     <div title>App name</div>
-    <div bottom-item>
-      <paper-progress value="10" indeterminate></paper-progress>
-    </div>
-  </x-toolbar>
+    <paper-progress value="10" indeterminate bottom-item></paper-progress>
+  </app-toolbar>
 
 </body>
 </html>

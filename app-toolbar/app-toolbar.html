@@ -11,7 +11,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 
-<dom-module id="x-toolbar">
+<!--
+`app-toolbar` is a horizontal bar containing items that can be used for
+label, navigation, search and actions.
+
+Example:
+
+Add a title to the toolbar.
+
+    <app-toolbar>
+      <div title>App name</div>
+    </app-toolbar>
+
+Add a button in the left and right side of the toolbar.
+
+    <app-toolbar>
+      <paper-icon-button icon="menu"></paper-icon-button>
+      <div title>App name</div>
+      <paper-icon-button icon="search"></paper-icon-button>
+    </app-toolbar>
+
+Use the attributes `top-item` or `bottom-item` to completely fit an element
+to the top or bottom of the toolbar respectively.
+
+### Styling
+
+app-toolbar has the following custom properties available for styling:
+
+Custom property              | Description                  | Default
+-----------------------------|------------------------------|-----------------------
+`--app-toolbar-font-size`    | Toolbar font size            | 20px
+
+@demo demo.html
+-->
+
+<dom-module id="app-toolbar">
 
   <template>
 
@@ -24,25 +58,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding: 0 16px;
         position: relative;
         pointer-events: none;
-        font-size: 24px;
+        font-size: var(--app-toolbar-font-size, 20px);
       }
 
       :host > ::content > * {
         pointer-events: auto;
       }
 
+      :host > ::content > paper-icon-button {
+        /* paper-icon-button/issues/33 */
+        font-size: 0;
+      }
+
       :host > ::content > [title] {
         @apply(--layout-flex);
         pointer-events: none;
-        @apply(--x-toolbar-title);
-      }
-
-      :host > ::content > [left-item] {
-        margin-right: 16px;
-      }
-
-      :host > ::content > [right-item] {
-        margin-left: 16px;
       }
 
       :host > ::content > [bottom-item] {
@@ -73,7 +103,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     Polymer({
 
-      is: 'x-toolbar'
+      is: 'app-toolbar'
 
     });
 

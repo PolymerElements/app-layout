@@ -23,10 +23,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../../iron-list/iron-list.html">
   <link rel="import" href="../../iron-ajax/iron-ajax.html">
-  <link rel="import" href="../x-header/x-header.html">
-  <link rel="import" href="../x-toolbar/x-toolbar.html">
-  <link rel="import" href="../x-drawer-layout/x-drawer-layout.html">
-  <link rel="import" href="../x-header-layout/x-header-layout.html">
+  <link rel="import" href="../app-header/app-header.html">
+  <link rel="import" href="../app-toolbar/app-toolbar.html">
+  <link rel="import" href="../app-drawer-layout/app-drawer-layout.html">
+  <link rel="import" href="../app-header-layout/app-header-layout.html">
   <link rel="import" href="../demo/sample-content.html">
 
   <style is="custom-style">
@@ -37,9 +37,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-color: #eee;
     }
 
-    x-header {
+    app-header {
       background-color: #4285f4;
-      color: #fff;
+      color: white;
+    }
+
+    app-header paper-icon-button {
+      --paper-icon-button-ink-color: white;
     }
 
     iron-list {
@@ -91,24 +95,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body unresolved>
 
 <template is="dom-bind">
-  <x-drawer-layout>
+  <app-drawer-layout>
     <div drawer>
-      <x-toolbar>MY APP</x-toolbar>
+      <app-toolbar class="nav-toolbar">App name</app-toolbar>
       <div style="height: 1000px; width: 100px;"></div>
       bottom
     </div>
-    <x-header-layout main>
-      <x-header condenses>
-        <x-toolbar>
+    <app-header-layout main>
+      <app-header condenses waterfall>
+        <app-toolbar>
           <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
           <div class="flex"></div>
-          <paper-icon-button icon="icons:more-vert" on-tap="openOverlay"></paper-icon-button>
-        </x-toolbar>
-        <x-toolbar></x-toolbar>
-        <x-toolbar>
+          <paper-icon-button icon="search"></paper-icon-button>
+          <paper-icon-button icon="more-vert"></paper-icon-button>
+        </app-toolbar>
+        <app-toolbar></app-toolbar>
+        <app-toolbar>
           <div spacer title>My Drive</div>
-        </x-toolbar>
-      </x-header>
+        </app-toolbar>
+      </app-header>
 
       <iron-list items="[[data]]" as="item" scroller="window" class="flex">
         <template>
@@ -128,17 +133,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <iron-ajax url="contacts.json" last-response="{{data}}" auto></iron-ajax>
 
-    </x-header-layout>
-  </x-drawer-layout>
+    </app-header-layout>
+  </app-drawer-layout>
 
 </template>
 
 <script>
   (function(scope) {
-
-    scope.openOverlay = function() {
-      this.$.helloWorld.show();
-    };
 
     scope.iconForItem = function(item) {
       return item ? (item.integer < 50 ? 'star-border' : 'star') : '';

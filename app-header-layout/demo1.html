@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-  <title>x-header-layout demo</title>
+  <title>app-header-layout demo</title>
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
@@ -22,12 +22,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
   <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../x-header/x-header.html">
-  <link rel="import" href="../x-toolbar/x-toolbar.html">
-  <link rel="import" href="x-header-layout.html">
+  <link rel="import" href="../app-header/app-header.html">
+  <link rel="import" href="../app-toolbar/app-toolbar.html">
+  <link rel="import" href="app-header-layout.html">
   <link rel="import" href="../demo/sample-content.html">
 
-  <style>
+  <style is="custom-style">
 
     body {
       margin: 0;
@@ -35,9 +35,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-color: #eee;
     }
 
-    x-header {
+    app-header {
       background-color: #4285f4;
       color: #fff;
+    }
+
+    app-header paper-icon-button {
+      --paper-icon-button-ink-color: white;
     }
 
   </style>
@@ -46,23 +50,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body>
 
   <!-- default to use body scroller -->
-  <x-header-layout>
+  <app-header-layout>
 
-    <x-header condenses>
-      <x-toolbar>
+    <app-header condenses waterfall>
+      <app-toolbar>
         <paper-icon-button icon="menu"></paper-icon-button>
         <div class="flex"></div>
         <paper-icon-button icon="search"></paper-icon-button>
-      </x-toolbar>
-      <x-toolbar></x-toolbar>
-      <x-toolbar>
+      </app-toolbar>
+      <app-toolbar></app-toolbar>
+      <app-toolbar>
         <div spacer title>My Drive</div>
-      </x-toolbar>
-    </x-header>
+      </app-toolbar>
+    </app-header>
 
     <sample-content size="100"></sample-content>
 
-  </x-header-layout>
+  </app-header-layout>
 
 </body>
 </html>

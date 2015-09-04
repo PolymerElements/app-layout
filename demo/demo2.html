@@ -21,13 +21,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../font-roboto/roboto.html">
   <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../x-drawer-layout/x-drawer-layout.html">
-  <link rel="import" href="../x-header/x-header.html">
-  <link rel="import" href="../x-header-layout/x-header-layout.html">
-  <link rel="import" href="../x-toolbar/x-toolbar.html">
+  <link rel="import" href="../app-drawer-layout/app-drawer-layout.html">
+  <link rel="import" href="../app-header/app-header.html">
+  <link rel="import" href="../app-header-layout/app-header-layout.html">
+  <link rel="import" href="../app-toolbar/app-toolbar.html">
   <link rel="import" href="../demo/sample-content.html">
 
-  <style>
+  <style is="custom-style">
 
     body {
       margin: 0;
@@ -35,9 +35,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-color: #eee;
     }
 
-    x-header {
+    app-header {
       background-color: #4285f4;
       color: #fff;
+    }
+
+    app-header paper-icon-button {
+      --paper-icon-button-ink-color: white;
     }
 
   </style>
@@ -45,29 +49,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body unresolved>
 
-  <x-drawer-layout>
+  <app-drawer-layout>
 
     <div drawer>
-      <x-toolbar>MY APP</x-toolbar>
+      <app-toolbar>App name</app-toolbar>
     </div>
 
-    <x-header-layout main>
+    <app-header-layout main>
 
-      <x-header condenses>
-        <x-toolbar>
+      <app-header condenses waterfall>
+        <app-toolbar>
           <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-        </x-toolbar>
-        <x-toolbar></x-toolbar>
-        <x-toolbar>
+        </app-toolbar>
+        <app-toolbar></app-toolbar>
+        <app-toolbar>
           <div spacer title>My Drive</div>
-        </x-toolbar>
-      </x-header>
+        </app-toolbar>
+      </app-header>
 
       <sample-content size="100"></sample-content>
 
-    </x-header-layout>
+    </app-header-layout>
 
-  </x-drawer-layout>
+  </app-drawer-layout>
 
 </body>
 </html>
