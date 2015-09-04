@@ -21,11 +21,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../paper-styles/shadow.html">
 <link rel="import" href="../../../../paper-slider/paper-slider.html">
 
-<link rel="import" href="../../../x-drawer-layout/x-drawer-layout.html">
-<link rel="import" href="../../../x-header/x-header.html">
-<link rel="import" href="../../../x-header-layout/x-header-layout.html">
-<link rel="import" href="../../../x-toolbar/x-toolbar.html">
-<link rel="import" href="../../../x-scrollpos-control/x-scrollpos-control.html">
+<link rel="import" href="../../../app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../../app-header/app-header.html">
+<link rel="import" href="../../../app-header-layout/app-header-layout.html">
+<link rel="import" href="../../../app-toolbar/app-toolbar.html">
+<link rel="import" href="../../../app-scrollpos-control/app-scrollpos-control.html">
 
 <link rel="import" href="article-headline.html">
 <link rel="import" href="article-detail.html">
@@ -41,9 +41,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --app-primary-color: #404040;
       }
 
-      x-drawer-layout {
+      app-drawer-layout {
         /* set the nav drawer background color */
-        --x-drawer-background-color: var(--app-primary-color);
+        --app-drawer-background-color: var(--app-primary-color);
       }
 
       [drawer] paper-menu {
@@ -60,7 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background-color: #888;
       }
 
-      [main] x-header {
+      [main] app-header {
         border-bottom: 1px solid #ddd;
         background-color: #fff;
         color: #444;
@@ -82,7 +82,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       /* hide nav title when is not in narrow layout */
-      x-drawer-layout:not([narrow]) #navTitle {
+      app-drawer-layout:not([narrow]) #navTitle {
         display: none;
       }
 
@@ -134,20 +134,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </style>
 
-    <x-drawer-layout drawer-width="288px" responsive-width="1280px" on-iron-resize="_positionNavTitle">
+    <app-drawer-layout drawer-width="288px" responsive-width="1280px" on-iron-resize="_positionNavTitle">
 
       <!-- nav panel -->
-      <x-header-layout drawer has-scroller>
+      <app-header-layout drawer has-scrolling-region>
 
-        <x-header fixed>
+        <app-header fixed>
 
-          <x-toolbar></x-toolbar>
+          <app-toolbar></app-toolbar>
 
-          <x-toolbar>
+          <app-toolbar>
             <div id="navTitle" class="title">ZUPERK&Uuml;LBLOG</div>
-          </x-toolbar>
+          </app-toolbar>
 
-        </x-header>
+        </app-header>
 
         <paper-menu selected="{{category}}" attr-for-selected="name" on-iron-activate="_backAction">
           <paper-item name="art">Art</paper-item>
@@ -158,23 +158,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-item name="aday">A Day in the Life</paper-item>
         </paper-menu>
 
-      </x-header-layout>
+      </app-header-layout>
 
       <!-- main panel -->
-      <x-header-layout main>
+      <app-header-layout main>
 
-        <x-header fixed waterfall>
+        <app-header fixed waterfall>
 
-          <x-toolbar>
+          <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle hidden$="{{_equal(page, 'detail')}}"></paper-icon-button>
             <paper-icon-button icon="arrow-back" hidden$="{{_equal(page, 'list')}}" on-tap="_backAction"></paper-icon-button>
-          </x-toolbar>
+          </app-toolbar>
 
-          <x-toolbar class="main-title-toolbar">
+          <app-toolbar class="main-title-toolbar">
             <div id="mainTitle" class="title">ZUPERK&Uuml;LBLOG</div>
-          </x-toolbar>
+          </app-toolbar>
 
-        </x-header>
+        </app-header>
 
         <!-- list/detail pages -->
         <iron-pages selected="{{page}}" attr-for-selected="name">
@@ -210,13 +210,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         </iron-pages>
 
-      </x-header-layout>
+      </app-header-layout>
 
-    </x-drawer-layout>
+    </app-drawer-layout>
 
     <!-- manages page's scroll position -->
-    <x-scrollpos-control selected="{{category}}"></x-scrollpos-control>
-    <x-scrollpos-control selected="{{page}}" reset></x-scrollpos-control>
+    <app-scrollpos-control selected="{{category}}"></app-scrollpos-control>
+    <app-scrollpos-control selected="{{page}}" reset></app-scrollpos-control>
 
   </template>
 
