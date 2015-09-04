@@ -13,8 +13,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <script>
 
 /**
- * `Polymer.CustomScrollerBehavior` allows to set an external scroll target. 
- * Elements that consume this behavior can override the `_scrollHandler` 
+ * `Polymer.CustomScrollerBehavior` allows to set an external scroll target.
+ * Elements that consume this behavior can override the `_scrollHandler`
  * method to listen to the scroll event.
  *
  * @polymerBehavior
@@ -27,8 +27,8 @@ Polymer.CustomScrollerBehavior = (function() {
 
       /**
        * Specifies an element that will handle the scroll event
-       * on the behalf of the current element. This is typically an `HTMLElement`, 
-       * but it's possible to set it to `window` to use the document scroll. 
+       * on the behalf of the current element. This is typically an `HTMLElement`,
+       * but it's possible to set it to `window` to use the document scroll.
        */
       scroller: {
         type: Object,
@@ -108,7 +108,7 @@ Polymer.CustomScrollerBehavior = (function() {
      * Scrolls the content to a particular place.
      *
      * @method scroll
-     * @param {number} top 
+     * @param {number} top
      * @return {number} left
      */
     scroll: function(top, left) {
