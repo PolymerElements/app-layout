@@ -1,6 +1,6 @@
 {
   "name": "app-layout",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "authors": [
     "The Polymer Authors"
   ],
@@ -13,11 +13,13 @@
   },
   "devDependencies": {
     "font-roboto": "polymerelements/font-roboto#^1.0.0",
+    "iron-component-page": "polymerelements/iron-component-page#^1.0.0",
     "iron-icon": "polymerelements/iron-icon#^1.0.0",
     "iron-icons": "polymerelements/iron-icons#^1.0.0",
     "iron-list": "polymerelements/iron-list#custom-scroller",
     "iron-pages": "polymerelements/iron-pages#^1.0.0",
     "paper-checkbox": "polymerelements/paper-checkbox#^1.0.0",
+    "paper-fab": "polymerelements/paper-fab#^1.0.0",
     "paper-icon-button": "polymerelements/paper-icon-button#^1.0.0",
     "paper-item": "polymerelements/paper-item#^1.0.0",
     "paper-menu": "polymerelements/paper-menu#^1.0.0",
