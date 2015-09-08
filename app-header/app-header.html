@@ -1,0 +1,228 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../scroll-behaviors/custom-scroller-behavior.html">
+
+<!--
+app-header is a container for app-toolbar. It can add effects to the toolbars based on the scroll position.
+
+Example:
+
+    <app-header condenses>
+      <app-toolbar>
+        <div title>App name</div>
+      </app-toolbar>
+    </app-drawer>
+
+@demo app-header/demo.html
+-->
+
+<dom-module id="app-header">
+
+  <style>
+
+    :host {
+      display: block;
+    }
+
+    :host::after {
+      content: '';
+      position: absolute;
+      left: 0px;
+      right: 0px;
+      bottom: -5px;
+      width: 100%;
+      height: 5px;
+      pointer-events: none;
+      opacity: 0;
+      box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+
+      transition: opacity 0.4s;
+
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+
+    :host([shadow])::after {
+      opacity: 1;
+    }
+
+  </style>
+
+  <template>
+
+    <content></content>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'app-header',
+
+      /**
+       * Fired when the header is translated.
+       *
+       * @event app-header-transform
+       */
+
+      properties: {
+
+        /**
+         * If true, the header's height will condense as the user scrolls down
+         * from the top of the content area.
+         */
+        condenses: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * If true, the header is fixed to the top and never moves away.
+         */
+        fixed: {
+          type: Boolean,
+          value: false,
+          observer: '_fixedChanged'
+        },
+
+        /**
+         * If true, the condensed header is always shown and does not move away.
+         */
+        alwaysVisible: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * If true, a shadow will appear when the user is not at the top of the content area.
+         */
+        waterfall: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * If true, a shadow will appear when the user is not at the top of the content area.
+         */
+        shadow: {
+          type: Boolean,
+          readOnly: true,
+          reflectToAttribute: true,
+          value: false
+        }
+
+      },
+
+      behaviors: [
+        Polymer.CustomScrollerBehavior
+      ],
+
+      /**
+       * A cached offsetHeight of the current element.
+       */
+      _height: 0,
+
+      /**
+       * The top most app-toolbar.
+       */
+      _topbar: null,
+
+      /**
+       * The distance in pixels the header will be translated to when scrolling.
+       */
+      _deltaHeight: 0,
+
+      get _clampedScrollTop() {
+        return Math.max(0,
+            this.alwaysVisible ? Math.min(this._scrollTop, this._deltaHeight) : this._scrollTop);
+      },
+
+      get _headerDy() {
+        return this.alwaysVisible ? this._deltaHeight : this._height;
+      },
+
+      created: function() {
+        this._oldY = 0;
+        this._oldTop = 0;
+      },
+
+      attached: function() {
+        this.async(this.setup, 1);
+      },
+
+      /**
+       * Recalculates the size of the toolbar.
+       *
+       * @method setup
+       */
+      setup: function() {
+        this._height = this.offsetHeight;
+        this._topbar = Polymer.dom(this).querySelectorAll('app-toolbar')[0];
+        this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
+      },
+
+      _scrollHandler: function() {
+        this._updateHeader(this._clampedScrollTop);
+      },
+
+      _updateHeader: function(scrollTop) {
+        var y = 0;
+
+        if (this.fixed) {
+          this._setShadow(this.waterfall && scrollTop > 0);
+        } else {
+          y = Math.min(this._headerDy, Math.max(0, this._oldY + scrollTop - this._oldTop));
+
+          if (this.condenses && this._oldTop >= scrollTop && scrollTop > this._deltaHeight) {
+            y = Math.max(y, this._deltaHeight);
+          }
+          if (this.alwaysVisible) {
+            this._setShadow(this.waterfall && y >= this._deltaHeight);
+          } else {
+            this._setShadow(this.waterfall && y >= this._deltaHeight && y < this._headerDy);
+          }
+
+          if (y !== this._oldY) {
+            this._transformHeader(y);
+            this.fire('app-header-transform', {
+              y: y
+            });
+          }
+        }
+        this._oldY = y;
+        this._oldTop = scrollTop;
+      },
+
+      _transformHeader: function(y) {
+        this._transformY(-y);
+        if (this.condenses && this._topbar) {
+          this._transformY(Math.min(y, this._deltaHeight), this._topbar);
+        }
+      },
+
+      _transformY: function(y, node) {
+        this.transform('translate3d(0,' + y + 'px, 0)', node);
+      },
+
+      _fixedChanged: function(fixed) {
+        if (fixed) {
+          this._transformHeader(0);
+        }
+      }
+
+    });
+
+  </script>
+
+</dom-module>

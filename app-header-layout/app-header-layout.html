@@ -1,0 +1,185 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../scroll-behaviors/document-scroll-behavior.html">
+
+<!--
+`app-header-layout` is a layout element that contains a header and a content.
+This layout element uses the document scroll by default, but this element can
+also define its own scrolling region.
+
+Example:
+
+Using the document scroll:
+
+    <app-header-layout>
+      <app-header condenses waterfall>
+        <app-toolbar>
+          <div title>App name</div>
+        </app-toolbar>
+      </app-header>
+      <div>
+        <!\-\- content goes here \-\->
+      </div>
+    </app-header-layout>
+
+Using an own scrolling region:
+
+    <app-header-layout has-scrolling-region class="fit">
+      <app-header condenses waterfall>
+        <app-toolbar>
+          <div title>App name</div>
+        </app-toolbar>
+      </app-header>
+      <div>
+        <!\-\- content goes here \-\->
+      </div>
+    </app-header-layout>
+
+@demo app-header-layout/demo1.html
+@demo app-header-layout/demo2.html
+-->
+
+<dom-module id="app-header-layout">
+
+  <style>
+
+    :host {
+      display: block;
+    }
+
+    :host([has-scrolling-region]) {
+      position: relative;
+      height: 100%;
+    }
+
+    :host > ::content > app-header {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    :host([has-scrolling-region]) > ::content > app-header {
+      position: absolute;
+    }
+
+    :host([has-scrolling-region]) > #contentContainer {
+      @apply(--layout-fit);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #contentContainer {
+      position: relative;
+      overflow-y: hidden;
+    }
+
+  </style>
+
+  <template>
+
+    <content id="header" select="app-header"></content>
+
+    <div id="contentContainer">
+      <content select=":not(app-header)"></content>
+    </div>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'app-header-layout',
+
+      behaviors: [
+        Polymer.IronResizableBehavior,
+        Polymer.DocumentScrollBehavior
+      ],
+
+      properties: {
+
+        /**
+         * If true, the current element will have its own scrolling region.
+         * Otherwise, it will use the document scroll to control the header.
+         */
+        hasScrollingRegion: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true,
+          observer: '_hasScrollingRegionChanged'
+        }
+
+      },
+
+      listeners: {
+        'iron-resize': '_updateLayout'
+      },
+
+      get header() {
+        return Polymer.dom(this.$.header).getDistributedNodes()[0];
+      },
+
+      attached: function() {
+        this.async(this._updateLayout, 1);
+      },
+
+      _updateLayout: function() {
+        this._updateContentPosition();
+        this._updateScroller();
+      },
+
+      _updateContentPosition: function() {
+        var header = this.header;
+        if (header) {
+          this._headerHeight = header.offsetHeight;
+
+          if (header.hasAttribute('fixed')) {
+            this.$.contentContainer.style.marginTop = this._headerHeight + 'px';
+          } else {
+            this.$.contentContainer.style.paddingTop = this._headerHeight + 'px';
+          }
+        }
+      },
+
+      _updateHeaderPosition: function() {
+        var header = this.header;
+        if (header) {
+          var rect = this.getBoundingClientRect();
+          header.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
+        }
+      },
+
+      _hasScrollingRegionChanged: function(hasScrollingRegion) {
+        // the user should be able to scroll
+        this.shouldEnableScroll(hasScrollingRegion, this.$.contentContainer);
+        this._updateScroller();
+      },
+
+      _updateScroller: function() {
+        if (this.isAttached) {
+          var header = this.header;
+          if (header) {
+            header.scroller = this.hasScrollingRegion ? this.$.contentContainer : window;
+            this._updateHeaderPosition();
+          }
+        }
+      }
+
+    });
+
+  </script>
+
+</dom-module>

@@ -1,0 +1,158 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../polymer/polymer.html">
+
+<!--
+`app-drawer` is a navigation drawers that can slide in from the left, right, bottom or top.
+
+Example:
+
+Add a drawer in the left side of the screen:
+
+    <app-drawer position="left" opened></app-drawer>
+
+Add a drawer in the right side of the screen:
+
+    <app-drawer position="right" opened></app-drawer>
+
+### Styling
+
+app-drawer has the following custom properties for styling:
+
+Custom property                         | Description                            | Default
+----------------------------------------|----------------------------------------|---------
+`--app-drawer-background-color`         | Background color                       | white
+`--app-drawer-duration`                 | The duration of the transition         | 0.2s
+`--app-drawer-timing-function`          | The timing function of the transition  | linear
+
+@demo app-drawer/demo.html
+-->
+
+<dom-module id="app-drawer">
+
+  <style>
+
+    :host {
+      position: absolute;
+      top: 0;
+      right: auto;
+      bottom: 0;
+      left: 0;
+      width: 256px;
+      overflow: hidden;
+      background-color: var(--app-drawer-background-color, white);
+      visibility: hidden;
+
+      -webkit-transform: translate3d(-100%, 0, 0);
+      transform: translate3d(-100%, 0, 0);
+
+      -webkit-transition-property: -webkit-transform, visibility;
+      transition-property: transform, visibility;
+
+      -webkit-transition-duration: var(--app-drawer-duration, 0.2s);
+      transition-duration: var(--app-drawer-duration, 0.2s);
+
+      -webkit-transition-timing-function: var(--app-drawer-timing-function, linear);
+      transition-timing-function: var(--app-drawer-timing-function, linear);
+    }
+
+    :host([position=right]) {
+      right: 0;
+      left: auto;
+      -webkit-transform: translate3d(100%, 0, 0);
+      transform: translate3d(100%, 0, 0);
+    }
+
+    :host([position=top]) {
+      top: 0;
+      right: 0;
+      bottom: auto;
+      left: 0;
+      width: auto;
+      height: 256px;
+      -webkit-transform: translate3d(0, -100%, 0);
+      transform: translate3d(0, -100%, 0);
+    }
+
+    :host([position=bottom]) {
+      top: auto;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: auto;
+      height: 256px;
+      -webkit-transform: translate3d(0, 100%, 0);
+      transform: translate3d(0, 100%, 0);
+    }
+
+    :host([opened]),
+    :host([position][opened]) {
+      -webkit-transition-property: -webkit-transform;
+      transition-property: transform;
+
+      -webkit-transform: translate3d(0, 0, 0);
+      transform:  translate3d(0, 0, 0);
+
+      visibility: visible;
+    }
+
+  </style>
+
+  <template>
+
+    <content></content>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'app-drawer',
+
+      properties: {
+
+        /**
+         * Specifies whether or not the drawer is opened.
+         */
+        opened: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          reflectToAttribute: true
+        },
+
+        /**
+         * Determinates the position of the drawer on the screen.
+         * Options are left, right, top, bottom.
+         */
+        position: {
+          type: String,
+          value: 'left',
+          reflectToAttribute: true
+        }
+
+      },
+
+      /**
+       * Toggles the drawer in and out.
+       *
+       * @method toggle
+       */
+      toggle: function() {
+        this.opened = !this.opened;
+      }
+
+    });
+
+  </script>
+
+</dom-module>
