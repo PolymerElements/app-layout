@@ -17481,6 +17481,7 @@ Displays a site on different device layouts.
         user-select: none;
         cursor: pointer;
         z-index: 0;
+        padding: 0.7em 0.57em;
 
         @apply(--paper-button);
       }
@@ -17504,22 +17505,19 @@ Displays a site on different device layouts.
 
       paper-material {
         border-radius: inherit;
+        @apply(--layout-fit);
       }
 
       .content > ::content * {
         text-transform: inherit;
       }
-
-      .content {
-        padding: 0.7em 0.57em
-      }
     </style>
 
     <paper-ripple></paper-ripple>
 
-    <paper-material class$="[[_computeContentClass(receivedFocusFromKeyboard)]]" elevation="[[_elevation]]" animated="">
-      <content></content>
-    </paper-material>
+    <paper-material class$="[[_computeContentClass(receivedFocusFromKeyboard)]]" elevation="[[_elevation]]" animated=""></paper-material>
+
+    <content></content>
 
   </template>
 </dom-module>
@@ -18449,6 +18447,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   position: relative;
 }
 
+.container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
 :host([device=phone]) {
   width: 360px;
   height: 600px;
@@ -18559,7 +18563,9 @@ iframe {
 
   <template>
 
-    <iframe src="{{src}}"></iframe>
+    <div class="container">
+      <iframe src="{{src}}"></iframe>
+    </div>
 
   </template>
 
