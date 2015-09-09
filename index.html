@@ -16232,7 +16232,7 @@ Displays a page on different device layouts.
     .coming-soon::after {
       content: '';
       @apply(--layout-fit);
-      background-color: rgba(256,256,256,0.8);
+      background-color: rgba(256,256,256,0.7);
     }
 
     .coming-soon::before {
@@ -16266,8 +16266,10 @@ Displays a page on different device layouts.
       background-image: url(tools/app/images/pesto.png);
     }
 
-    .music-image {
+    .grid-item > .music-image {
       background-image: url(tools/app/images/music.png);
+      background-size: contain;
+      background-color: #ccc;
     }
 
     .summit-image {
