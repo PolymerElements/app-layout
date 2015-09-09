@@ -16131,7 +16131,7 @@ Displays a page on a device layout.
 
 -->
 <!--
-Displays a site on different device layouts.
+Displays a page on different device layouts.
 
     <device-layout-viewer device="all" src="https://www.polymer-project.org/"></device-layout-viewer>
 
@@ -16198,9 +16198,9 @@ Displays a site on different device layouts.
     }
 
     section > h1 {
+      margin: 0 0 32px 0;
       font-size: 48px;
       font-weight: 300;
-      margin: 0 0 32px 0;
     }
 
     section > p {
@@ -16220,9 +16220,9 @@ Displays a site on different device layouts.
     }
 
     .grid-item {
+      position: relative;
       width: 400px;
       height: 420px;
-      position: relative;
       @apply(--layout-flex-none);
       margin: 8px;
       background-color: #fff;
@@ -16258,15 +16258,19 @@ Displays a site on different device layouts.
       background-size: cover;
     }
 
-    .publishing-bg {
+    .publishing-image {
       background-image: url(tools/app/images/publishing.png);
     }
 
-    .pesto-bg {
+    .pesto-image {
       background-image: url(tools/app/images/pesto.png);
     }
 
-    .summit-bg {
+    .music-image {
+      background-image: url(tools/app/images/music.png);
+    }
+
+    .summit-image {
       background-image: url(tools/app/images/polymer-summit.png);
     }
 
@@ -16282,10 +16286,10 @@ Displays a site on different device layouts.
 
     .misc-link {
       display: block;
-      font-size: 24px;
-      color: #147BCC;
-      line-height: 32px;
       padding: 12px 0;
+      font-size: 24px;
+      line-height: 32px;
+      color: #147BCC;
     }
 
     footer {
@@ -16336,9 +16340,11 @@ Displays a site on different device layouts.
     }
 
     @media (max-width: 848px) {
+
       .grid {
         width: 416px;
       }
+
     }
 
     @media (max-width: 600px) {
@@ -18578,7 +18584,7 @@ iframe {
       properties: {
 
         /**
-         * The url of the page to show.
+         * The url of the page to display.
          */
         src: String,
 
@@ -18613,7 +18619,8 @@ iframe {
 
   </script>
 
-</dom-module><dom-module id="device-layout-viewer" assetpath="tools/device-viewer/">
+</dom-module>
+<dom-module id="device-layout-viewer" assetpath="tools/device-viewer/">
 
   <style>
 /*
@@ -18757,7 +18764,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       properties: {
 
         /**
-         * The url for the site.
+         * The url of the page to display.
          */
         src: String,
 
@@ -18835,7 +18842,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div class="grid">
 
       <div class="grid-item">
-        <div class="image publishing-bg"></div>
+        <div class="image publishing-image"></div>
         <div class="caption">
           <h3>ZUPERKÜLBLOG</h3>
           <div>
@@ -18850,12 +18857,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
 
       <div class="grid-item coming-soon">
-        <div class="image pesto-bg"></div>
+        <div class="image pesto-image"></div>
         <div class="caption">
           <h3>PESTO</h3>
           <div>
-            <paper-button raised="">View</paper-button>
-            <paper-button raised="">Source</paper-button>
+            <paper-button raised="" disabled="">View</paper-button>
+            <paper-button raised="" disabled="">Source</paper-button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-item coming-soon">
+        <div class="image music-image"></div>
+        <div class="caption">
+          <h3>MUSIC</h3>
+          <div>
+            <paper-button raised="" disabled="">View</paper-button>
+            <paper-button raised="" disabled="">Source</paper-button>
           </div>
         </div>
       </div>
@@ -18868,12 +18886,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <h1>Apps</h1>
 
-    <p>Here are some applications built with App Layout.  Get started on your own and we might put it here to showcase and share your work.</p>
+    <p>Here are some applications built with App Layout. Get started on your own and we might put it here to showcase and share your work.</p>
 
     <div class="grid">
 
       <div class="grid-item">
-        <div class="image summit-bg"></div>
+        <div class="image summit-image"></div>
         <div class="caption">
           <h3>Polymer Summit</h3>
           <div>
@@ -18891,7 +18909,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   </section>
 
-  <section>
+  <section class="vertical center layout">
 
     <h1>Tools and References</h1>
 
@@ -18912,6 +18930,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <a target="_blank" href="https://www.polymer-project.org" data-outbound="about-polymer">About Polymer</a>
     </div>
   </footer>
+
 
 
 </body></html>
