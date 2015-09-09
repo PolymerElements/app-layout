@@ -37,17 +37,22 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
         @apply(--layout-wrap);
         max-width: calc(2 * var(--grid-column-width) + 4 * var(--grid-gutter));
         margin: var(--grid-gutter) auto;
+        /* item has width/height ratio 4:3 */
+        --grid-item-height: calc(3 * var(--grid-column-width) / 4);
       }
 
       :host > ::content > * {
         @apply(--layout-flex-none);
         width: var(--grid-column-width);
+        height: var(--grid-item-height);
         margin: var(--grid-gutter);
         box-sizing: border-box;
       }
 
       :host > ::content > *:nth-of-type(3n - 2) {
         width: calc(100% - 2 * var(--grid-gutter));
+        /* large item has widht/height ratio 2:1 */
+        height: calc(var(--grid-column-width)  + 2 * var(--grid-gutter));
       }
 
       :host([narrow-layout]) {
@@ -57,6 +62,7 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
 
       :host([narrow-layout]) > ::content > * {
         width: 100% !important;
+        height: var(--grid-item-height) !important;
         margin: var(--grid-gutter) 0;
       }
 

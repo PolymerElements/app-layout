@@ -11,6 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../polymer/polymer.html">
 <link rel="import" href="../../../../iron-icons/iron-icons.html">
 <link rel="import" href="../../../../paper-fab/paper-fab.html">
+<link rel="import" href="app-icons.html">
 
 <dom-module id="article-detail">
 
@@ -66,7 +67,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       /* narrow layout */
-      @media (max-width: 752px) {
+      @media (max-width: 808px) {
 
         .main {
           padding: 24px;
@@ -90,7 +91,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div>{{article.author}}</div>
       <div class="title" style$="{{_computeTitleStyle(article.secondaryColor)}}">{{article.title}}</div>
       <div>{{article.date}}</div>
-      <paper-fab icon="reply"></paper-fab>
+      <paper-fab icon="app:googleplus-reshare"></paper-fab>
     </div>
 
     <section class="main">
