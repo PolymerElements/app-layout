@@ -18347,7 +18347,8 @@ Displays a page on different device layouts.
          * Reset the scroll position to 0.
          */
         reset: {
-          type: Boolean
+          type: Boolean,
+          value: false
         }
 
       },
@@ -18745,7 +18746,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <div class="canvas" device$="{{device}}">
 
-      <iron-selector id="views" selected="{{device}}" attr-for-selected="device" selected-item="{{selectedView}}" device$="{{device}}">
+      <iron-selector id="views" selected="{{device}}" attr-for-selected="device" selected-item="{{selectedView}}" activate-event="" device$="{{device}}">
 
         <device-view device="laptop" src="{{src}}"></device-view>
         <device-view device="tablet" src="{{src}}" landscape=""></device-view>
