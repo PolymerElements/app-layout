@@ -2411,7 +2411,7 @@ if (typeof HTMLTemplateElement === "undefined") {
       var options = {
         prototype: prototype
       };
-      // NOTE: we're specifically supporting older Chrome versions here 
+      // NOTE: we're specifically supporting older Chrome versions here
       // (specifically Chrome 39) that throw when options.extends is undefined.
       if (prototype.extends) {
         options.extends = prototype.extends;
@@ -2490,11 +2490,11 @@ if (typeof HTMLTemplateElement === "undefined") {
    * Helper for determining when first render occurs.
    * Call `Polymer.RenderStatus.whenReady(callback)` to be notified when
    * first render occurs or immediately if it has already occured.
-   * Note that since HTML Imports are designed to load before rendering, 
+   * Note that since HTML Imports are designed to load before rendering,
    * this call can also be used to guarantee that imports have loaded.
    * This behavior is normalized to function correctly with the HTMLImports
    * polyfill which does not otherwise maintain this rendering guarantee.
-   * Querying style and layout data before first render is currently 
+   * Querying style and layout data before first render is currently
    * problematic on some browsers (Blink/Webkit) so this helper can be used
    * to prevent doing so until a safe time.
    */
@@ -3042,19 +3042,19 @@ if (typeof HTMLTemplateElement === "undefined") {
 
   /**
    * Generates a boilerplate constructor.
-   * 
+   *
    *     XFoo = Polymer({
    *       is: 'x-foo'
    *     });
    *     ASSERT(new XFoo() instanceof XFoo);
-   *  
-   * You can supply a custom constructor on the prototype. But remember that 
+   *
+   * You can supply a custom constructor on the prototype. But remember that
    * this constructor will only run if invoked **manually**. Elements created
    * via `document.createElement` or from HTML _will not invoke this method_.
-   * 
-   * Instead, we reuse the concept of `constructor` for a factory method which 
-   * can take arguments. 
-   * 
+   *
+   * Instead, we reuse the concept of `constructor` for a factory method which
+   * can take arguments.
+   *
    *     MyFoo = Polymer({
    *       is: 'my-foo',
    *       constructor: function(foo) {
@@ -3062,7 +3062,7 @@ if (typeof HTMLTemplateElement === "undefined") {
    *       }
    *       ...
    *     });
-   * 
+   *
    * @class base feature: constructor
    */
 
@@ -3074,16 +3074,16 @@ if (typeof HTMLTemplateElement === "undefined") {
       // support both possible `createElement` signatures
       this._factoryArgs = this.extends ? [this.extends, this.is] : [this.is];
       // thunk the constructor to delegate allocation to `createElement`
-      var ctor = function() { 
-        return this._factory(arguments); 
+      var ctor = function() {
+        return this._factory(arguments);
       };
       if (this.hasOwnProperty('extends')) {
-        ctor.extends = this.extends; 
+        ctor.extends = this.extends;
       }
       // ensure constructor is set. The `constructor` property is
       // not writable on Safari; note: Chrome requires the property
       // to be configurable.
-      Object.defineProperty(this, 'constructor', {value: ctor, 
+      Object.defineProperty(this, 'constructor', {value: ctor,
         writable: true, configurable: true});
       ctor.prototype = this;
     },
@@ -3239,9 +3239,9 @@ if (typeof HTMLTemplateElement === "undefined") {
       if (dash.indexOf('-') < 0) {
         return Polymer.CaseMap._caseMap[dash] = dash;
       }
-      return Polymer.CaseMap._caseMap[dash] = dash.replace(/-([a-z])/g, 
+      return Polymer.CaseMap._caseMap[dash] = dash.replace(/-([a-z])/g,
         function(m) {
-          return m[1].toUpperCase(); 
+          return m[1].toUpperCase();
         }
       );
     },
@@ -3251,9 +3251,9 @@ if (typeof HTMLTemplateElement === "undefined") {
       if (mapped) {
         return mapped;
       }
-      return Polymer.CaseMap._caseMap[camel] = camel.replace(/([a-z][A-Z])/g, 
-        function (g) { 
-          return g[0] + '-' + g[1].toLowerCase() 
+      return Polymer.CaseMap._caseMap[camel] = camel.replace(/([a-z][A-Z])/g,
+        function (g) {
+          return g[0] + '-' + g[1].toLowerCase()
         }
       );
     }
@@ -3829,7 +3829,7 @@ if (typeof HTMLTemplateElement === "undefined") {
 <script>
 
 Polymer.ArraySplice = (function() {
-  
+
   function newSplice(index, removed, addedCount) {
     return {
       index: index,
@@ -4091,7 +4091,7 @@ Polymer.ArraySplice = (function() {
     if (Settings.useShadow) {
 
       EventApi.prototype = {
-        
+
         get rootTarget() {
           return this.event.path[0];
         },
@@ -4109,7 +4109,7 @@ Polymer.ArraySplice = (function() {
     } else {
 
       EventApi.prototype = {
-      
+
         get rootTarget() {
           return this.event.target;
         },
@@ -4270,7 +4270,7 @@ Polymer.domInnerHTML = (function() {
     var s = '';
     var c$ = Polymer.dom(node).childNodes;
     c$ = composed ? node._composedChildren : c$;
-    for (var i=0, l=c$.length, child; (i<l) && (child=c$[i]); i++) {  
+    for (var i=0, l=c$.length, child; (i<l) && (child=c$[i]); i++) {
       s += getOuterHTML(child, node, composed);
     }
     return s;
@@ -4325,7 +4325,7 @@ Polymer.domInnerHTML = (function() {
         // we don't distribute before initial distribution
         if (host.shadyRoot && host.shadyRoot._distributionClean) {
           host.shadyRoot._distributionClean = false;
-          Polymer.dom.addDebouncer(host.debounce('_distribute', 
+          Polymer.dom.addDebouncer(host.debounce('_distribute',
             host._distributeContent));
         }
       },
@@ -4365,7 +4365,7 @@ Polymer.domInnerHTML = (function() {
         }
         this._addNodeToHost(node);
         // if not distributing and not adding to host, do a fast path addition
-        if (!this._maybeDistribute(node, this.node) && 
+        if (!this._maybeDistribute(node, this.node) &&
           !this._tryRemoveUndistributedNode(node)) {
           if (ref_node) {
             // if ref_node is <content> replace with first distributed node
@@ -4468,7 +4468,7 @@ Polymer.domInnerHTML = (function() {
           var root = this._ownerShadyRootForNode(parent);
           if (root) {
             var host = root.host;
-            // note, insertion point list update is handled after node 
+            // note, insertion point list update is handled after node
             // mutations are complete
             this._lazyDistribute(host);
           }
@@ -4489,7 +4489,7 @@ Polymer.domInnerHTML = (function() {
       of date parent at this point; returns true if a <content> is being added */
       _maybeAddInsertionPoint: function(node, parent) {
         var added;
-        if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE && 
+        if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE &&
           !node.__noContent) {
           var c$ = factory(node).querySelectorAll(CONTENT);
           for (var i=0, n, np, na; (i<c$.length) && (n=c$[i]); i++) {
@@ -4542,7 +4542,7 @@ Polymer.domInnerHTML = (function() {
       // NOTE: if `ensureComposedRemoval` is true then the node should be
       // removed from its composed parent.
       _removeNodeFromHost: function(node, ensureComposedRemoval) {
-        // note that it's possible for both the node's host and its parent 
+        // note that it's possible for both the node's host and its parent
         // to require distribution... both cases are handled here.
         var hostNeedsDist;
         var root;
@@ -4984,7 +4984,7 @@ Polymer.domInnerHTML = (function() {
 
     } else {
 
-      var forwardMethods = ['cloneNode', 'appendChild', 'insertBefore', 
+      var forwardMethods = ['cloneNode', 'appendChild', 'insertBefore',
       'removeChild', 'replaceChild'];
 
       forwardMethods.forEach(function(name) {
@@ -5014,13 +5014,13 @@ Polymer.domInnerHTML = (function() {
       }
 
       DomApi.prototype.getDestinationInsertionPoints = function() {
-        var n$ = this.node.getDestinationInsertionPoints && 
+        var n$ = this.node.getDestinationInsertionPoints &&
           this.node.getDestinationInsertionPoints();
         return n$ ? Array.prototype.slice.call(n$) : [];
       };
 
       DomApi.prototype.getDistributedNodes = function() {
-        var n$ = this.node.getDistributedNodes && 
+        var n$ = this.node.getDistributedNodes &&
           this.node.getDistributedNodes();
         return n$ ? Array.prototype.slice.call(n$) : [];
       };
@@ -5066,7 +5066,7 @@ Polymer.domInnerHTML = (function() {
 
       });
 
-      var forwardProperties = ['parentNode', 'firstChild', 'lastChild', 
+      var forwardProperties = ['parentNode', 'firstChild', 'lastChild',
       'nextSibling', 'previousSibling', 'firstElementChild', 'lastElementChild',
       'nextElementSibling', 'previousElementSibling'];
 
@@ -5101,7 +5101,7 @@ Polymer.domInnerHTML = (function() {
 
     // add flush api...
     Polymer.Base.extend(Polymer.dom, {
-      
+
       _flushGuard: 0,
       _FLUSH_MAX: 100,
       _needsTakeRecords: !Polymer.Settings.useNativeCustomElements,
@@ -5133,9 +5133,9 @@ Polymer.domInnerHTML = (function() {
         }
       },
 
-      // TODO(sorvell): There is currently not a good way 
+      // TODO(sorvell): There is currently not a good way
       // to process all custom elements mutations under SD polyfill because
-      // these mutations may be inside shadowRoots. 
+      // these mutations may be inside shadowRoots.
       _flushPolyfills: function() {
         if (this._needsTakeRecords) {
           CustomElements.takeRecords();
@@ -5145,7 +5145,7 @@ Polymer.domInnerHTML = (function() {
       addDebouncer: function(debouncer) {
         this._debouncers.push(debouncer);
         // ensure the list of active debouncers is cleared when done.
-        this._finishDebouncer = Polymer.Debounce(this._finishDebouncer, 
+        this._finishDebouncer = Polymer.Debounce(this._finishDebouncer,
           this._finishFlush);
       },
 
@@ -5288,12 +5288,12 @@ Polymer.domInnerHTML = (function() {
         this.shadyRoot._isShadyRoot = true;
         this.shadyRoot._dirtyRoots = [];
         // capture insertion point list
-        var i$ = this.shadyRoot._insertionPoints = !this._notes || 
+        var i$ = this.shadyRoot._insertionPoints = !this._notes ||
           this._notes._hasContent ?
           this.shadyRoot.querySelectorAll('content') : [];
         // save logical tree info
-        // a. for shadyRoot 
-        // b. for insertion points (fallback) 
+        // a. for shadyRoot
+        // b. for insertion points (fallback)
         // c. for parents of insertion points
         saveLightChildrenIfNeeded(this.shadyRoot);
         for (var i=0, c; i < i$.length; i++) {
@@ -5373,7 +5373,7 @@ Polymer.domInnerHTML = (function() {
         // compose self
         if (this._useContent) {
           // note: it's important to mark this clean before distribution
-          // so that attachment that provokes additional distribution (e.g. 
+          // so that attachment that provokes additional distribution (e.g.
           // adding something to your parentNode) works
           this.shadyRoot._distributionClean = true;
           if (hasInsertionPoint(this.shadyRoot)) {
@@ -5536,7 +5536,7 @@ Polymer.domInnerHTML = (function() {
         for (var i=0, d=0, s; (i<splices.length) && (s=splices[i]); i++) {
           for (var j=0, n; (j < s.removed.length) && (n=s.removed[j]); j++) {
             // check if the node is still where we expect it is before trying
-            // to remove it; this can happen if Polymer.dom moves a node and 
+            // to remove it; this can happen if Polymer.dom moves a node and
             // then schedules its previous host for distribution resulting in
             // the node being removed here.
             if (getComposedParent(n) === container) {
@@ -5711,7 +5711,7 @@ Polymer.domInnerHTML = (function() {
 
 </script>
 <script>
-  
+
   /**
     Implements `shadyRoot` compatible dom scoping using native ShadowDOM.
   */
@@ -5728,7 +5728,7 @@ Polymer.domInnerHTML = (function() {
       distributeContent: function() {},
       _distributeContent: function() {},
       _finishDistribute: function() {},
-      
+
       // create a shadowRoot
       _createLocalRoot: function() {
         this.createShadowRoot();
@@ -5935,7 +5935,7 @@ Polymer.domInnerHTML = (function() {
             !node.hasAttribute('preserve-content')) {
             this._parseTemplate(node, i, list, annote);
           }
-          // collapse adjacent textNodes: fixes an IE issue that can cause 
+          // collapse adjacent textNodes: fixes an IE issue that can cause
           // text nodes to be inexplicably split =(
           // note that root.normalize() should work but does not so we do this
           // manually.
@@ -6089,17 +6089,17 @@ Polymer.domInnerHTML = (function() {
 
   (function() {
 
-    // path fixup for urls in cssText that's expected to 
+    // path fixup for urls in cssText that's expected to
     // come from a given ownerDocument
     function resolveCss(cssText, ownerDocument) {
       return cssText.replace(CSS_URL_RX, function(m, pre, url, post) {
-        return pre + '\'' + 
-          resolve(url.replace(/["']/g, ''), ownerDocument) + 
+        return pre + '\'' +
+          resolve(url.replace(/["']/g, ''), ownerDocument) +
           '\'' + post;
       });
     }
 
-    // url fixup for urls in an element's attributes made relative to 
+    // url fixup for urls in an element's attributes made relative to
     // ownerDoc's base url
     function resolveAttrs(element, ownerDocument) {
       for (var name in URL_ATTRS) {
@@ -6122,7 +6122,7 @@ Polymer.domInnerHTML = (function() {
       // do not resolve '#' links, they are used for routing
       if (url && url[0] === '#') {
         return url;
-      }      
+      }
       var resolver = getUrlResolver(ownerDocument);
       resolver.href = url;
       return resolver.href || url;
@@ -6141,7 +6141,7 @@ Polymer.domInnerHTML = (function() {
     }
 
     function getUrlResolver(ownerDocument) {
-      return ownerDocument.__urlResolver || 
+      return ownerDocument.__urlResolver ||
         (ownerDocument.__urlResolver = ownerDocument.createElement('a'));
     }
 
@@ -7323,23 +7323,23 @@ new (window.MutationObserver || JsMutationObserver)
 <script>
 
 Polymer.Debounce = (function() {
-  
+
   // usage
-  
+
   // invoke cb.call(this) in 100ms, unless the job is re-registered,
   // which resets the timer
-  // 
+  //
   // this.job = this.debounce(this.job, cb, 100)
   //
   // returns a handle which can be used to re-register a job
 
   var Async = Polymer.Async;
-  
+
   var Debouncer = function(context) {
     this.context = context;
     this.boundComplete = this.complete.bind(this);
   };
-  
+
   Debouncer.prototype = {
     go: function(callback, wait) {
       var h;
@@ -7372,11 +7372,11 @@ Polymer.Debounce = (function() {
     debouncer.go(callback, wait);
     return debouncer;
   }
-  
-  // exports 
+
+  // exports
 
   return debounce;
-  
+
 })();
 
 </script>
@@ -7519,7 +7519,7 @@ Polymer.Debounce = (function() {
      *   payload.
      * @param {Object=} options Object specifying options.  These may include:
      *  `bubbles` (boolean, defaults to `true`),
-     *  `cancelable` (boolean, defaults to false), and 
+     *  `cancelable` (boolean, defaults to false), and
      *  `node` on which to fire the event (HTMLElement, defaults to `this`).
      * @return {CustomEvent} The new event that was fired.
      */
@@ -8363,7 +8363,7 @@ Polymer.Debounce = (function() {
       // don't accept undefined values in intialConfig
       for (var i in initialConfig) {
         if (initialConfig[i] !== undefined) {
-          this._config[i] = initialConfig[i];    
+          this._config[i] = initialConfig[i];
         }
       }
       this._handlers = [];
@@ -9054,7 +9054,7 @@ Polymer.CssParse = (function() {
             n = {start: i+1, parent: p, previous: previous};
             p.rules.push(n);
             break;
-          case this.CLOSE_BRACE: 
+          case this.CLOSE_BRACE:
             //console.groupEnd(n.start);
             n.end = i+1;
             n = n.parent || root;
@@ -9095,9 +9095,9 @@ Polymer.CssParse = (function() {
       if (r$) {
         for (var i=0, l=r$.length, r; (i<l) && (r=r$[i]); i++) {
           this._parseCss(r, text);
-        }  
+        }
       }
-      return node;  
+      return node;
     },
 
     // stringify parsed css.
@@ -9110,10 +9110,10 @@ Polymer.CssParse = (function() {
         if (r$ && (preserveProperties || !this._hasMixinRules(r$))) {
           for (var i=0, l=r$.length, r; (i<l) && (r=r$[i]); i++) {
             cssText = this.stringify(r, preserveProperties, cssText);
-          }  
+          }
         } else {
-          cssText = preserveProperties ? node.cssText : 
-            this.removeCustomProps(node.cssText);  
+          cssText = preserveProperties ? node.cssText :
+            this.removeCustomProps(node.cssText);
           cssText = cssText.trim();
           if (cssText) {
             cssText = '  ' + cssText + '\n';
@@ -9149,7 +9149,7 @@ Polymer.CssParse = (function() {
     },
 
     removeCustomPropApply: function(cssText) {
-      return cssText            
+      return cssText
         .replace(this._rx.mixinApply, '')
         .replace(this._rx.varApply, '');
     },
@@ -9182,7 +9182,7 @@ Polymer.CssParse = (function() {
   };
 
 
-  // exports 
+  // exports
   return api;
 
 })();
@@ -9200,7 +9200,7 @@ Polymer.CssParse = (function() {
       toCssText: function(rules, callback, preserveProperties) {
         if (typeof rules === 'string') {
           rules = this.parser.parse(rules);
-        } 
+        }
         if (callback) {
           this.forEachStyleRule(rules, callback);
         }
@@ -9234,7 +9234,7 @@ Polymer.CssParse = (function() {
         var skipRules = false;
         if (node.type === this.ruleTypes.STYLE_RULE) {
           callback(node);
-        } else if (node.type === this.ruleTypes.KEYFRAMES_RULE || 
+        } else if (node.type === this.ruleTypes.KEYFRAMES_RULE ||
             node.type === this.ruleTypes.MIXIN_RULE) {
           skipRules = true;
         }
@@ -9257,8 +9257,8 @@ Polymer.CssParse = (function() {
         if (!afterNode) {
           var n$ = target.querySelectorAll('style[scope]');
           afterNode = n$[n$.length-1];
-        } 
-        target.insertBefore(style, 
+        }
+        target.insertBefore(style,
           (afterNode && afterNode.nextSibling) || target.firstChild);
         return style;
       },
@@ -9320,7 +9320,7 @@ Polymer.CssParse = (function() {
         }
         return cssText;
       },
-      
+
       resolveCss: Polymer.ResolveUrl.resolveCss,
       parser: Polymer.CssParse,
       ruleTypes: Polymer.CssParse.types
@@ -9338,7 +9338,7 @@ Polymer.CssParse = (function() {
 
     /* Transforms ShadowDOM styling into ShadyDOM styling
 
-     * scoping: 
+     * scoping:
 
         * elements in scope get scoping selector class="x-foo-scope"
         * selectors re-written as follows:
@@ -9360,8 +9360,8 @@ Polymer.CssParse = (function() {
     */
     var api = {
 
-      // Given a node and scope name, add a scoping class to each node 
-      // in the tree. This facilitates transforming css into scoped rules. 
+      // Given a node and scope name, add a scoping class to each node
+      // in the tree. This facilitates transforming css into scoped rules.
       dom: function(node, scope, useAttr, shouldRemoveScope) {
         this._transformDom(node, scope || '', useAttr, shouldRemoveScope);
       },
@@ -9405,7 +9405,7 @@ Polymer.CssParse = (function() {
                     .replace(scope, ''));
                 }
               } else {
-                element.setAttribute(CLASS, c + (c ? ' ' : '') + 
+                element.setAttribute(CLASS, c + (c ? ' ' : '') +
                   SCOPE_NAME + ' ' + scope);
               }
             }
@@ -9472,7 +9472,7 @@ Polymer.CssParse = (function() {
         }
         // NOTE: save transformedSelector for subsequent matching of elements
         // agsinst selectors (e.g. when calculating style properties)
-        rule.selector = rule.transformedSelector = 
+        rule.selector = rule.transformedSelector =
           p$.join(COMPLEX_SELECTOR_SEP);
       },
 
@@ -9486,16 +9486,16 @@ Polymer.CssParse = (function() {
             stop = stop || info.stop;
             hostContext = hostContext || info.hostContext;
             c = info.combinator;
-            s = info.value;  
+            s = info.value;
           } else {
             s = s.replace(SCOPE_JUMP, ' ');
           }
           return c + s;
         });
         if (hostContext) {
-          selector = selector.replace(HOST_CONTEXT_PAREN, 
+          selector = selector.replace(HOST_CONTEXT_PAREN,
             function(m, pre, paren, post) {
-              return pre + paren + ' ' + hostScope + post + 
+              return pre + paren + ' ' + hostScope + post +
                 COMPLEX_SELECTOR_SEP + ' ' + pre + hostScope + paren + post;
              });
         }
@@ -9517,7 +9517,7 @@ Polymer.CssParse = (function() {
           selector = selector.replace(HOST, hostScope);
         // replace other selectors with scoping class
         } else if (jumpIndex !== 0) {
-          selector = scope ? this._transformSimpleSelector(selector, scope) : 
+          selector = scope ? this._transformSimpleSelector(selector, scope) :
             selector;
         }
         // remove left-side combinator when dealing with ::content.
@@ -9531,7 +9531,7 @@ Polymer.CssParse = (function() {
           selector = selector.replace(SCOPE_JUMP, ' ');
           stop = true;
         }
-        return {value: selector, combinator: combinator, stop: stop, 
+        return {value: selector, combinator: combinator, stop: stop,
           hostContext: hostContext};
       },
 
@@ -9566,13 +9566,13 @@ Polymer.CssParse = (function() {
     };
 
     var SCOPE_NAME = api.SCOPE_NAME;
-    var SCOPE_DOC_SELECTOR = ':not([' + SCOPE_NAME + '])' + 
+    var SCOPE_DOC_SELECTOR = ':not([' + SCOPE_NAME + '])' +
       ':not(.' + SCOPE_NAME + ')';
     var COMPLEX_SELECTOR_SEP = ',';
     var SIMPLE_SELECTOR_SEP = /(^|[\s>+~]+)([^\s>+~]+)/g;
     var HOST = ':host';
     var ROOT = ':root';
-    // NOTE: this supports 1 nested () pair for things like 
+    // NOTE: this supports 1 nested () pair for things like
     // :host(:not([selected]), more general support requires
     // parsing which seems like overkill
     var HOST_PAREN = /(\:host)(?:\(((?:\([^)(]*\)|[^)(]*)+?)\))/g;
@@ -9599,7 +9599,7 @@ Polymer.StyleExtends = (function() {
   var styleUtil = Polymer.StyleUtil;
 
   return {
-    
+
     hasExtends: function(cssText) {
       return Boolean(cssText.match(this.rx.EXTEND));
     },
@@ -9655,7 +9655,7 @@ Polymer.StyleExtends = (function() {
       // TODO: this misses `%foo, .bar` as an unetended selector but
       // this seems rare and could possibly be unsupported.
       source.selector = source.selector.replace(this.rx.STRIP, '');
-      source.selector = (source.selector && source.selector + ',\n') + 
+      source.selector = (source.selector && source.selector + ',\n') +
         target.selector;
       if (source.extends) {
         source.extends.forEach(function(e) {
@@ -9938,8 +9938,8 @@ Polymer.StyleExtends = (function() {
             var self = this;
             var fn = function(all, prefix, value, fallback) {
               var propertyValue = (self.valueForProperty(props[value], props) ||
-                (props[fallback] ? 
-                self.valueForProperty(props[fallback], props) : 
+                (props[fallback] ?
+                self.valueForProperty(props[fallback], props) :
                 fallback));
               return prefix + (propertyValue || '');
             };
@@ -9965,7 +9965,7 @@ Polymer.StyleExtends = (function() {
               }
               p = pp.join(':');
             }
-            parts[i] = (p && p.lastIndexOf(';') === p.length - 1) ? 
+            parts[i] = (p && p.lastIndexOf(';') === p.length - 1) ?
               // strip trailing ;
               p.slice(0, -1) :
               p || '';
@@ -9993,7 +9993,7 @@ Polymer.StyleExtends = (function() {
         // generates a unique key for these matches
         var o = [], i = 0;
         styleUtil.forRulesInStyles(styles, function(rule) {
-          // TODO(sorvell): we could trim the set of rules at declaration 
+          // TODO(sorvell): we could trim the set of rules at declaration
           // time to only include ones that have properties
           if (!rule.propertyInfo) {
             self.decorateRule(rule);
@@ -10017,7 +10017,7 @@ Polymer.StyleExtends = (function() {
       // collect any custom properties into `props`.
       scopePropertiesFromStyles: function(styles) {
         if (!styles._scopeStyleProperties) {
-          styles._scopeStyleProperties = 
+          styles._scopeStyleProperties =
             this.selectedPropertiesFromStyles(styles, this.SCOPE_SELECTORS);
         }
         return styles._scopeStyleProperties;
@@ -10030,7 +10030,7 @@ Polymer.StyleExtends = (function() {
       // :host(...) and then matching these against self.
       hostPropertiesFromStyles: function(styles) {
         if (!styles._hostStyleProperties) {
-          styles._hostStyleProperties = 
+          styles._hostStyleProperties =
             this.selectedPropertiesFromStyles(styles, this.HOST_SELECTORS);
         }
         return styles._hostStyleProperties;
@@ -10056,15 +10056,15 @@ Polymer.StyleExtends = (function() {
         var self = this;
         var hostSelector = styleTransformer
           ._calcHostScope(element.is, element.extends);
-        var rxHostSelector = element.extends ? 
-          '\\' + hostSelector.slice(0, -1) + '\\]' : 
+        var rxHostSelector = element.extends ?
+          '\\' + hostSelector.slice(0, -1) + '\\]' :
           hostSelector;
-        var hostRx = new RegExp(this.rx.HOST_PREFIX + rxHostSelector + 
+        var hostRx = new RegExp(this.rx.HOST_PREFIX + rxHostSelector +
           this.rx.HOST_SUFFIX);
         return styleTransformer.elementStyles(element, function(rule) {
           self.applyProperties(rule, properties);
           if (rule.cssText && !nativeShadow) {
-            self._scopeSelector(rule, hostRx, hostSelector, 
+            self._scopeSelector(rule, hostRx, hostSelector,
               element._scopeCssViaAttr, scopeSelector);
           }
         });
@@ -10076,8 +10076,8 @@ Polymer.StyleExtends = (function() {
       _scopeSelector: function(rule, hostRx, hostSelector, viaAttr, scopeId) {
         rule.transformedSelector = rule.transformedSelector || rule.selector;
         var selector = rule.transformedSelector;
-        var scope = viaAttr ? '[' + styleTransformer.SCOPE_NAME + '~=' + 
-          scopeId + ']' : 
+        var scope = viaAttr ? '[' + styleTransformer.SCOPE_NAME + '~=' +
+          scopeId + ']' :
           '.' + scopeId;
         var parts = selector.split(',');
         for (var i=0, l=parts.length, p; (i<l) && (p=parts[i]); i++) {
@@ -10104,8 +10104,8 @@ Polymer.StyleExtends = (function() {
 
       applyElementStyle: function(element, properties, selector, style) {
         // calculate cssText to apply
-        var cssText = style ? style.textContent || '' : 
-          this.transformStyles(element, properties, selector);  
+        var cssText = style ? style.textContent || '' :
+          this.transformStyles(element, properties, selector);
         // if shady and we have a cached style that is not style, decrement
         var s = element._customStyle;
         if (s && !nativeShadow && (s !== style)) {
@@ -10125,7 +10125,7 @@ Polymer.StyleExtends = (function() {
           } else if (cssText) {
             // apply css after the scope style of the element to help with
             // style predence rules.
-            style = styleUtil.applyCss(cssText, selector, 
+            style = styleUtil.applyCss(cssText, selector,
               nativeShadow ? element.root : null, element._scopeStyle);
           }
         }
@@ -10156,7 +10156,7 @@ Polymer.StyleExtends = (function() {
 
       rx: {
         VAR_ASSIGN: /(?:^|[;\n]\s*)(--[\w-]*?):\s*(?:([^;{]*)|{([^}]*)})(?:(?=[;\n])|$)/gi,
-        MIXIN_MATCH: /(?:^|\W+)@apply[\s]*\(([^)]*)\)/i, 
+        MIXIN_MATCH: /(?:^|\W+)@apply[\s]*\(([^)]*)\)/i,
         // note, this supports:
         // var(--a)
         // var(--a, --b)
@@ -10193,7 +10193,7 @@ Polymer.StyleExtends = (function() {
   }
 
   Polymer.StyleCache.prototype = {
-    
+
     MAX: 100,
 
     store: function(is, data, keyValues, keyStyles) {
@@ -10225,13 +10225,13 @@ Polymer.StyleExtends = (function() {
     },
 
     // note, this is intentially limited to support just the cases we need
-    // right now. The objects we're checking here are either objects that must 
+    // right now. The objects we're checking here are either objects that must
     // always have the same keys OR arrays.
     _objectsEqual: function(target, source) {
       var t, s;
       for (var i in target) {
         t = target[i], s = source[i];
-        if (!(typeof t === 'object' && t ? this._objectsStrictlyEqual(t, s) : 
+        if (!(typeof t === 'object' && t ? this._objectsStrictlyEqual(t, s) :
             t === s)) {
           return false;
         }
@@ -10243,7 +10243,7 @@ Polymer.StyleExtends = (function() {
     },
 
     _objectsStrictlyEqual: function(target, source) {
-      return this._objectsEqual(target, source) && 
+      return this._objectsEqual(target, source) &&
         this._objectsEqual(source, target);
     }
 
@@ -10303,8 +10303,8 @@ Polymer.StyleExtends = (function() {
        * been made that affect the values of custom properties.
        *
        * @method updateStyles
-       * @param {Object=} properties Properties object which is mixed into 
-       * the document root `customStyle` property. This argument provides a 
+       * @param {Object=} properties Properties object which is mixed into
+       * the document root `customStyle` property. This argument provides a
        * shortcut for setting `customStyle` and then calling `updateStyles`.
       */
       updateStyles: function(properties) {
@@ -10354,8 +10354,8 @@ Polymer.StyleExtends = (function() {
       },
 
       /**
-       * An element's style properties can be directly modified by 
-       * setting key-value pairs in `customStyle` on the element 
+       * An element's style properties can be directly modified by
+       * setting key-value pairs in `customStyle` on the element
        * (analogous to setting `style`) and then calling `updateStyles()`.
        *
        */
@@ -10666,7 +10666,7 @@ Polymer.StyleExtends = (function() {
 
 </script>
 
-<!-- 
+<!--
 
 The `custom-style` extension of the native `<style>` element allows defining styles
 in the main document that can take advantage of several special features of
@@ -10678,7 +10678,7 @@ not leak into local DOM when running on browsers without non-native Shadow DOM.
 browsers without non-native Shadow DOM.
 * Custom properties used by Polymer's shim for cross-scope styling
 may be defined in an `custom-style`.
-* An `include` attribute may be specified to pull in style data from a 
+* An `include` attribute may be specified to pull in style data from a
 `dom-module` matching the include attribute. By using `include`, style data
 can be shared between multiple `custom-style` elements.
 
@@ -10692,22 +10692,22 @@ Example:
   <link rel="import" href="components/polymer/polymer.html">
 
   <style is="custom-style">
-    
+
     /* Will be prevented from affecting local DOM of Polymer elements */
     * {
       box-sizing: border-box;
     }
-    
+
     /* Can use /deep/ and ::shadow combinators */
     body /deep/ .my-special-view::shadow #thing-inside {
       background: yellow;
     }
-    
+
     /* Custom properties that inherit down the document tree may be defined */
     body {
       --my-toolbar-title-color: green;
     }
-    
+
   </style>
 
 </head>
@@ -10749,7 +10749,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     },
 
     ready: function() {
-      // NOTE: we cannot just check attached because custom elements in 
+      // NOTE: we cannot just check attached because custom elements in
       // HTMLImports do not get attached.
       this._tryApply();
     },
@@ -10761,7 +10761,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     _tryApply: function() {
       if (!this._appliesToDocument) {
         // only apply variables iff this style is not inside a dom-module
-        if (this.parentNode && 
+        if (this.parentNode &&
           (this.parentNode.localName !== 'dom-module')) {
           this._appliesToDocument = true;
           // used applied element from HTMLImports polyfill or this
@@ -10782,13 +10782,13 @@ Note, all features of `custom-style` are available when defining styles as part 
       }
     },
 
-    // polyfill this style with root scoping and 
+    // polyfill this style with root scoping and
     // apply custom properties!
     _apply: function() {
       // used applied element from HTMLImports polyfill or this
       var e = this.__appliedElement || this;
       if (this.include) {
-        e.textContent = styleUtil.cssFromModules(this.include, true) + 
+        e.textContent = styleUtil.cssFromModules(this.include, true) +
           e.textContent;
       }
       if (e.textContent) {
@@ -10810,9 +10810,9 @@ Note, all features of `custom-style` are available when defining styles as part 
           // so next function isn't confused
           // NOTE: we have 3 categories of css:
           // (1) normal properties,
-          // (2) custom property assignments (--foo: red;), 
+          // (2) custom property assignments (--foo: red;),
           // (3) custom property usage: border: var(--foo); @apply(--foo);
-          // In elements, 1 and 3 are separated for efficiency; here they 
+          // In elements, 1 and 3 are separated for efficiency; here they
           // are not and this makes this case unique.
           css = cssParse.removeCustomPropAssignment(css);
           // replace with reified properties, scenario is same as mixin
@@ -11273,11 +11273,11 @@ Note, all features of `custom-style` are available when defining styles as part 
   /**
    * Creates a pseudo-custom-element that maps property values to bindings
    * in DOM.
-   * 
+   *
    * `stamp` method creates an instance of the pseudo-element. The instance
    * references a document-fragment containing the stamped and bound dom
-   * via it's `root` property. 
-   *  
+   * via it's `root` property.
+   *
    */
   Polymer({
 
@@ -15741,7 +15741,7 @@ Custom property              | Description                  | Default
       },
 
       /**
-       * The set of excluded elements where the key is the `localName` 
+       * The set of excluded elements where the key is the `localName`
        * of the element that will be ignored from the item list.
        *
        * @type {object}
@@ -16445,11 +16445,11 @@ Displays a page on different device layouts.
           type: String,
           observer: '_srcChanged'
         },
-        
+
         _meta: {
           value: Polymer.Base.create('iron-meta', {type: 'iconset'})
         }
-        
+
       },
 
       _DEFAULT_ICONSET: 'icons',
@@ -16848,7 +16848,7 @@ Displays a page on different device layouts.
   @param {Object} detail
   @param {Object} detail.node The animated node
   -->
-  
+
   <template>
     <style>
       :host {
@@ -16861,23 +16861,23 @@ Displays a page on different device layouts.
         right: 0;
         bottom: 0;
       }
-  
+
       :host([animating]) {
         /* This resolves a rendering issue in Chrome (as of 40) where the
            ripple is not properly clipped by its parent (which may have
            rounded corners). See: http://jsbin.com/temexa/4
-  
+
            Note: We only apply this style conditionally. Otherwise, the browser
            will create a new compositing layer for every ripple element on the
            page, and that would be bad. */
         -webkit-transform: translate(0, 0);
         transform: translate3d(0, 0, 0);
       }
-  
+
       :host([noink]) {
         pointer-events: none;
       }
-  
+
       #background,
       #waves,
       .wave-container,
@@ -16889,32 +16889,32 @@ Displays a page on different device layouts.
         width: 100%;
         height: 100%;
       }
-  
+
       #background,
       .wave {
         opacity: 0;
       }
-  
+
       #waves,
       .wave {
         overflow: hidden;
       }
-  
+
       .wave-container,
       .wave {
         border-radius: 50%;
       }
-  
+
       :host(.circle) #background,
       :host(.circle) #waves {
         border-radius: 50%;
       }
-  
+
       :host(.circle) .wave-container {
         overflow: hidden;
       }
     </style>
-    
+
     <div id="background"></div>
     <div id="waves"></div>
   </template>
@@ -18917,7 +18917,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <h1>Tools and References</h1>
 
     <a class="misc-link" href="https://www.google.com/design/spec/layout/adaptive-ui.html#adaptive-ui-patterns" target="_blank">Material Design Adaptive UI Pattern</a>
-    <a class="misc-link" href="https://orchid-thief.googleplex.com/" target="_blank">Resizer App</a>
     <a class="misc-link" href="https://developers.google.com/web/tools/polymer-starter-kit/" target="_blank">Polymer Starter Kit</a>
 
   </section>
