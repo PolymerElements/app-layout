@@ -1,5 +1,7 @@
 # App Layout
 
+http://polymerlabs.github.io/app-layout/
+
 It's a set of experimental layout elements for your app. It includes:
 
 - [app-toolbar](#app-toolbar)
