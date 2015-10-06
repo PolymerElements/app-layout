@@ -41,10 +41,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isFalse(scrim.visible);
       });
 
-      test('make it visible', function() {
-        assert.isTrue(scrim.offsetWidth === 0 && scrim.offsetHeight === 0);
+      test('make it visible', function(done) {
+        assert.equal(getComputedStyle(scrim).visibility, 'hidden');
         scrim.visible = true;
-        assert.isFalse(scrim.offsetWidth === 0 && scrim.offsetHeight === 0);
+        setTimeout(function() {
+          assert.equal(getComputedStyle(scrim).visibility, 'visible');
+          done();
+        }, 1000);
       });
 
       test('size and position', function() {

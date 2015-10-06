@@ -43,20 +43,15 @@ Custom property             | Description            | Default
       bottom: -120px;
       opacity: 0;
       background-color: var(--app-scrim-color, black);
-      display: none;
-      pointer-events: none;
+      visibility: hidden;
 
-      -webkit-transition: opacity 0.5s ease-out;
-      transition: opacity 0.5s ease-out;
-    }
-
-    :host(.visible) {
-      opacity: var(--app-scrim-opacity, 0.5);
+      transition: 0.5s ease-out;
+      transition-property: opacity, visibility;
     }
 
     :host([visible]) {
-      pointer-events: auto;
-      display: block;
+      opacity: var(--app-scrim-opacity, 0.5);
+      visibility: visible;
     }
 
   </style>
@@ -77,30 +72,7 @@ Custom property             | Description            | Default
         visible: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true,
-          observer: '_visibleChanged'
-        }
-      },
-
-      listeners: {
-        'transitionend': '_onTransitionEnd'
-      },
-
-      _layoutIfNeeded: function() {
-        return this.offsetWidth;
-      },
-
-      _visibleChanged: function(visible) {
-        if (visible) {
-          this.style.display = 'block';
-        }
-        this._layoutIfNeeded();
-        this.toggleClass('visible', visible);
-      },
-
-      _onTransitionEnd: function(e) {
-        if (!this.visible && e.currentTarget == this) {
-          this.style.display = '';
+          reflectToAttribute: true
         }
       }
 
