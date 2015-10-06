@@ -3174,7 +3174,7 @@ if (typeof HTMLTemplateElement === "undefined") {
      *    be serialized to a string and reflected to the attribute each time
      *    it changes.  This can impact performance, so it should be used
      *    only when reflecting the attribute value is important.
-     * * `observer` - indicates the name of a funciton that should be called
+     * * `observer` - indicates the name of a function that should be called
      *    each time the property changes. `e.g.: `observer: 'valueChanged'
      * * `computed` - configures the property to be computed by a computing
      *    function each time one or more dependent properties change.
@@ -7568,9 +7568,16 @@ Polymer.Debounce = (function() {
 
     /**
      * Removes an item from an array, if it exists.
+     * 
+     * If the array is specified by path, a change notification is 
+     * generated, so that observers, data bindings and computed
+     * properties watching that path can update. 
+     * 
+     * If the array is passed directly, **no change
+     * notification is generated**.
      *
      * @method arrayDelete
-     * @param {String|Array} path Path torray from which to remove the item
+     * @param {String|Array} path Path to array from which to remove the item
      *   (or the array itself).
      * @param {any} item Item to remove.
      * @return {Array} Array containing item removed.
@@ -8363,7 +8370,7 @@ Polymer.Debounce = (function() {
       // don't accept undefined values in intialConfig
       for (var i in initialConfig) {
         if (initialConfig[i] !== undefined) {
-          this._config[i] = initialConfig[i];    
+          this._config[i] = initialConfig[i];
         }
       }
       this._handlers = [];
@@ -8504,11 +8511,18 @@ Polymer.Debounce = (function() {
       for (var i=0, l=h$.length, h; (i<l) && (h=h$[i]); i++) {
         h[0].call(this, h[1], h[2]);
       }
+      // reset handlers array
+      //
+      // If an element holds a reference to a CustomEvent with a detail
+      // property, Chrome will leak memory across page refreshes
+      // https://crbug.com/529941
+      this._handlers = [];
     }
 
   });
 
-</script><script>
+</script>
+<script>
 
   /**
    * Changes to an object sub-field (aka "path") via a binding
@@ -11194,7 +11208,7 @@ Note, all features of `custom-style` are available when defining styles as part 
      *   initial data configuration for the instance.  Note that properties
      *   from the host used in the template are automatically copied into
      *   the model.
-     * @param {Polymer.Base} The Polymer.Base instance to manage the template
+     * @return {Polymer.Base} The Polymer.Base instance to manage the template
      *   instance.
      */
     stamp: function(model) {
@@ -11268,7 +11282,8 @@ Note, all features of `custom-style` are available when defining styles as part 
 
   };
 
-</script><script>
+</script>
+<script>
 
   /**
    * Creates a pseudo-custom-element that maps property values to bindings
@@ -13162,17 +13177,7 @@ element.
       },
 
       /**
-       * Will be set to true if there is at least one in-flight request
-       * associated with this iron-ajax element.
-       */
-      loading: {
-        type: Boolean,
-        notify: true,
-        readOnly: true
-      },
-
-      /**
-       * Will be set to the most recent request made by this iron-ajax element.
+       * The most recent request made by this iron-ajax element.
        */
       lastRequest: {
         type: Object,
@@ -13181,10 +13186,23 @@ element.
       },
 
       /**
-       * Will be set to the most recent response received by a request
-       * that originated from this iron-ajax element. The type of the response
-       * is determined by the value of `handleAs` at the time that the request
-       * was generated.
+       * True while lastRequest is in flight.
+       */
+      loading: {
+        type: Boolean,
+        notify: true,
+        readOnly: true
+      },
+
+      /**
+       * lastRequest's response.
+       *
+       * Note that lastResponse and lastError are set when lastRequest finishes,
+       * so if loading is true, then lastResponse and lastError will correspond
+       * to the result of the previous request.
+       *
+       * The type of the response is determined by the value of `handleAs` at
+       * the time that the request was generated.
        */
       lastResponse: {
         type: Object,
@@ -13193,8 +13211,7 @@ element.
       },
 
       /**
-       * Will be set to the most recent error that resulted from a request
-       * that originated from this iron-ajax element.
+       * lastRequest's error, if any.
        */
       lastError: {
         type: Object,
@@ -13233,7 +13250,7 @@ element.
     },
 
     observers: [
-      '_requestOptionsChanged(url, method, params, headers,' +
+      '_requestOptionsChanged(url, method, params.*, headers,' +
         'contentType, body, sync, handleAs, withCredentials, auto)'
     ],
 
@@ -13252,11 +13269,15 @@ element.
         value = this.params[param];
         param = window.encodeURIComponent(param);
 
-        if (value !== null) {
-          param += '=' + window.encodeURIComponent(value);
+        if (Array.isArray(value)) {
+          for (var i = 0; i < value.length; i++) {
+            queryParts.push(param + '=' + window.encodeURIComponent(value[i]));
+          }
+        } else if (value !== null) {
+          queryParts.push(param + '=' + window.encodeURIComponent(value));
+        } else {
+          queryParts.push(param);
         }
-
-        queryParts.push(param);
       }
 
       return queryParts.join('&');
@@ -13272,7 +13293,8 @@ element.
       var queryString = this.queryString;
 
       if (queryString) {
-        return this.url + '?' + queryString;
+        var bindingChar = this.url.indexOf('?') >= 0 ? '&' : '?';
+        return this.url + bindingChar + queryString;
       }
 
       return this.url;
@@ -13357,14 +13379,18 @@ element.
       this.fire('request', {
         request: request,
         options: requestOptions
-      });
+      }, {bubbles: false});
 
       return request;
     },
 
     _handleResponse: function(request) {
-      this._setLastResponse(request.response);
-      this.fire('response', request);
+      if (request === this.lastRequest) {
+        this._setLastResponse(request.response);
+        this._setLastError(null);
+        this._setLoading(false);
+      }
+      this.fire('response', request, {bubbles: false});
     },
 
     _handleError: function(request, error) {
@@ -13372,14 +13398,18 @@ element.
         console.error(error);
       }
 
-      this._setLastError({
-        request: request,
-        error: error
-      });
+      if (request === this.lastRequest) {
+        this._setLastError({
+          request: request,
+          error: error
+        });
+        this._setLastResponse(null);
+        this._setLoading(false);
+      }
       this.fire('error', {
         request: request,
         error: error
-      });
+      }, {bubbles: false});
     },
 
     _discardRequest: function(request) {
@@ -13387,10 +13417,6 @@ element.
 
       if (requestIndex > -1) {
         this.activeRequests.splice(requestIndex, 1);
-      }
-
-      if (this.activeRequests.length === 0) {
-        this._setLoading(false);
       }
     },
 
@@ -13506,6 +13532,10 @@ Or, in a Polymer element, you can include a meta in your template:
           notify: true
         }
 
+      },
+
+      hostAttributes: {
+        hidden: true
       },
 
       /**
@@ -13713,6 +13743,20 @@ Or, in a Polymer element, you can include a meta in your template:
 
   })();
 </script>
+<!--
+The `<iron-flex-layout>` component provides simple ways to use [CSS flexible box layout](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Flexible_boxes), also known as flexbox. This component provides two different ways to use flexbox:
+
+1. [Layout classes](https://github.com/PolymerElements/iron-flex-layout/tree/master/classes). The layout class stylesheet provides a simple set of class-based flexbox rules. Layout classes let you specify layout properties directly in markup.
+
+2. [Custom CSS mixins](https://github.com/PolymerElements/iron-flex-layout/blob/master/iron-flex-layout.html). The mixin stylesheet includes custom CSS mixins that can be applied inside a CSS rule using the `@apply` function.
+
+A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `<iron-flex-layout>` is available.
+
+@group Iron Elements
+@pseudoElement iron-flex-layout
+@demo demo/index.html
+-->
+
 <style>
   /* IE 10 support for HTML5 hidden attr */
   [hidden] {
@@ -14204,6 +14248,9 @@ Custom property | Description | Default
      */
     _nameChanged: function() {
       new Polymer.IronMeta({type: 'iconset', key: this.name, value: this});
+      this.async(function() {
+        this.fire('iron-iconset-added', this, {node: window});
+      });
     },
 
     /**
@@ -14461,7 +14508,7 @@ Custom property | Description | Default
      * the selected item or undefined if there is no selection.
      */
     get: function() {
-      return this.multi ? this.selection : this.selection[0];
+      return this.multi ? this.selection.slice() : this.selection[0];
     },
 
     /**
@@ -14548,34 +14595,38 @@ Custom property | Description | Default
   Polymer.IronSelectableBehavior = {
 
       /**
-       *  Fired when iron-selector is activated (selected or deselected).
-       *  It is fired before the selected items are changed.
-       *  Cancel the event to abort selection.
+       * Fired when iron-selector is activated (selected or deselected).
+       * It is fired before the selected items are changed.
+       * Cancel the event to abort selection.
        *
        * @event iron-activate
-       *
-       **/
+       */
+
       /**
-       *  Fired when an item is selected
+       * Fired when an item is selected
        *
        * @event iron-select
-       *
-       **/
+       */
+
       /**
-       *  Fired when an item is deselected
+       * Fired when an item is deselected
        *
        * @event iron-deselect
+       */
+
+      /**
+       * Fired when the list of selectable items changes (e.g., items are
+       * added or removed). The detail of the event is a list of mutation
+       * records that describe what changed.
        *
-       **/
+       * @event iron-items-changed
+       */
 
     properties: {
 
       /**
        * If you want to use the attribute value of an element for `selected` instead of the index,
        * set this to the name of the attribute.
-       *
-       * @attribute attrForSelected
-       * @type {string}
        */
       attrForSelected: {
         type: String,
@@ -14584,9 +14635,6 @@ Custom property | Description | Default
 
       /**
        * Gets or sets the selected element. The default is to use the index of the item.
-       *
-       * @attribute selected
-       * @type {string}
        */
       selected: {
         type: String,
@@ -14595,9 +14643,6 @@ Custom property | Description | Default
 
       /**
        * Returns the currently selected item.
-       *
-       * @attribute selectedItem
-       * @type {Object}
        */
       selectedItem: {
         type: Object,
@@ -14609,10 +14654,6 @@ Custom property | Description | Default
        * The event that fires from items when they are selected. Selectable
        * will listen for this event from items and update the selection state.
        * Set to empty string to listen to no events.
-       *
-       * @attribute activateEvent
-       * @type {string}
-       * @default 'tap'
        */
       activateEvent: {
         type: String,
@@ -14623,17 +14664,11 @@ Custom property | Description | Default
       /**
        * This is a CSS selector string.  If this is set, only items that match the CSS selector
        * are selectable.
-       *
-       * @attribute selectable
-       * @type {string}
        */
       selectable: String,
 
       /**
        * The class to set on elements when selected.
-       *
-       * @attribute selectedClass
-       * @type {string}
        */
       selectedClass: {
         type: String,
@@ -14642,9 +14677,6 @@ Custom property | Description | Default
 
       /**
        * The attribute to set on elements when selected.
-       *
-       * @attribute selectedAttribute
-       * @type {string}
        */
       selectedAttribute: {
         type: String,
@@ -14652,13 +14684,12 @@ Custom property | Description | Default
       },
 
       /**
-       * The set of excluded elements where the key is the `localName` 
+       * The set of excluded elements where the key is the `localName`
        * of the element that will be ignored from the item list.
        *
        * @type {object}
        * @default {template: 1}
        */
-
       excludedLocalNames: {
         type: Object,
         value: function() {
@@ -14681,6 +14712,9 @@ Custom property | Description | Default
     attached: function() {
       this._observer = this._observeItems(this);
       this._contentObserver = this._observeContent(this);
+      if (!this.selectedItem && this.selected) {
+        this._updateSelected(this.attrForSelected,this.selected)
+      }
     },
 
     detached: function() {
@@ -14751,9 +14785,7 @@ Custom property | Description | Default
     },
 
     _removeListener: function(eventName) {
-      // There is no unlisten yet...
-      // https://github.com/Polymer/polymer/issues/1639
-      //this.removeEventListener(eventName, this._bindActivateHandler);
+      this.unlisten(this, eventName, '_activateHandler');
     },
 
     _activateEventChanged: function(eventName, old) {
@@ -14829,7 +14861,15 @@ Custom property | Description | Default
 
     // observe items change under the given node.
     _observeItems: function(node) {
-      var observer = new MutationObserver(function() {
+      // TODO(cdata): Update this when we get distributed children changed.
+      var observer = new MutationObserver(function(mutations) {
+        // Let other interested parties know about the change so that
+        // we don't have to recreate mutation observers everywher.
+        this.fire('iron-items-changed', mutations, {
+          bubbles: false,
+          cancelable: false
+        });
+
         if (this.selected != null) {
           this._updateSelected();
         }
@@ -14842,11 +14882,6 @@ Custom property | Description | Default
     },
 
     _activateHandler: function(e) {
-      // TODO: remove this when https://github.com/Polymer/polymer/issues/1639 is fixed so we
-      // can just remove the old event listener.
-      if (e.type !== this.activateEvent) {
-        return;
-      }
       var t = e.target;
       var items = this.items;
       while (t && t != this) {
@@ -15886,6 +15921,8 @@ Example:
 
 </style>
 <!--
+Material design: [Cards](https://www.google.com/design/spec/components/cards.html)
+
 `paper-material` is a container that renders two shadows on top of each other to
 create the effect of a lifted piece of paper.
 
@@ -16130,7 +16167,7 @@ Example:
      * `keys` property is pressed.
      *
      * @demo demo/index.html
-     * @polymerBehavior IronA11yKeysBehavior
+     * @polymerBehavior
      */
     Polymer.IronA11yKeysBehavior = {
       properties: {
@@ -16309,19 +16346,26 @@ Example:
   })();
 </script>
 <!--
+Material design: [Surface reaction](https://www.google.com/design/spec/animation/responsive-interaction.html#responsive-interaction-surface-reaction)
+
 `paper-ripple` provides a visual effect that other paper elements can
 use to simulate a rippling effect emanating from the point of contact.  The
 effect can be visualized as a concentric circle with motion.
 
 Example:
 
-    <paper-ripple></paper-ripple>
+    <div style="position:relative">
+      <paper-ripple></paper-ripple>
+    </div>
+
+Note, it's important that the parent container of the ripple be relative position, otherwise
+the ripple will emanate outside of the desired container. 
 
 `paper-ripple` listens to "mousedown" and "mouseup" events so it would display ripple
 effect when touches on it.  You can also defeat the default behavior and
 manually route the down and up actions to the ripple element.  Note that it is
-important if you call downAction() you will have to make sure to call
-upAction() so that `paper-ripple` would end the animation loop.
+important if you call `downAction()` you will have to make sure to call
+`upAction()` so that `paper-ripple` would end the animation loop.
 
 Example:
 
@@ -16680,7 +16724,7 @@ Apply `circle` class to make the rippling effect within a circle.
 </script>
 <script>
 
-  /** @polymerBehavior */
+  /** @polymerBehavior Polymer.PaperButtonBehavior */
   Polymer.PaperButtonBehaviorImpl = {
 
     properties: {
@@ -16722,7 +16766,7 @@ Apply `circle` class to make the rippling effect within a circle.
 
 </script>
 <!--
-Material Design: <a href="http://www.google.com/design/spec/components/buttons.html">Button</a>
+Material design: [Floating Action Button](https://www.google.com/design/spec/components/buttons-floating-action-button.html)
 
 `paper-fab` is a floating action button. It contains an image placed in the center and
 comes in two sizes: regular size and a smaller size by applying the attribute `mini`. When
@@ -16753,6 +16797,7 @@ Custom property | Description | Default
 `--paper-fab` | Mixin applied to the button | `{}`
 `--paper-fab-mini` | Mixin applied to a mini button | `{}`
 `--paper-fab-disabled` | Mixin applied to a disabled button | `{}`
+`--paper-fab-iron-icon` | Mixin applied to the iron-icon within the button | `{}`
 
 @group Paper Elements
 @demo demo/index.html
@@ -16764,7 +16809,7 @@ Custom property | Description | Default
   /**
    * `Polymer.PaperInkyFocusBehavior` implements a ripple when the element has keyboard focus.
    *
-   * @polymerBehavior Polymer.PaperInkyFocusBehavior
+   * @polymerBehavior Polymer.PaperInkyFocusBehaviorImpl
    */
   Polymer.PaperInkyFocusBehaviorImpl = {
 
@@ -16791,7 +16836,7 @@ Custom property | Description | Default
 
 </script>
 <!--
-Material Design: <a href="http://www.google.com/design/spec/components/buttons.html">Buttons</a>
+Material design: [Icon toggles](https://www.google.com/design/spec/components/buttons.html#buttons-toggle-buttons)
 
 `paper-icon-button` is a button with an image placed at the center. When the user touches
 the button, a ripple effect emanates from the center of the button.
@@ -16811,7 +16856,7 @@ Example:
     <paper-icon-button icon="favorite"></paper-icon-button>
     <paper-icon-button src="star.png"></paper-icon-button>
 
-###Styling
+### Styling
 
 Style the button with CSS as you would a normal DOM element. If you are using the icons
 provided by `iron-icons`, they will inherit the foreground color of the button.
@@ -16820,14 +16865,7 @@ provided by `iron-icons`, they will inherit the foreground color of the button.
     <paper-icon-button icon="favorite" style="color: red;"></paper-icon-button>
 
 By default, the ripple is the same color as the foreground at 25% opacity. You may
-customize the color using this selector:
-
-    /* make #my-button use a blue ripple instead of foreground color */
-    #my-button::shadow #ripple {
-      color: blue;
-    }
-
-The opacity of the ripple is not customizable via CSS.
+customize the color using the `--paper-icon-button-ink-color` custom property.
 
 The following custom properties and mixins are available for styling:
 
@@ -17069,6 +17107,8 @@ Custom property | Description | Default
 
 </style>
 <!--
+Material design: [Lists](https://www.google.com/design/spec/components/lists.html)
+
 `<paper-item>` is a non-interactive list item. By default, it is a horizontal flexbox.
 
     <paper-item>Item</paper-item>
@@ -17202,9 +17242,9 @@ This element has `role="listitem"` by default. Depending on usage, it may be mor
       var i = this.selectedValues.indexOf(value);
       var unselected = i < 0;
       if (unselected) {
-        this.selectedValues.push(value);
+        this.push('selectedValues',value);
       } else {
-        this.selectedValues.splice(i, 1);
+        this.splice('selectedValues',i,1);
       }
       this._selection.setItemSelected(this._valueToItem(value), unselected);
     }
@@ -17260,59 +17300,27 @@ This element has `role="listitem"` by default. Depending on usage, it may be mor
 
     listeners: {
       'focus': '_onFocus',
-      'keydown': '_onKeydown'
+      'keydown': '_onKeydown',
+      'iron-items-changed': '_onIronItemsChanged'
     },
 
     keyBindings: {
       'up': '_onUpKey',
       'down': '_onDownKey',
       'esc': '_onEscKey',
-      'enter': '_onEnterKey',
       'shift+tab:keydown': '_onShiftTabDown'
     },
 
-    _updateMultiselectable: function(multi) {
-      if (multi) {
-        this.setAttribute('aria-multiselectable', 'true');
-      } else {
-        this.removeAttribute('aria-multiselectable');
-      }
+    attached: function() {
+      this._resetTabindices();
     },
 
-    _onShiftTabDown: function() {
-      var oldTabIndex;
-
-      Polymer.IronMenuBehaviorImpl._shiftTabPressed = true;
-
-      oldTabIndex = this.getAttribute('tabindex');
-
-      this.setAttribute('tabindex', '-1');
-
-      this.async(function() {
-        this.setAttribute('tabindex', oldTabIndex);
-        Polymer.IronMenuBehaviorImpl._shiftTabPressed = false;
-      // Note: polymer/polymer#1305
-      }, 1);
-    },
-
-    _applySelection: function(item, isSelected) {
-      if (isSelected) {
-        item.setAttribute('aria-selected', 'true');
-      } else {
-        item.removeAttribute('aria-selected');
-      }
-
-      Polymer.IronSelectableBehavior._applySelection.apply(this, arguments);
-    },
-
-    _focusedItemChanged: function(focusedItem, old) {
-      old && old.setAttribute('tabindex', '-1');
-      if (focusedItem) {
-        focusedItem.setAttribute('tabindex', '0');
-        focusedItem.focus();
-      }
-    },
-
+    /**
+     * Selects the given value. If the `multi` property is true, then the selected state of the
+     * `value` will be toggled; otherwise the `value` will be selected.
+     *
+     * @param {string} value the value to select.
+     */
     select: function(value) {
       if (this._defaultFocusAsync) {
         this.cancelAsync(this._defaultFocusAsync);
@@ -17324,6 +17332,152 @@ This element has `role="listitem"` by default. Depending on usage, it may be mor
       Polymer.IronMultiSelectableBehaviorImpl.select.apply(this, arguments);
     },
 
+    /**
+     * Resets all tabindex attributes to the appropriate value based on the
+     * current selection state. The appropriate value is `0` (focusable) for
+     * the default selected item, and `-1` (not keyboard focusable) for all
+     * other items.
+     */
+    _resetTabindices: function() {
+      var selectedItem = this.multi ? (this.selectedItems && this.selectedItems[0]) : this.selectedItem;
+
+      this.items.forEach(function(item) {
+        item.setAttribute('tabindex', item === selectedItem ? '0' : '-1');
+      }, this);
+    },
+
+    /**
+     * Sets appropriate ARIA based on whether or not the menu is meant to be
+     * multi-selectable.
+     *
+     * @param {boolean} multi True if the menu should be multi-selectable.
+     */
+    _updateMultiselectable: function(multi) {
+      if (multi) {
+        this.setAttribute('aria-multiselectable', 'true');
+      } else {
+        this.removeAttribute('aria-multiselectable');
+      }
+    },
+
+    /**
+     * Given a KeyboardEvent, this method will focus the appropriate item in the
+     * menu (if there is a relevant item, and it is possible to focus it).
+     *
+     * @param {KeyboardEvent} event A KeyboardEvent.
+     */
+    _focusWithKeyboardEvent: function(event) {
+      for (var i = 0, item; item = this.items[i]; i++) {
+        var attr = this.attrForItemTitle || 'textContent';
+        var title = item[attr] || item.getAttribute(attr);
+        if (title && title.trim().charAt(0).toLowerCase() === String.fromCharCode(event.keyCode).toLowerCase()) {
+          this._setFocusedItem(item);
+          break;
+        }
+      }
+    },
+
+    /**
+     * Focuses the previous item (relative to the currently focused item) in the
+     * menu.
+     */
+    _focusPrevious: function() {
+      var length = this.items.length;
+      var index = (Number(this.indexOf(this.focusedItem)) - 1 + length) % length;
+      this._setFocusedItem(this.items[index]);
+    },
+
+    /**
+     * Focuses the next item (relative to the currently focused item) in the
+     * menu.
+     */
+    _focusNext: function() {
+      var index = (Number(this.indexOf(this.focusedItem)) + 1) % this.items.length;
+      this._setFocusedItem(this.items[index]);
+    },
+
+    /**
+     * Mutates items in the menu based on provided selection details, so that
+     * all items correctly reflect selection state.
+     *
+     * @param {Element} item An item in the menu.
+     * @param {boolean} isSelected True if the item should be shown in a
+     * selected state, otherwise false.
+     */
+    _applySelection: function(item, isSelected) {
+      if (isSelected) {
+        item.setAttribute('aria-selected', 'true');
+      } else {
+        item.removeAttribute('aria-selected');
+      }
+
+      Polymer.IronSelectableBehavior._applySelection.apply(this, arguments);
+    },
+
+    /**
+     * Discretely updates tabindex values among menu items as the focused item
+     * changes.
+     *
+     * @param {Element} focusedItem The element that is currently focused.
+     * @param {?Element} old The last element that was considered focused, if
+     * applicable.
+     */
+    _focusedItemChanged: function(focusedItem, old) {
+      old && old.setAttribute('tabindex', '-1');
+      if (focusedItem) {
+        focusedItem.setAttribute('tabindex', '0');
+        focusedItem.focus();
+      }
+    },
+
+    /**
+     * A handler that responds to mutation changes related to the list of items
+     * in the menu.
+     *
+     * @param {CustomEvent} event An event containing mutation records as its
+     * detail.
+     */
+    _onIronItemsChanged: function(event) {
+      var mutations = event.detail;
+      var mutation;
+      var index;
+
+      for (index = 0; index < mutations.length; ++index) {
+        mutation = mutations[index];
+
+        if (mutation.addedNodes.length) {
+          this._resetTabindices();
+          break;
+        }
+      }
+    },
+
+    /**
+     * Handler that is called when a shift+tab keypress is detected by the menu.
+     *
+     * @param {CustomEvent} event A key combination event.
+     */
+    _onShiftTabDown: function(event) {
+      var oldTabIndex;
+
+      Polymer.IronMenuBehaviorImpl._shiftTabPressed = true;
+
+      oldTabIndex = this.getAttribute('tabindex');
+
+      this.setAttribute('tabindex', '-1');
+
+      this.async(function() {
+        this.setAttribute('tabindex', oldTabIndex);
+        Polymer.IronMenuBehaviorImpl._shiftTabPressed = false;
+      // NOTE(cdata): polymer/polymer#1305
+      }, 1);
+    },
+
+    /**
+     * Handler that is called when the menu receives focus.
+     *
+     * @param {FocusEvent} event A focus event.
+     */
     _onFocus: function(event) {
       if (Polymer.IronMenuBehaviorImpl._shiftTabPressed) {
         return;
@@ -17345,62 +17499,48 @@ This element has `role="listitem"` by default. Depending on usage, it may be mor
       }, 100);
     },
 
-    _onUpKey: function() {
+    /**
+     * Handler that is called when the up key is pressed.
+     *
+     * @param {CustomEvent} event A key combination event.
+     */
+    _onUpKey: function(event) {
       // up and down arrows moves the focus
       this._focusPrevious();
     },
 
-    _onDownKey: function() {
+    /**
+     * Handler that is called when the down key is pressed.
+     *
+     * @param {CustomEvent} event A key combination event.
+     */
+    _onDownKey: function(event) {
       this._focusNext();
     },
 
-    _onEscKey: function() {
+    /**
+     * Handler that is called when the esc key is pressed.
+     *
+     * @param {CustomEvent} event A key combination event.
+     */
+    _onEscKey: function(event) {
       // esc blurs the control
       this.focusedItem.blur();
     },
 
-    _onEnterKey: function(event) {
-      // enter activates the item unless it is disabled
-      this._activateFocused(event.detail.keyboardEvent);
-    },
-
+    /**
+     * Handler that is called when a keydown event is detected.
+     *
+     * @param {KeyboardEvent} event A keyboard event.
+     */
     _onKeydown: function(event) {
-      if (this.keyboardEventMatchesKeys(event, 'up down esc enter')) {
+      if (this.keyboardEventMatchesKeys(event, 'up down esc')) {
         return;
       }
 
       // all other keys focus the menu item starting with that character
       this._focusWithKeyboardEvent(event);
-    },
-
-    _focusWithKeyboardEvent: function(event) {
-      for (var i = 0, item; item = this.items[i]; i++) {
-        var attr = this.attrForItemTitle || 'textContent';
-        var title = item[attr] || item.getAttribute(attr);
-        if (title && title.trim().charAt(0).toLowerCase() === String.fromCharCode(event.keyCode).toLowerCase()) {
-          this._setFocusedItem(item);
-          break;
-        }
-      }
-    },
-
-    _activateFocused: function(event) {
-      if (!this.focusedItem.hasAttribute('disabled')) {
-        this._activateHandler(event);
-      }
-    },
-
-    _focusPrevious: function() {
-      var length = this.items.length;
-      var index = (Number(this.indexOf(this.focusedItem)) - 1 + length) % length;
-      this._setFocusedItem(this.items[index]);
-    },
-
-    _focusNext: function() {
-      var index = (Number(this.indexOf(this.focusedItem)) + 1) % this.items.length;
-      this._setFocusedItem(this.items[index]);
     }
-
   };
 
   Polymer.IronMenuBehaviorImpl._shiftTabPressed = false;
@@ -17414,6 +17554,8 @@ This element has `role="listitem"` by default. Depending on usage, it may be mor
 
 </script>
 <!--
+Material design: [Menus](https://www.google.com/design/spec/components/menus.html)
+
 `<paper-menu>` implements an accessible menu control with Material Design styling. The focused item
 is highlighted, and the selected item has bolded text.
 
@@ -17444,7 +17586,7 @@ The following custom properties and mixins are available for styling:
 Custom property | Description | Default
 ----------------|-------------|----------
 `--paper-menu-background-color`   | Menu background color                                            | `--primary-background-color`
-`--paper-menu-color`               | Menu foreground color                                            | `--primary-text-color`
+`--paper-menu-color`              | Menu foreground color                                            | `--primary-text-color`
 `--paper-menu-disabled-color`     | Foreground color for a disabled item                             | `--disabled-text-color`
 `--paper-menu`                    | Mixin applied to the menu                                        | `{}`
 `--paper-menu-selected-item`      | Mixin applied to the selected item                               | `{}`
@@ -18041,11 +18183,14 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
           type: String,
           observer: '_srcChanged'
         },
-        
+
+        /**
+         * @type {!Polymer.IronMeta}
+         */
         _meta: {
           value: Polymer.Base.create('iron-meta', {type: 'iconset'})
         }
-        
+
       },
 
       _DEFAULT_ICONSET: 'icons',
@@ -18069,12 +18214,13 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
       _updateIcon: function() {
         if (this._usesIconset()) {
           if (this._iconsetName) {
-            this._iconset = this._meta.byKey(this._iconsetName);
+            this._iconset = /** @type {?Polymer.Iconset} */ (
+              this._meta.byKey(this._iconsetName));
             if (this._iconset) {
               this._iconset.applyIcon(this, this._iconName, this.theme);
+              this.unlisten(window, 'iron-iconset-added', '_updateIcon');
             } else {
-              this._warn(this._logf('_updateIcon', 'could not find iconset `'
-                + this._iconsetName + '`, did you import the iconset?'));
+              this.listen(window, 'iron-iconset-added', '_updateIcon');
             }
           }
         } else {
@@ -19109,8 +19255,12 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
         this.upAction();
       },
 
-      _holdDownChanged: function(holdDown) {
-        if (holdDown) {
+      _holdDownChanged: function(newVal, oldVal) {
+        if (oldVal === undefined) {
+          return;
+        }
+
+        if (newVal) {
           this.downAction();
         } else {
           this.upAction();
@@ -19166,6 +19316,10 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
       @apply(--layout-fit);
       @apply(--layout-vertical);
       @apply(--layout-center-center);
+    }
+    
+    iron-icon {
+      @apply(--paper-fab-iron-icon);
     }
 
     .keyboard-focus {
@@ -19255,6 +19409,7 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
         cursor: pointer;
         z-index: 0;
 
+        width: 24px;
         @apply(--paper-icon-button);
       }
 
@@ -19268,6 +19423,11 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
         pointer-events: none;
         cursor: auto;
         @apply(--paper-icon-button-disabled);
+      }
+
+      iron-icon {
+        --iron-icon-width: 100%;
+        --iron-icon-height: 100%;
       }
     </style>
 
@@ -19326,149 +19486,121 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
     });
   </script>
 </dom-module>
-<dom-module id="paper-item" assetpath="../../../paper-item/">
-
-  <style>
-/*
-    @license
-    Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-    Code distributed by Google as part of the polymer project is also
-    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-
-:host {
-  display: block;
-  min-height: var(--paper-item-min-height, 48px);
-  padding: 0px 16px;
-}
-
-:host > ::content > *:not(:first-child):not(:last-child) {
-  margin-right: 16px;
-}
-
-</style>
-
-  <style>
-
-    :host {
-      @apply(--layout-horizontal);
-      @apply(--layout-center);
-      @apply(--paper-font-subhead);
-
-      @apply(--paper-item);
-    }
-
-  </style>
-
+<dom-module id="paper-item-shared-styles" assetpath="../../../paper-item/">
   <template>
+    <style>
+      :host {
+        display: block;
+        min-height: var(--paper-item-min-height, 48px);
+        padding: 0px 16px;
+      }
+
+      :host > ::content > *:not(:first-child):not(:last-child) {
+        margin-right: 16px;
+      }
+    </style>
+  </template>
+</dom-module>
+<dom-module id="paper-item" assetpath="../../../paper-item/">
+  <template>
+    <style include="paper-item-shared-styles"></style>
+    <style>
+      :host {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        @apply(--paper-font-subhead);
+
+        @apply(--paper-item);
+      }
+    </style>
+
     <content></content>
   </template>
 
+  <script>
+    Polymer({
+      is: 'paper-item',
+
+      hostAttributes: {
+        role: 'listitem',
+        tabindex: '0'
+      },
+
+      behaviors: [
+        Polymer.IronControlState,
+        Polymer.IronButtonState
+      ]
+    });
+  </script>
 </dom-module>
-
-<script>
-
-(function() {
-
-  Polymer({
-
-    is: 'paper-item',
-
-    hostAttributes: {
-      role: 'listitem'
-    }
-
-  });
-
-})();
-
-</script>
-<dom-module id="paper-menu" assetpath="../../../paper-menu/">
-  <style>
-/**
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-
-/* need a wrapper element to make this higher specificity than the :host rule in paper-item */
-.selectable-content > ::content > .iron-selected {
-  font-weight: bold;
-
-  @apply(--paper-menu-selected-item);
-}
-
-.selectable-content > ::content > [disabled] {
-  color: var(--paper-menu-disabled-color, --disabled-text-color);
-}
-
-.selectable-content > ::content > *:focus {
-  position: relative;
-  outline: 0;
-
-  @apply(--paper-menu-focused-item);
-}
-
-.selectable-content > ::content > *:focus:after {
-  @apply(--layout-fit);
-  background: currentColor;
-  opacity: var(--dark-divider-opacity);
-  content: '';
-
-  @apply(--paper-menu-focused-item-after);
-}
-
-.selectable-content > ::content > *[colored]:focus:after {
-  opacity: 0.26;
-}
-
-</style>
-
-  <style>
-    :host {
-      display: block;
-      padding: 8px 0;
-
-      background: var(--paper-menu-background-color, --primary-background-color);
-      color: var(--paper-menu-color, --primary-text-color);
-
-      @apply(--paper-menu);
-    }
-  </style>
+<dom-module id="paper-menu-shared-styles" assetpath="../../../paper-menu/">
   <template>
+    <style>
+      /* need a wrapper element to make this higher specificity than the :host rule in paper-item */
+      .selectable-content > ::content > .iron-selected {
+        font-weight: bold;
+
+        @apply(--paper-menu-selected-item);
+      }
+
+      .selectable-content > ::content > [disabled] {
+        color: var(--paper-menu-disabled-color, --disabled-text-color);
+      }
+
+      .selectable-content > ::content > *:focus {
+        position: relative;
+        outline: 0;
+
+        @apply(--paper-menu-focused-item);
+      }
+
+      .selectable-content > ::content > *:focus:after {
+        @apply(--layout-fit);
+        background: currentColor;
+        opacity: var(--dark-divider-opacity);
+        content: '';
+
+        @apply(--paper-menu-focused-item-after);
+      }
+
+      .selectable-content > ::content > *[colored]:focus:after {
+        opacity: 0.26;
+      }
+    </style>
+  </template>
+</dom-module>
+<dom-module id="paper-menu" assetpath="../../../paper-menu/">
+  <template>
+    <style include="paper-menu-shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        padding: 8px 0;
+
+        background: var(--paper-menu-background-color, --primary-background-color);
+        color: var(--paper-menu-color, --primary-text-color);
+
+        @apply(--paper-menu);
+      }
+    </style>
 
     <div class="selectable-content">
       <content></content>
     </div>
-
   </template>
 
+  <script>
+    (function() {
+      Polymer({
+        is: 'paper-menu',
+
+        behaviors: [
+          Polymer.IronMenuBehavior
+        ]
+      });
+    })();
+  </script>
 </dom-module>
-
-<script>
-
-(function() {
-
-  Polymer({
-
-    is: 'paper-menu',
-
-    behaviors: [
-      Polymer.IronMenuBehavior
-    ]
-
-  });
-
-})();
-
-</script>
 <dom-module id="app-drawer" assetpath="../../app-drawer/">
 
   <style>
@@ -20314,7 +20446,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
          * Reset the scroll position to 0.
          */
         reset: {
-          type: Boolean
+          type: Boolean,
+          value: false
         }
 
       },
