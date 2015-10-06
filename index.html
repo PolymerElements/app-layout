@@ -61,7 +61,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     .heading > .sub-title {
       margin-top: 24px;
-      line-height: 28px;
+      line-height: 1.6;
     }
 
     .bottom-toolbar {
@@ -100,7 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       padding: 0 8px;
       font-size: 18px;
       letter-spacing: 0.05em;
-      line-height: 26px;
+      line-height: 1.5;
     }
 
     .grid {
@@ -113,9 +113,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     .grid-item {
       position: relative;
       width: 400px;
-      height: 420px;
+      max-height: 420px;
       @apply(--layout-flex-none);
       margin: 8px;
+      padding-bottom: 24px;
       background-color: #fff;
       @apply(--shadow-elevation-2dp);
     }
@@ -172,6 +173,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       color: #5c5c5c;
     }
 
+    .grid-item > .caption > p {
+      margin: 16px;
+      line-height: 1.5;
+    }
+
     .grid-item paper-button {
       background-color: #4FB6F7;
       color: #fff;
@@ -181,7 +187,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       display: block;
       padding: 12px 0;
       font-size: 24px;
-      line-height: 32px;
+      line-height: 1.25;
       color: #147BCC;
     }
 
@@ -195,7 +201,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       padding: 36px 16px;
       border-top: 1px solid #acacac;
       font-size: 18px;
-      line-height: 48px;
+      line-height: 3;
       color: #147BCC;
     }
 
@@ -353,6 +359,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>
             <paper-button raised disabled>View</paper-button>
             <paper-button raised disabled>Source</paper-button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section>
+
+    <h1>Patterns</h1>
+
+    <p>Sample code for various UI patterns.</p>
+
+    <div class="grid">
+
+      <div class="grid-item">
+        <div class="caption">
+          <h3>Adaptive UI: Transform Navigation</h3>
+          <p>As more screen space is available, side navigation can transform into tabs.</p>
+          <div>
+            <a href="patterns/transform-navigation" target="_blank" tabindex="-1">
+              <paper-button raised>View</paper-button>
+            </a>
+            <a href="https://github.com/PolymerLabs/app-layout/tree/master/patterns/transform-navigation" target="_blank" tabindex="-1">
+              <paper-button raised>Source</paper-button>
+            </a>
           </div>
         </div>
       </div>
