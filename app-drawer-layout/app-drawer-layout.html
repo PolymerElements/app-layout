@@ -85,18 +85,9 @@ Add an app-header-layout
       -webkit-overflow-scrolling: touch;
     }
 
-    #scrim {
-      z-index: 2;
-    }
-
     #main {
       position: relative;
       height: 100%;
-      z-index: 1;
-    }
-
-    :host([narrow]) app-drawer {
-      z-index: 3;
     }
 
     :host([narrow]) app-drawer {
@@ -119,16 +110,16 @@ Add an app-header-layout
 
   <template>
 
+    <div id="main" style$="[[_computeMainStyle(narrow, drawerWidth)]]">
+      <content select=":not([drawer])"></content>
+      <app-scrim id="scrim" visible$="[[_isScrimVisible(narrow, opened)]]" on-tap="toggleDrawer"></app-scrim>
+    </div>
+
     <app-drawer id="drawerContainer" position="[[drawerPosition]]"
         opened="[[_drawerOpened(narrow, opened)]]" style$="[[_computeDrawerStyle(drawerWidth)]]"
         on-iron-activate="_drawerActivate">
       <content id="drawer" select="[drawer]"></content>
     </app-drawer>
-
-    <div id="main" style$="[[_computeMainStyle(narrow, drawerWidth)]]">
-      <content></content>
-      <app-scrim id="scrim" visible$="[[_isScrimVisible(narrow, opened)]]" on-tap="toggleDrawer"></app-scrim>
-    </div>
 
     <iron-media-query query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]"
         on-query-matches-changed="_onQueryMatchesChanged"></iron-media-query>
@@ -260,7 +251,7 @@ Add an app-header-layout
         if (!this.disableDrawerActivate && this.narrow) {
           this.async(function() {
             this.opened = false;
-          }.bind(this));
+          });
         }
       },
 

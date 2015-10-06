@@ -68,7 +68,6 @@ Using an own scrolling region:
       top: 0;
       right: 0;
       left: 0;
-      z-index: 1;
     }
 
     :host([has-scrolling-region]) > ::content > app-header {
@@ -90,11 +89,11 @@ Using an own scrolling region:
 
   <template>
 
-    <content id="header" select="app-header"></content>
-
     <div id="contentContainer">
       <content select=":not(app-header)"></content>
     </div>
+
+    <content id="header" select="app-header"></content>
 
   </template>
 
