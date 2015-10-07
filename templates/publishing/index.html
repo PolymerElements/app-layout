@@ -21,7 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
  * Code distributed by Google as part of the polymer project is also
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
-// @version 0.7.2
+// @version 0.7.14
 window.WebComponents = window.WebComponents || {};
 
 (function(scope) {
@@ -66,7 +66,7 @@ window.WebComponents = window.WebComponents || {};
     window.CustomElements.flags.register = flags.register;
   }
   scope.flags = flags;
-})(WebComponents);
+})(window.WebComponents);
 
 (function(scope) {
   "use strict";
@@ -178,7 +178,7 @@ window.WebComponents = window.WebComponents || {};
 
        case "scheme data":
         if ("?" == c) {
-          query = "?";
+          this._query = "?";
           state = "query";
         } else if ("#" == c) {
           this._fragment = "#";
@@ -588,7 +588,7 @@ window.WebComponents = window.WebComponents || {};
     };
   }
   scope.URL = jURL;
-})(this);
+})(self);
 
 if (typeof WeakMap === "undefined") {
   (function() {
@@ -923,7 +923,7 @@ if (typeof WeakMap === "undefined") {
   };
   global.JsMutationObserver = JsMutationObserver;
   if (!global.MutationObserver) global.MutationObserver = JsMutationObserver;
-})(this);
+})(self);
 
 window.HTMLImports = window.HTMLImports || {
   flags: {}
@@ -934,19 +934,19 @@ window.HTMLImports = window.HTMLImports || {
   var useNative = Boolean(IMPORT_LINK_TYPE in document.createElement("link"));
   var hasShadowDOMPolyfill = Boolean(window.ShadowDOMPolyfill);
   var wrap = function(node) {
-    return hasShadowDOMPolyfill ? ShadowDOMPolyfill.wrapIfNeeded(node) : node;
+    return hasShadowDOMPolyfill ? window.ShadowDOMPolyfill.wrapIfNeeded(node) : node;
   };
   var rootDocument = wrap(document);
   var currentScriptDescriptor = {
     get: function() {
-      var script = HTMLImports.currentScript || document.currentScript || (document.readyState !== "complete" ? document.scripts[document.scripts.length - 1] : null);
+      var script = window.HTMLImports.currentScript || document.currentScript || (document.readyState !== "complete" ? document.scripts[document.scripts.length - 1] : null);
       return wrap(script);
     },
     configurable: true
   };
   Object.defineProperty(document, "_currentScript", currentScriptDescriptor);
   Object.defineProperty(rootDocument, "_currentScript", currentScriptDescriptor);
-  var isIE = /Trident|Edge/.test(navigator.userAgent);
+  var isIE = /Trident/.test(navigator.userAgent);
   function whenReady(callback, doc) {
     doc = doc || rootDocument;
     whenDocumentReady(function() {
@@ -1055,8 +1055,8 @@ window.HTMLImports = window.HTMLImports || {
     })();
   }
   whenReady(function(detail) {
-    HTMLImports.ready = true;
-    HTMLImports.readyTime = new Date().getTime();
+    window.HTMLImports.ready = true;
+    window.HTMLImports.readyTime = new Date().getTime();
     var evt = rootDocument.createEvent("CustomEvent");
     evt.initCustomEvent("HTMLImportsLoaded", true, true, detail);
     rootDocument.dispatchEvent(evt);
@@ -1066,7 +1066,7 @@ window.HTMLImports = window.HTMLImports || {
   scope.rootDocument = rootDocument;
   scope.whenReady = whenReady;
   scope.isIE = isIE;
-})(HTMLImports);
+})(window.HTMLImports);
 
 (function(scope) {
   var modules = [];
@@ -1080,9 +1080,9 @@ window.HTMLImports = window.HTMLImports || {
   };
   scope.addModule = addModule;
   scope.initializeModules = initializeModules;
-})(HTMLImports);
+})(window.HTMLImports);
 
-HTMLImports.addModule(function(scope) {
+window.HTMLImports.addModule(function(scope) {
   var CSS_URL_REGEXP = /(url\()([^)]*)(\))/g;
   var CSS_IMPORT_REGEXP = /(@import[\s]+(?!url\())([^;]*)(;)/g;
   var path = {
@@ -1112,7 +1112,7 @@ HTMLImports.addModule(function(scope) {
   scope.path = path;
 });
 
-HTMLImports.addModule(function(scope) {
+window.HTMLImports.addModule(function(scope) {
   var xhr = {
     async: true,
     ok: function(request) {
@@ -1144,7 +1144,7 @@ HTMLImports.addModule(function(scope) {
   scope.xhr = xhr;
 });
 
-HTMLImports.addModule(function(scope) {
+window.HTMLImports.addModule(function(scope) {
   var xhr = scope.xhr;
   var flags = scope.flags;
   var Loader = function(onLoad, onComplete) {
@@ -1237,7 +1237,7 @@ HTMLImports.addModule(function(scope) {
   scope.Loader = Loader;
 });
 
-HTMLImports.addModule(function(scope) {
+window.HTMLImports.addModule(function(scope) {
   var Observer = function(addCallback) {
     this.addCallback = addCallback;
     this.mo = new MutationObserver(this.handler.bind(this));
@@ -1270,7 +1270,7 @@ HTMLImports.addModule(function(scope) {
   scope.Observer = Observer;
 });
 
-HTMLImports.addModule(function(scope) {
+window.HTMLImports.addModule(function(scope) {
   var path = scope.path;
   var rootDocument = scope.rootDocument;
   var flags = scope.flags;
@@ -1279,7 +1279,7 @@ HTMLImports.addModule(function(scope) {
   var IMPORT_SELECTOR = "link[rel=" + IMPORT_LINK_TYPE + "]";
   var importParser = {
     documentSelectors: IMPORT_SELECTOR,
-    importsSelectors: [ IMPORT_SELECTOR, "link[rel=stylesheet]", "style", "script:not([type])", 'script[type="application/javascript"]', 'script[type="text/javascript"]' ].join(","),
+    importsSelectors: [ IMPORT_SELECTOR, "link[rel=stylesheet]:not([type])", "style:not([type])", "script:not([type])", 'script[type="application/javascript"]', 'script[type="text/javascript"]' ].join(","),
     map: {
       link: "parseLink",
       script: "parseScript",
@@ -1330,8 +1330,9 @@ HTMLImports.addModule(function(scope) {
       }
     },
     parseImport: function(elt) {
-      if (HTMLImports.__importsParsingHook) {
-        HTMLImports.__importsParsingHook(elt);
+      elt.import = elt.__doc;
+      if (window.HTMLImports.__importsParsingHook) {
+        window.HTMLImports.__importsParsingHook(elt);
       }
       if (elt.import) {
         elt.import.__importParsed = true;
@@ -1392,6 +1393,8 @@ HTMLImports.addModule(function(scope) {
     trackElement: function(elt, callback) {
       var self = this;
       var done = function(e) {
+        elt.removeEventListener("load", done);
+        elt.removeEventListener("error", done);
         if (callback) {
           callback(e);
         }
@@ -1429,7 +1432,9 @@ HTMLImports.addModule(function(scope) {
       script.src = scriptElt.src ? scriptElt.src : generateScriptDataUrl(scriptElt);
       scope.currentScript = scriptElt;
       this.trackElement(script, function(e) {
-        script.parentNode.removeChild(script);
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
         scope.currentScript = null;
       });
       this.addElementToDocument(script);
@@ -1445,7 +1450,7 @@ HTMLImports.addModule(function(scope) {
         for (var i = 0, l = nodes.length, p = 0, n; i < l && (n = nodes[i]); i++) {
           if (!this.isParsed(n)) {
             if (this.hasResource(n)) {
-              return nodeIsImport(n) ? this.nextToParseInDoc(n.import, n) : n;
+              return nodeIsImport(n) ? this.nextToParseInDoc(n.__doc, n) : n;
             } else {
               return;
             }
@@ -1468,7 +1473,7 @@ HTMLImports.addModule(function(scope) {
       return this.dynamicElements.indexOf(elt) >= 0;
     },
     hasResource: function(node) {
-      if (nodeIsImport(node) && node.import === undefined) {
+      if (nodeIsImport(node) && node.__doc === undefined) {
         return false;
       }
       return true;
@@ -1502,7 +1507,7 @@ HTMLImports.addModule(function(scope) {
   scope.IMPORT_SELECTOR = IMPORT_SELECTOR;
 });
 
-HTMLImports.addModule(function(scope) {
+window.HTMLImports.addModule(function(scope) {
   var flags = scope.flags;
   var IMPORT_LINK_TYPE = scope.IMPORT_LINK_TYPE;
   var IMPORT_SELECTOR = scope.IMPORT_SELECTOR;
@@ -1542,7 +1547,7 @@ HTMLImports.addModule(function(scope) {
           }
           this.documents[url] = doc;
         }
-        elt.import = doc;
+        elt.__doc = doc;
       }
       parser.parseNext();
     },
@@ -1601,7 +1606,7 @@ HTMLImports.addModule(function(scope) {
   scope.importLoader = importLoader;
 });
 
-HTMLImports.addModule(function(scope) {
+window.HTMLImports.addModule(function(scope) {
   var parser = scope.parser;
   var importer = scope.importer;
   var dynamic = {
@@ -1638,11 +1643,18 @@ HTMLImports.addModule(function(scope) {
   if (scope.useNative) {
     return;
   }
-  if (isIE && typeof window.CustomEvent !== "function") {
+  if (!window.CustomEvent || isIE && typeof window.CustomEvent !== "function") {
     window.CustomEvent = function(inType, params) {
       params = params || {};
       var e = document.createEvent("CustomEvent");
       e.initCustomEvent(inType, Boolean(params.bubbles), Boolean(params.cancelable), params.detail);
+      e.preventDefault = function() {
+        Object.defineProperty(this, "defaultPrevented", {
+          get: function() {
+            return true;
+          }
+        });
+      };
       return e;
     };
     window.CustomEvent.prototype = window.Event.prototype;
@@ -1650,14 +1662,14 @@ HTMLImports.addModule(function(scope) {
   initializeModules();
   var rootDocument = scope.rootDocument;
   function bootstrap() {
-    HTMLImports.importer.bootDocument(rootDocument);
+    window.HTMLImports.importer.bootDocument(rootDocument);
   }
   if (document.readyState === "complete" || document.readyState === "interactive" && !window.attachEvent) {
     bootstrap();
   } else {
     document.addEventListener("DOMContentLoaded", bootstrap);
   }
-})(HTMLImports);
+})(window.HTMLImports);
 
 window.CustomElements = window.CustomElements || {
   flags: {}
@@ -1677,11 +1689,12 @@ window.CustomElements = window.CustomElements || {
   scope.addModule = addModule;
   scope.initializeModules = initializeModules;
   scope.hasNative = Boolean(document.registerElement);
-  scope.useNative = !flags.register && scope.hasNative && !window.ShadowDOMPolyfill && (!window.HTMLImports || HTMLImports.useNative);
-})(CustomElements);
+  scope.isIE = /Trident/.test(navigator.userAgent);
+  scope.useNative = !flags.register && scope.hasNative && !window.ShadowDOMPolyfill && (!window.HTMLImports || window.HTMLImports.useNative);
+})(window.CustomElements);
 
-CustomElements.addModule(function(scope) {
-  var IMPORT_LINK_TYPE = window.HTMLImports ? HTMLImports.IMPORT_LINK_TYPE : "none";
+window.CustomElements.addModule(function(scope) {
+  var IMPORT_LINK_TYPE = window.HTMLImports ? window.HTMLImports.IMPORT_LINK_TYPE : "none";
   function forSubtree(node, cb) {
     findAllElements(node, function(e) {
       if (cb(e)) {
@@ -1718,7 +1731,7 @@ CustomElements.addModule(function(scope) {
     _forDocumentTree(doc, cb, []);
   }
   function _forDocumentTree(doc, cb, processingDocuments) {
-    doc = wrap(doc);
+    doc = window.wrap(doc);
     if (processingDocuments.indexOf(doc) >= 0) {
       return;
     }
@@ -1735,33 +1748,27 @@ CustomElements.addModule(function(scope) {
   scope.forSubtree = forSubtree;
 });
 
-CustomElements.addModule(function(scope) {
+window.CustomElements.addModule(function(scope) {
   var flags = scope.flags;
   var forSubtree = scope.forSubtree;
   var forDocumentTree = scope.forDocumentTree;
-  function addedNode(node) {
-    return added(node) || addedSubtree(node);
+  function addedNode(node, isAttached) {
+    return added(node, isAttached) || addedSubtree(node, isAttached);
   }
-  function added(node) {
-    if (scope.upgrade(node)) {
+  function added(node, isAttached) {
+    if (scope.upgrade(node, isAttached)) {
       return true;
     }
-    attached(node);
+    if (isAttached) {
+      attached(node);
+    }
   }
-  function addedSubtree(node) {
+  function addedSubtree(node, isAttached) {
     forSubtree(node, function(e) {
-      if (added(e)) {
+      if (added(e, isAttached)) {
         return true;
       }
     });
-  }
-  function attachedNode(node) {
-    attached(node);
-    if (inDocument(node)) {
-      forSubtree(node, function(e) {
-        attached(e);
-      });
-    }
   }
   var hasPolyfillMutations = !window.MutationObserver || window.MutationObserver === window.JsMutationObserver;
   scope.hasPolyfillMutations = hasPolyfillMutations;
@@ -1792,12 +1799,10 @@ CustomElements.addModule(function(scope) {
     }
   }
   function _attached(element) {
-    if (element.__upgraded__ && (element.attachedCallback || element.detachedCallback)) {
-      if (!element.__attached && inDocument(element)) {
-        element.__attached = true;
-        if (element.attachedCallback) {
-          element.attachedCallback();
-        }
+    if (element.__upgraded__ && !element.__attached) {
+      element.__attached = true;
+      if (element.attachedCallback) {
+        element.attachedCallback();
       }
     }
   }
@@ -1817,18 +1822,16 @@ CustomElements.addModule(function(scope) {
     }
   }
   function _detached(element) {
-    if (element.__upgraded__ && (element.attachedCallback || element.detachedCallback)) {
-      if (element.__attached && !inDocument(element)) {
-        element.__attached = false;
-        if (element.detachedCallback) {
-          element.detachedCallback();
-        }
+    if (element.__upgraded__ && element.__attached) {
+      element.__attached = false;
+      if (element.detachedCallback) {
+        element.detachedCallback();
       }
     }
   }
   function inDocument(element) {
     var p = element;
-    var doc = wrap(document);
+    var doc = window.wrap(document);
     while (p) {
       if (p == doc) {
         return true;
@@ -1846,7 +1849,7 @@ CustomElements.addModule(function(scope) {
       }
     }
   }
-  function handler(mutations) {
+  function handler(root, mutations) {
     if (flags.dom) {
       var mx = mutations[0];
       if (mx && mx.type === "childList" && mx.addedNodes) {
@@ -1861,13 +1864,14 @@ CustomElements.addModule(function(scope) {
       }
       console.group("mutations (%d) [%s]", mutations.length, u || "");
     }
+    var isAttached = inDocument(root);
     mutations.forEach(function(mx) {
       if (mx.type === "childList") {
         forEach(mx.addedNodes, function(n) {
           if (!n.localName) {
             return;
           }
-          addedNode(n);
+          addedNode(n, isAttached);
         });
         forEach(mx.removedNodes, function(n) {
           if (!n.localName) {
@@ -1880,16 +1884,16 @@ CustomElements.addModule(function(scope) {
     flags.dom && console.groupEnd();
   }
   function takeRecords(node) {
-    node = wrap(node);
+    node = window.wrap(node);
     if (!node) {
-      node = wrap(document);
+      node = window.wrap(document);
     }
     while (node.parentNode) {
       node = node.parentNode;
     }
     var observer = node.__observer;
     if (observer) {
-      handler(observer.takeRecords());
+      handler(node, observer.takeRecords());
       takeMutations();
     }
   }
@@ -1898,7 +1902,7 @@ CustomElements.addModule(function(scope) {
     if (inRoot.__observer) {
       return;
     }
-    var observer = new MutationObserver(handler);
+    var observer = new MutationObserver(handler.bind(this, inRoot));
     observer.observe(inRoot, {
       childList: true,
       subtree: true
@@ -1906,9 +1910,10 @@ CustomElements.addModule(function(scope) {
     inRoot.__observer = observer;
   }
   function upgradeDocument(doc) {
-    doc = wrap(doc);
+    doc = window.wrap(doc);
     flags.dom && console.group("upgradeDocument: ", doc.baseURI.split("/").pop());
-    addedNode(doc);
+    var isMainDocument = doc === window.wrap(document);
+    addedNode(doc, isMainDocument);
     observe(doc);
     flags.dom && console.groupEnd();
   }
@@ -1919,34 +1924,33 @@ CustomElements.addModule(function(scope) {
   if (originalCreateShadowRoot) {
     Element.prototype.createShadowRoot = function() {
       var root = originalCreateShadowRoot.call(this);
-      CustomElements.watchShadow(this);
+      window.CustomElements.watchShadow(this);
       return root;
     };
   }
   scope.watchShadow = watchShadow;
   scope.upgradeDocumentTree = upgradeDocumentTree;
+  scope.upgradeDocument = upgradeDocument;
   scope.upgradeSubtree = addedSubtree;
   scope.upgradeAll = addedNode;
-  scope.attachedNode = attachedNode;
+  scope.attached = attached;
   scope.takeRecords = takeRecords;
 });
 
-CustomElements.addModule(function(scope) {
+window.CustomElements.addModule(function(scope) {
   var flags = scope.flags;
-  function upgrade(node) {
+  function upgrade(node, isAttached) {
     if (!node.__upgraded__ && node.nodeType === Node.ELEMENT_NODE) {
       var is = node.getAttribute("is");
-      var definition = scope.getRegisteredDefinition(is || node.localName);
+      var definition = scope.getRegisteredDefinition(node.localName) || scope.getRegisteredDefinition(is);
       if (definition) {
-        if (is && definition.tag == node.localName) {
-          return upgradeWithDefinition(node, definition);
-        } else if (!is && !definition.extends) {
-          return upgradeWithDefinition(node, definition);
+        if (is && definition.tag == node.localName || !is && !definition.extends) {
+          return upgradeWithDefinition(node, definition, isAttached);
         }
       }
     }
   }
-  function upgradeWithDefinition(element, definition) {
+  function upgradeWithDefinition(element, definition, isAttached) {
     flags.upgrade && console.group("upgrade:", element.localName);
     if (definition.is) {
       element.setAttribute("is", definition.is);
@@ -1954,8 +1958,10 @@ CustomElements.addModule(function(scope) {
     implementPrototype(element, definition);
     element.__upgraded__ = true;
     created(element);
-    scope.attachedNode(element);
-    scope.upgradeSubtree(element);
+    if (isAttached) {
+      scope.attached(element);
+    }
+    scope.upgradeSubtree(element, isAttached);
     flags.upgrade && console.groupEnd();
     return element;
   }
@@ -1991,8 +1997,8 @@ CustomElements.addModule(function(scope) {
   scope.implementPrototype = implementPrototype;
 });
 
-CustomElements.addModule(function(scope) {
-  var isIE11OrOlder = scope.isIE11OrOlder;
+window.CustomElements.addModule(function(scope) {
+  var isIE = scope.isIE;
   var upgradeDocumentTree = scope.upgradeDocumentTree;
   var upgradeAll = scope.upgradeAll;
   var upgradeWithDefinition = scope.upgradeWithDefinition;
@@ -2083,16 +2089,22 @@ CustomElements.addModule(function(scope) {
       var nativePrototype = HTMLElement.prototype;
       if (definition.is) {
         var inst = document.createElement(definition.tag);
-        var expectedPrototype = Object.getPrototypeOf(inst);
-        if (expectedPrototype === definition.prototype) {
-          nativePrototype = expectedPrototype;
-        }
+        nativePrototype = Object.getPrototypeOf(inst);
       }
       var proto = definition.prototype, ancestor;
-      while (proto && proto !== nativePrototype) {
+      var foundPrototype = false;
+      while (proto) {
+        if (proto == nativePrototype) {
+          foundPrototype = true;
+        }
         ancestor = Object.getPrototypeOf(proto);
-        proto.__proto__ = ancestor;
+        if (ancestor) {
+          proto.__proto__ = ancestor;
+        }
         proto = ancestor;
+      }
+      if (!foundPrototype) {
+        console.warn(definition.tag + " prototype not found in prototype chain for " + definition.is);
       }
       definition.native = nativePrototype;
     }
@@ -2155,6 +2167,9 @@ CustomElements.addModule(function(scope) {
   var isInstance;
   if (!Object.__proto__ && !useNative) {
     isInstance = function(obj, ctor) {
+      if (obj instanceof ctor) {
+        return true;
+      }
       var p = obj;
       while (p) {
         if (p === ctor.prototype) {
@@ -2179,7 +2194,7 @@ CustomElements.addModule(function(scope) {
   }
   wrapDomMethodToForceUpgrade(Node.prototype, "cloneNode");
   wrapDomMethodToForceUpgrade(document, "importNode");
-  if (isIE11OrOlder) {
+  if (isIE) {
     (function() {
       var importNode = document.importNode;
       document.importNode = function() {
@@ -2207,7 +2222,7 @@ CustomElements.addModule(function(scope) {
 (function(scope) {
   var useNative = scope.useNative;
   var initializeModules = scope.initializeModules;
-  var isIE11OrOlder = /Trident/.test(navigator.userAgent);
+  var isIE = scope.isIE;
   if (useNative) {
     var nop = function() {};
     scope.watchShadow = nop;
@@ -2223,39 +2238,54 @@ CustomElements.addModule(function(scope) {
     initializeModules();
   }
   var upgradeDocumentTree = scope.upgradeDocumentTree;
+  var upgradeDocument = scope.upgradeDocument;
   if (!window.wrap) {
     if (window.ShadowDOMPolyfill) {
-      window.wrap = ShadowDOMPolyfill.wrapIfNeeded;
-      window.unwrap = ShadowDOMPolyfill.unwrapIfNeeded;
+      window.wrap = window.ShadowDOMPolyfill.wrapIfNeeded;
+      window.unwrap = window.ShadowDOMPolyfill.unwrapIfNeeded;
     } else {
       window.wrap = window.unwrap = function(node) {
         return node;
       };
     }
   }
-  function bootstrap() {
-    upgradeDocumentTree(wrap(document));
-    if (window.HTMLImports) {
-      HTMLImports.__importsParsingHook = function(elt) {
-        upgradeDocumentTree(wrap(elt.import));
-      };
-    }
-    CustomElements.ready = true;
-    setTimeout(function() {
-      CustomElements.readyTime = Date.now();
-      if (window.HTMLImports) {
-        CustomElements.elapsed = CustomElements.readyTime - HTMLImports.readyTime;
+  if (window.HTMLImports) {
+    window.HTMLImports.__importsParsingHook = function(elt) {
+      if (elt.import) {
+        upgradeDocument(wrap(elt.import));
       }
-      document.dispatchEvent(new CustomEvent("WebComponentsReady", {
-        bubbles: true
-      }));
+    };
+  }
+  function bootstrap() {
+    upgradeDocumentTree(window.wrap(document));
+    window.CustomElements.ready = true;
+    var requestAnimationFrame = window.requestAnimationFrame || function(f) {
+      setTimeout(f, 16);
+    };
+    requestAnimationFrame(function() {
+      setTimeout(function() {
+        window.CustomElements.readyTime = Date.now();
+        if (window.HTMLImports) {
+          window.CustomElements.elapsed = window.CustomElements.readyTime - window.HTMLImports.readyTime;
+        }
+        document.dispatchEvent(new CustomEvent("WebComponentsReady", {
+          bubbles: true
+        }));
+      });
     });
   }
-  if (isIE11OrOlder && typeof window.CustomEvent !== "function") {
+  if (!window.CustomEvent || isIE && typeof window.CustomEvent !== "function") {
     window.CustomEvent = function(inType, params) {
       params = params || {};
       var e = document.createEvent("CustomEvent");
       e.initCustomEvent(inType, Boolean(params.bubbles), Boolean(params.cancelable), params.detail);
+      e.preventDefault = function() {
+        Object.defineProperty(this, "defaultPrevented", {
+          get: function() {
+            return true;
+          }
+        });
+      };
       return e;
     };
     window.CustomEvent.prototype = window.Event.prototype;
@@ -2265,24 +2295,51 @@ CustomElements.addModule(function(scope) {
   } else if (document.readyState === "interactive" && !window.attachEvent && (!window.HTMLImports || window.HTMLImports.ready)) {
     bootstrap();
   } else {
-    var loadEvent = window.HTMLImports && !HTMLImports.ready ? "HTMLImportsLoaded" : "DOMContentLoaded";
+    var loadEvent = window.HTMLImports && !window.HTMLImports.ready ? "HTMLImportsLoaded" : "DOMContentLoaded";
     window.addEventListener(loadEvent, bootstrap);
   }
-  scope.isIE11OrOlder = isIE11OrOlder;
 })(window.CustomElements);
 
 if (typeof HTMLTemplateElement === "undefined") {
   (function() {
     var TEMPLATE_TAG = "template";
+    var contentDoc = document.implementation.createHTMLDocument("template");
+    var canDecorate = true;
     HTMLTemplateElement = function() {};
     HTMLTemplateElement.prototype = Object.create(HTMLElement.prototype);
     HTMLTemplateElement.decorate = function(template) {
       if (!template.content) {
-        template.content = template.ownerDocument.createDocumentFragment();
+        template.content = contentDoc.createDocumentFragment();
       }
       var child;
       while (child = template.firstChild) {
         template.content.appendChild(child);
+      }
+      if (canDecorate) {
+        try {
+          Object.defineProperty(template, "innerHTML", {
+            get: function() {
+              var o = "";
+              for (var e = this.content.firstChild; e; e = e.nextSibling) {
+                o += e.outerHTML || escapeData(e.data);
+              }
+              return o;
+            },
+            set: function(text) {
+              contentDoc.body.innerHTML = text;
+              HTMLTemplateElement.bootstrap(contentDoc);
+              while (this.content.firstChild) {
+                this.content.removeChild(this.content.firstChild);
+              }
+              while (contentDoc.body.firstChild) {
+                this.content.appendChild(contentDoc.body.firstChild);
+              }
+            },
+            configurable: true
+          });
+        } catch (err) {
+          canDecorate = false;
+        }
       }
     };
     HTMLTemplateElement.bootstrap = function(doc) {
@@ -2291,7 +2348,7 @@ if (typeof HTMLTemplateElement === "undefined") {
         HTMLTemplateElement.decorate(t);
       }
     };
-    addEventListener("DOMContentLoaded", function() {
+    window.addEventListener("DOMContentLoaded", function() {
       HTMLTemplateElement.bootstrap(document);
     });
     var createElement = document.createElement;
@@ -2303,8 +2360,58 @@ if (typeof HTMLTemplateElement === "undefined") {
       }
       return el;
     };
+    var escapeDataRegExp = /[&\u00A0<>]/g;
+    function escapeReplace(c) {
+      switch (c) {
+       case "&":
+        return "&amp;";
+
+       case "<":
+        return "&lt;";
+
+       case ">":
+        return "&gt;";
+
+       case " ":
+        return "&nbsp;";
+      }
+    }
+    function escapeData(s) {
+      return s.replace(escapeDataRegExp, escapeReplace);
+    }
   })();
 }
+
+(function(scope) {
+  "use strict";
+  if (!window.performance) {
+    var start = Date.now();
+    window.performance = {
+      now: function() {
+        return Date.now() - start;
+      }
+    };
+  }
+  if (!window.requestAnimationFrame) {
+    window.requestAnimationFrame = function() {
+      var nativeRaf = window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
+      return nativeRaf ? function(callback) {
+        return nativeRaf(function() {
+          callback(performance.now());
+        });
+      } : function(callback) {
+        return window.setTimeout(callback, 1e3 / 60);
+      };
+    }();
+  }
+  if (!window.cancelAnimationFrame) {
+    window.cancelAnimationFrame = function() {
+      return window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || function(id) {
+        clearTimeout(id);
+      };
+    }();
+  }
+})(window.WebComponents);
 
 (function(scope) {
   var style = document.createElement("style");
@@ -12637,9 +12744,7 @@ iron-request can be used to perform XMLHttpRequests.
        * A reference to the XMLHttpRequest instance used to generate the
        * network request.
        *
-       * @attribute xhr
-       * @type XMLHttpRequest
-       * @default `new XMLHttpRequest`
+       * @type {XMLHttpRequest}
        */
       xhr: {
         type: Object,
@@ -12654,7 +12759,6 @@ iron-request can be used to perform XMLHttpRequests.
        * A reference to the parsed response body, if the `xhr` has completely
        * resolved.
        *
-       * @attribute response
        * @type {*}
        * @default null
        */
@@ -12669,9 +12773,6 @@ iron-request can be used to perform XMLHttpRequests.
 
       /**
        * A reference to the status code, if the `xhr` has completely resolved.
-       *
-       * @attribute status
-       * @default 0
        */
       status: {
         type: Number,
@@ -12682,9 +12783,6 @@ iron-request can be used to perform XMLHttpRequests.
 
       /**
        * A reference to the status text, if the `xhr` has completely resolved.
-       *
-       * @attribute statusText
-       * @default ""
        */
       statusText: {
         type: String,
@@ -12697,9 +12795,7 @@ iron-request can be used to perform XMLHttpRequests.
        * A promise that resolves when the `xhr` response comes back, or rejects
        * if there is an error before the `xhr` completes.
        *
-       * @attribute completes
-       * @type Promise
-       * @default `new Promise`
+       * @type {Promise}
        */
       completes: {
         type: Object,
@@ -12717,8 +12813,6 @@ iron-request can be used to perform XMLHttpRequests.
        * An object that contains progress information emitted by the XHR if
        * available.
        *
-       * @attribute progress
-       * @type Object
        * @default {}
        */
       progress: {
@@ -12732,28 +12826,50 @@ iron-request can be used to perform XMLHttpRequests.
 
       /**
        * Aborted will be true if an abort of the request is attempted.
-       *
-       * @attribute aborted
-       * @type boolean
-       * @default false
        */
       aborted: {
         type: Boolean,
         notify: true,
         readOnly: true,
         value: false,
+      },
+
+      /**
+       * Errored will be true if the browser fired an error event from the
+       * XHR object (mainly network errors).
+       */
+      errored: {
+        type: Boolean,
+        notify: true,
+        readOnly: true,
+        value: false
+      },
+
+      /**
+       * TimedOut will be true if the XHR threw a timeout event.
+       */
+      timedOut: {
+        type: Boolean,
+        notify: true,
+        readOnly: true,
+        value: false
       }
     },
 
     /**
-     * Succeeded is true if the request succeeded. The request succeeded if the
-     * status code is greater-than-or-equal-to 200, and less-than 300. Also,
-     * the status code 0 is accepted as a success even though the outcome may
-     * be ambiguous.
+     * Succeeded is true if the request succeeded. The request succeeded if it
+     * loaded without error, wasn't aborted, and the status code is ≥ 200, and
+     * < 300, or if the status code is 0.
+     *
+     * The status code 0 is accepted as a success because some schemes - e.g.
+     * file:// - don't provide status codes.
      *
      * @return {boolean}
      */
     get succeeded() {
+      if (this.errored || this.aborted || this.timedOut) {
+        return false;
+      }
       var status = this.xhr.status || 0;
 
       // Note: if we are using the file:// protocol, the status code will be 0
@@ -12781,6 +12897,7 @@ iron-request can be used to perform XMLHttpRequests.
      *     headers HTTP request headers.
      *     handleAs The response type. Default is 'text'.
      *     withCredentials Whether or not to send credentials on the request. Default is false.
+     *   timeout: (Number|undefined)
      * @return {Promise}
      */
     send: function (options) {
@@ -12789,20 +12906,6 @@ iron-request can be used to perform XMLHttpRequests.
       if (xhr.readyState > 0) {
         return null;
       }
-
-      xhr.addEventListener('readystatechange', function () {
-        if (xhr.readyState === 4 && !this.aborted) {
-          this._updateStatus();
-
-          if (!this.succeeded) {
-            this.rejectCompletes(new Error('The request failed with status code: ' + this.xhr.status));
-            return;
-          }
-
-          this._setResponse(this.parseResponse());
-          this.resolveCompletes(this);
-        }
-      }.bind(this));
 
       xhr.addEventListener('progress', function (progress) {
         this._setProgress({
@@ -12813,6 +12916,13 @@ iron-request can be used to perform XMLHttpRequests.
       }.bind(this))
 
       xhr.addEventListener('error', function (error) {
+        this._setErrored(true);
+        this._updateStatus();
+        this.rejectCompletes(error);
+      }.bind(this));
+
+      xhr.addEventListener('timeout', function (error) {
+        this._setTimedOut(true);
         this._updateStatus();
         this.rejectCompletes(error);
       }.bind(this));
@@ -12822,6 +12932,20 @@ iron-request can be used to perform XMLHttpRequests.
         this.rejectCompletes(new Error('Request aborted.'));
       }.bind(this));
 
+      // Called after all of the above.
+      xhr.addEventListener('loadend', function () {
+        this._updateStatus();
+
+        if (!this.succeeded) {
+          this.rejectCompletes(new Error('The request failed with status code: ' + this.xhr.status));
+          return;
+        }
+
+        this._setResponse(this.parseResponse());
+        this.resolveCompletes(this);
+      }.bind(this));
+
+      this.url = options.url;
       xhr.open(
         options.method || 'GET',
         options.url,
@@ -12845,8 +12969,11 @@ iron-request can be used to perform XMLHttpRequests.
 
       // In IE, `xhr.responseType` is an empty string when the response
       // returns. Hence, caching it as `xhr._responseType`.
-      xhr.responseType = xhr._responseType = (options.handleAs || 'text');
+      if (options.async !== false) {
+        xhr.responseType = xhr._responseType = (options.handleAs || 'text');
+      }
       xhr.withCredentials = !!options.withCredentials;
+      xhr.timeout = options.timeout;
 
 
 
@@ -12868,29 +12995,25 @@ iron-request can be used to perform XMLHttpRequests.
      */
     parseResponse: function () {
       var xhr = this.xhr;
-      var responseType = this.xhr.responseType ||
-        this.xhr._responseType;
-      // If we don't have a natural `xhr.responseType`, we prefer parsing
-      // `xhr.responseText` over returning `xhr.response`..
+      var responseType = xhr.responseType || xhr._responseType;
       var preferResponseText = !this.xhr.responseType;
 
       try {
         switch (responseType) {
           case 'json':
-            // If xhr.response is undefined, responseType `json` may
-            // not be supported.
+            // If the xhr object doesn't have a natural `xhr.responseType`,
+            // we can assume that the browser hasn't parsed the response for us,
+            // and so parsing is our responsibility. Likewise if response is
+            // undefined, as there's no way to encode undefined in JSON.
             if (preferResponseText || xhr.response === undefined) {
-              // If accessing `xhr.responseText` throws, responseType `json`
-              // is supported and the result is rightly `undefined`.
+              // Try to emulate the JSON section of the response body section of
+              // the spec: https://xhr.spec.whatwg.org/#response-body
+              // That is to say, we try to parse as JSON, but if anything goes
+              // wrong return null.
               try {
-                /** @suppress {suspiciousCode} */ xhr.responseText;
-              } catch (e) {
-                return xhr.response;
-              }
-
-              // Otherwise, attempt to parse `xhr.responseText` as JSON.
-              if (xhr.responseText) {
-                return JSON.parse(xhr.responseText);
+                return JSON.parse(xhr.responseText);;
+              } catch (_) {
+                return null;
               }
             }
 
@@ -13160,6 +13283,14 @@ element.
       },
 
       /**
+       * Set the timeout flag on the request.
+       */
+      timeout: {
+        type: Number,
+        value: 0
+      },
+
+      /**
        * If true, automatically performs an Ajax request when either `url` or
        * `params` changes.
        */
@@ -13251,7 +13382,7 @@ element.
 
     observers: [
       '_requestOptionsChanged(url, method, params.*, headers,' +
-        'contentType, body, sync, handleAs, withCredentials, auto)'
+        'contentType, body, sync, handleAs, withCredentials, timeout, auto)'
     ],
 
     /**
@@ -13348,7 +13479,8 @@ element.
         body: this.body,
         async: !this.sync,
         handleAs: this.handleAs,
-        withCredentials: this.withCredentials
+        withCredentials: this.withCredentials,
+        timeout: this.timeout
       };
     },
 
@@ -13482,6 +13614,7 @@ Or, in a Polymer element, you can include a meta in your template:
     // monostate data
     var metaDatas = {};
     var metaArrays = {};
+    var singleton = null;
 
     Polymer.IronMeta = Polymer({
 
@@ -13631,6 +13764,13 @@ Or, in a Polymer element, you can include a meta in your template:
       }
 
     });
+
+    Polymer.IronMeta.getIronMeta = function getIronMeta() {
+       if (singleton === null) {
+         singleton = new Polymer.IronMeta();
+       }
+       return singleton;
+     };
 
     /**
     `iron-meta-query` can be used to access infomation stored in `iron-meta`.
@@ -14101,10 +14241,11 @@ Example of using an icon named `cherry` from a custom iconset with the ID `fruit
 
     <iron-icon icon="fruit:cherry"></iron-icon>
 
-See [iron-iconset](#iron-iconset) and [iron-iconset-svg](#iron-iconset-svg) for more information about
+See [iron-iconset](iron-iconset) and [iron-iconset-svg](iron-iconset-svg) for more information about
 how to create a custom iconset.
 
-See [iron-icons](https://elements.polymer-project.org/elements/iron-icons?view=demo:demo/index.html) for the default set of icons.
+See the [iron-icons demo](iron-icons?view=demo:demo/index.html) to see the icons available
+in the various iconsets.
 
 
 ### Styling
@@ -14291,13 +14432,15 @@ Custom property | Description | Default
      */
     _prepareSvgClone: function(sourceSvg, size) {
       if (sourceSvg) {
-        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('viewBox', ['0', '0', size, size].join(' '));
+        var content = sourceSvg.cloneNode(true),
+            svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+            viewBox = content.getAttribute('viewBox') || '0 0 ' + size + ' ' + size;
+        svg.setAttribute('viewBox', viewBox);
         svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
         // TODO(dfreedm): `pointer-events: none` works around https://crbug.com/370136
         // TODO(sjmiles): inline style may not be ideal, but avoids requiring a shadow-root
         svg.style.cssText = 'pointer-events: none; display: block; width: 100%; height: 100%;';
-        svg.appendChild(sourceSvg.cloneNode(true)).removeAttribute('id');
+        svg.appendChild(content).removeAttribute('id');
         return svg;
       }
       return null;
@@ -14690,7 +14833,7 @@ Custom property | Description | Default
        * @type {object}
        * @default {template: 1}
        */
-      excludedLocalNames: {
+      _excludedLocalNames: {
         type: Object,
         value: function() {
           return {
@@ -14707,6 +14850,9 @@ Custom property | Description | Default
     created: function() {
       this._bindFilterItem = this._filterItem.bind(this);
       this._selection = new Polymer.IronSelection(this._applySelection.bind(this));
+      // TODO(cdata): When polymer/polymer#2535 lands, we do not need to do this
+      // book keeping anymore:
+      this.__listeningForActivate = false;
     },
 
     attached: function() {
@@ -14715,6 +14861,7 @@ Custom property | Description | Default
       if (!this.selectedItem && this.selected) {
         this._updateSelected(this.attrForSelected,this.selected)
       }
+      this._addListener(this.activateEvent);
     },
 
     detached: function() {
@@ -14781,11 +14928,17 @@ Custom property | Description | Default
     },
 
     _addListener: function(eventName) {
+      if (!this.isAttached || this.__listeningForActivate) {
+        return;
+      }
+
+      this.__listeningForActivate = true;
       this.listen(this, eventName, '_activateHandler');
     },
 
     _removeListener: function(eventName) {
       this.unlisten(this, eventName, '_activateHandler');
+      this.__listeningForActivate = false;
     },
 
     _activateEventChanged: function(eventName, old) {
@@ -14802,7 +14955,7 @@ Custom property | Description | Default
     },
 
     _filterItem: function(node) {
-      return !this.excludedLocalNames[node.localName];
+      return !this._excludedLocalNames[node.localName];
     },
 
     _valueToItem: function(value) {
@@ -17645,23 +17798,47 @@ Example:
       query: {
         type: String,
         observer: 'queryChanged'
+      },
+
+      _boundMQHandler: {
+        value: function() {
+          return this.queryHandler.bind(this);
+        }
       }
-
     },
 
-    created: function() {
-      this._mqHandler = this.queryHandler.bind(this);
+    attached: function() {
+      this.queryChanged();
     },
 
-    queryChanged: function(query) {
+    detached: function() {
+      this._remove();
+    },
+
+    _add: function() {
       if (this._mq) {
-        this._mq.removeListener(this._mqHandler);
+        this._mq.addListener(this._boundMQHandler);
+      }
+    },
+
+    _remove: function() {
+      if (this._mq) {
+        this._mq.removeListener(this._boundMQHandler);
+      }
+      this._mq = null;
+    },
+
+    queryChanged: function() {
+      this._remove();
+      var query = this.query;
+      if (!query) {
+        return;
       }
       if (query[0] !== '(') {
         query = '(' + query + ')';
       }
       this._mq = window.matchMedia(query);
-      this._mq.addListener(this._mqHandler);
+      this._add();
       this.queryHandler(this._mq);
     },
 
@@ -19734,20 +19911,15 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
       bottom: -120px;
       opacity: 0;
       background-color: var(--app-scrim-color, black);
-      display: none;
-      pointer-events: none;
+      visibility: hidden;
 
-      -webkit-transition: opacity 0.5s ease-out;
-      transition: opacity 0.5s ease-out;
-    }
-
-    :host(.visible) {
-      opacity: var(--app-scrim-opacity, 0.5);
+      transition: 0.5s ease-out;
+      transition-property: opacity, visibility;
     }
 
     :host([visible]) {
-      pointer-events: auto;
-      display: block;
+      opacity: var(--app-scrim-opacity, 0.5);
+      visibility: visible;
     }
 
   </style>
@@ -19768,30 +19940,7 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
         visible: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true,
-          observer: '_visibleChanged'
-        }
-      },
-
-      listeners: {
-        'transitionend': '_onTransitionEnd'
-      },
-
-      _layoutIfNeeded: function() {
-        return this.offsetWidth;
-      },
-
-      _visibleChanged: function(visible) {
-        if (visible) {
-          this.style.display = 'block';
-        }
-        this._layoutIfNeeded();
-        this.toggleClass('visible', visible);
-      },
-
-      _onTransitionEnd: function(e) {
-        if (!this.visible && e.currentTarget == this) {
-          this.style.display = '';
+          reflectToAttribute: true
         }
       }
 
@@ -19818,18 +19967,9 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
       -webkit-overflow-scrolling: touch;
     }
 
-    #scrim {
-      z-index: 2;
-    }
-
     #main {
       position: relative;
       height: 100%;
-      z-index: 1;
-    }
-
-    :host([narrow]) app-drawer {
-      z-index: 3;
     }
 
     :host([narrow]) app-drawer {
@@ -19852,14 +19992,14 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
 
   <template>
 
+    <div id="main" style$="[[_computeMainStyle(narrow, drawerWidth)]]">
+      <content select=":not([drawer])"></content>
+      <app-scrim id="scrim" visible$="[[_isScrimVisible(narrow, opened)]]" on-tap="toggleDrawer"></app-scrim>
+    </div>
+
     <app-drawer id="drawerContainer" position="[[drawerPosition]]" opened="[[_drawerOpened(narrow, opened)]]" style$="[[_computeDrawerStyle(drawerWidth)]]" on-iron-activate="_drawerActivate">
       <content id="drawer" select="[drawer]"></content>
     </app-drawer>
-
-    <div id="main" style$="[[_computeMainStyle(narrow, drawerWidth)]]">
-      <content></content>
-      <app-scrim id="scrim" visible$="[[_isScrimVisible(narrow, opened)]]" on-tap="toggleDrawer"></app-scrim>
-    </div>
 
     <iron-media-query query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]" on-query-matches-changed="_onQueryMatchesChanged"></iron-media-query>
 
@@ -19990,7 +20130,7 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
         if (!this.disableDrawerActivate && this.narrow) {
           this.async(function() {
             this.opened = false;
-          }.bind(this));
+          });
         }
       },
 
@@ -20244,7 +20384,6 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
       top: 0;
       right: 0;
       left: 0;
-      z-index: 1;
     }
 
     :host([has-scrolling-region]) > ::content > app-header {
@@ -20266,11 +20405,11 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
 
   <template>
 
-    <content id="header" select="app-header"></content>
-
     <div id="contentContainer">
       <content select=":not(app-header)"></content>
     </div>
+
+    <content id="header" select="app-header"></content>
 
   </template>
 
