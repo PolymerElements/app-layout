@@ -68,6 +68,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       height: 136px;
     }
 
+    .bottom-tools {
+      margin-left: auto;
+    }
+
     .bottom-toolbar paper-button {
       width: 220px;
       background-color: #FC6C9C;
@@ -173,8 +177,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       color: #5c5c5c;
     }
 
-    .grid-item > .caption > p {
-      margin: 16px;
+    .caption > h3 {
+      margin: 24px 0;
+    }
+
+    .caption > p {
+      margin: 16px 16px 24px;
       line-height: 1.5;
     }
 
@@ -273,6 +281,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     @media (max-width: 432px) {
 
+      .heading > .title {
+        font-size: 40px;
+      }
+
       .grid {
         width: auto;
         @apply(--layout-vertical);
@@ -299,8 +311,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </app-toolbar>
 
     <app-toolbar class="bottom-toolbar">
-      <div class="flex"></div>
-      <div class="responsive horizontal layout">
+      <div class="bottom-tools responsive horizontal layout">
         <a href="https://github.com/PolymerLabs/app-layout" target="_blank" tabindex="-1">
           <paper-button raised><iron-icon icon="file-download"></iron-icon>View On GitHub</paper-button>
         </a>
@@ -377,13 +388,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <div class="grid-item">
         <div class="caption">
-          <h3>Adaptive UI: Transform Navigation</h3>
+          <h3>Transform Navigation</h3>
           <p>As more screen space is available, side navigation can transform into tabs.</p>
           <div>
             <a href="patterns/transform-navigation" target="_blank" tabindex="-1">
               <paper-button raised>View</paper-button>
             </a>
-            <a href="https://github.com/PolymerLabs/app-layout/tree/master/patterns/transform-navigation" target="_blank" tabindex="-1">
+            <a href="https://github.com/PolymerLabs/app-layout/tree/master/patterns/transform-navigation/x-app.html" target="_blank" tabindex="-1">
+              <paper-button raised>Source</paper-button>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-item">
+        <div class="caption">
+          <h3>Expand Card</h3>
+          <p>Content cards may expand to take up more horizontal space.</p>
+          <div>
+            <a href="patterns/expand-card" target="_blank" tabindex="-1">
+              <paper-button raised>View</paper-button>
+            </a>
+            <a href="https://github.com/PolymerLabs/app-layout/tree/master/patterns/expand-card/index.html" target="_blank" tabindex="-1">
               <paper-button raised>Source</paper-button>
             </a>
           </div>
