@@ -9,33 +9,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../app-header/app-header.html">
 <link rel="import" href="../../app-header-layout/app-header-layout.html">
 <link rel="import" href="../../app-toolbar/app-toolbar.html">
-<link rel="import" href="../../app-header/app-header.html">
 <link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../iron-icons/iron-icons.html">
 <link rel="import" href="../../../iron-media-query/iron-media-query.html">
 <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../../paper-tabs/paper-tabs.html">
-<link rel="import" href="../../../paper-menu/paper-menu.html">
 <link rel="import" href="../../../paper-item/paper-item.html">
+<link rel="import" href="../../../paper-menu/paper-menu.html">
+<link rel="import" href="../../../paper-tabs/paper-tabs.html">
 
 <dom-module id="x-app">
 
   <style>
 
     app-toolbar {
-      background-color: #4285f4;
-      color: white;
+      background-color: #dcdcdc;
     }
 
-    .tabs-bar {
-      @apply(--layout-center-center);
+    .main-header {
+      box-shadow: 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
     }
 
     paper-tabs {
-      @apply(--layout-flex);
       max-width: 640px;
+      --paper-tabs-selection-bar-color: black;
+    }
+
+    paper-tab {
+      --paper-tab-ink: #aaa;
+      text-transform: uppercase;
     }
 
     .drawer-layout:not([wide-layout]) .tabs-bar {
@@ -54,7 +58,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <div drawer>
         <app-toolbar></app-toolbar>
-        <!-- Nav on mobile -->
+        <!-- Nav on mobile: side nav menu -->
         <paper-menu selected="{{selected}}" attr-for-selected="name">
           <template is="dom-repeat" items="{{categories}}">
             <paper-item name="{{item}}">{{item}}</paper-item>
@@ -63,13 +67,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
 
       <app-header-layout main>
-        <app-header>
+        <app-header class="main-header">
           <app-toolbar>
             <paper-icon-button class="menu-button" icon="menu" drawer-toggle></paper-icon-button>
           </app-toolbar>
           <app-toolbar class="tabs-bar">
-            <!-- Nav on desktop -->
-            <paper-tabs selected="{{selected}}" attr-for-selected="name">
+            <!-- Nav on desktop: tabs -->
+            <paper-tabs selected="{{selected}}" attr-for-selected="name" bottom-item>
               <template is="dom-repeat" items="{{categories}}">
                 <paper-tab name="{{item}}">{{item}}</paper-tab>
               </template>
@@ -93,13 +97,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         selected: {
           type: String,
-          value: 'Genre'
+          value: 'Item One'
         },
 
         categories: {
           type: Array,
           value: function() {
-            return ['Genre', 'Artist', 'Album', 'New Releases', 'Bestsellers'];
+            return ['Item One', 'Item Two', 'Item Three', 'Item Four', 'Item Five'];
           }
         }
 
