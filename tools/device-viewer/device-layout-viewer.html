@@ -28,7 +28,7 @@ Displays a page on different device layouts.
     <div class="canvas" device$="{{device}}">
 
       <iron-selector id="views" selected="{{device}}" attr-for-selected="device"
-          selected-item="{{selectedView}}" device$="{{device}}">
+          selected-item="{{selectedView}}" device$="{{device}}" activate-event="">
 
         <device-view device="laptop" src="{{src}}"></device-view>
         <device-view device="tablet" src="{{src}}" landscape></device-view>
