@@ -114,6 +114,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height: calc(100vh - 129px);
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
+        padding: 8px;
+        text-align: center;
         font-size: 30px;
         color: #bbb;
       }
@@ -235,10 +237,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </template>
 
             <!-- other categories -->
-            <section name="photography" class="no-contents">No Contents</section>
-            <section name="design" class="no-contents">No Contents</section>
-            <section name="topten" class="no-contents">No Contents</section>
-            <section name="aday" class="no-contents">No Contents</section>
+            <section name="photography" class="no-contents">Photography (No Contents)</section>
+            <section name="design" class="no-contents">Design (No Contents)</section>
+            <section name="topten" class="no-contents">Top Ten (No Contents)</section>
+            <section name="aday" class="no-contents">A Day in the Life (No Contents)</section>
 
           </iron-pages>
 
@@ -309,7 +311,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           for (var i=0, a; a=as[i]; i++) {
             if (a.title === title) {
               this.article = a;
-              break;
+              return;
             }
           }
         }

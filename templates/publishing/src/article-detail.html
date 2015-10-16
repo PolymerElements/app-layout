@@ -84,11 +84,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </style>
 
-    <div class="image" style$="{{_computeImageStyle(article.image, article.primaryColor)}}"></div>
+    <div class="image" style$="background-color: {{article.primaryColor}}; background-image: url('{{article.image}}')"></div>
 
     <div class="header">
       <div>{{article.author}}</div>
-      <div class="title" style$="{{_computeTitleStyle(article.secondaryColor)}}">{{article.title}}</div>
+      <div class="title" style$="color: {{article.secondaryColor}};">{{article.title}}</div>
       <div>{{article.date}}</div>
       <paper-fab icon="app:googleplus-reshare"></paper-fab>
     </div>
@@ -110,14 +110,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         article: Object
 
-      },
-
-      _computeImageStyle: function(image, primaryColor) {
-        return 'background-color: ' + primaryColor + '; background-image: url(' + image + ');';
-      },
-
-      _computeTitleStyle: function(secondaryColor) {
-        return 'color: ' + secondaryColor + ';';
       }
 
     });
