@@ -20980,8 +20980,8 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
 
     </style>
 
-    <div class="image" style$="{{_computeImageStyle(article.image, article.primaryColor)}}"></div>
-    <div class="title" style$="{{_computeTitleStyle(article.secondaryColor)}}">{{article.title}}</div>
+    <div class="image" style$="background-color: {{article.primaryColor}}; background-image: url('{{article.image}}');"></div>
+    <div class="title" style$="background-color: {{article.secondaryColor}};">{{article.title}}</div>
 
   </template>
 
@@ -20997,14 +20997,6 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
 
         article: Object
 
-      },
-
-      _computeImageStyle: function(image, primaryColor) {
-        return 'background-color: ' + primaryColor + '; background-image: url(' + image + ');';
-      },
-
-      _computeTitleStyle: function(secondaryColor) {
-        return 'background-color: ' + secondaryColor + ';';
       }
 
     });
@@ -21091,11 +21083,11 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
 
     </style>
 
-    <div class="image" style$="{{_computeImageStyle(article.image, article.primaryColor)}}"></div>
+    <div class="image" style$="background-color: {{article.primaryColor}}; background-image: url('{{article.image}}')"></div>
 
     <div class="header">
       <div>{{article.author}}</div>
-      <div class="title" style$="{{_computeTitleStyle(article.secondaryColor)}}">{{article.title}}</div>
+      <div class="title" style$="color: {{article.secondaryColor}};">{{article.title}}</div>
       <div>{{article.date}}</div>
       <paper-fab icon="app:googleplus-reshare"></paper-fab>
     </div>
@@ -21117,14 +21109,6 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
 
         article: Object
 
-      },
-
-      _computeImageStyle: function(image, primaryColor) {
-        return 'background-color: ' + primaryColor + '; background-image: url(' + image + ');';
-      },
-
-      _computeTitleStyle: function(secondaryColor) {
-        return 'color: ' + secondaryColor + ';';
       }
 
     });
@@ -21330,6 +21314,8 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
         height: calc(100vh - 129px);
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
+        padding: 8px;
+        text-align: center;
         font-size: 30px;
         color: #bbb;
       }
@@ -21451,10 +21437,10 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
             </template>
 
             <!-- other categories -->
-            <section name="photography" class="no-contents">No Contents</section>
-            <section name="design" class="no-contents">No Contents</section>
-            <section name="topten" class="no-contents">No Contents</section>
-            <section name="aday" class="no-contents">No Contents</section>
+            <section name="photography" class="no-contents">Photography (No Contents)</section>
+            <section name="design" class="no-contents">Design (No Contents)</section>
+            <section name="topten" class="no-contents">Top Ten (No Contents)</section>
+            <section name="aday" class="no-contents">A Day in the Life (No Contents)</section>
 
           </iron-pages>
 
@@ -21525,7 +21511,7 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
           for (var i=0, a; a=as[i]; i++) {
             if (a.title === title) {
               this.article = a;
-              break;
+              return;
             }
           }
         }
