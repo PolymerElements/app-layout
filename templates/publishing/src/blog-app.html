@@ -10,14 +10,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../../polymer/polymer.html">
 
-<link rel="import" href="../../../../iron-icons/iron-icons.html">
+<link rel="import" href="../../../../carbon-elements/carbon-router.html">
+
 <link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../../iron-pages/iron-pages.html">
+<link rel="import" href="../../../../iron-selector/iron-selector.html">
 
 <link rel="import" href="../../../../paper-fab/paper-fab.html">
 <link rel="import" href="../../../../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../../../paper-item/paper-item.html">
-<link rel="import" href="../../../../paper-menu/paper-menu.html">
 <link rel="import" href="../../../../paper-styles/shadow.html">
 
 <link rel="import" href="../../../app-drawer-layout/app-drawer-layout.html">
@@ -45,17 +45,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --app-drawer-background-color: var(--app-primary-color);
       }
 
-      [drawer] paper-menu {
+      .nav-menu {
         background-color: var(--app-primary-color);
         color: #fff;
       }
 
-      [drawer] paper-item {
-        font-size: 20px;
-        font-weight: 600;
+      a {
+        text-decoration: none;
+        color: inherit;
+        font-size: inherit;
       }
 
-      [drawer] paper-item.iron-selected {
+      .nav-menu > a {
+        display: block;
+        padding: 12px 16px;
+        font-size: 20px;
+        font-weight: 500;
+      }
+
+      .nav-menu > a.iron-selected {
         background-color: #888;
       }
 
@@ -132,6 +140,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </style>
 
+    <!-- setup routes -->
+    <carbon-router route="{{route}}"></carbon-router>
+    <carbon-route route="{{route}}" matches=":category" category="{{category}}" subroute="{{subroute}}"></carbon-route>
+    <carbon-route route="{{subroute}}" matches=":page" page="{{page}}" subroute="{{title}}"></carbon-route>
+
+    <!-- manages page's scroll position -->
+    <app-scrollpos-control selected="{{category}}"></app-scrollpos-control>
+    <app-scrollpos-control selected="{{page}}" reset></app-scrollpos-control>
+
     <app-drawer-layout drawer-width="288px" responsive-width="1280px" on-iron-resize="_positionNavTitle">
 
       <!-- nav panel -->
@@ -139,22 +156,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <app-header fixed>
 
+          <!-- top toolbar -->
           <app-toolbar></app-toolbar>
 
+          <!-- bottom toolbar -->
           <app-toolbar>
             <div id="navTitle" class="title">ZUPERK&Uuml;LBLOG</div>
           </app-toolbar>
 
         </app-header>
 
-        <paper-menu selected="{{category}}" attr-for-selected="name" on-iron-activate="_backAction">
-          <paper-item name="art">Art</paper-item>
-          <paper-item name="film">Film</paper-item>
-          <paper-item name="photography">Photography</paper-item>
-          <paper-item name="design">Design</paper-item>
-          <paper-item name="topten">Top Ten</paper-item>
-          <paper-item name="aday">A Day in the Life</paper-item>
-        </paper-menu>
+        <!-- nav menu -->
+        <iron-selector class="nav-menu" selected="{{category}}" attr-for-selected="name" on-iron-activate="_showList">
+          <a name="art" href="#/art/list">Art</a>
+          <a name="film" href="#/film/list">Film</a>
+          <a name="photography" href="#/photography/list">Photography</a>
+          <a name="design" href="#/design/list">Design</a>
+          <a name="topten" href="#/topten/list">Top Ten</a>
+          <a name="aday" href="#/aday/list">A Day in the Life</a>
+        </iron-selector>
 
       </app-header-layout>
 
@@ -163,11 +183,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <app-header fixed waterfall>
 
+          <!-- top toolbar -->
           <app-toolbar>
-            <paper-icon-button icon="menu" drawer-toggle hidden$="{{_equal(page, 'detail')}}"></paper-icon-button>
-            <paper-icon-button icon="arrow-back" hidden$="{{_equal(page, 'list')}}" on-tap="_backAction"></paper-icon-button>
+            <!-- menu button -->
+            <paper-icon-button icon="app:menu" drawer-toggle hidden$="{{_equal(page, 'detail')}}"></paper-icon-button>
+            <!-- back button -->
+            <a href="#/{{category}}/list" hidden$="{{_equal(page, 'list')}}">
+              <paper-icon-button icon="app:arrow-back"></paper-icon-button>
+            </a>
           </app-toolbar>
 
+          <!-- bottom toolbar -->
           <app-toolbar class="main-title-toolbar">
             <div id="mainTitle" class="title">ZUPERK&Uuml;LBLOG</div>
           </app-toolbar>
@@ -180,20 +206,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <!-- list page -->
           <iron-pages name="list" selected="{{category}}" attr-for-selected="name">
 
-            <!-- 'Art' category page -->
-            <section name="art">
+            <!-- 'art' category page (lazy-loaded) -->
+            <template is="dom-if" if="{{_equal(category, 'art')}}">
+              <section name="art">
 
-              <!-- 2-columns grid -->
-              <two-columns-grid column-width="396" gutter="4">
-                <template is="dom-repeat" items="{{articles}}">
-                  <article-headline article="{{item}}" on-tap="_headlineAction"></article-headline>
-                </template>
-              </two-columns-grid>
+                <!-- 2-columns grid -->
+                <two-columns-grid column-width="396" gutter="4">
+                  <template is="dom-repeat" items="{{articles.art}}">
+                    <a is="article-headline" href="#/art/detail/{{item.title}}" article="{{item}}"></a>
+                  </template>
+                </two-columns-grid>
 
-            </section>
+              </section>
+            </template>
+
+            <!-- 'film' category page (lazy-loaded) -->
+            <template is="dom-if" if="{{_equal(category, 'film')}}">
+              <section name="film">
+
+                <!-- 2-columns grid -->
+                <two-columns-grid column-width="396" gutter="4">
+                  <template is="dom-repeat" items="{{articles.film}}">
+                    <a is="article-headline" href="#/film/detail/{{item.title}}" article="{{item}}"></a>
+                  </template>
+                </two-columns-grid>
+
+              </section>
+            </template>
 
             <!-- other categories -->
-            <section name="film" class="no-contents">No Contents</section>
             <section name="photography" class="no-contents">No Contents</section>
             <section name="design" class="no-contents">No Contents</section>
             <section name="topten" class="no-contents">No Contents</section>
@@ -202,19 +243,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </iron-pages>
 
           <!-- detail page -->
-          <div name="detail">
-            <article-detail article="{{article}}"></article-detail>
-          </div>
+          <article-detail name="detail" article="{{article}}"></article-detail>
 
         </iron-pages>
 
       </app-header-layout>
 
     </app-drawer-layout>
-
-    <!-- manages page's scroll position -->
-    <app-scrollpos-control selected="{{category}}"></app-scrollpos-control>
-    <app-scrollpos-control selected="{{page}}" reset></app-scrollpos-control>
 
   </template>
 
@@ -229,37 +264,55 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         /**
          * The selected category.
          */
-        category: {
-          value: 'art'
-        },
+        category: String,
 
         /**
          * The selected page (either `list` or `detail`).
          */
-        page: {
-          value: 'list'
-        },
+        page: String,
 
         /**
-         * An array of articles data.
+         * The selected article title.
          */
-        articles: {
-          type: Array
-        }
+        title: String,
+
+        /**
+         * Articles data.
+         */
+        articles: Object
 
       },
+
+      observers: [
+        '_updateArticle(articles, category, title)',
+        '_routeChange(route)'
+      ],
 
       _equal: function(value1, value2) {
         return value1 === value2;
       },
 
-      _backAction: function() {
+      _showList: function() {
         this.page = 'list';
       },
 
-      _headlineAction: function(e) {
-        this.article = Polymer.dom(e).localTarget.article;
-        this.page = 'detail';
+      _routeChange: function(route) {
+        if (!route) {
+          // default route
+          this.route = 'art/list'
+        }
+      },
+
+      _updateArticle: function(articles, category, title) {
+        var as = articles[category];
+        if (as) {
+          for (var i=0, a; a=as[i]; i++) {
+            if (a.title === title) {
+              this.article = a;
+              break;
+            }
+          }
+        }
       },
 
       // position nav title to be on top of the main title.

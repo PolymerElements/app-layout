@@ -83,6 +83,12 @@ Add an app-header-layout
       position: fixed;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+
+      @apply(--app-drawer-layout-drawer);
+    }
+
+    :host([narrow]) > #drawerContainer {
+      @apply(--app-drawer-layout-narrow-drawer);
     }
 
     #main {

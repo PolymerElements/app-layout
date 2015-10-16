@@ -19,6 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       :host {
         @apply(--layout-vertical);
+        text-decoration: none;
         font-size: 22px;
         line-height: 32px;
       }
@@ -53,11 +54,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       is: 'article-headline',
 
+      extends: 'a',
+
       properties: {
 
-        article: {
-          type: Object
-        }
+        article: Object
 
       },
 
