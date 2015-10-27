@@ -21,13 +21,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
  * Code distributed by Google as part of the polymer project is also
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
-// @version 0.7.14
-window.WebComponents = window.WebComponents || {};
-
-(function(scope) {
-  var flags = scope.flags || {};
+// @version 0.7.15
+(function() {
+  window.WebComponents = window.WebComponents || {
+    flags: {}
+  };
   var file = "webcomponents-lite.js";
   var script = document.querySelector('script[src*="' + file + '"]');
+  var flags = {};
   if (!flags.noOpts) {
     location.search.slice(1).split("&").forEach(function(option) {
       var parts = option.split("=");
@@ -43,7 +44,7 @@ window.WebComponents = window.WebComponents || {};
         }
       }
     }
-    if (flags.log) {
+    if (flags.log && flags.log.split) {
       var parts = flags.log.split(",");
       flags.log = {};
       parts.forEach(function(f) {
@@ -53,20 +54,14 @@ window.WebComponents = window.WebComponents || {};
       flags.log = {};
     }
   }
-  flags.shadow = flags.shadow || flags.shadowdom || flags.polyfill;
-  if (flags.shadow === "native") {
-    flags.shadow = false;
-  } else {
-    flags.shadow = flags.shadow || !HTMLElement.prototype.createShadowRoot;
-  }
   if (flags.register) {
     window.CustomElements = window.CustomElements || {
       flags: {}
     };
     window.CustomElements.flags.register = flags.register;
   }
-  scope.flags = flags;
-})(window.WebComponents);
+  WebComponents.flags = flags;
+})();
 
 (function(scope) {
   "use strict";
@@ -627,6 +622,9 @@ if (typeof WeakMap === "undefined") {
 }
 
 (function(global) {
+  if (global.JsMutationObserver) {
+    return;
+  }
   var registrationsTable = new WeakMap();
   var setImmediate;
   if (/Trident|Edge/.test(navigator.userAgent)) {
@@ -922,7 +920,10 @@ if (typeof WeakMap === "undefined") {
     }
   };
   global.JsMutationObserver = JsMutationObserver;
-  if (!global.MutationObserver) global.MutationObserver = JsMutationObserver;
+  if (!global.MutationObserver) {
+    global.MutationObserver = JsMutationObserver;
+    JsMutationObserver._isPolyfilled = true;
+  }
 })(self);
 
 window.HTMLImports = window.HTMLImports || {
@@ -1770,8 +1771,9 @@ window.CustomElements.addModule(function(scope) {
       }
     });
   }
-  var hasPolyfillMutations = !window.MutationObserver || window.MutationObserver === window.JsMutationObserver;
-  scope.hasPolyfillMutations = hasPolyfillMutations;
+  var hasThrottledAttached = window.MutationObserver._isPolyfilled && flags["throttle-attached"];
+  scope.hasPolyfillMutations = hasThrottledAttached;
+  scope.hasThrottledAttached = hasThrottledAttached;
   var isPendingMutations = false;
   var pendingMutations = [];
   function deferMutation(fn) {
@@ -1790,7 +1792,7 @@ window.CustomElements.addModule(function(scope) {
     pendingMutations = [];
   }
   function attached(element) {
-    if (hasPolyfillMutations) {
+    if (hasThrottledAttached) {
       deferMutation(function() {
         _attached(element);
       });
@@ -1813,7 +1815,7 @@ window.CustomElements.addModule(function(scope) {
     });
   }
   function detached(element) {
-    if (hasPolyfillMutations) {
+    if (hasThrottledAttached) {
       deferMutation(function() {
         _detached(element);
       });
@@ -2893,7 +2895,7 @@ if (typeof HTMLTemplateElement === "undefined") {
   function forceDocumentUpgrade() {
     if (cePolyfill) {
       var script = document._currentScript || document.currentScript;
-      var doc = script && script.ownerDocument;
+      var doc = script && script.ownerDocument || document;
       if (doc) {
         CustomElements.upgradeAll(doc);
       }
@@ -4187,88 +4189,6 @@ Polymer.ArraySplice = (function() {
 })();
 </script><script>
 
-  Polymer.EventApi = (function() {
-
-    var Settings = Polymer.Settings;
-
-    var EventApi = function(event) {
-      this.event = event;
-    };
-
-    if (Settings.useShadow) {
-
-      EventApi.prototype = {
-        
-        get rootTarget() {
-          return this.event.path[0];
-        },
-
-        get localTarget() {
-          return this.event.target;
-        },
-
-        get path() {
-          return this.event.path;
-        }
-
-      };
-
-    } else {
-
-      EventApi.prototype = {
-      
-        get rootTarget() {
-          return this.event.target;
-        },
-
-        get localTarget() {
-          var current = this.event.currentTarget;
-          var currentRoot = current && Polymer.dom(current).getOwnerRoot();
-          var p$ = this.path;
-          for (var i=0; i < p$.length; i++) {
-            if (Polymer.dom(p$[i]).getOwnerRoot() === currentRoot) {
-              return p$[i];
-            }
-          }
-        },
-
-        // TODO(sorvell): simulate event.path. This probably incorrect for
-        // non-bubbling events.
-        get path() {
-          if (!this.event._path) {
-            var path = [];
-            var o = this.rootTarget;
-            while (o) {
-              path.push(o);
-              o = Polymer.dom(o).parentNode || o.host;
-            }
-            // event path includes window in most recent native implementations
-            path.push(window);
-            this.event._path = path;
-          }
-          return this.event._path;
-        }
-
-      };
-
-    }
-
-    var factory = function(event) {
-      if (!event.__eventApi) {
-        event.__eventApi = new EventApi(event);
-      }
-      return event.__eventApi;
-    };
-
-    return {
-      factory: factory
-    };
-
-  })();
-
-</script>
-<script>
-
 Polymer.domInnerHTML = (function() {
 
   // Cribbed from ShadowDOM polyfill
@@ -4392,6 +4312,12 @@ Polymer.domInnerHTML = (function() {
 </script>
 <script>
 
+  /**
+   * DomApi is a dom manipulation library which is compatible with both 
+   * Shady DOM and Shadow DOM. The general usage is 
+   * `Polymer.dom(node).method(arguments)` where methods and arguments
+   * match native DOM where possible.
+   */
   Polymer.DomApi = (function() {
     'use strict';
 
@@ -4452,7 +4378,7 @@ Polymer.domInnerHTML = (function() {
       // container to container.host.
       // 3. node is <content> (host of container needs distribution)
       _addNode: function(node, ref_node) {
-        this._removeNodeFromHost(node, true);
+        this._removeNodeFromParent(node);
         var addedInsertionPoint;
         var root = this.getOwnerRoot();
         // if a <content> is added, make sure it's parent has logical info.
@@ -4491,6 +4417,7 @@ Polymer.domInnerHTML = (function() {
         if (addedInsertionPoint) {
           this._updateInsertionPoints(root.host);
         }
+        this.notifyObserver();
         return node;
       },
 
@@ -4514,6 +4441,7 @@ Polymer.domInnerHTML = (function() {
             nativeRemoveChild.call(container, node);
           }
         }
+        this.notifyObserver();
         return node;
       },
 
@@ -4646,6 +4574,16 @@ Polymer.domInnerHTML = (function() {
         return parent && parent.shadyRoot && hasInsertionPoint(parent.shadyRoot);
       },
 
+      _removeNodeFromParent: function(node) {
+        // note: we may need to notify and not have logical info so fallback
+        // to composed parentNode.
+        var parent = node._lightParent || node.parentNode;
+        if (parent && hasDomApi(parent)) {
+          factory(parent).notifyObserver();
+        }
+        this._removeNodeFromHost(node, true);
+      },
+
       // NOTE: if `ensureComposedRemoval` is true then the node should be
       // removed from its composed parent.
       _removeNodeFromHost: function(node, ensureComposedRemoval) {
@@ -4663,7 +4601,7 @@ Polymer.domInnerHTML = (function() {
             root.host._elementRemove(node);
             hostNeedsDist = this._removeDistributedChildren(root, node);
           }
-          this._removeLogicalInfo(node, node._lightParent);
+          this._removeLogicalInfo(node, parent);
         }
         this._removeOwnerShadyRoot(node);
         if (root && hostNeedsDist) {
@@ -4815,28 +4753,36 @@ Polymer.domInnerHTML = (function() {
         points.
       */
       queryDistributedElements: function(selector) {
-        var c$ = this.childNodes;
+        var c$ = this.getEffectiveChildNodes();
         var list = [];
-        this._distributedFilter(selector, c$, list);
         for (var i=0, l=c$.length, c; (i<l) && (c=c$[i]); i++) {
-          if (c.localName === CONTENT) {
-            this._distributedFilter(selector, factory(c).getDistributedNodes(),
-              list);
+          if ((c.nodeType === Node.ELEMENT_NODE) && 
+              matchesSelector.call(c, selector)) {
+            list.push(c);
           }
         }
         return list;
       },
 
-      _distributedFilter: function(selector, list, results) {
-        results = results || [];
-        for (var i=0, l=list.length, d; (i<l) && (d=list[i]); i++) {
-          if ((d.nodeType === Node.ELEMENT_NODE) &&
-            (d.localName !== CONTENT) &&
-            matchesSelector.call(d, selector)) {
-            results.push(d);
+      /*
+        Returns a list of effective childNoes within this element. These can be
+        dom child nodes or elements distributed to children that are insertion
+        points.
+      */
+      getEffectiveChildNodes: function() {
+        var list = [];
+        var c$ = this.childNodes;
+        for (var i=0, l=c$.length, c; (i<l) && (c=c$[i]); i++) {
+          if (c.localName === CONTENT) {
+            var d$ = factory(c).getDistributedNodes();
+            for (var j=0; j < d$.length; j++) {
+              list.push(d$[j]);
+            }
+          } else {
+            list.push(c);
           }
         }
-        return results;
+        return list;
       },
 
       _clear: function() {
@@ -4888,45 +4834,49 @@ Polymer.domInnerHTML = (function() {
           }
         }
         return n;
+      },
+
+      /**
+       * Notifies callers about changes to the element's effective child nodes, 
+       * the same list as returned by `getEffectiveChildNodes`. 
+       * @param {function} callback The supplied callback is called with an 
+       * `info` argument which is an object that provides 
+       * the `target` on which the changes occurred, a list of any nodes 
+       * added in the `addedNodes` array, and nodes removed in the 
+       * `removedNodes` array.
+       * @return {object} Returns a handle which is the argument to 
+       * `unobserveNodes`.
+       */
+      observeNodes: function(callback) {
+        if (callback) {
+          if (!this.observer) {
+            this.observer = this.node.localName === CONTENT ?
+              new DomApi.DistributedNodesObserver(this) :
+              new DomApi.EffectiveNodesObserver(this);
+          }
+          return this.observer.addListener(callback);
+        }
+      },
+
+      /**
+       * Stops observing changes to the element's effective child nodes.
+       * @param {object} handle The handle for the callback that should
+       * no longer receive notifications. This handle is returned from 
+       * `observeNodes`.
+       */
+      unobserveNodes: function(handle) {
+        if (this.observer) {
+          this.observer.removeListener(handle);
+        }
+      },
+
+      notifyObserver: function() {
+        if (this.observer) {
+          this.observer.notify();
+        }
       }
 
     };
-
-    Object.defineProperty(DomApi.prototype, 'classList', {
-      get: function() {
-        if (!this._classList) {
-          this._classList = new DomApi.ClassList(this);
-        }
-        return this._classList;
-      },
-      configurable: true
-    });
-
-    DomApi.ClassList = function(host) {
-      this.domApi = host;
-      this.node = host.node;
-    }
-
-    DomApi.ClassList.prototype = {
-      add: function() {
-        this.node.classList.add.apply(this.node.classList, arguments);
-        this.domApi._distributeParent();
-      },
-
-      remove: function() {
-        this.node.classList.remove.apply(this.node.classList, arguments);
-        this.domApi._distributeParent();
-      },
-
-      toggle: function() {
-        this.node.classList.toggle.apply(this.node.classList, arguments);
-        this.domApi._distributeParent();
-      },
-      contains: function() {
-        return this.node.classList.contains.apply(this.node.classList,
-          arguments);
-      }
-    }
 
     // changes and accessors...
     if (!Settings.useShadow) {
@@ -5132,7 +5082,16 @@ Polymer.domInnerHTML = (function() {
         return n$ ? Array.prototype.slice.call(n$) : [];
       };
 
-      DomApi.prototype._distributeParent = function() {}
+      DomApi.prototype._distributeParent = function() {};
+
+      var nativeForwards = ['appendChild', 'insertBefore', 
+        'removeChild', 'replaceChild'];
+
+      nativeForwards.forEach(function(forward) {
+        DomApi.prototype[forward] = function() {
+          return this.node[forward].apply(this.node, arguments);
+        };
+      });
 
       Object.defineProperties(DomApi.prototype, {
 
@@ -5190,13 +5149,17 @@ Polymer.domInnerHTML = (function() {
 
     var CONTENT = 'content';
 
-    var factory = function(node, patch) {
+    function factory(node, patch) {
       node = node || document;
       if (!node.__domApi) {
         node.__domApi = new DomApi(node, patch);
       }
       return node.__domApi;
     };
+
+    function hasDomApi(node) {
+      return Boolean(node.__domApi);
+    }
 
     Polymer.dom = function(obj, patch) {
       if (obj instanceof Event) {
@@ -5205,62 +5168,6 @@ Polymer.domInnerHTML = (function() {
         return factory(obj, patch);
       }
     };
-
-    // add flush api...
-    Polymer.Base.extend(Polymer.dom, {
-      
-      _flushGuard: 0,
-      _FLUSH_MAX: 100,
-      _needsTakeRecords: !Polymer.Settings.useNativeCustomElements,
-      _debouncers: [],
-      _finishDebouncer: null,
-
-      // flush and debounce exposed as statics on Polymer.dom
-      flush: function() {
-        // flush debouncers
-        for (var i=0; i < this._debouncers.length; i++) {
-          this._debouncers[i].complete();
-        }
-        // clear the list of debouncers
-        if (this._finishDebouncer) {
-          this._finishDebouncer.complete();
-        }
-        // again make any pending CE mutations that might trigger debouncer
-        // additions go...
-        this._flushPolyfills();
-        // flush again if there are now any debouncers to process
-        if (this._debouncers.length && this._flushGuard < this._FLUSH_MAX) {
-          this._flushGuard++;
-          this.flush();
-        } else {
-          if (this._flushGuard >= this._FLUSH_MAX) {
-            console.warn('Polymer.dom.flush aborted. Flush may not be complete.')
-          }
-          this._flushGuard = 0;
-        }
-      },
-
-      // TODO(sorvell): There is currently not a good way 
-      // to process all custom elements mutations under SD polyfill because
-      // these mutations may be inside shadowRoots. 
-      _flushPolyfills: function() {
-        if (this._needsTakeRecords) {
-          CustomElements.takeRecords();
-        }
-      },
-
-      addDebouncer: function(debouncer) {
-        this._debouncers.push(debouncer);
-        // ensure the list of active debouncers is cleared when done.
-        this._finishDebouncer = Polymer.Debounce(this._finishDebouncer, 
-          this._finishFlush);
-      },
-
-      _finishFlush: function() {
-        Polymer.dom._debouncers = [];
-      }
-
-    });
 
     function getLightChildren(node) {
       var children = node._lightChildren;
@@ -5346,20 +5253,579 @@ Polymer.domInnerHTML = (function() {
       matchesSelector: matchesSelector,
       hasInsertionPoint: hasInsertionPoint,
       ctor: DomApi,
-      factory: factory
+      factory: factory,
+      hasDomApi: hasDomApi
     };
 
   })();
 
 </script><script>
 
+  /** 
+   * `Polymer.dom.flush()` causes any asynchronously queued actions to be 
+   * flushed synchronously. It should be used sparingly as calling it frequently
+   * can negatively impact performance since work is often deferred for 
+   * efficiency. Calling `Polymer.dom.flush()` is useful, for example, when 
+   * an element has to measure itself and is unsure about the state of its 
+   * internal or compoased DOM.
+   */
+  Polymer.Base.extend(Polymer.dom, {
+    
+    _flushGuard: 0,
+    _FLUSH_MAX: 100,
+    _needsTakeRecords: !Polymer.Settings.useNativeCustomElements,
+    _debouncers: [],
+    _staticFlushList: [],
+    _finishDebouncer: null,
+
+    // flush and debounce exposed as statics on Polymer.dom
+    flush: function() {
+      this._flushGuard = 0;
+      this._prepareFlush();
+      while (this._debouncers.length && this._flushGuard < this._FLUSH_MAX) {
+        for (var i=0; i < this._debouncers.length; i++) {
+          this._debouncers[i].complete();
+        }
+        // clear the list of debouncers
+        if (this._finishDebouncer) {
+          this._finishDebouncer.complete();
+        }
+        this._prepareFlush();
+        this._flushGuard++;
+      }
+      if (this._flushGuard >= this._FLUSH_MAX) {
+        console.warn('Polymer.dom.flush aborted. Flush may not be complete.')
+      }
+    },
+
+    _prepareFlush: function() {
+      // TODO(sorvell): There is currently not a good way 
+      // to process all custom elements mutations under SD polyfill because
+      // these mutations may be inside shadowRoots. 
+      // again make any pending CE mutations that might trigger debouncer
+      // additions go...
+      if (this._needsTakeRecords) {
+        CustomElements.takeRecords();
+      }
+      for (var i=0; i < this._staticFlushList.length; i++) {
+        this._staticFlushList[i]();
+      }
+    },
+
+    // add to the static list of methods to call when flushing
+    addStaticFlush: function(fn) {
+      this._staticFlushList.push(fn);
+    },
+
+    // remove a function from the static list of methods to call when flushing
+    removeStaticFlush: function(fn) {
+      var i = this._staticFlushList.indexOf(fn);
+      if (i >= 0) {
+        this._staticFlushList.splice(i, 1);
+      }
+    },
+
+    addDebouncer: function(debouncer) {
+      this._debouncers.push(debouncer);
+      // ensure the list of active debouncers is cleared when done.
+      this._finishDebouncer = Polymer.Debounce(this._finishDebouncer, 
+        this._finishFlush);
+    },
+
+    _finishFlush: function() {
+      Polymer.dom._debouncers = [];
+    }
+
+  });
+
+</script><script>
+Polymer.EventApi = (function() {
+  'use strict';
+
+  var DomApi = Polymer.DomApi.ctor;
+  var Settings = Polymer.Settings;
+
+  
+  /**
+   * DomApi.Event allows maniuplation of events compatible with 
+   * the scoping concepts in Shadow DOM and compatible with both Shady DOM 
+   * and Shadow DOM. The general usage is 
+   * `Polymer.dom(event).property`. The `path` property returns `event.path` 
+   * matching Shadow DOM. The `rootTarget` property returns the first node 
+   * in the `path` and is the original event target. The `localTarget` property
+   * matches event.target under Shadow DOM and is the scoped event target.
+   */
+  DomApi.Event = function(event) {
+    this.event = event;
+  };
+
+  if (Settings.useShadow) {
+
+    DomApi.Event.prototype = {
+      
+      get rootTarget() {
+        return this.event.path[0];
+      },
+
+      get localTarget() {
+        return this.event.target;
+      },
+
+      get path() {
+        return this.event.path;
+      }
+
+    };
+
+  } else {
+
+    DomApi.Event.prototype = {
+    
+      get rootTarget() {
+        return this.event.target;
+      },
+
+      get localTarget() {
+        var current = this.event.currentTarget;
+        var currentRoot = current && Polymer.dom(current).getOwnerRoot();
+        var p$ = this.path;
+        for (var i=0; i < p$.length; i++) {
+          if (Polymer.dom(p$[i]).getOwnerRoot() === currentRoot) {
+            return p$[i];
+          }
+        }
+      },
+
+      // TODO(sorvell): simulate event.path. This probably incorrect for
+      // non-bubbling events.
+      get path() {
+        if (!this.event._path) {
+          var path = [];
+          var o = this.rootTarget;
+          while (o) {
+            path.push(o);
+            o = Polymer.dom(o).parentNode || o.host;
+          }
+          // event path includes window in most recent native implementations
+          path.push(window);
+          this.event._path = path;
+        }
+        return this.event._path;
+      }
+
+    };
+
+  }
+
+  var factory = function(event) {
+    if (!event.__eventApi) {
+      event.__eventApi = new DomApi.Event(event);
+    }
+    return event.__eventApi;
+  };
+
+  return {
+    factory: factory
+  };
+
+})();
+
+</script>
+<script>
+
+(function() {
+  'use strict';
+
+  var DomApi = Polymer.DomApi.ctor;
+
+  /**
+   * DomApi.classList allows maniuplation of `classList` compatible with 
+   * Polymer.dom. The general usage is 
+   * `Polymer.dom(node).classList.method(arguments)` where methods and arguments
+   * match native DOM.
+   */
+  Object.defineProperty(DomApi.prototype, 'classList', {
+    get: function() {
+      if (!this._classList) {
+        this._classList = new DomApi.ClassList(this);
+      }
+      return this._classList;
+    },
+    configurable: true
+  });
+
+  DomApi.ClassList = function(host) {
+    this.domApi = host;
+    this.node = host.node;
+  }
+
+  DomApi.ClassList.prototype = {
+    add: function() {
+      this.node.classList.add.apply(this.node.classList, arguments);
+      this.domApi._distributeParent();
+    },
+
+    remove: function() {
+      this.node.classList.remove.apply(this.node.classList, arguments);
+      this.domApi._distributeParent();
+    },
+
+    toggle: function() {
+      this.node.classList.toggle.apply(this.node.classList, arguments);
+      this.domApi._distributeParent();
+    },
+    contains: function() {
+      return this.node.classList.contains.apply(this.node.classList,
+        arguments);
+    }
+  }
+
+})();
+</script><script>
+(function() {
+  'use strict';
+
+    var DomApi = Polymer.DomApi.ctor;
+    var Settings = Polymer.Settings;
+    var hasDomApi = Polymer.DomApi.hasDomApi;
+
+    /**
+     * DomApi.EffectiveNodesObserver tracks changes to an element's 
+     * effective child nodes, the same list returned from 
+     * `Polymer.dom(node).getEffectiveChildNodes()`.
+     * It is not meant to be used directly; it is used by
+     * `Polymer.dom(node).observeNodes(callback)` to observe changes.
+     */
+    DomApi.EffectiveNodesObserver = function(domApi) {
+      this.domApi = domApi;
+      this.node = this.domApi.node;
+      this._listeners = [];
+    };
+
+    DomApi.EffectiveNodesObserver.prototype = {
+
+      addListener: function(callback) {
+        if (!this._isSetup) {
+          this._setup();
+          this._isSetup = true;
+        }
+        var listener = {fn: callback, _nodes: []};
+        this._listeners.push(listener);
+        this._scheduleNotify();
+        return listener;
+      },
+
+      removeListener: function(handle) {
+        var i = this._listeners.indexOf(handle);
+        if (i >= 0) {
+          this._listeners.splice(i, 1);
+          handle._nodes = [];
+        }
+        if (!this._hasListeners()) {
+          this._cleanup();
+          this._isSetup = false;
+        }
+      },
+
+      _setup: function() {
+        this._observeContentElements(this.domApi.childNodes);
+      },
+
+      _cleanup: function() {
+        this._unobserveContentElements(this.domApi.childNodes);
+      },
+
+      _hasListeners: function() {
+        return Boolean(this._listeners.length);
+      },
+
+      _scheduleNotify: function() {
+        if (this._debouncer) {
+          this._debouncer.stop();
+        }
+        this._debouncer = Polymer.Debounce(this._debouncer, 
+          this._notify);
+        this._debouncer.context = this;
+        Polymer.dom.addDebouncer(this._debouncer);
+      },
+
+      notify: function() {
+        if (this._hasListeners()) {
+          this._scheduleNotify();
+        }
+      },
+
+      _notify: function(mxns) {
+        this._beforeCallListeners();
+        this._callListeners();
+      },
+
+      _beforeCallListeners: function() {
+        this._updateContentElements();
+      },
+
+      _updateContentElements: function() {
+        this._observeContentElements(this.domApi.childNodes);
+      },
+
+      _observeContentElements: function(elements) {
+        for (var i=0, n; (i < elements.length) && (n=elements[i]); i++) {
+          if (this._isContent(n)) {
+            n.__observeNodesMap = n.__observeNodesMap || new WeakMap();
+            if (!n.__observeNodesMap.has(this)) {
+              n.__observeNodesMap.set(this, this._observeContent(n));
+            }
+          }
+        }
+      },
+
+      _observeContent: function(content) {
+        var h = Polymer.dom(content).observeNodes(this._scheduleNotify.bind(this));
+        h._avoidChangeCalculation = true;
+        return h;
+      },
+
+      _unobserveContentElements: function(elements) {
+        for (var i=0, n, h; (i < elements.length) && (n=elements[i]); i++) {
+          if (this._isContent(n)) {
+            h = n.__observeNodesMap.get(this);
+            if (h) {
+              Polymer.dom(n).unobserveNodes(h);
+              n.__observeNodesMap.delete(this);
+            }
+          }
+        }
+      },
+
+      _isContent: function(node) {
+        return (node.localName === 'content');
+      },
+
+      _callListeners: function() {
+        var o$ = this._listeners;
+        var nodes = this._getEffectiveNodes();
+        for (var i=0, o; (i < o$.length) && (o=o$[i]); i++) {
+          var info = this._generateListenerInfo(o, nodes);
+          if (info || o._alwaysNotify) {
+            this._callListener(o, info);
+          }
+        }
+      },
+
+      _getEffectiveNodes: function() {
+        return this.domApi.getEffectiveChildNodes()
+      },
+
+      _generateListenerInfo: function(listener, newNodes) {
+        if (listener._avoidChangeCalculation) {
+          return true;
+        }
+        var oldNodes = listener._nodes;
+        var info = {
+          target: this.node,
+          addedNodes: [],
+          removedNodes: []
+        };
+        var splices = Polymer.ArraySplice.calculateSplices(newNodes, oldNodes);
+        // process removals
+        for (var i=0, s; (i<splices.length) && (s=splices[i]); i++) {
+          for (var j=0, n; (j < s.removed.length) && (n=s.removed[j]); j++) {
+            info.removedNodes.push(n);
+          }
+        }
+        // process adds
+        for (var i=0, s; (i<splices.length) && (s=splices[i]); i++) {
+          for (var j=s.index; j < s.index + s.addedCount; j++) {
+            info.addedNodes.push(newNodes[j]);
+          }
+        }
+        // update cache
+        listener._nodes = newNodes;
+        if (info.addedNodes.length || info.removedNodes.length) {
+          return info;
+        }
+      },
+
+      _callListener: function(listener, info) {
+        return listener.fn.call(this.node, info);
+      },
+
+      enableShadowAttributeTracking: function() {}
+
+    };
+
+    if (Settings.useShadow) {
+
+      var baseSetup = DomApi.EffectiveNodesObserver.prototype._setup;
+      var baseCleanup = DomApi.EffectiveNodesObserver.prototype._cleanup;
+
+      var beforeCallListeners = DomApi.EffectiveNodesObserver
+        .prototype._beforeCallListeners;
+
+      Polymer.Base.extend(DomApi.EffectiveNodesObserver.prototype, {
+        
+        _setup: function() {
+          if (!this._observer) {
+            var self = this;
+            this._mutationHandler = function(mxns) {
+              if (mxns && mxns.length) {
+                self._scheduleNotify();
+              }
+            };
+            this._observer = new MutationObserver(this._mutationHandler);
+            this._boundFlush = this._flush.bind(this);
+            Polymer.dom.addStaticFlush(this._boundFlush);
+            // NOTE: subtree true is way too aggressive, but it easily catches
+            // attribute changes on children. These changes otherwise require
+            // attribute observers on every child. Testing has shown this
+            // approach to be more efficient. 
+            // TODO(sorvell): do we still need to include an option to defeat
+            // attribute tracking?
+            this._observer.observe(this.node, { childList: true });
+          }
+          baseSetup.call(this);
+        },
+
+        _cleanup: function() {
+          this._observer.disconnect();
+          this._observer = null;
+          this._mutationHandler = null;
+          Polymer.dom.removeStaticFlush(this._boundFlush);
+          baseCleanup.call(this);
+        },
+
+        _flush: function() {
+          if (this._observer) {
+            this._mutationHandler(this._observer.takeRecords());
+          }
+        },
+
+        enableShadowAttributeTracking: function() {
+          if (this._observer) {
+            // provoke all listeners needed for <content> observation
+            // to always call listeners when no-op changes occur (which may
+            // affect lower distributions.
+            this._makeContentListenersAlwaysNotify();
+            this._observer.disconnect();
+            this._observer.observe(this.node, { 
+              childList: true,
+              attributes: true,
+              subtree: true
+            });
+            var root = this.domApi.getOwnerRoot();
+            var host = root && root.host;
+            if (host && Polymer.dom(host).observer) {
+              Polymer.dom(host).observer.enableShadowAttributeTracking();
+            }
+          }
+        },
+
+        _makeContentListenersAlwaysNotify: function() {
+          for (var i=0, h; i < this._listeners.length ; i++) {
+            h = this._listeners[i];
+            h._alwaysNotify = h._isContentListener;
+          }
+        }
+
+      });
+
+    }
+
+})();
+
+</script><script>
+(function() {
+  'use strict';
+
+    var DomApi = Polymer.DomApi.ctor;
+    var Settings = Polymer.Settings;
+
+    /**
+     * DomApi.DistributedNodesObserver notifies when the list returned by 
+     * a <content> element's `getDistributedNodes()` may have changed.
+     * It is not meant to be used directly; it is used by
+     * `Polymer.dom(node).observeNodes(callback)` to observe changes to
+     * `<content>.getDistributedNodes()`.
+     */
+    DomApi.DistributedNodesObserver = function(domApi) {
+      DomApi.EffectiveNodesObserver.call(this, domApi);
+    };
+
+    DomApi.DistributedNodesObserver.prototype = 
+      Object.create(DomApi.EffectiveNodesObserver.prototype);
+
+    Polymer.Base.extend(DomApi.DistributedNodesObserver.prototype, {
+
+      // NOTE: ShadyDOM distribute provokes notification of these observers
+      // so no setup is required.
+      _setup: function() {},
+
+      _cleanup: function() {},
+
+      // no need to update sub-elements since <content> does not nest
+      // (but note that <slot> will)
+      _beforeCallListeners: function() {},
+
+      _getEffectiveNodes: function() {
+        return this.domApi.getDistributedNodes();
+      }
+
+    });
+
+    if (Settings.useShadow) {
+      
+      Polymer.Base.extend(DomApi.DistributedNodesObserver.prototype, {
+        
+        // NOTE: Under ShadowDOM we must observe the host element for
+        // changes.
+        _setup: function() {
+          if (!this._observer) {
+            var root = this.domApi.getOwnerRoot();
+            var host = root && root.host;
+            if (host) {
+              this._observer = Polymer.dom(host).observeNodes(
+                this._scheduleNotify.bind(this));
+              // NOTE: we identify this listener as needed for <content>
+              // notification so that enableShadowAttributeTracking 
+              // can find these observers an ensure that we pass always 
+              // pass notifications down.
+              this._observer._isContentListener = true;
+              if (this._hasAttrSelect()) {
+                Polymer.dom(host).observer.enableShadowAttributeTracking();
+              }
+            }
+          }
+        },
+
+        _hasAttrSelect: function() {
+          var select = this.node.getAttribute('select');
+          return select && select.match(/[[.]+/);
+        },
+
+        _cleanup: function() {
+          var root = this.domApi.getOwnerRoot();
+          var host = root && root.host;
+          if (host) {
+            Polymer.dom(host).unobserveNodes(this._observer);
+          }
+          this._observer = null;
+        }
+
+      });
+    
+    }
+
+})();
+
+</script><script>
+
   (function() {
     /**
-
       Implements a pared down version of ShadowDOM's scoping, which is easy to
       polyfill across browsers.
-
     */
+    var hasDomApi = Polymer.DomApi.hasDomApi;
+
     Polymer.Base._addFeature({
 
       _prepShady: function() {
@@ -5485,6 +5951,9 @@ Polymer.domInnerHTML = (function() {
           this.shadyRoot._distributionClean = true;
           if (hasInsertionPoint(this.shadyRoot)) {
             this._composeTree();
+            // NOTE: send a signal to insertion points that we have distributed
+            // which informs effective children observers
+            notifyContentObservers(this.shadyRoot);
           } else {
             if (!this.shadyRoot._hasDistributed) {
               this.textContent = '';
@@ -5498,6 +5967,11 @@ Polymer.domInnerHTML = (function() {
               var children = this._composeNode(this);
               this._updateChildNodes(this, children);
             }
+          }
+          // NOTE: send a signal to any Polymer.dom node observers
+          // to report the initial set of childNodes
+          if (!this.shadyRoot._hasDistributed) {
+            notifyInitialDistribution(this);
           }
           this.shadyRoot._hasDistributed = true;
         }
@@ -5805,6 +6279,21 @@ Polymer.domInnerHTML = (function() {
       }
     }
 
+    function notifyContentObservers(root) {
+      for (var i=0, c; i < root._insertionPoints.length; i++) {
+        c = root._insertionPoints[i];
+        if (hasDomApi(c)) {
+          Polymer.dom(c).notifyObserver();
+        }
+      }
+    }
+
+    function notifyInitialDistribution(host) {
+      if (hasDomApi(host)) {
+        Polymer.dom(host).notifyObserver();
+      }
+    }
+
     var needsUpgrade = window.CustomElements && !CustomElements.useNative;
 
     function upgradeLightChildren(children) {
@@ -5978,26 +6467,91 @@ Polymer.domInnerHTML = (function() {
           this._parseElementAnnotations(node, list);
     },
 
-    _testEscape: function(value) {
-      var escape = value.slice(0, 2);
-      if (escape === '{{' || escape === '[[') {
-        return escape;
+    _bindingRegex: /([^{[]*)({{|\[\[)([^}\]]*)(?:]]|}})/g,
+
+    // TODO(kschaaf): We could modify this to allow an escape mechanism by
+    // looking for the escape sequence in each of the matches and converting
+    // the part back to a literal type, and then bailing if only literals
+    // were found
+    _parseBindings: function(text) {
+      var re = this._bindingRegex;
+      var parts = [];
+      var m, lastIndex;
+      // Example: "literal1{{binding1}}literal2[[binding2]]final"
+      // Regex matches:
+      //       Iteration 1:  Iteration 2:
+      // m[1]: 'literal1'    'literal2'
+      // m[2]: '{{'          '[['
+      // m[3]: 'binding1'    'binding2'
+      // 'final' is manually substring'ed from end
+      while ((m = re.exec(text)) !== null) {
+        // Add literal part
+        if (m[1]) {
+          parts.push({literal: m[1]});
+        }
+        // Add binding part
+        // Mode (one-way or two)
+        var mode = m[2][0];
+        var value = m[3].trim();
+        // Negate
+        var negate = false;
+        if (value[0] == '!') {
+          negate = true;
+          value = value.substring(1).trim();
+        }
+        var customEvent, notifyEvent, colon;
+        if (mode == '{' && (colon = value.indexOf('::')) > 0) {
+          notifyEvent = value.substring(colon + 2);
+          value = value.substring(0, colon);
+          customEvent = true;
+        }
+        parts.push({
+          compoundIndex: parts.length,
+          value: value,
+          mode: mode,
+          negate: negate,
+          event: notifyEvent,
+          customEvent: customEvent
+        });
+        lastIndex = re.lastIndex;
       }
+      // Add a final literal part
+      if (lastIndex && lastIndex < text.length) {
+        var literal = text.substring(lastIndex);
+        if (literal) {
+          parts.push({
+            literal: literal
+          });
+        }
+      }
+      if (parts.length) {
+        return parts;
+      }
+    },
+
+    _literalFromParts: function(parts) {
+      var s = '';
+      for (var i=0; i<parts.length; i++) {
+        var literal = parts[i].literal;
+        s += literal || '';
+      }
+      return s;
     },
 
     // add annotations gleaned from TextNode `node` to `list`
     _parseTextNodeAnnotation: function(node, list) {
-      var v = node.textContent;
-      var escape = this._testEscape(v);
-      if (escape) {
-        // NOTE: use a space here so the textNode remains; some browsers
-        // (IE) evacipate an empty textNode.
-        node.textContent = ' ';
+      var parts = this._parseBindings(node.textContent);
+      if (parts) {
+        // Initialize the textContent with any literal parts
+        // NOTE: default to a space here so the textNode remains; some browsers
+        // (IE) evacipate an empty textNode following cloneNode/importNode.
+        node.textContent = this._literalFromParts(parts) || ' ';
         var annote = {
           bindings: [{
             kind: 'text',
-            mode: escape[0],
-            value: v.slice(2, -2).trim()
+            name: 'textContent',
+            parts: parts,
+            isCompound: parts.length !== 1
           }]
         };
         list.push(annote);
@@ -6042,7 +6596,7 @@ Polymer.domInnerHTML = (function() {
             !node.hasAttribute('preserve-content')) {
             this._parseTemplate(node, i, list, annote);
           }
-          // collapse adjacent textNodes: fixes an IE issue that can cause 
+          // collapse adjacent textNodes: fixes an IE issue that can cause
           // text nodes to be inexplicably split =(
           // note that root.normalize() should work but does not so we do this
           // manually.
@@ -6092,14 +6646,15 @@ Polymer.domInnerHTML = (function() {
     // TODO(sjmiles): the distinction between an `annotation` and
     // `annotation data` is not as clear as it could be
     _parseNodeAttributeAnnotations: function(node, annotation) {
-      for (var i=node.attributes.length-1, a; (a=node.attributes[i]); i--) {
-        var n = a.name, v = a.value;
-        // id (unless actually an escaped binding annotation)
-        if (n === 'id' && !this._testEscape(v)) {
-          annotation.id = v;
-        }
+      // Make copy of original attribute list, since the order may change
+      // as attributes are added and removed
+      var attrs = Array.prototype.slice.call(node.attributes);
+      for (var i=attrs.length-1, a; (a=attrs[i]); i--) {
+        var n = a.name;
+        var v = a.value;
+        var b;
         // events (on-*)
-        else if (n.slice(0, 3) === 'on-') {
+        if (n.slice(0, 3) === 'on-') {
           node.removeAttribute(n);
           annotation.events.push({
             name: n.slice(3),
@@ -6107,53 +6662,41 @@ Polymer.domInnerHTML = (function() {
           });
         }
         // bindings (other attributes)
-        else {
-          var b = this._parseNodeAttributeAnnotation(node, n, v);
-          if (b) {
-            annotation.bindings.push(b);
-          }
+        else if (b = this._parseNodeAttributeAnnotation(node, n, v)) {
+          annotation.bindings.push(b);
+        }
+        // static id
+        else if (n === 'id') {
+          annotation.id = v;
         }
       }
     },
 
     // construct annotation data from a generic attribute, or undefined
-    _parseNodeAttributeAnnotation: function(node, n, v) {
-      var escape = this._testEscape(v);
-      if (escape) {
-        var customEvent;
-        // Cache name (`n` will be mangled)
-        var name = n;
-        // Mode (one-way or two)
-        var mode = escape[0];
-        v = v.slice(2, -2).trim();
-        // Negate
-        var not = false;
-        if (v[0] == '!') {
-          v = v.substring(1);
-          not = true;
-        }
+    _parseNodeAttributeAnnotation: function(node, name, value) {
+      var parts = this._parseBindings(value);
+      if (parts) {
         // Attribute or property
+        var origName = name;
         var kind = 'property';
-        if (n[n.length-1] == '$') {
-          name = n.slice(0, -1);
+        if (name[name.length-1] == '$') {
+          name = name.slice(0, -1);
           kind = 'attribute';
         }
-        // Custom notification event
-        var notifyEvent, colon;
-        if (mode == '{' && (colon = v.indexOf('::')) > 0) {
-          notifyEvent = v.substring(colon + 2);
-          v = v.substring(0, colon);
-          customEvent = true;
+        // Initialize attribute bindings with any literal parts
+        var literal = this._literalFromParts(parts);
+        if (literal && kind == 'attribute') {
+          node.setAttribute(name, literal);
         }
         // Clear attribute before removing, since IE won't allow removing
         // `value` attribute if it previously had a value (can't
         // unconditionally set '' before removing since attributes with `$`
         // can't be set using setAttribute)
-        if (node.localName == 'input' && n == 'value') {
-          node.setAttribute(n, '');
+        if (node.localName == 'input' && name == 'value') {
+          node.setAttribute(origName, '');
         }
         // Remove annotation
-        node.removeAttribute(n);
+        node.removeAttribute(origName);
         // Case hackery: attributes are lower-case, but bind targets
         // (properties) are case sensitive. Gambit is to map dash-case to
         // camel-case: `foo-bar` becomes `fooBar`.
@@ -6163,12 +6706,10 @@ Polymer.domInnerHTML = (function() {
         }
         return {
           kind: kind,
-          mode: mode,
           name: name,
-          value: v,
-          negate: not,
-          event: notifyEvent,
-          customEvent: customEvent
+          parts: parts,
+          literal: literal,
+          isCompound: parts.length !== 1
         };
       }
     },
@@ -6396,9 +6937,14 @@ TODO(sjmiles): this module should produce either syntactic metadata
         // Parse bindings for methods & path roots (models)
         for (var j=0; j<note.bindings.length; j++) {
           var b = note.bindings[j];
-          b.signature = this._parseMethod(b.value);
-          if (!b.signature) {
-            b.model = this._modelForPath(b.value);
+          for (var k=0; k<b.parts.length; k++) {
+            var p = b.parts[k];
+            if (!p.literal) {
+              p.signature = this._parseMethod(p.value);
+              if (!p.signature) {
+                p.model = this._modelForPath(p.value);
+              }
+            }
           }
         }
         // Recurse into nested templates & bind parent props
@@ -6411,10 +6957,12 @@ TODO(sjmiles): this module should produce either syntactic metadata
             bindings.push({
               index: note.index,
               kind: 'property',
-              mode: '{',
               name: '_parent_' + prop,
-              model: prop,
-              value: prop
+              parts: [{
+                mode: '{',
+                model: prop,
+                value: prop
+              }]
             });
           }
           note.bindings = note.bindings.concat(bindings);
@@ -6431,14 +6979,16 @@ TODO(sjmiles): this module should produce either syntactic metadata
       notes.forEach(function(n) {
         // Find all bindings to parent.* and spread them into _parentPropChain
         n.bindings.forEach(function(b) {
-          if (b.signature) {
-            var args = b.signature.args;
-            for (var k=0; k<args.length; k++) {
-              pp[args[k].model] = true;
+          b.parts.forEach(function(p) {
+            if (p.signature) {
+              var args = p.signature.args;
+              for (var k=0; k<args.length; k++) {
+                pp[args[k].model] = true;
+              }
+            } else {
+              pp[p.model] = true;
             }
-          } else {
-            pp[b.model] = true;
-          }
+          });
         });
         // Merge child _parentProps into this _parentProps
         if (n.templateContent) {
@@ -6467,21 +7017,61 @@ TODO(sjmiles): this module should produce either syntactic metadata
     },
 
     // push configuration references at configure time
-    _configureAnnotationReferences: function() {
-      this._configureTemplateContent();
+    _configureAnnotationReferences: function(config) {
+      var notes = this._notes;
+      var nodes = this._nodes;
+      for (var i=0; i<notes.length; i++) {
+        var note = notes[i];
+        var node = nodes[i];
+        this._configureTemplateContent(note, node);
+        this._configureCompoundBindings(note, node);
+      }
     },
 
     // nested template contents have been stored prototypically to avoid
     // unnecessary duplication, here we put references to the
     // indirected contents onto the nested template instances
-    _configureTemplateContent: function() {
-      this._notes.forEach(function(note, i) {
-        if (note.templateContent) {
-          // note: we can rely on _nodes being set here and having the same
-          // index as _notes
-          this._nodes[i]._content = note.templateContent;
+    _configureTemplateContent: function(note, node) {
+      if (note.templateContent) {
+        // note: we can rely on _nodes being set here and having the same
+        // index as _notes
+        node._content = note.templateContent;
+      }
+    },
+
+    // Compound bindings utilize private storage on the node to store
+    // the current state of each value that will be concatenated to generate
+    // the final property/attribute/text value
+    // Here we initialize the private storage array on the node with any
+    // literal parts that won't change (could get fancy and use WeakMap),
+    // and configure property bindings to children with the literal parts
+    // (textContent and annotations were already initialized in the template)
+    _configureCompoundBindings: function(note, node) {
+      var bindings = note.bindings;
+      for (var i=0; i<bindings.length; i++) {
+        var binding = bindings[i];
+        if (binding.isCompound) {
+          // Create compound storage map
+          var storage = node.__compoundStorage__ ||
+            (node.__compoundStorage__ = {});
+          var parts = binding.parts;
+          // Copy literals from parts into storage for this binding
+          var literals = new Array(parts.length);
+          for (var j=0; j<parts.length; j++) {
+            literals[j] = parts[j].literal;
+          }
+          var name = binding.name;
+          storage[name] = literals;
+          // Configure properties with their literal parts
+          if (binding.literal && binding.kind == 'property') {
+            if (node._configValue) {
+              node._configValue(name, binding.literal);
+            } else {
+              node[name] = binding.literal;
+            }
+          }
         }
-      }, this);
+      }
     },
 
     // construct `$` map (from id annotations)
@@ -6590,8 +7180,17 @@ TODO(sjmiles): this module should produce either syntactic metadata
      * @param {string} methodName Name of handler method on `this` to call.
      */
     listen: function(node, eventName, methodName) {
-      this._listen(node, eventName,
-        this._createEventHandler(node, eventName, methodName));
+      var handler = this._recallEventHandler(this, eventName, node, methodName);
+      // reuse cache'd handler
+      if (!handler) {
+        handler = this._createEventHandler(node, eventName, methodName);
+      }
+      // don't call _listen if we are already listening
+      if (handler._listening) {
+        return;
+      }
+      this._listen(node, eventName, handler);
+      handler._listening = true;
     },
 
     _boundListenerKey: function(eventName, methodName) {
@@ -6635,6 +7234,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
             methodName + '` not defined'));
         }
       };
+      handler._listening = false;
       this._recordEventHandler(host, eventName, node, methodName, handler);
       return handler;
     },
@@ -6650,9 +7250,11 @@ TODO(sjmiles): this module should produce either syntactic metadata
      anymore.
      */
     unlisten: function(node, eventName, methodName) {
+      // leave handler in map for cache purposes
       var handler = this._recallEventHandler(this, eventName, node, methodName);
       if (handler) {
         this._unlisten(node, eventName, handler);
+        handler._listening = false;
       }
     },
 
@@ -7422,9 +8024,9 @@ Polymer.Async = {
   }
 };
 
-new (window.MutationObserver || JsMutationObserver)
-  (Polymer.Async._atEndOfMicrotask.bind(Polymer.Async))
-  .observe(Polymer.Async._twiddle, {characterData: true});
+new window.MutationObserver(function() {
+    Polymer.Async._atEndOfMicrotask();
+  }).observe(Polymer.Async._twiddle, {characterData: true});
 
 </script>
 <script>
@@ -7581,6 +8183,63 @@ Polymer.Debounce = (function() {
     },
 
     /**
+     * Returns a list of nodes that are the effective childNodes. The effective
+     * childNodes list is the same as the element's childNodes except that 
+     * any `<content>` elements are replaced with the list of nodes distributed
+     * to the `<content>`, the result of its `getDistributedNodes` method.
+     *
+     * @method getEffectiveChildNodes
+     * @return {Array<Node>} List of effctive child nodes.
+     */
+    getEffectiveChildNodes: function() {
+      return Polymer.dom(this).getEffectiveChildNodes();
+    },
+
+    /**
+     * Returns a list of elements that are the effective children. The effective
+     * children list is the same as the element's children except that 
+     * any `<content>` elements are replaced with the list of elements 
+     * distributed to the `<content>`.
+     *
+     * @method getEffectiveChildren
+     * @return {Array<Node>} List of effctive children.
+     */
+    getEffectiveChildren: function() {
+      var list = Polymer.dom(this).getEffectiveChildNodes();
+      return list.filter(function(n) {
+        return (n.nodeType === Node.ELEMENT_NODE);
+      });
+    },
+
+    /**
+     * Returns a string of text content that is the concatenation of the 
+     * text content's of the element's effective childNodes (the elements
+     * returned by <a href="#getEffectiveChildNodes>getEffectiveChildNodes</a>.
+     *
+     * @method getEffectiveTextContent
+     * @return {Array<Node>} List of effctive children.
+     */
+    getEffectiveTextContent: function() {
+      var cn = this.getEffectiveChildNodes();
+      var tc = [];
+      for (var i=0, c; c = cn[i]; i++) {
+        if (c.nodeType !== Node.COMMENT_NODE) {
+          tc.push(Polymer.dom(c).textContent);
+        }
+      }
+      return tc.join('');
+    },
+
+    queryEffectiveChildren: function(slctr) {
+      var e$ = Polymer.dom(this).queryDistributedElements(slctr);
+      return e$ && e$[0];
+    },
+
+    queryAllEffectiveChildren: function(slctr) {
+      return Polymer.dom(this).queryAllDistributedElements(slctr);
+    },
+
+    /**
      * Returns a list of nodes distributed to this element's `<content>`.
      *
      * If this element contans more than one `<content>` in its local DOM,
@@ -7618,15 +8277,15 @@ Polymer.Debounce = (function() {
     },
 
     /**
-     * Dispatches a custom event with an optional detail object.
+     * Dispatches a custom event with an optional detail value.
      *
      * @method fire
      * @param {String} type Name of event type.
-     * @param {Object=} detail Detail object containing event-specific
+     * @param {*=} detail Detail value containing event-specific
      *   payload.
      * @param {Object=} options Object specifying options.  These may include:
      *  `bubbles` (boolean, defaults to `true`),
-     *  `cancelable` (boolean, defaults to false), and 
+     *  `cancelable` (boolean, defaults to false), and
      *  `node` on which to fire the event (HTMLElement, defaults to `this`).
      * @return {CustomEvent} The new event that was fired.
      */
@@ -7675,11 +8334,11 @@ Polymer.Debounce = (function() {
 
     /**
      * Removes an item from an array, if it exists.
-     * 
-     * If the array is specified by path, a change notification is 
+     *
+     * If the array is specified by path, a change notification is
      * generated, so that observers, data bindings and computed
-     * properties watching that path can update. 
-     * 
+     * properties watching that path can update.
+     *
      * If the array is passed directly, **no change
      * notification is generated**.
      *
@@ -7697,7 +8356,7 @@ Polymer.Debounce = (function() {
           return path.splice(index, 1);
         }
       } else {
-        var arr = this.get(path);
+        var arr = this._get(path);
         index = arr.indexOf(item);
         if (index >= 0) {
           return this.splice(path, index, 1);
@@ -7782,6 +8441,29 @@ Polymer.Debounce = (function() {
         }
       }
       return elt;
+    },
+
+    /**
+     * Checks whether an element is in this element's light DOM tree.
+     *
+     * @method isLightDescendant
+     * @param {HTMLElement=} node The element to be checked.
+     * @return {Boolean} true if node is in this element's light DOM tree.
+     */
+    isLightDescendant: function(node) {
+      return this.contains(node) &&
+          Polymer.dom(this).getOwnerRoot() === Polymer.dom(node).getOwnerRoot();
+    },
+
+    /**
+     * Checks whether an element is in this element's local DOM tree.
+     *
+     * @method isLocalDescendant
+     * @param {HTMLElement=} node The element to be checked.
+     * @return {Boolean} true if node is in this element's local DOM tree.
+     */
+    isLocalDescendant: function(node) {
+      return this.root === Polymer.dom(node).getOwnerRoot();
     }
 
   });
@@ -7992,7 +8674,7 @@ Polymer.Debounce = (function() {
       return function(e, target) {
         if (!bogusTest(e, target)) {
           if (e.detail && e.detail.path) {
-            this.notifyPath(this._fixPath(path, property, e.detail.path),
+            this._notifyPath(this._fixPath(path, property, e.detail.path),
               e.detail.value);
           } else {
             var value = target[property];
@@ -8034,15 +8716,16 @@ Polymer.Debounce = (function() {
 
     _shouldAddListener: function(effect) {
       return effect.name &&
-             effect.mode === '{' &&
-             !effect.negate &&
-             effect.kind != 'attribute'
-             ;
+             effect.kind != 'attribute' &&
+             effect.kind != 'text' &&
+             !effect.isCompound &&
+             effect.parts[0].mode === '{' &&
+             !effect.parts[0].negate;
     },
 
     _annotationEffect: function(source, value, effect) {
       if (source != effect.value) {
-        value = this.get(effect.value);
+        value = this._get(effect.value);
         this.__data__[effect.value] = value;
       }
       var calc = effect.negate ? !value : value;
@@ -8050,7 +8733,7 @@ Polymer.Debounce = (function() {
       // are used, since the target element may not dirty check (e.g. <input>)
       if (!effect.customEvent ||
           this._nodes[effect.index][effect.name] !== calc) {
-        return this._applyEffectValue(calc, effect);
+        return this._applyEffectValue(effect, calc);
       }
     },
 
@@ -8097,7 +8780,7 @@ Polymer.Debounce = (function() {
       if (args) {
         var fn = this[effect.method];
         if (fn) {
-          this.__setProperty(effect.property, fn.apply(this, args));
+          this.__setProperty(effect.name, fn.apply(this, args));
         } else {
           this._warn(this._logf('_computeEffect', 'compute method `' +
             effect.method + '` not defined'));
@@ -8115,7 +8798,7 @@ Polymer.Debounce = (function() {
           if (effect.negate) {
             computedvalue = !computedvalue;
           }
-          this._applyEffectValue(computedvalue, effect);
+          this._applyEffectValue(effect, computedvalue);
         }
       } else {
         computedHost._warn(computedHost._logf('_annotatedComputationEffect',
@@ -8135,7 +8818,7 @@ Polymer.Debounce = (function() {
         if (arg.literal) {
           v = arg.value;
         } else if (arg.structured) {
-          v = Polymer.Base.get(name, model);
+          v = Polymer.Base._get(name, model);
         } else {
           v = model[name];
         }
@@ -8231,7 +8914,7 @@ Polymer.Debounce = (function() {
           method: sig.method,
           args: sig.args,
           trigger: arg,
-          property: name
+          name: name
         });
       }, this);
     },
@@ -8280,39 +8963,52 @@ Polymer.Debounce = (function() {
       if (Polymer.Bind._shouldAddListener(note)) {
         // <node>.on.<dash-case-property>-changed: <path> = e.detail.value
         Polymer.Bind._addAnnotatedListener(this, index,
-          note.name, note.value, note.event);
+          note.name, note.parts[0].value, note.parts[0].event);
       }
-      if (note.signature) {
-        this._addAnnotatedComputationEffect(note, index);
-      } else {
-        // capture the node index
-        note.index = index;
-        // add 'annotation' binding effect for property 'model'
-        this._addPropertyEffect(note.model, 'annotation', note);
+      for (var i=0; i<note.parts.length; i++) {
+        var part = note.parts[i];
+        if (part.signature) {
+          this._addAnnotatedComputationEffect(note, part, index);
+        } else if (!part.literal) {
+          // add 'annotation' binding effect for property 'model'
+          this._addPropertyEffect(part.model, 'annotation', {
+            kind: note.kind,
+            index: index,
+            name: note.name,
+            value: part.value,
+            isCompound: note.isCompound,
+            compoundIndex: part.compoundIndex,
+            event: part.event,
+            customEvent: part.customEvent,
+            negate: part.negate
+          });
+        }
       }
     },
 
-    _addAnnotatedComputationEffect: function(note, index) {
-      var sig = note.signature;
+    _addAnnotatedComputationEffect: function(note, part, index) {
+      var sig = part.signature;
       if (sig.static) {
-        this.__addAnnotatedComputationEffect('__static__', index, note, sig, null);
+        this.__addAnnotatedComputationEffect('__static__', index, note, part, null);
       } else {
         sig.args.forEach(function(arg) {
           if (!arg.literal) {
-            this.__addAnnotatedComputationEffect(arg.model, index, note, sig, arg);
+            this.__addAnnotatedComputationEffect(arg.model, index, note, part, arg);
           }
         }, this);
       }
     },
 
-    __addAnnotatedComputationEffect: function(property, index, note, sig, trigger) {
+    __addAnnotatedComputationEffect: function(property, index, note, part, trigger) {
       this._addPropertyEffect(property, 'annotatedComputation', {
         index: index,
+        isCompound: note.isCompound,
+        compoundIndex: part.compoundIndex,
         kind: note.kind,
-        property: note.name,
-        negate: note.negate,
-        method: sig.method,
-        args: sig.args,
+        name: note.name,
+        negate: part.negate,
+        method: part.signature.method,
+        args: part.signature.args,
         trigger: trigger
       });
     },
@@ -8400,11 +9096,14 @@ Polymer.Debounce = (function() {
       Polymer.Bind.setupBindListeners(this);
     },
 
-    _applyEffectValue: function(value, info) {
+    _applyEffectValue: function(info, value) {
       var node = this._nodes[info.index];
-      // TODO(sorvell): ideally, the info object is normalized for easy
-      // lookup here.
-      var property = info.property || info.name || 'textContent';
+      var property = info.name;
+      if (info.isCompound) {
+        var storage = node.__compoundStorage__[property];
+        storage[info.compoundIndex] = value;
+        value = storage.join('');
+      }
       // special processing for 'class' and 'className'; 'class' handled
       // when attr is serialized.
       if (info.kind == 'attribute') {
@@ -8559,12 +9258,14 @@ Polymer.Debounce = (function() {
           var fx = fx$[p];
           if (fx) {
             for (var i=0, l=fx.length, x; (i<l) && (x=fx[i]); i++) {
-              if (x.kind === 'annotation') {
+              // TODO(kschaaf): compound bindings (as well as computed effects)
+              // are excluded from top-down configure for now; to be revisited
+              if (x.kind === 'annotation' && !x.isCompound) {
                 var node = this._nodes[x.effect.index];
                 // seeding configuration only
                 if (node._configValue) {
                   var value = (p === x.effect.value) ? config[p] :
-                    this.get(x.effect.value, config);
+                    this._get(x.effect.value, config);
                   node._configValue(x.effect.name, value);
                 }
               }
@@ -8686,10 +9387,12 @@ Polymer.Debounce = (function() {
 
     Polymer.Base._addFeature({
       /**
-       * Notify that a path has changed. For example:
+       * Notify that a path has changed.
        *
-       *   this.item.user.name = 'Bob';
-       *   this.notifyPath('item.user.name', this.item.user.name);
+       * Example:
+       *
+       *     this.item.user.name = 'Bob';
+       *     this.notifyPath('item.user.name', this.item.user.name);
        *
        * @param {string} path Path that should be notified.
        * @param {*} value Value of the specified path.
@@ -8700,6 +9403,15 @@ Polymer.Debounce = (function() {
        *   based on a dirty check of whether the new value was already known.
       */
       notifyPath: function(path, value, fromAbove) {
+        // Convert any array indices to keys before notifying path
+        var info = {};
+        path = this._get(path, this, info);
+        // Notify change to key-based path
+        this._notifyPath(info.path, value, fromAbove);
+      },
+
+      // Note: this implemetation only accepts key-based array paths
+      _notifyPath: function(path, value, fromAbove) {
         var old = this._propertySetter(path, value);
         // manual dirty checking for now...
         // NaN is always not equal to itself,
@@ -8715,7 +9427,7 @@ Polymer.Debounce = (function() {
           // is coming from above already (avoid wasted event dispatch)
           if (!fromAbove) {
             // TODO(sorvell): should only notify if notify: true?
-            this._notifyPath(path, value);
+            this._notifyPathUp(path, value);
           }
           // console.groupEnd((this.localName || this.dataHost.id + '-' + this.dataHost.dataHost.index) + '#' + (this.id || this.index) + ' ' + path, value);
           return true;
@@ -8756,7 +9468,7 @@ Polymer.Debounce = (function() {
        *   or an array of path parts (e.g. `['foo.bar', 'baz']`).  Note that
        *   bracketed expressions are not supported; string-based path parts
        *   *must* be separated by dots.  Note that when dereferencing array
-       *   indicies, the index may be used as a dotted part directly
+       *   indices, the index may be used as a dotted part directly
        *   (e.g. `users.12.name` or `['users', 12, 'name']`).
        * @param {*} value Value to set at the specified path.
        * @param {Object=} root Root object from which the path is evaluated.
@@ -8767,29 +9479,56 @@ Polymer.Debounce = (function() {
         var array;
         var last = parts[parts.length-1];
         if (parts.length > 1) {
+          // Loop over path parts[0..n-2] and dereference
           for (var i=0; i<parts.length-1; i++) {
             var part = parts[i];
-            prop = prop[part];
-            if (array && (parseInt(part) == part)) {
-              parts[i] = Polymer.Collection.get(array).getKey(prop);
+            if (array && part[0] == '#') {
+              // Part was key; lookup item in collection
+              prop = Polymer.Collection.get(array).getItem(part);
+            } else {
+              // Get item from simple property dereference
+              prop = prop[part];
+              if (array && (parseInt(part, 10) == part)) {
+                // Translate array indices to collection keys for path notificaiton
+                parts[i] = Polymer.Collection.get(array).getKey(prop);
+              }
             }
             if (!prop) {
               return;
             }
+            // Cache previous part if it is an array
             array = Array.isArray(prop) ? prop : null;
           }
-          if (array && (parseInt(last) == last)) {
+          // Special handling when last part is a array item: need to replace
+          // item in collection associated with key for that item
+          if (array) {
             var coll = Polymer.Collection.get(array);
-            var old = prop[last];
-            var key = coll.getKey(old);
-            parts[i] = key;
-            coll.setItem(key, value);
+            if (last[0] == '#') {
+              // Part was key; lookup item in collection
+              var key = last;
+              var old = coll.getItem(key);
+              // Update last part from key to index: O(n) lookup unavoidable
+              last = array.indexOf(old);
+              // Replace item associated with key in collection
+              coll.setItem(key, value);
+            } else if (parseInt(last, 10) == last) {
+              // Dereference index & lookup collection key
+              var old = prop[last];
+              var key = coll.getKey(old);
+              // Translate array indices to collection keys for path notificaiton
+              parts[i] = key;
+              // Replace item associated with key in collection
+              coll.setItem(key, value);
+            }
           }
+          // Set value to object at end of path
           prop[last] = value;
+          // Notify observers of path change
           if (!root) {
-            this.notifyPath(parts.join('.'), value);
+            this._notifyPath(parts.join('.'), value);
           }
         } else {
+          // Simple property set
           prop[path] = value;
         }
       },
@@ -8807,23 +9546,47 @@ Polymer.Debounce = (function() {
        *   or an array of path parts (e.g. `['foo.bar', 'baz']`).  Note that
        *   bracketed expressions are not supported; string-based path parts
        *   *must* be separated by dots.  Note that when dereferencing array
-       *   indicies, the index may be used as a dotted part directly
+       *   indices, the index may be used as a dotted part directly
        *   (e.g. `users.12.name` or `['users', 12, 'name']`).
        * @param {Object=} root Root object from which the path is evaluated.
        * @return {*} Value at the path, or `undefined` if any part of the path
        *   is undefined.
        */
       get: function(path, root) {
+        return this._get(path, root);
+      },
+
+      // If `info` object is supplied, a `path` property will be added to it
+      // containing the path with array indices converted to keys, for use
+      // by the private _notifyPath / _notifySplice implementations
+      _get: function(path, root, info) {
         var prop = root || this;
         var parts = this._getPathParts(path);
-        var last = parts.pop();
-        while (parts.length) {
-          prop = prop[parts.shift()];
+        var array;
+        // Loop over path parts[0..n-1] and dereference
+        for (var i=0; i<parts.length; i++) {
           if (!prop) {
             return;
           }
+          var part = parts[i];
+          if (array && part[0] == '#') {
+            // Part was key; lookup item in collection
+            prop = Polymer.Collection.get(array).getItem(part);
+          } else {
+            // Get item from simple property dereference
+            prop = prop[part];
+            if (info && array && (parseInt(part, 10) == part)) {
+              // Translate array indices to collection keys for path notificaiton
+              parts[i] = Polymer.Collection.get(array).getKey(prop);
+            }
+          }
+          // Cache previous part if it is an array
+          array = Array.isArray(prop) ? prop : null;
         }
-        return prop[last];
+        if (info) {
+          info.path = parts.join('.');
+        }
+        return prop;
       },
 
       _pathEffector: function(path, value) {
@@ -8897,7 +9660,7 @@ Polymer.Debounce = (function() {
         this._boundPaths = this._boundPaths || {};
         if (from) {
           this._boundPaths[to] = from;
-          // this.set(to, this.get(from));
+          // this.set(to, this._get(from));
         } else {
           this.unlinkPaths(to);
           // this.set(to, from);
@@ -8934,7 +9697,7 @@ Polymer.Debounce = (function() {
         return property + path.slice(root.length);
       },
 
-      _notifyPath: function(path, value) {
+      _notifyPathUp: function(path, value) {
         var rootName = this._modelForPath(path);
         var dashCaseName = Polymer.CaseMap.camelToDashCase(rootName);
         var eventName = dashCaseName + this._EVENT_CHANGED;
@@ -8951,25 +9714,67 @@ Polymer.Debounce = (function() {
 
       _EVENT_CHANGED: '-changed',
 
+      /**
+       * Notify that an array has changed.
+       *
+       * Example:
+       *
+       *     this.items = [ {name: 'Jim'}, {name: 'Todd'}, {name: 'Bill'} ];
+       *     ...
+       *     this.items.splice(1, 1, {name: 'Sam'});
+       *     this.items.push({name: 'Bob'});
+       *     this.notifySplices('items', [
+       *       { index: 1, removed: [{name: 'Todd'}], addedCount: 1, obect: this.items, type: 'splice' },
+       *       { index: 3, removed: [], addedCount: 1, object: this.items, type: 'splice'}
+       *     ]);
+       *
+       * @param {string} path Path that should be notified.
+       * @param {Array} splices Array of splice records indicating ordered
+       *   changes that occurred to the array. Each record should have the
+       *   following fields:
+       *    * index: index at which the change occurred
+       *    * removed: array of items that were removed from this index
+       *    * addedCount: number of new items added at this index
+       *    * object: a reference to the array in question
+       *    * type: the string literal 'splice'
+       *
+       *   Note that splice records _must_ be normalized such that they are
+       *   reported in index order (raw results from `Object.observe` are not
+       *   ordered and must be normalized/merged before notifying).
+      */
+      notifySplices: function(path, splices) {
+        var info = {};
+        var array = this._get(path, this, info);
+        // Notify change to key-based path
+        this._notifySplices(array, info.path, splices);
+      },
+
+      // Note: this implemetation only accepts key-based array paths
+      _notifySplices: function(array, path, splices) {
+        var change = {
+          keySplices: Polymer.Collection.applySplices(array, splices),
+          indexSplices: splices
+        };
+        if (!array.hasOwnProperty('splices')) {
+          Object.defineProperty(array, 'splices',
+            {configurable: true, writable: true});
+        }
+        array.splices = change;
+        this._notifyPath(path + '.splices', change);
+        this._notifyPath(path + '.length', array.length);
+        // Null here to allow potentially large splice records to be GC'ed
+        change.keySplices = null;
+        change.indexSplices = null;
+      },
+
       _notifySplice: function(array, path, index, added, removed) {
-        var splices = [{
+        this._notifySplices(array, path, [{
           index: index,
           addedCount: added,
           removed: removed,
           object: array,
           type: 'splice'
-        }];
-        var change = {
-          keySplices: Polymer.Collection.applySplices(array, splices),
-          indexSplices: splices
-        };
-        this.set(path + '.splices', change);
-        if (added != removed.length) {
-          this.notifyPath(path + '.length', array.length);
-        }
-        // Null here to allow potentially large splice records to be GC'ed
-        change.keySplices = null;
-        change.indexSplices = null;
+        }]);
       },
 
       /**
@@ -8987,12 +9792,13 @@ Polymer.Debounce = (function() {
        * @return {number} New length of the array.
        */
       push: function(path) {
-        var array = this.get(path);
+        var info = {};
+        var array = this._get(path, this, info);
         var args = Array.prototype.slice.call(arguments, 1);
         var len = array.length;
         var ret = array.push.apply(array, args);
         if (args.length) {
-          this._notifySplice(array, path, len, args.length, []);
+          this._notifySplice(array, info.path, len, args.length, []);
         }
         return ret;
       },
@@ -9011,12 +9817,13 @@ Polymer.Debounce = (function() {
        * @return {any} Item that was removed.
        */
       pop: function(path) {
-        var array = this.get(path);
+        var info = {};
+        var array = this._get(path, this, info);
         var hadLength = Boolean(array.length);
         var args = Array.prototype.slice.call(arguments, 1);
         var ret = array.pop.apply(array, args);
         if (hadLength) {
-          this._notifySplice(array, path, array.length, 0, [ret]);
+          this._notifySplice(array, info.path, array.length, 0, [ret]);
         }
         return ret;
       },
@@ -9039,7 +9846,8 @@ Polymer.Debounce = (function() {
        * @return {Array} Array of removed items.
        */
       splice: function(path, start, deleteCount) {
-        var array = this.get(path);
+        var info = {};
+        var array = this._get(path, this, info);
         // Normalize fancy native splice handling of crazy start values
         if (start < 0) {
           start = array.length - Math.floor(-start);
@@ -9053,7 +9861,7 @@ Polymer.Debounce = (function() {
         var ret = array.splice.apply(array, args);
         var addedCount = Math.max(args.length - 2, 0);
         if (addedCount || ret.length) {
-          this._notifySplice(array, path, start, addedCount, ret);
+          this._notifySplice(array, info.path, start, addedCount, ret);
         }
         return ret;
       },
@@ -9072,12 +9880,13 @@ Polymer.Debounce = (function() {
        * @return {any} Item that was removed.
        */
       shift: function(path) {
-        var array = this.get(path);
+        var info = {};
+        var array = this._get(path, this, info);
         var hadLength = Boolean(array.length);
         var args = Array.prototype.slice.call(arguments, 1);
         var ret = array.shift.apply(array, args);
         if (hadLength) {
-          this._notifySplice(array, path, 0, 0, [ret]);
+          this._notifySplice(array, info.path, 0, 0, [ret]);
         }
         return ret;
       },
@@ -9097,13 +9906,38 @@ Polymer.Debounce = (function() {
        * @return {number} New length of the array.
        */
       unshift: function(path) {
-        var array = this.get(path);
+        var info = {};
+        var array = this._get(path, this, info);
         var args = Array.prototype.slice.call(arguments, 1);
         var ret = array.unshift.apply(array, args);
         if (args.length) {
-          this._notifySplice(array, path, 0, args.length, []);
+          this._notifySplice(array, info.path, 0, args.length, []);
         }
         return ret;
+      },
+
+      // TODO(kschaaf): This is the path analogue to Polymer.Bind.prepareModel,
+      // which provides API for path-based notification on elements with property
+      // effects; this should be re-factored along with the Bind lib, either all on
+      // Base or all in Bind (see issue https://github.com/Polymer/polymer/issues/2547).
+      prepareModelNotifyPath: function(model) {
+        this.mixin(model, {
+          fire: Polymer.Base.fire,
+          notifyPath: Polymer.Base.notifyPath,
+          _get: Polymer.Base._get,
+          _EVENT_CHANGED: Polymer.Base._EVENT_CHANGED,
+          _notifyPath: Polymer.Base._notifyPath,
+          _notifyPathUp: Polymer.Base._notifyPathUp,
+          _pathEffector: Polymer.Base._pathEffector,
+          _annotationPathEffect: Polymer.Base._annotationPathEffect,
+          _complexObserverPathEffect: Polymer.Base._complexObserverPathEffect,
+          _annotatedComputationPathEffect: Polymer.Base._annotatedComputationPathEffect,
+          _computePathEffect: Polymer.Base._computePathEffect,
+          _modelForPath: Polymer.Base._modelForPath,
+          _pathMatchesEffect: Polymer.Base._pathMatchesEffect,
+          _notifyBoundPaths: Polymer.Base._notifyBoundPaths,
+          _getPathParts: Polymer.Base._getPathParts
+        });
       }
 
     });
@@ -11025,6 +11859,7 @@ Note, all features of `custom-style` are available when defining styles as part 
      * @param {HTMLTemplateElement} template The template to process.
      */
     templatize: function(template) {
+      this._templatized = template;
       // TODO(sjmiles): supply _alternate_ content reference missing from root
       // templates (not nested). `_content` exists to provide content sharing
       // for nested templates.
@@ -11046,17 +11881,17 @@ Note, all features of `custom-style` are available when defining styles as part 
       // archetypes do special caching
       this._customPrepAnnotations(archetype, template);
 
+      // forward parent properties to archetype
+      this._prepParentProperties(archetype, template);
+
       // setup accessors
       archetype._prepEffects();
       this._customPrepEffects(archetype);
       archetype._prepBehaviors();
       archetype._prepBindings();
 
-      // forward parent properties to archetype
-      this._prepParentProperties(archetype, template);
-
       // boilerplate code
-      archetype._notifyPath = this._notifyPathImpl;
+      archetype._notifyPathUp = this._notifyPathUpImpl;
       archetype._scopeElementClass = this._scopeElementClassImpl;
       archetype.listen = this._listenImpl;
       archetype._showHideChildren = this._showHideChildrenImpl;
@@ -11161,6 +11996,7 @@ Note, all features of `custom-style` are available when defining styles as part 
             // assume that the template is not a Poylmer.Base, so prep it
             // for binding
             Polymer.Bind.prepareModel(proto);
+            Polymer.Base.prepareModelNotifyPath(proto);
           }
           // Create accessors for each parent prop that forward the property
           // to template instances through abstract _forwardParentProp API
@@ -11179,10 +12015,10 @@ Note, all features of `custom-style` are available when defining styles as part 
         // Instance setup
         if (template != this) {
           Polymer.Bind.prepareInstance(template);
-          template._forwardParentProp =
-            this._forwardParentProp.bind(this);
+          template._forwardParentProp = this._forwardParentProp.bind(this);
         }
         this._extendTemplate(template, proto);
+        template._pathEffector = this._pathEffectorImpl.bind(this);
       }
     },
 
@@ -11195,7 +12031,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     _createHostPropEffector: function(prop) {
       var prefix = this._parentPropPrefix;
       return function(source, value) {
-        this.dataHost[prefix + prop] = value;
+        this.dataHost._templatized[prefix + prop] = value;
       };
     },
 
@@ -11228,25 +12064,26 @@ Note, all features of `custom-style` are available when defining styles as part 
     // _forwardParentPath: function(path, value) { },
     // _forwardParentProp: function(prop, value) { },
 
-    _notifyPathImpl: function(path, value) {
+    _notifyPathUpImpl: function(path, value) {
       var dataHost = this.dataHost;
       var dot = path.indexOf('.');
       var root = dot < 0 ? path : path.slice(0, dot);
       // Call extension point for Templatizer sub-classes
       dataHost._forwardInstancePath.call(dataHost, this, path, value);
       if (root in dataHost._parentProps) {
-        dataHost.notifyPath(dataHost._parentPropPrefix + path, value);
+        dataHost._templatized.notifyPath(dataHost._parentPropPrefix + path, value);
       }
     },
 
     // Overrides Base notify-path module
-    _pathEffector: function(path, value, fromAbove) {
+    _pathEffectorImpl: function(path, value, fromAbove) {
       if (this._forwardParentPath) {
         if (path.indexOf(this._parentPropPrefix) === 0) {
-          this._forwardParentPath(path.substring(8), value);
+          var subPath = path.substring(this._parentPropPrefix.length);
+          this._forwardParentPath(subPath, value);
         }
       }
-      Polymer.Base._pathEffector.apply(this, arguments);
+      Polymer.Base._pathEffector.call(this._templatized, path, value, fromAbove);
     },
 
     _constructorImpl: function(model, host) {
@@ -11311,7 +12148,7 @@ Note, all features of `custom-style` are available when defining styles as part 
      * `stamp`.
      *
      * @method stamp
-     * @param {Object} model An object containing key/values to serve as the
+     * @param {Object=} model An object containing key/values to serve as the
      *   initial data configuration for the instance.  Note that properties
      *   from the host used in the template are automatically copied into
      *   the model.
@@ -11321,8 +12158,9 @@ Note, all features of `custom-style` are available when defining styles as part 
     stamp: function(model) {
       model = model || {};
       if (this._parentProps) {
+        var templatized = this._templatized;
         for (var prop in this._parentProps) {
-          model[prop] = this[this._parentPropPrefix + prop];
+          model[prop] = templatized[this._parentPropPrefix + prop];
         }
       }
       return new this.ctor(model, this);
@@ -11453,10 +12291,11 @@ Note, all features of `custom-style` are available when defining styles as part 
       } else {
         this.pmap[item] = key;
       }
-      return key;
+      return '#' + key;
     },
 
     removeKey: function(key) {
+      key = this._parseKey(key);
       this._removeFromMap(this.store[key]);
       delete this.store[key];
     },
@@ -11476,18 +12315,32 @@ Note, all features of `custom-style` are available when defining styles as part 
     },
 
     getKey: function(item) {
+      var key;
       if (item && typeof item == 'object') {
-        return this.omap.get(item);
+        key = this.omap.get(item);
       } else {
-        return this.pmap[item];
+        key = this.pmap[item];
+      }
+      if (key != undefined) {
+        return '#' + key;
       }
     },
 
     getKeys: function() {
-      return Object.keys(this.store);
+      return Object.keys(this.store).map(function(key) {
+        return '#' + key;
+      });
+    },
+
+    _parseKey: function(key) {
+      if (key[0] == '#') {
+        return key.slice(1);
+      }
+      throw new Error('unexpected key ' + key);
     },
 
     setItem: function(key, item) {
+      key = this._parseKey(key);
       var old = this.store[key];
       if (old) {
         this._removeFromMap(old);
@@ -11501,6 +12354,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     },
 
     getItem: function(key) {
+      key = this._parseKey(key);
       return this.store[key];
     },
 
@@ -12079,7 +12933,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     // for notifying items.<key-for-inst>.<path> change up to host
     _forwardInstancePath: function(inst, path, value) {
       if (path.indexOf(this.as + '.') === 0) {
-        this.notifyPath('items.' + inst.__key__ + '.' +
+        this._notifyPath('items.' + inst.__key__ + '.' +
           path.slice(this.as.length + 1), value);
       }
     },
@@ -12098,7 +12952,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     // notifying parent path change on each inst
     _forwardParentPath: function(path, value) {
       this._instances.forEach(function(inst) {
-        inst.notifyPath(path, value, true);
+        inst._notifyPath(path, value, true);
       }, this);
     },
 
@@ -12113,7 +12967,7 @@ Note, all features of `custom-style` are available when defining styles as part 
         if (inst) {
           if (dot >= 0) {
             path = this.as + '.' + path.substring(dot+1);
-            inst.notifyPath(path, value, true);
+            inst._notifyPath(path, value, true);
           } else {
             inst.__setProperty(this.as, value, true);
           }
@@ -12238,6 +13092,7 @@ Note, all features of `custom-style` are available when defining styles as part 
         }
       } else {
         this.unlinkPaths('selected');
+        this.unlinkPaths('selectedItem');
       }
       // Initialize selection
       if (this.multi) {
@@ -12305,7 +13160,7 @@ Note, all features of `custom-style` are available when defining styles as part 
           }
         } else {
           this.push('selected', item);
-          skey = this._selectedColl.getKey(item);
+          var skey = this._selectedColl.getKey(item);
           this.linkPaths('selected.' + skey, 'items.' + key);
         }
       } else {
@@ -12473,7 +13328,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     // notifying parent.<path> path change on each row
     _forwardParentPath: function(path, value) {
       if (this._instance) {
-        this._instance.notifyPath(path, value, true);
+        this._instance._notifyPath(path, value, true);
       }
     }
 
@@ -13277,6 +14132,8 @@ Custom property | Description | Default
 ----------------|-------------|----------
 `--iron-icon-width` | Width of the icon | `24px`
 `--iron-icon-height` | Height of the icon | `24px`
+`--iron-icon-fill-color` | Fill color of the svg icon | `currentcolor`
+`--iron-icon-stroke-color` | Stroke color of the svg icon | none
 
 @group Iron Elements
 @element iron-icon
@@ -13292,9 +14149,9 @@ Custom property | Description | Default
    * `iron-iconset-svg` element. Multiple icons should be given distinct id's.
    *
    * Using svg elements to create icons has a few advantages over traditional
-   * bitmap graphics like jpg or png. Icons that use svg are vector based so they
-   * are resolution independent and should look good on any device. They are
-   * stylable via css. Icons can be themed, colorized, and even animated.
+   * bitmap graphics like jpg or png. Icons that use svg are vector based so
+   * they are resolution independent and should look good on any device. They
+   * are stylable via css. Icons can be themed, colorized, and even animated.
    *
    * Example:
    *
@@ -13319,18 +14176,15 @@ Custom property | Description | Default
    *
    * @element iron-iconset-svg
    * @demo demo/index.html
+   * @implements {Polymer.Iconset}
    */
   Polymer({
-
     is: 'iron-iconset-svg',
 
     properties: {
 
       /**
        * The name of the iconset.
-       *
-       * @attribute name
-       * @type string
        */
       name: {
         type: String,
@@ -13339,10 +14193,6 @@ Custom property | Description | Default
 
       /**
        * The size of an individual icon. Note that icons must be square.
-       *
-       * @attribute iconSize
-       * @type number
-       * @default 24
        */
       size: {
         type: Number,
@@ -13372,7 +14222,7 @@ Custom property | Description | Default
      * @method applyIcon
      * @param {Element} element Element to which the icon is applied.
      * @param {string} iconName Name of the icon to apply.
-     * @return {Element} The svg element which renders the icon.
+     * @return {?Element} The svg element which renders the icon.
      */
     applyIcon: function(element, iconName) {
       // insert svg element into shadow root, if it exists
@@ -14549,7 +15399,7 @@ Example:
     </div>
 
 Note, it's important that the parent container of the ripple be relative position, otherwise
-the ripple will emanate outside of the desired container. 
+the ripple will emanate outside of the desired container.
 
 `paper-ripple` listens to "mousedown" and "mouseup" events so it would display ripple
 effect when touches on it.  You can also defeat the default behavior and
@@ -14660,9 +15510,8 @@ Apply `circle` class to make the rippling effect within a circle.
       // handled). In either case, we can disregard `event.path`.
 
       if (event.target === this) {
-        var focused = event.type === 'focus';
-        this._setFocused(focused);
-      } else if (!this.shadowRoot) {
+        this._setFocused(event.type === 'focus');
+      } else if (!this.shadowRoot && !this.isLightDescendant(event.target)) {
         this.fire(event.type, {sourceEvent: event}, {
           node: this,
           bubbles: event.bubbles,
@@ -14806,33 +15655,7 @@ Apply `circle` class to make the rippling effect within a circle.
       }
     },
 
-    _eventSourceIsPrimaryInput: function(event) {
-      event = event.detail.sourceEvent || event;
-
-      // Always true for non-mouse events....
-      if (!this._mouseEventRe.test(event.type)) {
-        return true;
-      }
-
-      // http://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
-      if ('buttons' in event) {
-        return event.buttons === 1;
-      }
-
-      // http://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/which
-      if (typeof event.which === 'number') {
-        return event.which < 2;
-      }
-
-      // http://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
-      return event.button < 1;
-    },
-
     _downHandler: function(event) {
-      if (!this._eventSourceIsPrimaryInput(event)) {
-        return;
-      }
-
       this._setPointerDown(true);
       this._setPressed(true);
       this._setReceivedFocusFromKeyboard(false);
@@ -14843,6 +15666,9 @@ Apply `circle` class to make the rippling effect within a circle.
       this._setPressed(false);
     },
 
+    /**
+     * @param {!KeyboardEvent} event .
+     */ 
     _spaceKeyDownHandler: function(event) {
       var keyboardEvent = event.detail.keyboardEvent;
       keyboardEvent.preventDefault();
@@ -14850,7 +15676,10 @@ Apply `circle` class to make the rippling effect within a circle.
       this._setPressed(true);
     },
 
-    _spaceKeyUpHandler: function() {
+    /**
+     * @param {!KeyboardEvent} event .
+     */ 
+    _spaceKeyUpHandler: function(event) {
       if (this.pressed) {
         this._asyncClick();
       }
@@ -14914,24 +15743,152 @@ Apply `circle` class to make the rippling effect within a circle.
 </script>
 <script>
 
+  /**
+   * `Polymer.PaperRippleBehavior` dynamically implements a ripple
+   * when the element has focus via pointer or keyboard.
+   *
+   * NOTE: This behavior is intended to be used in conjunction with and after
+   * `Polymer.IronButtonState` and `Polymer.IronControlState`.
+   *
+   * @polymerBehavior Polymer.PaperRippleBehavior
+   */
+  Polymer.PaperRippleBehavior = {
+
+    properties: {
+      /**
+       * If true, the element will not produce a ripple effect when interacted
+       * with via the pointer.
+       */
+      noink: {
+        type: Boolean,
+        observer: '_noinkChanged'
+      },
+
+      /**
+       * @type {Element|undefined}
+       */
+      _rippleContainer: {
+        type: Object,
+      }
+    },
+
+    /**
+     * Ensures a `<paper-ripple>` element is available when the element is
+     * focused.
+     */
+    _buttonStateChanged: function() {
+      if (this.focused) {
+        this.ensureRipple();
+      }
+    },
+
+    /**
+     * In addition to the functionality provided in `IronButtonState`, ensures
+     * a ripple effect is created when the element is in a `pressed` state.
+     */
+    _downHandler: function(event) {
+      Polymer.IronButtonStateImpl._downHandler.call(this, event);
+      if (this.pressed) {
+        this.ensureRipple(event);
+      }
+    },
+
+    /**
+     * Ensures this element contains a ripple effect. For startup efficiency
+     * the ripple effect is dynamically on demand when needed.
+     * @param {!Event=} opt_triggeringEvent (optional) event that triggered the
+     * ripple.
+     */
+    ensureRipple: function(opt_triggeringEvent) {
+      if (!this.hasRipple()) {
+        this._ripple = this._createRipple();
+        this._ripple.noink = this.noink;
+        var rippleContainer = this._rippleContainer || this.root;
+        if (rippleContainer) {
+          Polymer.dom(rippleContainer).appendChild(this._ripple);
+        }
+        var domContainer = rippleContainer === this.shadyRoot ? this :
+          rippleContainer;
+        if (opt_triggeringEvent) {
+          var target = opt_triggeringEvent.target;
+          if (domContainer.contains(/** @type {Node} */(target))) {
+            this._ripple.uiDownAction(opt_triggeringEvent);
+          }
+        }
+      }
+    },
+
+    /**
+     * Returns the `<paper-ripple>` element used by this element to create
+     * ripple effects. The element's ripple is created on demand, when
+     * necessary, and calling this method will force the
+     * ripple to be created.
+     */
+    getRipple: function() {
+      this.ensureRipple();
+      return this._ripple;
+    },
+
+    /**
+     * Returns true if this element currently contains a ripple effect.
+     * @return {boolean}
+     */
+    hasRipple: function() {
+      return Boolean(this._ripple);
+    },
+
+    /**
+     * Create the element's ripple effect via creating a `<paper-ripple>`.
+     * Override this method to customize the ripple element.
+     * @return {!PaperRippleElement} Returns a `<paper-ripple>` element.
+     */
+    _createRipple: function() {
+      return /** @type {!PaperRippleElement} */ (
+          document.createElement('paper-ripple'));
+    },
+
+    _noinkChanged: function(noink) {
+      if (this.hasRipple()) {
+        this._ripple.noink = noink;
+      }
+    }
+
+  };
+
+</script>
+<script>
+
   /** @polymerBehavior Polymer.PaperButtonBehavior */
   Polymer.PaperButtonBehaviorImpl = {
 
     properties: {
 
-      _elevation: {
-        type: Number
+      /**
+       * The z-depth of this element, from 0-5. Setting to 0 will remove the
+       * shadow, and each increasing number greater than 0 will be "deeper"
+       * than the last.
+       *
+       * @attribute elevation
+       * @type number
+       * @default 1
+       */
+      elevation: {
+        type: Number,
+        reflectToAttribute: true,
+        readOnly: true
       }
 
     },
 
     observers: [
-      '_calculateElevation(focused, disabled, active, pressed, receivedFocusFromKeyboard)'
+      '_calculateElevation(focused, disabled, active, pressed, receivedFocusFromKeyboard)',
+      '_computeKeyboardClass(receivedFocusFromKeyboard)'
     ],
 
     hostAttributes: {
       role: 'button',
-      tabindex: '0'
+      tabindex: '0',
+      animated: true
     },
 
     _calculateElevation: function() {
@@ -14943,14 +15900,46 @@ Apply `circle` class to make the rippling effect within a circle.
       } else if (this.receivedFocusFromKeyboard) {
         e = 3;
       }
-      this._elevation = e;
+      this._setElevation(e);
+    },
+
+    _computeKeyboardClass: function(receivedFocusFromKeyboard) {
+      this.classList.toggle('keyboard-focus', receivedFocusFromKeyboard);
+    },
+
+    /**
+     * In addition to `IronButtonState` behavior, when space key goes down,
+     * create a ripple down effect.
+     *
+     * @param {!KeyboardEvent} event .
+     */
+    _spaceKeyDownHandler: function(event) {
+      Polymer.IronButtonStateImpl._spaceKeyDownHandler.call(this, event);
+      if (this.hasRipple()) {
+        this._ripple.uiDownAction();
+      }
+    },
+
+    /**
+     * In addition to `IronButtonState` behavior, when space key goes up,
+     * create a ripple up effect.
+     *
+     * @param {!KeyboardEvent} event .
+     */
+    _spaceKeyUpHandler: function(event) {
+      Polymer.IronButtonStateImpl._spaceKeyUpHandler.call(this, event);
+      if (this.hasRipple()) {
+        this._ripple.uiUpAction();
+      }
     }
+
   };
 
   /** @polymerBehavior */
   Polymer.PaperButtonBehavior = [
     Polymer.IronButtonState,
     Polymer.IronControlState,
+    Polymer.PaperRippleBehavior,
     Polymer.PaperButtonBehaviorImpl
   ];
 
@@ -15055,11 +16044,21 @@ Example:
         type: String,
         observer: 'queryChanged'
       },
-
+      
+      /**
+       * @type {function(MediaQueryList)}
+       */ 
       _boundMQHandler: {
         value: function() {
           return this.queryHandler.bind(this);
         }
+      },
+      
+      /**
+       * @type {MediaQueryList}
+       */ 
+      _mq: {
+        value: null
       }
     },
 
@@ -15718,6 +16717,195 @@ Custom property              | Description                  | Default
 -->
 
 <script>
+(function() {
+
+  var route;
+
+  var requireRouting = function() {
+    requireRouting = function() {};
+    addEventListener('popstate', popStateHandler);
+    parseLocation();
+  };
+
+  var popStateHandler = function() {
+    parseLocation();
+    Polymer.Base.fire('route-change', route, {node: window});
+  };
+
+  var parseLocation = function() {
+    route = location.hash.slice(2);
+  };
+
+  var getRoute = function() {
+    return route;
+  };
+
+  var setRoute = function(value) {
+    if (value !== route) {
+      route = value;
+      history.replaceState(null, '', '#/' + route);
+      popStateHandler();
+    }
+  };
+
+  var topRoute = function(instance) {
+    addEventListener('route-change', function() {
+      instance.route = getRoute();
+    });
+    return getRoute();
+  };
+
+  Polymer.CarbonRoutingBehavior = {
+
+    properties: {
+      route: {
+        notify: true
+      },
+
+      subroute: {
+        notify: true,
+        observer: '_subrouteChanged'
+      },
+
+      data: {
+        computed: '_computeData(route, matches)',
+        notify: true
+      },
+
+      tail: {
+        notify: true,
+        observer: '_tailChanged'
+      }
+
+    },
+
+    created: function() {
+      this._dynData = {};
+      requireRouting();
+    },
+
+    _computeData: function(route, matches) {
+      return this._routinize(route, matches);
+    },
+
+    _routinize: function(route, match) {
+      var src = route.split('/');
+      var trg = match.split('/');
+      //
+      var head = [];
+      var values = {};
+      //
+      for (var i=0;;i++) {
+        var t = trg[i];
+        if (!t) {
+          break;
+        }
+        var s = src.shift();
+        head.push(s);
+        if (t[0] == ':') {
+          t = t.slice(1);
+          values[t] = s;
+        }
+        else if (!s || t !== s) {
+          return null;
+        }
+      }
+      //
+      Object.keys(values).forEach(function(name) {
+        this._fauxNotify(name, values[name]);
+      }, this);
+      //
+      var head = head.join('/');
+      var tail = src.join('/');
+      //
+      this.head = head;
+      this.tail = tail;
+      //
+      //if (Object.keys(values).length === 0) {
+      //  return tail;
+      //} else {
+      values.head = head;
+      values.tail = tail;
+      //
+      //console.log(route, values);
+      //
+      return values;
+      //}
+    },
+
+    _subrouteChanged: function(subroute) {
+      this.tail = subroute;
+    },
+
+    _tailChanged: function(tail) {
+      this.subroute = tail;
+      if (tail) {
+        //console.log('got new route tail, new route', this.head + '/' + tail, this.route);
+        this.route = this.head + '/' + this.tail;
+      }
+    },
+
+    _fauxNotify: function(property, value) {
+      Object.defineProperty(this, property, {
+        configurable: true,
+        get: function() {
+          //console.log('getting', property);
+          return this._dynData[property];
+        },
+        set: function(value) {
+          //console.log('setting route data: ', property, value);
+          this._dynData[property] = value;
+          this._routinate()
+        }
+      });
+      this._dynData[property] = value;
+      this._notifyChange(property);
+    },
+
+    _routinate: function() {
+      var trg = this.matches.split('/');
+      var interp = trg.map(function(value) {
+        if (value[0] == ':') {
+          value = this[value.slice(1)];
+        }
+        return value;
+      }, this);
+      if (this.tail) {
+        interp.push(this.tail);
+      }
+      //console.log('generated route: ', interp.join('/'));
+      this.route = interp.join('/');
+    },
+
+    // static
+    setRoute: function(route) {
+      setRoute(route);
+    }
+
+  };
+
+  Polymer.CarbonRoutingRootBehavior = {
+
+    properties: {
+      route: {
+        value: function() {
+          return topRoute(this) || this.defaultRoute || '';
+        },
+        observer: '_setRoute'
+      }
+    },
+
+    _setRoute: function(route) {
+      //console.warn('setting route: ', route);
+      setRoute(route);
+    }
+
+  };
+
+})();
+</script>
+
+<script>
 
   /**
    * @param {!Function} selectCallback
@@ -15874,6 +17062,8 @@ Custom property              | Description                  | Default
 
       /**
        * Returns the currently selected item.
+       * 
+       * @type {?Object}
        */
       selectedItem: {
         type: Object,
@@ -15918,7 +17108,6 @@ Custom property              | Description                  | Default
        * The set of excluded elements where the key is the `localName`
        * of the element that will be ignored from the item list.
        *
-       * @type {object}
        * @default {template: 1}
        */
       _excludedLocalNames: {
@@ -16468,6 +17657,10 @@ Displays a page on different device layouts.
       background-image: url(tools/app/images/polymer-summit.png);
     }
 
+    .pica-image {
+      background-image: url(tools/app/images/pica.png);
+    }
+
     .grid-item > .caption {
       text-align: center;
       color: #5c5c5c;
@@ -16605,7 +17798,8 @@ Displays a page on different device layouts.
 
       vertical-align: middle;
 
-      fill: currentcolor;
+      fill: var(--iron-icon-fill-color, currentcolor);
+      stroke: var(--iron-icon-stroke-color, none);
 
       width: var(--iron-icon-width, 24px);
       height: var(--iron-icon-height, 24px);
@@ -17057,7 +18251,7 @@ Displays a page on different device layouts.
   @param {Object} detail
   @param {Object} detail.node The animated node
   -->
-  
+
   <template>
     <style>
       :host {
@@ -17069,24 +18263,26 @@ Displays a page on different device layouts.
         left: 0;
         right: 0;
         bottom: 0;
+
+        /* See PolymerElements/paper-behaviors/issues/34. On non-Chrome browsers,
+         * creating a node (with a position:absolute) in the middle of an event
+         * handler "interrupts" that event handler (which happens when the
+         * ripple is created on demand) */
+        pointer-events: none;
       }
-  
+
       :host([animating]) {
         /* This resolves a rendering issue in Chrome (as of 40) where the
            ripple is not properly clipped by its parent (which may have
            rounded corners). See: http://jsbin.com/temexa/4
-  
+
            Note: We only apply this style conditionally. Otherwise, the browser
            will create a new compositing layer for every ripple element on the
            page, and that would be bad. */
         -webkit-transform: translate(0, 0);
         transform: translate3d(0, 0, 0);
       }
-  
-      :host([noink]) {
-        pointer-events: none;
-      }
-  
+
       #background,
       #waves,
       .wave-container,
@@ -17098,32 +18294,32 @@ Displays a page on different device layouts.
         width: 100%;
         height: 100%;
       }
-  
+
       #background,
       .wave {
         opacity: 0;
       }
-  
+
       #waves,
       .wave {
         overflow: hidden;
       }
-  
+
       .wave-container,
       .wave {
         border-radius: 50%;
       }
-  
+
       :host(.circle) #background,
       :host(.circle) #waves {
         border-radius: 50%;
       }
-  
+
       :host(.circle) .wave-container {
         overflow: hidden;
       }
     </style>
-    
+
     <div id="background"></div>
     <div id="waves"></div>
   </template>
@@ -17507,6 +18703,17 @@ Displays a page on different device layouts.
           observer: '_holdDownChanged'
         },
 
+        /**
+         * If true, the ripple will not generate a ripple effect
+         * via pointer interaction.
+         * Calling ripple's imperative api like `simulatedRipple` will
+         * still generate the ripple effect.
+         */
+        noink: {
+          type: Boolean,
+          value: false
+        },
+
         _animating: {
           type: Boolean
         },
@@ -17539,12 +18746,17 @@ Displays a page on different device layouts.
       },
 
       attached: function() {
-        this.listen(this.target, 'up', 'upAction');
-        this.listen(this.target, 'down', 'downAction');
+        // Set up a11yKeysBehavior to listen to key events on the target,
+        // so that space and enter activate the ripple even if the target doesn't
+        // handle key events. The key handlers deal with `noink` themselves.
+        this.keyEventTarget = this.target;
+        this.listen(this.target, 'up', 'uiUpAction');
+        this.listen(this.target, 'down', 'uiDownAction');
+      },
 
-        if (!this.target.hasAttribute('noink')) {
-          this.keyEventTarget = this.target;
-        }
+      detached: function() {
+        this.unlisten(this.target, 'up', 'uiUpAction');
+        this.unlisten(this.target, 'down', 'uiDownAction');
       },
 
       get shouldKeepAnimating () {
@@ -17566,7 +18778,22 @@ Displays a page on different device layouts.
         }, 1);
       },
 
-      /** @param {Event=} event */
+      /**
+       * Provokes a ripple down effect via a UI event,
+       * respecting the `noink` property.
+       * @param {Event=} event
+       */
+      uiDownAction: function(event) {
+        if (!this.noink) {
+          this.downAction(event);
+        }
+      },
+
+      /**
+       * Provokes a ripple down effect via a UI event,
+       * *not* respecting the `noink` property.
+       * @param {Event=} event
+       */
       downAction: function(event) {
         if (this.holdDown && this.ripples.length > 0) {
           return;
@@ -17581,7 +18808,22 @@ Displays a page on different device layouts.
         }
       },
 
-      /** @param {Event=} event */
+      /**
+       * Provokes a ripple up effect via a UI event,
+       * respecting the `noink` property.
+       * @param {Event=} event
+       */
+      uiUpAction: function(event) {
+        if (!this.noink) {
+          this.upAction(event);
+        }
+      },
+
+      /**
+       * Provokes a ripple up effect via a UI event,
+       * *not* respecting the `noink` property.
+       * @param {Event=} event
+       */
       upAction: function(event) {
         if (this.holdDown) {
           return;
@@ -17654,23 +18896,24 @@ Displays a page on different device layouts.
       },
 
       _onEnterKeydown: function() {
-        this.downAction();
-        this.async(this.upAction, 1);
+        this.uiDownAction();
+        this.async(this.uiUpAction, 1);
       },
 
       _onSpaceKeydown: function() {
-        this.downAction();
+        this.uiDownAction();
       },
 
       _onSpaceKeyup: function() {
-        this.upAction();
+        this.uiUpAction();
       },
 
+      // note: holdDown does not respect noink since it can be a focus based
+      // effect.
       _holdDownChanged: function(newVal, oldVal) {
         if (oldVal === undefined) {
           return;
         }
-
         if (newVal) {
           this.downAction();
         } else {
@@ -17681,9 +18924,9 @@ Displays a page on different device layouts.
   })();
 </script>
 <dom-module id="paper-button" assetpath="../paper-button/">
-  <template>
+  <template strip-whitespace="">
 
-    <style>
+    <style include="paper-material">
       :host {
         display: inline-block;
         position: relative;
@@ -17707,12 +18950,12 @@ Displays a page on different device layouts.
         @apply(--paper-button);
       }
 
-      :host([raised]) .keyboard-focus {
+      :host([raised].keyboard-focus) {
         font-weight: bold;
         @apply(--paper-button-raised-keyboard-focus);
       }
 
-      :host(:not([raised])) .keyboard-focus {
+      :host(:not([raised]).keyboard-focus) {
         font-weight: bold;
         @apply(--paper-button-flat-keyboard-focus);
       }
@@ -17726,32 +18969,15 @@ Displays a page on different device layouts.
         @apply(--paper-button-disabled);
       }
 
-      :host([noink]) paper-ripple {
-        display: none;
-      }
-
       paper-ripple {
         color: var(--paper-button-ink-color);
       }
 
-      paper-material {
-        border-radius: inherit;
-        @apply(--layout-fit);
-      }
-
-      .content > ::content * {
+      :host > ::content * {
         text-transform: inherit;
       }
     </style>
-
-    <paper-ripple></paper-ripple>
-
-    <paper-material elevation="[[_elevation]]" animated=""></paper-material>
-
-    <div class$="[[_computeContentClass(receivedFocusFromKeyboard)]]">
-      <content></content>
-    </div>
-
+    <content></content>
   </template>
 </dom-module>
 
@@ -17777,18 +19003,10 @@ Displays a page on different device layouts.
 
     _calculateElevation: function() {
       if (!this.raised) {
-        this._elevation = 0;
+        this.elevation = 0;
       } else {
         Polymer.PaperButtonBehaviorImpl._calculateElevation.apply(this);
       }
-    },
-
-    _computeContentClass: function(receivedFocusFromKeyboard) {
-      var className = 'content ';
-      if (receivedFocusFromKeyboard) {
-        className += ' keyboard-focus';
-      }
-      return className;
     }
   });
 </script>
@@ -17979,6 +19197,12 @@ Displays a page on different device layouts.
       position: fixed;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+
+      @apply(--app-drawer-layout-drawer);
+    }
+
+    :host([narrow]) > #drawerContainer {
+      @apply(--app-drawer-layout-narrow-drawer);
     }
 
     #main {
@@ -18039,6 +19263,7 @@ Displays a page on different device layouts.
         narrow: {
           type: Boolean,
           readOnly: true,
+          notify: true,
           reflectToAttribute: true,
           value: false
         },
@@ -18550,10 +19775,16 @@ Displays a page on different device layouts.
         }
         var pos = this._scrollposMap[selected];
         if (pos != null && !this.reset) {
-          window.scrollTo(pos.x, pos.y);
+          this._scrollTo(pos.x, pos.y);
         } else {
-          window.scrollTo(0, 0);
+          this._scrollTo(0, 0);
         }
+      },
+
+      _scrollTo: function(x, y) {
+        this.async(function() {
+          window.scrollTo(x, y);
+        }, 1);
       }
 
     });
@@ -18625,6 +19856,43 @@ Displays a page on different device layouts.
 
   </script>
 
+</dom-module>
+<dom-module id="carbon-router" assetpath="../carbon-elements/">
+  <script>
+
+    Polymer({
+
+      behaviors: [
+        Polymer.CarbonRoutingBehavior,
+        Polymer.CarbonRoutingRootBehavior
+      ],
+
+      properties: {
+
+        route: {
+          notify: true
+        },
+
+        matches: {
+          value: ':base'
+        }
+
+      }
+
+    });
+  </script>
+</dom-module>
+
+<dom-module id="carbon-route" assetpath="../carbon-elements/">
+  <script>
+    Polymer({
+
+      behaviors: [
+        Polymer.CarbonRoutingBehavior
+      ]
+
+    });
+  </script>
 </dom-module>
 <dom-module id="device-view" assetpath="tools/device-viewer/">
 
@@ -19130,6 +20398,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <paper-button raised="">View</paper-button>
             </a>
             <a href="https://github.com/frankiefu/summit" target="_blank" tabindex="-1">
+              <paper-button raised="">Source</paper-button>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-item">
+        <div class="image pica-image"></div>
+        <div class="caption">
+          <h3>PICA</h3>
+          <div>
+            <a href="http://frankiefu.github.io/pica" target="_blank" tabindex="-1">
+              <paper-button raised="">View</paper-button>
+            </a>
+            <a href="https://github.com/frankiefu/pica" target="_blank" tabindex="-1">
               <paper-button raised="">Source</paper-button>
             </a>
           </div>
