@@ -84,10 +84,16 @@ Example:
         }
         var pos = this._scrollposMap[selected];
         if (pos != null && !this.reset) {
-          window.scrollTo(pos.x, pos.y);
+          this._scrollTo(pos.x, pos.y);
         } else {
-          window.scrollTo(0, 0);
+          this._scrollTo(0, 0);
         }
+      },
+
+      _scrollTo: function(x, y) {
+        this.async(function() {
+          window.scrollTo(x, y);
+        }, 1);
       }
 
     });

@@ -42,7 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isFalse(scrollposControl.reset);
       });
 
-      test('store and retrieve', function() {
+      test('store and retrieve', function(done) {
         // page0 selected
         scrollposControl.selected = 'page0';
         assert.equal(window.pageYOffset, 0);
@@ -50,10 +50,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         window.scrollTo(0, 200);
         // change to page1
         scrollposControl.selected = 'page1';
-        assert.equal(window.pageYOffset, 0, 'should be reset to 0');
-        // change it back to page0
-        scrollposControl.selected = 'page0';
-        assert.equal(window.pageYOffset, 200, 'should update to previous scrollpos on page0');
+        setTimeout(function() {
+          assert.equal(window.pageYOffset, 0, 'should be reset to 0');
+          // change it back to page0
+          scrollposControl.selected = 'page0';
+          setTimeout(function() {
+            assert.equal(window.pageYOffset, 200, 'should update to previous scrollpos on page0');
+            done();
+          }, 10);
+        }, 10);
       });
 
     });
