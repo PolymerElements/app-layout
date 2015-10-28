@@ -243,8 +243,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           </iron-pages>
 
-          <!-- detail page -->
-          <article-detail name="detail" article="{{article}}"></article-detail>
+          <!-- detail page (lazy-loaded) -->
+          <template is="dom-if" if="{{_equal(page, 'detail')}}">
+            <article-detail name="detail" article="{{article}}"></article-detail>
+          </template>
 
         </iron-pages>
 
