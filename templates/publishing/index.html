@@ -2317,26 +2317,32 @@ if (typeof HTMLTemplateElement === "undefined") {
       while (child = template.firstChild) {
         template.content.appendChild(child);
       }
-      Object.defineProperty(template, "innerHTML", {
-        get: function() {
-          var o = "";
-          for (var e = this.content.firstChild; e; e = e.nextSibling) {
-            o += e.outerHTML || escapeData(e.data);
-          }
-          return o;
-        },
-        set: function(text) {
-          contentDoc.body.innerHTML = text;
-          HTMLTemplateElement.bootstrap(contentDoc);
-          while (this.content.firstChild) {
-            this.content.removeChild(this.content.firstChild);
-          }
-          while (contentDoc.body.firstChild) {
-            this.content.appendChild(contentDoc.body.firstChild);
-          }
-        },
-        configurable: true
-      });
+      if (canDecorate) {
+        try {
+          Object.defineProperty(template, "innerHTML", {
+            get: function() {
+              var o = "";
+              for (var e = this.content.firstChild; e; e = e.nextSibling) {
+                o += e.outerHTML || escapeData(e.data);
+              }
+              return o;
+            },
+            set: function(text) {
+              contentDoc.body.innerHTML = text;
+              HTMLTemplateElement.bootstrap(contentDoc);
+              while (this.content.firstChild) {
+                this.content.removeChild(this.content.firstChild);
+              }
+              while (contentDoc.body.firstChild) {
+                this.content.appendChild(contentDoc.body.firstChild);
+              }
+            },
+            configurable: true
+          });
+        } catch (err) {
+          canDecorate = false;
+        }
+      }
     };
     HTMLTemplateElement.bootstrap = function(doc) {
       var templates = doc.querySelectorAll(TEMPLATE_TAG);
@@ -2514,7 +2520,7 @@ if (typeof HTMLTemplateElement === "undefined") {
       var options = {
         prototype: prototype
       };
-      // NOTE: we're specifically supporting older Chrome versions here
+      // NOTE: we're specifically supporting older Chrome versions here 
       // (specifically Chrome 39) that throw when options.extends is undefined.
       if (prototype.extends) {
         options.extends = prototype.extends;
@@ -2593,11 +2599,11 @@ if (typeof HTMLTemplateElement === "undefined") {
    * Helper for determining when first render occurs.
    * Call `Polymer.RenderStatus.whenReady(callback)` to be notified when
    * first render occurs or immediately if it has already occured.
-   * Note that since HTML Imports are designed to load before rendering,
+   * Note that since HTML Imports are designed to load before rendering, 
    * this call can also be used to guarantee that imports have loaded.
    * This behavior is normalized to function correctly with the HTMLImports
    * polyfill which does not otherwise maintain this rendering guarantee.
-   * Querying style and layout data before first render is currently
+   * Querying style and layout data before first render is currently 
    * problematic on some browsers (Blink/Webkit) so this helper can be used
    * to prevent doing so until a safe time.
    */
@@ -2857,7 +2863,6 @@ if (typeof HTMLTemplateElement === "undefined") {
      */
     import: function(id, selector) {
       if (id) {
-        forceDocumentUpgrade();
         var m = findModule(id);
         if (!m) {
           // If polyfilling, a script can run before a dom-module element
@@ -3146,19 +3151,19 @@ if (typeof HTMLTemplateElement === "undefined") {
 
   /**
    * Generates a boilerplate constructor.
-   *
+   * 
    *     XFoo = Polymer({
    *       is: 'x-foo'
    *     });
    *     ASSERT(new XFoo() instanceof XFoo);
-   *
-   * You can supply a custom constructor on the prototype. But remember that
+   *  
+   * You can supply a custom constructor on the prototype. But remember that 
    * this constructor will only run if invoked **manually**. Elements created
    * via `document.createElement` or from HTML _will not invoke this method_.
-   *
-   * Instead, we reuse the concept of `constructor` for a factory method which
-   * can take arguments.
-   *
+   * 
+   * Instead, we reuse the concept of `constructor` for a factory method which 
+   * can take arguments. 
+   * 
    *     MyFoo = Polymer({
    *       is: 'my-foo',
    *       constructor: function(foo) {
@@ -3166,7 +3171,7 @@ if (typeof HTMLTemplateElement === "undefined") {
    *       }
    *       ...
    *     });
-   *
+   * 
    * @class base feature: constructor
    */
 
@@ -3178,16 +3183,16 @@ if (typeof HTMLTemplateElement === "undefined") {
       // support both possible `createElement` signatures
       this._factoryArgs = this.extends ? [this.extends, this.is] : [this.is];
       // thunk the constructor to delegate allocation to `createElement`
-      var ctor = function() {
-        return this._factory(arguments);
+      var ctor = function() { 
+        return this._factory(arguments); 
       };
       if (this.hasOwnProperty('extends')) {
-        ctor.extends = this.extends;
+        ctor.extends = this.extends; 
       }
       // ensure constructor is set. The `constructor` property is
       // not writable on Safari; note: Chrome requires the property
       // to be configurable.
-      Object.defineProperty(this, 'constructor', {value: ctor,
+      Object.defineProperty(this, 'constructor', {value: ctor, 
         writable: true, configurable: true});
       ctor.prototype = this;
     },
@@ -3343,9 +3348,9 @@ if (typeof HTMLTemplateElement === "undefined") {
       if (dash.indexOf('-') < 0) {
         return Polymer.CaseMap._caseMap[dash] = dash;
       }
-      return Polymer.CaseMap._caseMap[dash] = dash.replace(/-([a-z])/g,
+      return Polymer.CaseMap._caseMap[dash] = dash.replace(/-([a-z])/g, 
         function(m) {
-          return m[1].toUpperCase();
+          return m[1].toUpperCase(); 
         }
       );
     },
@@ -3355,9 +3360,9 @@ if (typeof HTMLTemplateElement === "undefined") {
       if (mapped) {
         return mapped;
       }
-      return Polymer.CaseMap._caseMap[camel] = camel.replace(/([a-z][A-Z])/g,
-        function (g) {
-          return g[0] + '-' + g[1].toLowerCase()
+      return Polymer.CaseMap._caseMap[camel] = camel.replace(/([a-z][A-Z])/g, 
+        function (g) { 
+          return g[0] + '-' + g[1].toLowerCase() 
         }
       );
     }
@@ -3739,7 +3744,9 @@ if (typeof HTMLTemplateElement === "undefined") {
       }
       // bootstrap the template if it has not already been
       if (this._template && !this._template.content && HTMLTemplateElement.bootstrap) {
-        HTMLTemplateElement.bootstrap(document);
+        HTMLTemplateElement.decorate(this._template);
+        // recurse if necessary
+        HTMLTemplateElement.bootstrap(this._template.content);
       }
     },
 
@@ -3931,7 +3938,7 @@ if (typeof HTMLTemplateElement === "undefined") {
 <script>
 
 Polymer.ArraySplice = (function() {
-
+  
   function newSplice(index, removed, addedCount) {
     return {
       index: index,
@@ -4290,7 +4297,7 @@ Polymer.domInnerHTML = (function() {
     var s = '';
     var c$ = Polymer.dom(node).childNodes;
     c$ = composed ? node._composedChildren : c$;
-    for (var i=0, l=c$.length, child; (i<l) && (child=c$[i]); i++) {
+    for (var i=0, l=c$.length, child; (i<l) && (child=c$[i]); i++) {  
       s += getOuterHTML(child, node, composed);
     }
     return s;
@@ -4306,8 +4313,8 @@ Polymer.domInnerHTML = (function() {
 <script>
 
   /**
-   * DomApi is a dom manipulation library which is compatible with both
-   * Shady DOM and Shadow DOM. The general usage is
+   * DomApi is a dom manipulation library which is compatible with both 
+   * Shady DOM and Shadow DOM. The general usage is 
    * `Polymer.dom(node).method(arguments)` where methods and arguments
    * match native DOM where possible.
    */
@@ -4351,7 +4358,7 @@ Polymer.domInnerHTML = (function() {
         // we don't distribute before initial distribution
         if (host.shadyRoot && host.shadyRoot._distributionClean) {
           host.shadyRoot._distributionClean = false;
-          Polymer.dom.addDebouncer(host.debounce('_distribute',
+          Polymer.dom.addDebouncer(host.debounce('_distribute', 
             host._distributeContent));
         }
       },
@@ -4391,7 +4398,7 @@ Polymer.domInnerHTML = (function() {
         }
         this._addNodeToHost(node);
         // if not distributing and not adding to host, do a fast path addition
-        if (!this._maybeDistribute(node, this.node) &&
+        if (!this._maybeDistribute(node, this.node) && 
           !this._tryRemoveUndistributedNode(node)) {
           if (ref_node) {
             // if ref_node is <content> replace with first distributed node
@@ -4496,7 +4503,7 @@ Polymer.domInnerHTML = (function() {
           var root = this._ownerShadyRootForNode(parent);
           if (root) {
             var host = root.host;
-            // note, insertion point list update is handled after node
+            // note, insertion point list update is handled after node 
             // mutations are complete
             this._lazyDistribute(host);
           }
@@ -4517,7 +4524,7 @@ Polymer.domInnerHTML = (function() {
       of date parent at this point; returns true if a <content> is being added */
       _maybeAddInsertionPoint: function(node, parent) {
         var added;
-        if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE &&
+        if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE && 
           !node.__noContent) {
           var c$ = factory(node).querySelectorAll(CONTENT);
           for (var i=0, n, np, na; (i<c$.length) && (n=c$[i]); i++) {
@@ -4580,7 +4587,7 @@ Polymer.domInnerHTML = (function() {
       // NOTE: if `ensureComposedRemoval` is true then the node should be
       // removed from its composed parent.
       _removeNodeFromHost: function(node, ensureComposedRemoval) {
-        // note that it's possible for both the node's host and its parent
+        // note that it's possible for both the node's host and its parent 
         // to require distribution... both cases are handled here.
         var hostNeedsDist;
         var root;
@@ -4749,7 +4756,7 @@ Polymer.domInnerHTML = (function() {
         var c$ = this.getEffectiveChildNodes();
         var list = [];
         for (var i=0, l=c$.length, c; (i<l) && (c=c$[i]); i++) {
-          if ((c.nodeType === Node.ELEMENT_NODE) &&
+          if ((c.nodeType === Node.ELEMENT_NODE) && 
               matchesSelector.call(c, selector)) {
             list.push(c);
           }
@@ -4830,14 +4837,14 @@ Polymer.domInnerHTML = (function() {
       },
 
       /**
-       * Notifies callers about changes to the element's effective child nodes,
-       * the same list as returned by `getEffectiveChildNodes`.
-       * @param {function} callback The supplied callback is called with an
-       * `info` argument which is an object that provides
-       * the `target` on which the changes occurred, a list of any nodes
-       * added in the `addedNodes` array, and nodes removed in the
+       * Notifies callers about changes to the element's effective child nodes, 
+       * the same list as returned by `getEffectiveChildNodes`. 
+       * @param {function} callback The supplied callback is called with an 
+       * `info` argument which is an object that provides 
+       * the `target` on which the changes occurred, a list of any nodes 
+       * added in the `addedNodes` array, and nodes removed in the 
        * `removedNodes` array.
-       * @return {object} Returns a handle which is the argument to
+       * @return {object} Returns a handle which is the argument to 
        * `unobserveNodes`.
        */
       observeNodes: function(callback) {
@@ -4854,7 +4861,7 @@ Polymer.domInnerHTML = (function() {
       /**
        * Stops observing changes to the element's effective child nodes.
        * @param {object} handle The handle for the callback that should
-       * no longer receive notifications. This handle is returned from
+       * no longer receive notifications. This handle is returned from 
        * `observeNodes`.
        */
       unobserveNodes: function(handle) {
@@ -5034,7 +5041,7 @@ Polymer.domInnerHTML = (function() {
 
     } else {
 
-      var forwardMethods = ['cloneNode', 'appendChild', 'insertBefore',
+      var forwardMethods = ['cloneNode', 'appendChild', 'insertBefore', 
       'removeChild', 'replaceChild'];
 
       forwardMethods.forEach(function(name) {
@@ -5064,20 +5071,20 @@ Polymer.domInnerHTML = (function() {
       }
 
       DomApi.prototype.getDestinationInsertionPoints = function() {
-        var n$ = this.node.getDestinationInsertionPoints &&
+        var n$ = this.node.getDestinationInsertionPoints && 
           this.node.getDestinationInsertionPoints();
         return n$ ? Array.prototype.slice.call(n$) : [];
       };
 
       DomApi.prototype.getDistributedNodes = function() {
-        var n$ = this.node.getDistributedNodes &&
+        var n$ = this.node.getDistributedNodes && 
           this.node.getDistributedNodes();
         return n$ ? Array.prototype.slice.call(n$) : [];
       };
 
       DomApi.prototype._distributeParent = function() {};
 
-      var nativeForwards = ['appendChild', 'insertBefore',
+      var nativeForwards = ['appendChild', 'insertBefore', 
         'removeChild', 'replaceChild'];
 
       nativeForwards.forEach(function(forward) {
@@ -5125,7 +5132,7 @@ Polymer.domInnerHTML = (function() {
 
       });
 
-      var forwardProperties = ['parentNode', 'firstChild', 'lastChild',
+      var forwardProperties = ['parentNode', 'firstChild', 'lastChild', 
       'nextSibling', 'previousSibling', 'firstElementChild', 'lastElementChild',
       'nextElementSibling', 'previousElementSibling'];
 
@@ -5254,16 +5261,16 @@ Polymer.domInnerHTML = (function() {
 
 </script><script>
 
-  /**
-   * `Polymer.dom.flush()` causes any asynchronously queued actions to be
+  /** 
+   * `Polymer.dom.flush()` causes any asynchronously queued actions to be 
    * flushed synchronously. It should be used sparingly as calling it frequently
-   * can negatively impact performance since work is often deferred for
-   * efficiency. Calling `Polymer.dom.flush()` is useful, for example, when
-   * an element has to measure itself and is unsure about the state of its
+   * can negatively impact performance since work is often deferred for 
+   * efficiency. Calling `Polymer.dom.flush()` is useful, for example, when 
+   * an element has to measure itself and is unsure about the state of its 
    * internal or compoased DOM.
    */
   Polymer.Base.extend(Polymer.dom, {
-
+    
     _flushGuard: 0,
     _FLUSH_MAX: 100,
     _needsTakeRecords: !Polymer.Settings.useNativeCustomElements,
@@ -5292,9 +5299,9 @@ Polymer.domInnerHTML = (function() {
     },
 
     _prepareFlush: function() {
-      // TODO(sorvell): There is currently not a good way
+      // TODO(sorvell): There is currently not a good way 
       // to process all custom elements mutations under SD polyfill because
-      // these mutations may be inside shadowRoots.
+      // these mutations may be inside shadowRoots. 
       // again make any pending CE mutations that might trigger debouncer
       // additions go...
       if (this._needsTakeRecords) {
@@ -5321,7 +5328,7 @@ Polymer.domInnerHTML = (function() {
     addDebouncer: function(debouncer) {
       this._debouncers.push(debouncer);
       // ensure the list of active debouncers is cleared when done.
-      this._finishDebouncer = Polymer.Debounce(this._finishDebouncer,
+      this._finishDebouncer = Polymer.Debounce(this._finishDebouncer, 
         this._finishFlush);
     },
 
@@ -5338,13 +5345,13 @@ Polymer.EventApi = (function() {
   var DomApi = Polymer.DomApi.ctor;
   var Settings = Polymer.Settings;
 
-
+  
   /**
-   * DomApi.Event allows maniuplation of events compatible with
-   * the scoping concepts in Shadow DOM and compatible with both Shady DOM
-   * and Shadow DOM. The general usage is
-   * `Polymer.dom(event).property`. The `path` property returns `event.path`
-   * matching Shadow DOM. The `rootTarget` property returns the first node
+   * DomApi.Event allows maniuplation of events compatible with 
+   * the scoping concepts in Shadow DOM and compatible with both Shady DOM 
+   * and Shadow DOM. The general usage is 
+   * `Polymer.dom(event).property`. The `path` property returns `event.path` 
+   * matching Shadow DOM. The `rootTarget` property returns the first node 
    * in the `path` and is the original event target. The `localTarget` property
    * matches event.target under Shadow DOM and is the scoped event target.
    */
@@ -5355,7 +5362,7 @@ Polymer.EventApi = (function() {
   if (Settings.useShadow) {
 
     DomApi.Event.prototype = {
-
+      
       get rootTarget() {
         return this.event.path[0];
       },
@@ -5373,7 +5380,7 @@ Polymer.EventApi = (function() {
   } else {
 
     DomApi.Event.prototype = {
-
+    
       get rootTarget() {
         return this.event.target;
       },
@@ -5432,8 +5439,8 @@ Polymer.EventApi = (function() {
   var DomApi = Polymer.DomApi.ctor;
 
   /**
-   * DomApi.classList allows maniuplation of `classList` compatible with
-   * Polymer.dom. The general usage is
+   * DomApi.classList allows maniuplation of `classList` compatible with 
+   * Polymer.dom. The general usage is 
    * `Polymer.dom(node).classList.method(arguments)` where methods and arguments
    * match native DOM.
    */
@@ -5483,8 +5490,8 @@ Polymer.EventApi = (function() {
     var hasDomApi = Polymer.DomApi.hasDomApi;
 
     /**
-     * DomApi.EffectiveNodesObserver tracks changes to an element's
-     * effective child nodes, the same list returned from
+     * DomApi.EffectiveNodesObserver tracks changes to an element's 
+     * effective child nodes, the same list returned from 
      * `Polymer.dom(node).getEffectiveChildNodes()`.
      * It is not meant to be used directly; it is used by
      * `Polymer.dom(node).observeNodes(callback)` to observe changes.
@@ -5536,7 +5543,7 @@ Polymer.EventApi = (function() {
         if (this._debouncer) {
           this._debouncer.stop();
         }
-        this._debouncer = Polymer.Debounce(this._debouncer,
+        this._debouncer = Polymer.Debounce(this._debouncer, 
           this._notify);
         this._debouncer.context = this;
         Polymer.dom.addDebouncer(this._debouncer);
@@ -5656,7 +5663,7 @@ Polymer.EventApi = (function() {
         .prototype._beforeCallListeners;
 
       Polymer.Base.extend(DomApi.EffectiveNodesObserver.prototype, {
-
+        
         _setup: function() {
           if (!this._observer) {
             var self = this;
@@ -5671,7 +5678,7 @@ Polymer.EventApi = (function() {
             // NOTE: subtree true is way too aggressive, but it easily catches
             // attribute changes on children. These changes otherwise require
             // attribute observers on every child. Testing has shown this
-            // approach to be more efficient.
+            // approach to be more efficient. 
             // TODO(sorvell): do we still need to include an option to defeat
             // attribute tracking?
             this._observer.observe(this.node, { childList: true });
@@ -5700,7 +5707,7 @@ Polymer.EventApi = (function() {
             // affect lower distributions.
             this._makeContentListenersAlwaysNotify();
             this._observer.disconnect();
-            this._observer.observe(this.node, {
+            this._observer.observe(this.node, { 
               childList: true,
               attributes: true,
               subtree: true
@@ -5734,7 +5741,7 @@ Polymer.EventApi = (function() {
     var Settings = Polymer.Settings;
 
     /**
-     * DomApi.DistributedNodesObserver notifies when the list returned by
+     * DomApi.DistributedNodesObserver notifies when the list returned by 
      * a <content> element's `getDistributedNodes()` may have changed.
      * It is not meant to be used directly; it is used by
      * `Polymer.dom(node).observeNodes(callback)` to observe changes to
@@ -5744,7 +5751,7 @@ Polymer.EventApi = (function() {
       DomApi.EffectiveNodesObserver.call(this, domApi);
     };
 
-    DomApi.DistributedNodesObserver.prototype =
+    DomApi.DistributedNodesObserver.prototype = 
       Object.create(DomApi.EffectiveNodesObserver.prototype);
 
     Polymer.Base.extend(DomApi.DistributedNodesObserver.prototype, {
@@ -5766,9 +5773,9 @@ Polymer.EventApi = (function() {
     });
 
     if (Settings.useShadow) {
-
+      
       Polymer.Base.extend(DomApi.DistributedNodesObserver.prototype, {
-
+        
         // NOTE: Under ShadowDOM we must observe the host element for
         // changes.
         _setup: function() {
@@ -5779,8 +5786,8 @@ Polymer.EventApi = (function() {
               this._observer = Polymer.dom(host).observeNodes(
                 this._scheduleNotify.bind(this));
               // NOTE: we identify this listener as needed for <content>
-              // notification so that enableShadowAttributeTracking
-              // can find these observers an ensure that we pass always
+              // notification so that enableShadowAttributeTracking 
+              // can find these observers an ensure that we pass always 
               // pass notifications down.
               this._observer._isContentListener = true;
               if (this._hasAttrSelect()) {
@@ -5805,7 +5812,7 @@ Polymer.EventApi = (function() {
         }
 
       });
-
+    
     }
 
 })();
@@ -5854,12 +5861,12 @@ Polymer.EventApi = (function() {
         this.shadyRoot._isShadyRoot = true;
         this.shadyRoot._dirtyRoots = [];
         // capture insertion point list
-        var i$ = this.shadyRoot._insertionPoints = !this._notes ||
+        var i$ = this.shadyRoot._insertionPoints = !this._notes || 
           this._notes._hasContent ?
           this.shadyRoot.querySelectorAll('content') : [];
         // save logical tree info
-        // a. for shadyRoot
-        // b. for insertion points (fallback)
+        // a. for shadyRoot 
+        // b. for insertion points (fallback) 
         // c. for parents of insertion points
         saveLightChildrenIfNeeded(this.shadyRoot);
         for (var i=0, c; i < i$.length; i++) {
@@ -5939,7 +5946,7 @@ Polymer.EventApi = (function() {
         // compose self
         if (this._useContent) {
           // note: it's important to mark this clean before distribution
-          // so that attachment that provokes additional distribution (e.g.
+          // so that attachment that provokes additional distribution (e.g. 
           // adding something to your parentNode) works
           this.shadyRoot._distributionClean = true;
           if (hasInsertionPoint(this.shadyRoot)) {
@@ -6110,7 +6117,7 @@ Polymer.EventApi = (function() {
         for (var i=0, d=0, s; (i<splices.length) && (s=splices[i]); i++) {
           for (var j=0, n; (j < s.removed.length) && (n=s.removed[j]); j++) {
             // check if the node is still where we expect it is before trying
-            // to remove it; this can happen if Polymer.dom moves a node and
+            // to remove it; this can happen if Polymer.dom moves a node and 
             // then schedules its previous host for distribution resulting in
             // the node being removed here.
             if (getComposedParent(n) === container) {
@@ -6300,7 +6307,7 @@ Polymer.EventApi = (function() {
 
 </script>
 <script>
-
+  
   /**
     Implements `shadyRoot` compatible dom scoping using native ShadowDOM.
   */
@@ -6317,7 +6324,7 @@ Polymer.EventApi = (function() {
       distributeContent: function() {},
       _distributeContent: function() {},
       _finishDistribute: function() {},
-
+      
       // create a shadowRoot
       _createLocalRoot: function() {
         this.createShadowRoot();
@@ -6730,17 +6737,17 @@ Polymer.EventApi = (function() {
 
   (function() {
 
-    // path fixup for urls in cssText that's expected to
+    // path fixup for urls in cssText that's expected to 
     // come from a given ownerDocument
     function resolveCss(cssText, ownerDocument) {
       return cssText.replace(CSS_URL_RX, function(m, pre, url, post) {
-        return pre + '\'' +
-          resolve(url.replace(/["']/g, ''), ownerDocument) +
+        return pre + '\'' + 
+          resolve(url.replace(/["']/g, ''), ownerDocument) + 
           '\'' + post;
       });
     }
 
-    // url fixup for urls in an element's attributes made relative to
+    // url fixup for urls in an element's attributes made relative to 
     // ownerDoc's base url
     function resolveAttrs(element, ownerDocument) {
       for (var name in URL_ATTRS) {
@@ -6763,7 +6770,7 @@ Polymer.EventApi = (function() {
       // do not resolve '#' links, they are used for routing
       if (url && url[0] === '#') {
         return url;
-      }
+      }      
       var resolver = getUrlResolver(ownerDocument);
       resolver.href = url;
       return resolver.href || url;
@@ -6782,7 +6789,7 @@ Polymer.EventApi = (function() {
     }
 
     function getUrlResolver(ownerDocument) {
-      return ownerDocument.__urlResolver ||
+      return ownerDocument.__urlResolver || 
         (ownerDocument.__urlResolver = ownerDocument.createElement('a'));
     }
 
@@ -8025,23 +8032,23 @@ new window.MutationObserver(function() {
 <script>
 
 Polymer.Debounce = (function() {
-
+  
   // usage
-
+  
   // invoke cb.call(this) in 100ms, unless the job is re-registered,
   // which resets the timer
-  //
+  // 
   // this.job = this.debounce(this.job, cb, 100)
   //
   // returns a handle which can be used to re-register a job
 
   var Async = Polymer.Async;
-
+  
   var Debouncer = function(context) {
     this.context = context;
     this.boundComplete = this.complete.bind(this);
   };
-
+  
   Debouncer.prototype = {
     go: function(callback, wait) {
       var h;
@@ -8074,11 +8081,11 @@ Polymer.Debounce = (function() {
     debouncer.go(callback, wait);
     return debouncer;
   }
-
-  // exports
+  
+  // exports 
 
   return debounce;
-
+  
 })();
 
 </script>
@@ -8177,7 +8184,7 @@ Polymer.Debounce = (function() {
 
     /**
      * Returns a list of nodes that are the effective childNodes. The effective
-     * childNodes list is the same as the element's childNodes except that
+     * childNodes list is the same as the element's childNodes except that 
      * any `<content>` elements are replaced with the list of nodes distributed
      * to the `<content>`, the result of its `getDistributedNodes` method.
      *
@@ -8190,8 +8197,8 @@ Polymer.Debounce = (function() {
 
     /**
      * Returns a list of elements that are the effective children. The effective
-     * children list is the same as the element's children except that
-     * any `<content>` elements are replaced with the list of elements
+     * children list is the same as the element's children except that 
+     * any `<content>` elements are replaced with the list of elements 
      * distributed to the `<content>`.
      *
      * @method getEffectiveChildren
@@ -8205,7 +8212,7 @@ Polymer.Debounce = (function() {
     },
 
     /**
-     * Returns a string of text content that is the concatenation of the
+     * Returns a string of text content that is the concatenation of the 
      * text content's of the element's effective childNodes (the elements
      * returned by <a href="#getEffectiveChildNodes>getEffectiveChildNodes</a>.
      *
@@ -10002,7 +10009,7 @@ Polymer.CssParse = (function() {
             n = {start: i+1, parent: p, previous: previous};
             p.rules.push(n);
             break;
-          case this.CLOSE_BRACE:
+          case this.CLOSE_BRACE: 
             //console.groupEnd(n.start);
             n.end = i+1;
             n = n.parent || root;
@@ -10043,9 +10050,9 @@ Polymer.CssParse = (function() {
       if (r$) {
         for (var i=0, l=r$.length, r; (i<l) && (r=r$[i]); i++) {
           this._parseCss(r, text);
-        }
+        }  
       }
-      return node;
+      return node;  
     },
 
     // stringify parsed css.
@@ -10058,10 +10065,10 @@ Polymer.CssParse = (function() {
         if (r$ && (preserveProperties || !this._hasMixinRules(r$))) {
           for (var i=0, l=r$.length, r; (i<l) && (r=r$[i]); i++) {
             cssText = this.stringify(r, preserveProperties, cssText);
-          }
+          }  
         } else {
-          cssText = preserveProperties ? node.cssText :
-            this.removeCustomProps(node.cssText);
+          cssText = preserveProperties ? node.cssText : 
+            this.removeCustomProps(node.cssText);  
           cssText = cssText.trim();
           if (cssText) {
             cssText = '  ' + cssText + '\n';
@@ -10097,7 +10104,7 @@ Polymer.CssParse = (function() {
     },
 
     removeCustomPropApply: function(cssText) {
-      return cssText
+      return cssText            
         .replace(this._rx.mixinApply, '')
         .replace(this._rx.varApply, '');
     },
@@ -10130,7 +10137,7 @@ Polymer.CssParse = (function() {
   };
 
 
-  // exports
+  // exports 
   return api;
 
 })();
@@ -10148,7 +10155,7 @@ Polymer.CssParse = (function() {
       toCssText: function(rules, callback, preserveProperties) {
         if (typeof rules === 'string') {
           rules = this.parser.parse(rules);
-        }
+        } 
         if (callback) {
           this.forEachStyleRule(rules, callback);
         }
@@ -10182,7 +10189,7 @@ Polymer.CssParse = (function() {
         var skipRules = false;
         if (node.type === this.ruleTypes.STYLE_RULE) {
           callback(node);
-        } else if (node.type === this.ruleTypes.KEYFRAMES_RULE ||
+        } else if (node.type === this.ruleTypes.KEYFRAMES_RULE || 
             node.type === this.ruleTypes.MIXIN_RULE) {
           skipRules = true;
         }
@@ -10205,8 +10212,8 @@ Polymer.CssParse = (function() {
         if (!afterNode) {
           var n$ = target.querySelectorAll('style[scope]');
           afterNode = n$[n$.length-1];
-        }
-        target.insertBefore(style,
+        } 
+        target.insertBefore(style, 
           (afterNode && afterNode.nextSibling) || target.firstChild);
         return style;
       },
@@ -10268,7 +10275,7 @@ Polymer.CssParse = (function() {
         }
         return cssText;
       },
-
+      
       resolveCss: Polymer.ResolveUrl.resolveCss,
       parser: Polymer.CssParse,
       ruleTypes: Polymer.CssParse.types
@@ -10286,7 +10293,7 @@ Polymer.CssParse = (function() {
 
     /* Transforms ShadowDOM styling into ShadyDOM styling
 
-     * scoping:
+     * scoping: 
 
         * elements in scope get scoping selector class="x-foo-scope"
         * selectors re-written as follows:
@@ -10308,8 +10315,8 @@ Polymer.CssParse = (function() {
     */
     var api = {
 
-      // Given a node and scope name, add a scoping class to each node
-      // in the tree. This facilitates transforming css into scoped rules.
+      // Given a node and scope name, add a scoping class to each node 
+      // in the tree. This facilitates transforming css into scoped rules. 
       dom: function(node, scope, useAttr, shouldRemoveScope) {
         this._transformDom(node, scope || '', useAttr, shouldRemoveScope);
       },
@@ -10353,7 +10360,7 @@ Polymer.CssParse = (function() {
                     .replace(scope, ''));
                 }
               } else {
-                element.setAttribute(CLASS, c + (c ? ' ' : '') +
+                element.setAttribute(CLASS, c + (c ? ' ' : '') + 
                   SCOPE_NAME + ' ' + scope);
               }
             }
@@ -10420,7 +10427,7 @@ Polymer.CssParse = (function() {
         }
         // NOTE: save transformedSelector for subsequent matching of elements
         // agsinst selectors (e.g. when calculating style properties)
-        rule.selector = rule.transformedSelector =
+        rule.selector = rule.transformedSelector = 
           p$.join(COMPLEX_SELECTOR_SEP);
       },
 
@@ -10434,16 +10441,16 @@ Polymer.CssParse = (function() {
             stop = stop || info.stop;
             hostContext = hostContext || info.hostContext;
             c = info.combinator;
-            s = info.value;
+            s = info.value;  
           } else {
             s = s.replace(SCOPE_JUMP, ' ');
           }
           return c + s;
         });
         if (hostContext) {
-          selector = selector.replace(HOST_CONTEXT_PAREN,
+          selector = selector.replace(HOST_CONTEXT_PAREN, 
             function(m, pre, paren, post) {
-              return pre + paren + ' ' + hostScope + post +
+              return pre + paren + ' ' + hostScope + post + 
                 COMPLEX_SELECTOR_SEP + ' ' + pre + hostScope + paren + post;
              });
         }
@@ -10465,7 +10472,7 @@ Polymer.CssParse = (function() {
           selector = selector.replace(HOST, hostScope);
         // replace other selectors with scoping class
         } else if (jumpIndex !== 0) {
-          selector = scope ? this._transformSimpleSelector(selector, scope) :
+          selector = scope ? this._transformSimpleSelector(selector, scope) : 
             selector;
         }
         // remove left-side combinator when dealing with ::content.
@@ -10479,7 +10486,7 @@ Polymer.CssParse = (function() {
           selector = selector.replace(SCOPE_JUMP, ' ');
           stop = true;
         }
-        return {value: selector, combinator: combinator, stop: stop,
+        return {value: selector, combinator: combinator, stop: stop, 
           hostContext: hostContext};
       },
 
@@ -10514,13 +10521,13 @@ Polymer.CssParse = (function() {
     };
 
     var SCOPE_NAME = api.SCOPE_NAME;
-    var SCOPE_DOC_SELECTOR = ':not([' + SCOPE_NAME + '])' +
+    var SCOPE_DOC_SELECTOR = ':not([' + SCOPE_NAME + '])' + 
       ':not(.' + SCOPE_NAME + ')';
     var COMPLEX_SELECTOR_SEP = ',';
     var SIMPLE_SELECTOR_SEP = /(^|[\s>+~]+)([^\s>+~]+)/g;
     var HOST = ':host';
     var ROOT = ':root';
-    // NOTE: this supports 1 nested () pair for things like
+    // NOTE: this supports 1 nested () pair for things like 
     // :host(:not([selected]), more general support requires
     // parsing which seems like overkill
     var HOST_PAREN = /(\:host)(?:\(((?:\([^)(]*\)|[^)(]*)+?)\))/g;
@@ -10547,7 +10554,7 @@ Polymer.StyleExtends = (function() {
   var styleUtil = Polymer.StyleUtil;
 
   return {
-
+    
     hasExtends: function(cssText) {
       return Boolean(cssText.match(this.rx.EXTEND));
     },
@@ -10603,7 +10610,7 @@ Polymer.StyleExtends = (function() {
       // TODO: this misses `%foo, .bar` as an unetended selector but
       // this seems rare and could possibly be unsupported.
       source.selector = source.selector.replace(this.rx.STRIP, '');
-      source.selector = (source.selector && source.selector + ',\n') +
+      source.selector = (source.selector && source.selector + ',\n') + 
         target.selector;
       if (source.extends) {
         source.extends.forEach(function(e) {
@@ -10886,8 +10893,8 @@ Polymer.StyleExtends = (function() {
             var self = this;
             var fn = function(all, prefix, value, fallback) {
               var propertyValue = (self.valueForProperty(props[value], props) ||
-                (props[fallback] ?
-                self.valueForProperty(props[fallback], props) :
+                (props[fallback] ? 
+                self.valueForProperty(props[fallback], props) : 
                 fallback));
               return prefix + (propertyValue || '');
             };
@@ -10913,7 +10920,7 @@ Polymer.StyleExtends = (function() {
               }
               p = pp.join(':');
             }
-            parts[i] = (p && p.lastIndexOf(';') === p.length - 1) ?
+            parts[i] = (p && p.lastIndexOf(';') === p.length - 1) ? 
               // strip trailing ;
               p.slice(0, -1) :
               p || '';
@@ -10941,7 +10948,7 @@ Polymer.StyleExtends = (function() {
         // generates a unique key for these matches
         var o = [], i = 0;
         styleUtil.forRulesInStyles(styles, function(rule) {
-          // TODO(sorvell): we could trim the set of rules at declaration
+          // TODO(sorvell): we could trim the set of rules at declaration 
           // time to only include ones that have properties
           if (!rule.propertyInfo) {
             self.decorateRule(rule);
@@ -10965,7 +10972,7 @@ Polymer.StyleExtends = (function() {
       // collect any custom properties into `props`.
       scopePropertiesFromStyles: function(styles) {
         if (!styles._scopeStyleProperties) {
-          styles._scopeStyleProperties =
+          styles._scopeStyleProperties = 
             this.selectedPropertiesFromStyles(styles, this.SCOPE_SELECTORS);
         }
         return styles._scopeStyleProperties;
@@ -10978,7 +10985,7 @@ Polymer.StyleExtends = (function() {
       // :host(...) and then matching these against self.
       hostPropertiesFromStyles: function(styles) {
         if (!styles._hostStyleProperties) {
-          styles._hostStyleProperties =
+          styles._hostStyleProperties = 
             this.selectedPropertiesFromStyles(styles, this.HOST_SELECTORS);
         }
         return styles._hostStyleProperties;
@@ -11004,15 +11011,15 @@ Polymer.StyleExtends = (function() {
         var self = this;
         var hostSelector = styleTransformer
           ._calcHostScope(element.is, element.extends);
-        var rxHostSelector = element.extends ?
-          '\\' + hostSelector.slice(0, -1) + '\\]' :
+        var rxHostSelector = element.extends ? 
+          '\\' + hostSelector.slice(0, -1) + '\\]' : 
           hostSelector;
-        var hostRx = new RegExp(this.rx.HOST_PREFIX + rxHostSelector +
+        var hostRx = new RegExp(this.rx.HOST_PREFIX + rxHostSelector + 
           this.rx.HOST_SUFFIX);
         return styleTransformer.elementStyles(element, function(rule) {
           self.applyProperties(rule, properties);
           if (rule.cssText && !nativeShadow) {
-            self._scopeSelector(rule, hostRx, hostSelector,
+            self._scopeSelector(rule, hostRx, hostSelector, 
               element._scopeCssViaAttr, scopeSelector);
           }
         });
@@ -11024,8 +11031,8 @@ Polymer.StyleExtends = (function() {
       _scopeSelector: function(rule, hostRx, hostSelector, viaAttr, scopeId) {
         rule.transformedSelector = rule.transformedSelector || rule.selector;
         var selector = rule.transformedSelector;
-        var scope = viaAttr ? '[' + styleTransformer.SCOPE_NAME + '~=' +
-          scopeId + ']' :
+        var scope = viaAttr ? '[' + styleTransformer.SCOPE_NAME + '~=' + 
+          scopeId + ']' : 
           '.' + scopeId;
         var parts = selector.split(',');
         for (var i=0, l=parts.length, p; (i<l) && (p=parts[i]); i++) {
@@ -11052,8 +11059,8 @@ Polymer.StyleExtends = (function() {
 
       applyElementStyle: function(element, properties, selector, style) {
         // calculate cssText to apply
-        var cssText = style ? style.textContent || '' :
-          this.transformStyles(element, properties, selector);
+        var cssText = style ? style.textContent || '' : 
+          this.transformStyles(element, properties, selector);  
         // if shady and we have a cached style that is not style, decrement
         var s = element._customStyle;
         if (s && !nativeShadow && (s !== style)) {
@@ -11073,7 +11080,7 @@ Polymer.StyleExtends = (function() {
           } else if (cssText) {
             // apply css after the scope style of the element to help with
             // style predence rules.
-            style = styleUtil.applyCss(cssText, selector,
+            style = styleUtil.applyCss(cssText, selector, 
               nativeShadow ? element.root : null, element._scopeStyle);
           }
         }
@@ -11104,7 +11111,7 @@ Polymer.StyleExtends = (function() {
 
       rx: {
         VAR_ASSIGN: /(?:^|[;\n]\s*)(--[\w-]*?):\s*(?:([^;{]*)|{([^}]*)})(?:(?=[;\n])|$)/gi,
-        MIXIN_MATCH: /(?:^|\W+)@apply[\s]*\(([^)]*)\)/i,
+        MIXIN_MATCH: /(?:^|\W+)@apply[\s]*\(([^)]*)\)/i, 
         // note, this supports:
         // var(--a)
         // var(--a, --b)
@@ -11141,7 +11148,7 @@ Polymer.StyleExtends = (function() {
   }
 
   Polymer.StyleCache.prototype = {
-
+    
     MAX: 100,
 
     store: function(is, data, keyValues, keyStyles) {
@@ -11173,13 +11180,13 @@ Polymer.StyleExtends = (function() {
     },
 
     // note, this is intentially limited to support just the cases we need
-    // right now. The objects we're checking here are either objects that must
+    // right now. The objects we're checking here are either objects that must 
     // always have the same keys OR arrays.
     _objectsEqual: function(target, source) {
       var t, s;
       for (var i in target) {
         t = target[i], s = source[i];
-        if (!(typeof t === 'object' && t ? this._objectsStrictlyEqual(t, s) :
+        if (!(typeof t === 'object' && t ? this._objectsStrictlyEqual(t, s) : 
             t === s)) {
           return false;
         }
@@ -11191,7 +11198,7 @@ Polymer.StyleExtends = (function() {
     },
 
     _objectsStrictlyEqual: function(target, source) {
-      return this._objectsEqual(target, source) &&
+      return this._objectsEqual(target, source) && 
         this._objectsEqual(source, target);
     }
 
@@ -11251,8 +11258,8 @@ Polymer.StyleExtends = (function() {
        * been made that affect the values of custom properties.
        *
        * @method updateStyles
-       * @param {Object=} properties Properties object which is mixed into
-       * the document root `customStyle` property. This argument provides a
+       * @param {Object=} properties Properties object which is mixed into 
+       * the document root `customStyle` property. This argument provides a 
        * shortcut for setting `customStyle` and then calling `updateStyles`.
       */
       updateStyles: function(properties) {
@@ -11302,8 +11309,8 @@ Polymer.StyleExtends = (function() {
       },
 
       /**
-       * An element's style properties can be directly modified by
-       * setting key-value pairs in `customStyle` on the element
+       * An element's style properties can be directly modified by 
+       * setting key-value pairs in `customStyle` on the element 
        * (analogous to setting `style`) and then calling `updateStyles()`.
        *
        */
@@ -11614,7 +11621,7 @@ Polymer.StyleExtends = (function() {
 
 </script>
 
-<!--
+<!-- 
 
 The `custom-style` extension of the native `<style>` element allows defining styles
 in the main document that can take advantage of several special features of
@@ -11626,7 +11633,7 @@ not leak into local DOM when running on browsers without non-native Shadow DOM.
 browsers without non-native Shadow DOM.
 * Custom properties used by Polymer's shim for cross-scope styling
 may be defined in an `custom-style`.
-* An `include` attribute may be specified to pull in style data from a
+* An `include` attribute may be specified to pull in style data from a 
 `dom-module` matching the include attribute. By using `include`, style data
 can be shared between multiple `custom-style` elements.
 
@@ -11640,22 +11647,22 @@ Example:
   <link rel="import" href="components/polymer/polymer.html">
 
   <style is="custom-style">
-
+    
     /* Will be prevented from affecting local DOM of Polymer elements */
     * {
       box-sizing: border-box;
     }
-
+    
     /* Can use /deep/ and ::shadow combinators */
     body /deep/ .my-special-view::shadow #thing-inside {
       background: yellow;
     }
-
+    
     /* Custom properties that inherit down the document tree may be defined */
     body {
       --my-toolbar-title-color: green;
     }
-
+    
   </style>
 
 </head>
@@ -11697,7 +11704,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     },
 
     ready: function() {
-      // NOTE: we cannot just check attached because custom elements in
+      // NOTE: we cannot just check attached because custom elements in 
       // HTMLImports do not get attached.
       this._tryApply();
     },
@@ -11709,7 +11716,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     _tryApply: function() {
       if (!this._appliesToDocument) {
         // only apply variables iff this style is not inside a dom-module
-        if (this.parentNode &&
+        if (this.parentNode && 
           (this.parentNode.localName !== 'dom-module')) {
           this._appliesToDocument = true;
           // used applied element from HTMLImports polyfill or this
@@ -11730,13 +11737,13 @@ Note, all features of `custom-style` are available when defining styles as part 
       }
     },
 
-    // polyfill this style with root scoping and
+    // polyfill this style with root scoping and 
     // apply custom properties!
     _apply: function() {
       // used applied element from HTMLImports polyfill or this
       var e = this.__appliedElement || this;
       if (this.include) {
-        e.textContent = styleUtil.cssFromModules(this.include, true) +
+        e.textContent = styleUtil.cssFromModules(this.include, true) + 
           e.textContent;
       }
       if (e.textContent) {
@@ -11758,9 +11765,9 @@ Note, all features of `custom-style` are available when defining styles as part 
           // so next function isn't confused
           // NOTE: we have 3 categories of css:
           // (1) normal properties,
-          // (2) custom property assignments (--foo: red;),
+          // (2) custom property assignments (--foo: red;), 
           // (3) custom property usage: border: var(--foo); @apply(--foo);
-          // In elements, 1 and 3 are separated for efficiency; here they
+          // In elements, 1 and 3 are separated for efficiency; here they 
           // are not and this makes this case unique.
           css = cssParse.removeCustomPropAssignment(css);
           // replace with reified properties, scenario is same as mixin
@@ -11856,9 +11863,6 @@ Note, all features of `custom-style` are available when defining styles as part 
       // TODO(sjmiles): supply _alternate_ content reference missing from root
       // templates (not nested). `_content` exists to provide content sharing
       // for nested templates.
-      if (!template.content) {
-        HTMLTemplateElement.decorate(template);
-      }
       if (!template._content) {
         template._content = template.content;
       }
@@ -12229,11 +12233,11 @@ Note, all features of `custom-style` are available when defining styles as part 
   /**
    * Creates a pseudo-custom-element that maps property values to bindings
    * in DOM.
-   *
+   * 
    * `stamp` method creates an instance of the pseudo-element. The instance
    * references a document-fragment containing the stamped and bound dom
-   * via it's `root` property.
-   *
+   * via it's `root` property. 
+   *  
    */
   Polymer({
 
@@ -13558,7 +13562,7 @@ Note, all features of `custom-style` are available when defining styles as part 
 		});
 	};
 
-
+	
   return Promise;
 }
 
@@ -14185,7 +14189,7 @@ element.
        *
        * The type of the response is determined by the value of `handleAs` at
        * the time that the request was generated.
-       *
+       * 
        * @type {Object}
        */
       lastResponse: {
@@ -14196,7 +14200,7 @@ element.
 
       /**
        * lastRequest's error, if any.
-       *
+       * 
        * @type {Object}
        */
       lastError: {
@@ -15266,7 +15270,7 @@ A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `
 
       /**
        * Returns the currently selected item.
-       *
+       * 
        * @type {?Object}
        */
       selectedItem: {
@@ -17329,7 +17333,7 @@ Custom property | Description | Default
 
     /**
      * @param {!KeyboardEvent} event .
-     */
+     */ 
     _spaceKeyDownHandler: function(event) {
       var keyboardEvent = event.detail.keyboardEvent;
       keyboardEvent.preventDefault();
@@ -17339,7 +17343,7 @@ Custom property | Description | Default
 
     /**
      * @param {!KeyboardEvent} event .
-     */
+     */ 
     _spaceKeyUpHandler: function(event) {
       if (this.pressed) {
         this._asyncClick();
@@ -17767,7 +17771,7 @@ Example:
     --google-grey-300: #e0e0e0;
     --google-grey-500: #9e9e9e;
     --google-grey-700: #616161;
-
+    
     /* Material Design color palette from online spec document */
 
     --paper-red-50: #ffebee;
@@ -17784,7 +17788,7 @@ Example:
     --paper-red-a200: #ff5252;
     --paper-red-a400: #ff1744;
     --paper-red-a700: #d50000;
-
+ 
     --paper-pink-50: #fce4ec;
     --paper-pink-100: #f8bbd0;
     --paper-pink-200: #f48fb1;
@@ -17799,7 +17803,7 @@ Example:
     --paper-pink-a200: #ff4081;
     --paper-pink-a400: #f50057;
     --paper-pink-a700: #c51162;
-
+ 
     --paper-purple-50: #f3e5f5;
     --paper-purple-100: #e1bee7;
     --paper-purple-200: #ce93d8;
@@ -17814,7 +17818,7 @@ Example:
     --paper-purple-a200: #e040fb;
     --paper-purple-a400: #d500f9;
     --paper-purple-a700: #aa00ff;
-
+ 
     --paper-deep-purple-50: #ede7f6;
     --paper-deep-purple-100: #d1c4e9;
     --paper-deep-purple-200: #b39ddb;
@@ -17829,7 +17833,7 @@ Example:
     --paper-deep-purple-a200: #7c4dff;
     --paper-deep-purple-a400: #651fff;
     --paper-deep-purple-a700: #6200ea;
-
+ 
     --paper-indigo-50: #e8eaf6;
     --paper-indigo-100: #c5cae9;
     --paper-indigo-200: #9fa8da;
@@ -17844,7 +17848,7 @@ Example:
     --paper-indigo-a200: #536dfe;
     --paper-indigo-a400: #3d5afe;
     --paper-indigo-a700: #304ffe;
-
+ 
     --paper-blue-50: #e3f2fd;
     --paper-blue-100: #bbdefb;
     --paper-blue-200: #90caf9;
@@ -17859,7 +17863,7 @@ Example:
     --paper-blue-a200: #448aff;
     --paper-blue-a400: #2979ff;
     --paper-blue-a700: #2962ff;
-
+ 
     --paper-light-blue-50: #e1f5fe;
     --paper-light-blue-100: #b3e5fc;
     --paper-light-blue-200: #81d4fa;
@@ -17874,7 +17878,7 @@ Example:
     --paper-light-blue-a200: #40c4ff;
     --paper-light-blue-a400: #00b0ff;
     --paper-light-blue-a700: #0091ea;
-
+ 
     --paper-cyan-50: #e0f7fa;
     --paper-cyan-100: #b2ebf2;
     --paper-cyan-200: #80deea;
@@ -17889,7 +17893,7 @@ Example:
     --paper-cyan-a200: #18ffff;
     --paper-cyan-a400: #00e5ff;
     --paper-cyan-a700: #00b8d4;
-
+ 
     --paper-teal-50: #e0f2f1;
     --paper-teal-100: #b2dfdb;
     --paper-teal-200: #80cbc4;
@@ -17904,7 +17908,7 @@ Example:
     --paper-teal-a200: #64ffda;
     --paper-teal-a400: #1de9b6;
     --paper-teal-a700: #00bfa5;
-
+ 
     --paper-green-50: #e8f5e9;
     --paper-green-100: #c8e6c9;
     --paper-green-200: #a5d6a7;
@@ -17919,7 +17923,7 @@ Example:
     --paper-green-a200: #69f0ae;
     --paper-green-a400: #00e676;
     --paper-green-a700: #00c853;
-
+ 
     --paper-light-green-50: #f1f8e9;
     --paper-light-green-100: #dcedc8;
     --paper-light-green-200: #c5e1a5;
@@ -17934,7 +17938,7 @@ Example:
     --paper-light-green-a200: #b2ff59;
     --paper-light-green-a400: #76ff03;
     --paper-light-green-a700: #64dd17;
-
+ 
     --paper-lime-50: #f9fbe7;
     --paper-lime-100: #f0f4c3;
     --paper-lime-200: #e6ee9c;
@@ -17949,7 +17953,7 @@ Example:
     --paper-lime-a200: #eeff41;
     --paper-lime-a400: #c6ff00;
     --paper-lime-a700: #aeea00;
-
+ 
     --paper-yellow-50: #fffde7;
     --paper-yellow-100: #fff9c4;
     --paper-yellow-200: #fff59d;
@@ -17964,7 +17968,7 @@ Example:
     --paper-yellow-a200: #ffff00;
     --paper-yellow-a400: #ffea00;
     --paper-yellow-a700: #ffd600;
-
+ 
     --paper-amber-50: #fff8e1;
     --paper-amber-100: #ffecb3;
     --paper-amber-200: #ffe082;
@@ -17979,7 +17983,7 @@ Example:
     --paper-amber-a200: #ffd740;
     --paper-amber-a400: #ffc400;
     --paper-amber-a700: #ffab00;
-
+ 
     --paper-orange-50: #fff3e0;
     --paper-orange-100: #ffe0b2;
     --paper-orange-200: #ffcc80;
@@ -17994,7 +17998,7 @@ Example:
     --paper-orange-a200: #ffab40;
     --paper-orange-a400: #ff9100;
     --paper-orange-a700: #ff6500;
-
+ 
     --paper-deep-orange-50: #fbe9e7;
     --paper-deep-orange-100: #ffccbc;
     --paper-deep-orange-200: #ffab91;
@@ -18009,7 +18013,7 @@ Example:
     --paper-deep-orange-a200: #ff6e40;
     --paper-deep-orange-a400: #ff3d00;
     --paper-deep-orange-a700: #dd2c00;
-
+ 
     --paper-brown-50: #efebe9;
     --paper-brown-100: #d7ccc8;
     --paper-brown-200: #bcaaa4;
@@ -18020,7 +18024,7 @@ Example:
     --paper-brown-700: #5d4037;
     --paper-brown-800: #4e342e;
     --paper-brown-900: #3e2723;
-
+ 
     --paper-grey-50: #fafafa;
     --paper-grey-100: #f5f5f5;
     --paper-grey-200: #eeeeee;
@@ -18031,7 +18035,7 @@ Example:
     --paper-grey-700: #616161;
     --paper-grey-800: #424242;
     --paper-grey-900: #212121;
-
+ 
     --paper-blue-grey-50: #eceff1;
     --paper-blue-grey-100: #cfd8dc;
     --paper-blue-grey-200: #b0bec5;
@@ -18251,19 +18255,19 @@ Example:
         type: String,
         observer: 'queryChanged'
       },
-
+      
       /**
        * @type {function(MediaQueryList)}
-       */
+       */ 
       _boundMQHandler: {
         value: function() {
           return this.queryHandler.bind(this);
         }
       },
-
+      
       /**
        * @type {MediaQueryList}
-       */
+       */ 
       _mq: {
         value: null
       }
@@ -20028,7 +20032,7 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
         cursor: pointer;
         z-index: 0;
         line-height: 1;
-
+        
         width: 40px;
         height: 40px;
 
