@@ -38,8 +38,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     app-header {
-      background-color: #4285f4;
+      background-color: #0b8043;
       color: white;
+
+      --app-header-full-header: {
+        background-color: #4285f4;
+      };
     }
 
     app-header paper-icon-button {
@@ -89,6 +93,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       color: gray;
     }
 
+    .mainHeader [title] {
+      font-weight: 400;
+      margin: 0 0 0 50px;
+    }
+
+    .mainHeader [condensed-title] {
+      font-weight: 400;
+      margin-left: 30px;
+    }
+    
+    .mainHeader [condensed-title] i {
+      font-style: normal;
+      font-weight: 100;
+    }
+
+    app-toolbar.tall {
+      height: 148px;
+    }
   </style>
 
 </head>
@@ -97,22 +119,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template is="dom-bind">
     <app-drawer-layout>
       <div drawer>
-        <app-toolbar class="nav-toolbar">App name</app-toolbar>
+        <app-toolbar class="navToolbar">App name</app-toolbar>
       </div>
       <app-header-layout main>
-        <app-header condenses waterfall>
+        <app-header class="mainHeader" condenses reveals effects="resize-title blend-background waterfall">
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <div class="flex"></div>
+            <h4 condensed-title>Contacts <i>&mdash; Summary</i></h4>
             <paper-icon-button icon="search"></paper-icon-button>
             <paper-icon-button icon="more-vert"></paper-icon-button>
           </app-toolbar>
-          <app-toolbar></app-toolbar>
-          <app-toolbar>
-            <div spacer title>My Drive</div>
+          <app-toolbar class="tall">
+            <h1 title>Contacts</h1>
           </app-toolbar>
         </app-header>
-
         <iron-list items="[[data]]" as="item" scroller="window" class="flex">
           <template>
             <div>

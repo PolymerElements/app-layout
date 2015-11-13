@@ -9,15 +9,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <!doctype html>
-<html>
+<html style="-webkit-overflow-scrolling: touch;">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>app-header demo</title>
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-
+  
   <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
@@ -25,46 +26,78 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="app-header.html">
   <link rel="import" href="../demo/sample-content.html">
 
-  <style>
+  <style is="custom-style">
 
     body {
       margin: 0;
-      font-family: 'Roboto', 'Noto', sans-serif;
+      font-family: arial;
       background-color: #eee;
     }
+  
 
     app-header {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      background-color: #4285f4;
+      height: 212px;
       color: #fff;
+      --app-header-condensed-header: {
+        background-color: #f09300;
+      };
+    }
+    
+    paper-icon-button {
+      --paper-icon-button-ink-color: white;
     }
 
-    .tall {
-      height: 128px;
+    app-toolbar.tall {
+      height: 148px;
     }
 
     sample-content {
-      padding-top: 256px;
+      padding-top: 212px;
     }
 
+    [title] {
+      font-weight: lighter;
+      margin-left: 108px;
+    }
+
+    [condensed-title] {
+      font-weight: lighter;
+      margin-left: 30px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    [condensed-title] i {
+      font-weight: 100;
+      font-style: normal;
+    }
+
+    @media (max-width: 639px) {
+      [title] {
+        margin-left: 50px;
+        font-size: 30px;
+      }
+      [condensed-title] {
+        font-size: 15px;
+      }
+    }
   </style>
 
 </head>
-<body>
-
+<body class="fullbleed" unresolved>
 <!-- set scroller to "window" to use document scroller -->
-  <app-header scroller="window" condenses>
+  <app-header scroller="window" condenses reveals effects="waterfall resize-title blend-background parallax-background">
     <app-toolbar>
-      <paper-icon-button icon="menu"></paper-icon-button>
-      <div class="flex"></div>
+     <paper-icon-button icon="menu"></paper-icon-button>
+      <h4 condensed-title>What is material? &mdash; Environment</h4>
       <paper-icon-button icon="search"></paper-icon-button>
     </app-toolbar>
-    <app-toolbar class="tall"></app-toolbar>
-    <app-toolbar>
-      <div spacer title>My Drive</div>
+    <app-toolbar class="tall">
+      <h1 title>What is material?</h1>
     </app-toolbar>
   </app-header>
 

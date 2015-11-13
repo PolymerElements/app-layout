@@ -1,0 +1,258 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<script>
+
+(function() {
+  function interpolate(run, points, fn, ctx) {
+    fn.apply(ctx, points.map(function(point) {
+      return point[0] + (point[1] - point[0]) * run;
+    }));
+  }
+
+  Polymer.AppHeaderEffects = {};
+
+  /**
+   * Use this effect to blend the background images in the header.
+   */
+  Polymer.AppHeaderEffects['blend-background'] = {
+    setUp: function setUp() {
+      this.$.headerBg.style.willChange = 'opacity';
+      this.$.headerBg.style.webkitTransform = 'translateZ(0)';
+      this.$.condensedHeaderBg.style.willChange = 'opacity';
+      this.$.condensedHeaderBg.style.webkitTransform = 'translateZ(0)';
+      this.$.condensedHeaderBg.style.opacity = 0;
+    },
+    tearDown: Function(),
+    run: function run(p, y) {
+      this.$.headerBg.style.opacity = 1 - p;
+      this.$.condensedHeaderBg.style.opacity = p;
+    }
+  };
+
+  /**
+   * Use this effect to fade in/out the background in the header.
+   */
+  Polymer.AppHeaderEffects['fade-background'] = {
+    setUp: function setUp() {
+      var duration = this._styleProperties['--fade-background-duration'] || '0.5s';
+
+      this.$.headerBg.style.willChange = 'opacity';
+      this.$.headerBg.style.webkitTransform = 'translateZ(0)';
+      this.$.headerBg.style.transitionProperty = 'opacity';
+      this.$.headerBg.style.transitionDuration = duration;
+      this.$.condensedHeaderBg.style.willChange = 'opacity';
+      this.$.condensedHeaderBg.style.webkitTransform = 'translateZ(0)';
+      this.$.condensedHeaderBg.style.transitionProperty = 'opacity';
+      this.$.condensedHeaderBg.style.transitionDuration = duration;
+    },
+    tearDown: Function(),
+    run: function run(p, y) {
+      if (p >= 1) {
+        this.$.headerBg.style.opacity = 0;
+        this.$.condensedHeaderBg.style.opacity = 1;
+      } else {
+        this.$.headerBg.style.opacity = 1;
+        this.$.condensedHeaderBg.style.opacity = 0;
+      }
+    }
+  };
+
+  /**
+   * Use this effect to fade in/out the background images in the header.
+   */
+  Polymer.AppHeaderEffects['parallax-background'] = {
+    setUp: function setUp() {
+      this._friction = parseFloat(this._styleProperties['--parallax-background-friction']);
+      if (isNaN(this._friction)) {
+        this._friction = 0.8;
+      }
+    },
+    tearDown: function() {
+      delete this._friction;
+    },
+    run: function run(p, y) {
+      var friction = this._friction;
+      if (this.fixed) {
+        friction = -friction;
+      }
+      this.transform('translate3d(0px, ' + (y * friction) + 'px, 0px)', this.$.headerBg);
+      this.transform('translate3d(0px, ' + (y * friction) + 'px, 0px)', this.$.condensedHeaderBg);
+    }
+  };
+
+  /**
+   * Use this effect to transform the main title into the condensed title.
+   */
+  Polymer.AppHeaderEffects['resize-title'] = {
+    setUp: function setUp() {
+      var condensedTitle = Polymer.dom(this).querySelector('[condensed-title]');
+
+      if (!condensedTitle) {
+        throw new ReferenceError('You forgot to place an element with the ' +
+            '`condensed-title` attribute inside the header');
+      }
+      if (!this._title) {
+        throw new ReferenceError('You forgot to place an element with the ' +
+            '`title` attribute inside the header');
+      }
+
+      condensedTitle.style.willChange = 'opacity';
+      this._title.style.willChange = 'opacity';
+
+      condensedTitle.style.webkitTransform = 'translateZ(0)';
+      this._title.style.webkitTransform = 'translateZ(0)';
+
+      var titleClientRect = this._title.getBoundingClientRect();
+      var condensedTitleClientRect = condensedTitle.getBoundingClientRect();
+
+      this._scale = parseInt(window.getComputedStyle(condensedTitle)['font-size']) /
+          parseInt(window.getComputedStyle(this._title)['font-size']);
+      this._titleDX = titleClientRect.left - condensedTitleClientRect.left;
+      this._titleDY = titleClientRect.top - condensedTitleClientRect.top;
+      this._condensedTitle = condensedTitle;
+    },
+    tearDown: function tearDown() {
+       delete this._condensedTitle;
+       delete this._scale;
+       delete this._titleDX;
+       delete this._titleDY;
+    },
+    run: function run(p, y) {
+      if (this.fixed) {
+        y = 0;
+      }
+      if (p >= 1) {
+        this._title.style.opacity = 0;
+        this._condensedTitle.style.opacity = 1;
+      } else {
+        this._title.style.opacity = 1;
+        this._condensedTitle.style.opacity = 0;
+      }
+
+      interpolate(Math.min(1, p), [
+        [1,  this._scale],
+        [0, -this._titleDX],
+        [y, y-this._titleDY]
+      ],
+      function(scale, translateX, translateY) {
+        this.transform('translate(' + translateX + 'px, ' + translateY + 'px) ' +
+            'scale3d(' + scale + ', ' + scale + ', 1)',
+            this._title);
+      }, this);
+    }
+  };
+
+  /**
+   * Use this effect to allow the title to transition to the condensed title quickly.
+   */
+  Polymer.AppHeaderEffects['resize-snapped-title'] = {
+    setUp: function setUp() {
+      var condensedTitle = Polymer.dom(this).querySelector('[condensed-title]');
+
+      if (!condensedTitle) {
+        throw new ReferenceError('undefined `condensed-title`');
+      }
+      if (!this._title) {
+        throw new ReferenceError('undefined `title`');
+      }
+      this._condensedTitle = condensedTitle;
+      this._title.style.transition = 'opacity 0.2s';
+      condensedTitle.style.transition = 'opacity 0.2s';
+
+      if (!condensedTitle) {
+        throw new ReferenceError('invalid');
+      }
+    },
+    tearDown: function tearDown() {
+      this._title.style.transition = '';
+      this._condensedTitle.style.transition = '';
+      delete this._condensedTitle;
+    },
+    run: function run(p, y) {
+      if (y > this._deltaHeight * 0.2) {
+        this._title.style.opacity = 0;
+        this._condensedTitle.style.opacity = 1;
+      } else {
+        this._title.style.opacity = 1;
+        this._condensedTitle.style.opacity = 0;
+      }
+
+      this.transform('translate(0px, ' + y + 'px)', this._title);
+    }
+  };
+
+  /**
+   * Use this effect to dynamically display a shadow below the header.
+   */
+  Polymer.AppHeaderEffects['waterfall'] = {
+    setUp: Function(),
+    tearDown: Function(),
+    run: function run(p, y) {
+      if (this.fixed) {
+        this.shadow = (y > 0);
+      } else {
+        this.shadow = (y >= this._deltaHeight && y < this._headerDy);
+      }
+    }
+  };
+
+  /**
+   *
+   */
+  Polymer.AppHeaderEffects['condense-header'] = {
+    setUp: Function(),
+    tearDown: Function(),
+    run: function run(p, y) {
+      this.transform('translate3d(0,' + (-y) + 'px, 0)');
+      if (this._topbar) {
+        this.transform('translate3d(0,' + Math.min(y, this._deltaHeight) + 'px, 0)',
+            this._topbar);
+      }
+    }
+  };
+
+  /**
+   *
+   */
+  Polymer.AppHeaderEffects['condense-snapped-header'] = {
+    setUp: Function(),
+    tearDown: Function(),
+    run: function run(p, y) {
+
+      this.style.transition = 'transform 0.2s';
+      this._topbar.style.transition = 'transform 0.2s';
+
+      this.style.webkitTransition = '-webkit-transform 0.2s';
+      this._topbar.style.webkitTransition = '-webkit-transform 0.2s';
+
+      if (y > this._deltaHeight) {
+        this.transform('translate3d(0,' + (-this._deltaHeight) + 'px, 0)');
+        if (this._topbar) {
+          this.transform('translate3d(0,' + this._deltaHeight + 'px, 0)',
+              this._topbar);
+        }
+      } else {
+        this.transform('translate3d(0, 0, 0)');
+        this.transform('translate3d(0, 0, 0)', this._topbar);
+      }
+    }
+  };
+
+  Polymer.AppHeaderEffects['material'] = {
+    setUp: function() {
+      this.effects = 'waterfall resize-title fade-background parallax-background';
+    },
+    tearDown: Function(),
+    run: Function()
+  };
+
+})();
+
+</script>
