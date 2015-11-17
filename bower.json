@@ -12,7 +12,6 @@
     "iron-resizable-behavior": "polymerelements/iron-resizable-behavior#^1.0.0"
   },
   "devDependencies": {
-    "carbon-elements": "polymerelements/carbon-elements#gh-pages",
     "font-roboto": "polymerelements/font-roboto#^1.0.0",
     "iron-component-page": "polymerelements/iron-component-page#^1.0.0",
     "iron-icon": "polymerelements/iron-icon#^1.0.0",

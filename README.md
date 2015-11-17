@@ -13,9 +13,26 @@ It's a set of experimental layout elements for your app. It includes:
 
 ### Install
 
-```bash
-$ bower install PolymerLabs/app-layout --save
-```
+ 1. run `bower install`
+
+    ```bash
+    $ bower install PolymerLabs/app-layout --save
+    ```
+
+ 2. Clone `carbon-elements` (because the repo is private)
+
+    ```bash
+    $ git clone git@github.com:PolymerElements/carbon-elements.git
+    ```
+
+ 3. `bower link` the `carbon-elements` checkout
+
+    ```bash
+    $ cd carbon-elements
+    $ bower link
+    $ cd ../app-layout
+    $ bower link carbon-elements
+    ```
 
 app-toolbar
 ---------
@@ -56,7 +73,7 @@ Custom property              | Description                  | Default
 app-header
 ---------
 
-app-header is a container for app-toolbar. It can add effects to the toolbars based on the scroll position. 
+app-header is a container for app-toolbar. It can add effects to the toolbars based on the scroll position.
 
 #### Example
 
@@ -73,7 +90,7 @@ app-header-layout
 ---------
 
 app-header-layout is a layout element that contains a header and a content.
-This layout element uses the document scroll by default, but this element can 
+This layout element uses the document scroll by default, but this element can
 also define its own scrolling region.
 
 #### Example
