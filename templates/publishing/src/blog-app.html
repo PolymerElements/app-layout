@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../../polymer/polymer.html">
 
-<link rel="import" href="../../../../carbon-elements/carbon-router.html">
+<link rel="import" href="../../../../lab-elements/lab-router.html">
 
 <link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../../iron-pages/iron-pages.html">
@@ -143,9 +143,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <!-- setup routes -->
-    <carbon-router route="{{route}}"></carbon-router>
-    <carbon-route route="{{route}}" matches=":category" category="{{category}}" subroute="{{subroute}}"></carbon-route>
-    <carbon-route route="{{subroute}}" matches=":page" page="{{page}}" subroute="{{title}}"></carbon-route>
+    <lab-router route="{{route}}"></lab-router>
+    <lab-route route="{{route}}" matches=":category" category="{{category}}" subroute="{{subroute}}"></lab-route>
+    <lab-route route="{{subroute}}" matches=":page" page="{{page}}" subroute="{{title}}"></lab-route>
 
     <!-- manages page's scroll position -->
     <app-scrollpos-control selected="{{category}}/{{page}}" reset="{{_equal(page, 'detail')}}"></app-scrollpos-control>
