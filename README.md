@@ -66,7 +66,7 @@ Condense the header when the user scrolls
   <app-toolbar>
     <div title>App name</div>
   </app-toolbar>
-</app-drawer>
+</app-header>
 ```
 
 app-header-layout
@@ -165,7 +165,7 @@ app-scrim is a transparent layer behind overlays that helps to create focus on t
 #### Example
 
 ```html
-<app-scrim visible></app-toolbar>
+<app-scrim visible></app-scrim>
 ```
 
 #### Styling
