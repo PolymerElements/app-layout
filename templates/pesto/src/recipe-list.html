@@ -22,9 +22,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
 
     app-header {
-      border-bottom: 1px solid #ddd;
-      background-color: #fff;
-      color: #444;
+      background-color: rgb(0, 170, 141);
+      color: #fff;
     }
 
     .main-title-toolbar {
@@ -33,13 +32,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     .content-container {
       width: 720px;
-      margin: 0 auto 40px;
+      margin: 4px auto 40px;
     }
 
     paper-card {
       width: 350px;
-      height: 230px;
       margin: 4px;
+
+      --paper-card-header-image: {
+        height: 200px;
+      }
     }
 
     paper-fab {
@@ -71,7 +73,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- main panel -->
     <app-header-layout>
 
-      <app-header condenses reveals>
+      <app-header id="header" condenses reveals shadow>
         <!-- top toolbar -->
         <app-toolbar>
           <!-- menu button -->
@@ -90,9 +92,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <div class="content-container">
         <template is="dom-repeat" items="{{recipes.recipes}}">
-          <paper-card heading="{{item.title}}" image="http://placehold.it/350x150"
-                      on-tap="_cardTapHandler" recipe="{{item}}">
-            <div class="card-content">{{item.description}}</div>
+          <paper-card image="{{item.imageUrl}}" on-tap="__cardTapHandler" recipe="{{item}}">
+            <div class="card-content">
+              <h2>{{item.title}}</h2>
+              <p>{{item.description}}</p>
+            </div>
           </paper-card>
         </template>
       </div>
@@ -115,7 +119,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     },
 
-    _cardTapHandler: function(event, detail) {
+    __cardTapHandler: function(event, detail) {
       this.selectedRecipe = Polymer.dom(event).event.currentTarget.recipe;
       this.fire('recipe-open');
     }

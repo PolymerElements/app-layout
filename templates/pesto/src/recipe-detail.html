@@ -42,15 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       height: 65px;
 
       --app-header-condensed-header: {
-        background-color: #4285f4;
-        transition: opacity 300ms;
-      };
-    }
-
-    app-header[shadow] {
-      --app-header-condensed-header: {
-        background-color: #4285f4;
-        transition: none;
+        background-color: rgb(0, 170, 141);
       };
     }
 
@@ -148,7 +140,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </app-header>
 
       <parallax-layer speed="0.5">
-        <img src="https://material-adaptive.firebaseapp.com/pesto/app/assets/recipe_images/recipe1.jpg" style="width:100%" />
+        <img src="{{recipe.imageUrl}}" style="width:100%" />
       </parallax-layer>
 
       <div class="content-container">
@@ -164,6 +156,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <div class="ingredient-item">
                 <div class="ingredient-amount">{{item.amount}}</div>
                 <div class="ingredient-name">{{item.name}}</div>
+              </div>
+            </template>
+
+            <h4>Directions</h4>
+
+            <template is="dom-repeat" items="{{recipe.directions}}">
+              <div class="ingredient-item">
+                <div class="ingredient-amount">{{item.duration}}</div>
+                <div class="ingredient-name">{{item.description}}</div>
               </div>
             </template>
 

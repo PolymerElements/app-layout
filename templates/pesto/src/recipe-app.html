@@ -84,21 +84,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       recipes: Object,
 
-      selectedRecipe: Object
+      selectedRecipe: Object,
+
+      __lastListPageYOffset: Number
 
     },
 
     listeners: {
-      'recipe-open': '_openRecipeDetail',
-      'recipe-close': '_closeRecipeDetail'
+      'recipe-open': '__openRecipeDetail',
+      'recipe-close': '__closeRecipeDetail'
     },
 
-    _openRecipeDetail: function() {
+    __openRecipeDetail: function() {
+      this.__lastListPageYOffset = window.pageYOffset;
       this.$.views.selected = 'detail';
+      this.__asyncScrollToY(0);
     },
 
-    _closeRecipeDetail: function() {
+    __closeRecipeDetail: function() {
       this.$.views.selected = 'list';
+      this.__asyncScrollToY(this.__lastListPageYOffset);
+    },
+
+    __asyncScrollToY: function(y) {
+      this.async(function() {
+        window.scrollTo(0, y);
+      });
     }
 
   });
