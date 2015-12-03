@@ -32,7 +32,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     .content-container {
       width: 720px;
-      margin: 4px auto 40px;
+      margin: 4px auto;
     }
 
     paper-card {
@@ -42,6 +42,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       --paper-card-header-image: {
         height: 200px;
       }
+    }
+
+    paper-card h2 {
+      margin: 4px;
+      font-weight: normal;
+    }
+
+    paper-card p {
+      margin: 4px;
+      color: #999;
     }
 
     paper-fab {
@@ -95,7 +105,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-card image="{{item.imageUrl}}" on-tap="__cardTapHandler" recipe="{{item}}">
             <div class="card-content">
               <h2>{{item.title}}</h2>
-              <p>{{item.description}}</p>
+              <p>By <span>{{item.author}}</span></p>
             </div>
           </paper-card>
         </template>
