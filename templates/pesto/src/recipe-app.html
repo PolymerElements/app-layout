@@ -1,0 +1,108 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../../polymer/polymer.html">
+
+<link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../iron-pages/iron-pages.html">
+<link rel="import" href="../../../../iron-selector/iron-selector.html">
+
+<link rel="import" href="../../../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../paper-item/paper-item.html">
+<link rel="import" href="../../../../paper-listbox/paper-listbox.html">
+
+<link rel="import" href="../../../app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../../app-header-layout/app-header-layout.html">
+<link rel="import" href="../../../app-header/app-header.html">
+<link rel="import" href="../../../app-toolbar/app-toolbar.html">
+<link rel="import" href="../../../app-scrollpos-control/app-scrollpos-control.html">
+
+<link rel="import" href="recipe-detail.html">
+<link rel="import" href="recipe-list.html">
+
+<dom-module id="recipe-app">
+
+  <template>
+
+    <style>
+
+      :host {
+        --app-primary-color: #404040;
+      }
+
+    </style>
+
+    <app-drawer-layout drawer-width="288px" responsive-width="1280px">
+
+      <!-- nav panel -->
+      <app-header-layout drawer has-scrolling-region>
+
+        <app-header fixed>
+          <!-- top toolbar -->
+          <app-toolbar></app-toolbar>
+        </app-header>
+
+        <!-- nav menu -->
+        <paper-listbox selected="0">
+          <paper-item>Home</paper-item>
+          <paper-item>Favorite</paper-item>
+          <paper-item>Saved</paper-item>
+          <paper-item>Trending</paper-item>
+        </paper-listbox>
+
+      </app-header-layout>
+
+      <!-- list/detail pages -->
+      <iron-pages id="views" selected="list" attr-for-selected="name" main>
+
+        <recipe-list name="list" recipes="{{recipes}}" selected-recipe="{{selectedRecipe}}">
+          <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
+        </recipe-list>
+
+        <recipe-detail name="detail" recipe="{{selectedRecipe}}"></recipe-detail>
+
+      </iron-pages>
+
+    </app-drawer-layout>
+
+  </template>
+
+  <script>
+
+  Polymer({
+
+    is: 'recipe-app',
+
+    properties: {
+
+      recipes: Object,
+
+      selectedRecipe: Object
+
+    },
+
+    listeners: {
+      'recipe-open': '_openRecipeDetail',
+      'recipe-close': '_closeRecipeDetail'
+    },
+
+    _openRecipeDetail: function() {
+      this.$.views.selected = 'detail';
+    },
+
+    _closeRecipeDetail: function() {
+      this.$.views.selected = 'list';
+    }
+
+  });
+
+  </script>
+
+</dom-module>

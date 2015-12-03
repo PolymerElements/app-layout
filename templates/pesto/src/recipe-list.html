@@ -1,0 +1,126 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../../polymer/polymer.html">
+
+<link rel="import" href="../../../../paper-card/paper-card.html">
+<link rel="import" href="../../../../paper-fab/paper-fab.html">
+
+<link rel="import" href="../../../app-header-layout/app-header-layout.html">
+<link rel="import" href="../../../app-header/app-header.html">
+<link rel="import" href="../../../app-toolbar/app-toolbar.html">
+
+<dom-module id="recipe-list">
+  <template>
+    <style>
+
+    app-header {
+      border-bottom: 1px solid #ddd;
+      background-color: #fff;
+      color: #444;
+    }
+
+    .main-title-toolbar {
+      @apply(--layout-center-center);
+    }
+
+    .content-container {
+      width: 720px;
+      margin: 0 auto 40px;
+    }
+
+    paper-card {
+      width: 350px;
+      height: 230px;
+      margin: 4px;
+    }
+
+    paper-fab {
+      position: absolute;
+      top: 165px;
+      right: 40px;
+    }
+
+    @media (max-width: 940px) {
+
+      /* position fab to the bottom right corner of the screen */
+      paper-fab {
+        position: fixed;
+        top: auto;
+        right: 24px;
+        bottom: 24px;
+      }
+    }
+
+    @media (max-width: 720px) {
+
+      .content-container {
+        width: 358px;
+      }
+
+    }
+    </style>
+
+    <!-- main panel -->
+    <app-header-layout>
+
+      <app-header condenses reveals>
+        <!-- top toolbar -->
+        <app-toolbar>
+          <!-- menu button -->
+          <content select="[drawer-toggle]"></content>
+        </app-toolbar>
+
+        <app-toolbar></app-toolbar>
+
+        <!-- bottom toolbar -->
+        <app-toolbar class="main-title-toolbar">
+          <div id="mainTitle" class="title">Pesto</div>
+        </app-toolbar>
+      </app-header>
+
+      <paper-fab app-header-overlay icon="app:googleplus-reshare"></paper-fab>
+
+      <div class="content-container">
+        <template is="dom-repeat" items="{{recipes.recipes}}">
+          <paper-card heading="{{item.title}}" image="http://placehold.it/350x150"
+                      on-tap="_cardTapHandler" recipe="{{item}}">
+            <div class="card-content">{{item.description}}</div>
+          </paper-card>
+        </template>
+      </div>
+
+    </app-header-layout>
+  </template>
+
+  <script>
+
+  Polymer({
+
+    is: 'recipe-list',
+
+    properties: {
+      recipes: Object,
+
+      selectedRecipe: {
+        type: Object,
+        notify: true
+      }
+    },
+
+    _cardTapHandler: function(event, detail) {
+      this.selectedRecipe = Polymer.dom(event).event.currentTarget.recipe;
+      this.fire('recipe-open');
+    }
+
+  });
+
+  </script>
+</dom-module>

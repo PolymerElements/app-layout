@@ -1,0 +1,200 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../../polymer/polymer.html">
+
+<link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../iron-icon/iron-icon.html">
+<link rel="import" href="../../../../iron-icons/social-icons.html">
+<link rel="import" href="../../../../iron-icons/communication-icons.html">
+
+<link rel="import" href="../../../../paper-card/paper-card.html">
+<link rel="import" href="../../../../paper-fab/paper-fab.html">
+<link rel="import" href="../../../../paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../paper-item/paper-icon-item.html">
+<link rel="import" href="../../../../paper-menu-button/paper-menu-button.html">
+
+<link rel="import" href="../../../app-header-layout/app-header-layout.html">
+<link rel="import" href="../../../app-header/app-header.html">
+<link rel="import" href="../../../app-toolbar/app-toolbar.html">
+
+<link rel="import" href="app-icons.html">
+<link rel="import" href="parallax-layer.html">
+
+<dom-module id="recipe-detail">
+
+  <template>
+
+    <style>
+
+    app-header {
+      color: white;
+      /* HACK: need a positive dy between app-header and first (only) app-toolbar
+       * so the waterfall effect can properly detect when at top of page.*/
+      height: 65px;
+
+      --app-header-condensed-header: {
+        background-color: #4285f4;
+        transition: opacity 300ms;
+      };
+    }
+
+    app-header[shadow] {
+      --app-header-condensed-header: {
+        background-color: #4285f4;
+        transition: none;
+      };
+    }
+
+    parallax-layer {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .content-container {
+      position: relative;
+      width: 720px;
+      margin: 300px auto 40px;
+    }
+
+    paper-card {
+      padding: 60px 60px 60px 120px;
+      width: 100%;
+      sizing: border-box;
+    }
+
+    h4 {
+      margin-top: 60px;
+    }
+
+    .ingredient-item {
+      margin: 20px 0;
+      @apply(--layout-horizontal);
+    }
+
+    .ingredient-amount {
+      margin-left: -100px;
+      width: 100px;
+    }
+
+    .ingredient-name {
+      @apply(--layout-flex);
+    }
+
+    paper-fab {
+      position: absolute;
+      top: -28px;
+      right: 40px;
+    }
+
+    @media (max-width: 720px) {
+
+      .content-container {
+        width: 100%;
+        margin: 150px 0 0;
+      }
+
+    }
+
+    </style>
+
+    <!-- main panel -->
+    <app-header-layout>
+
+      <!-- HACK: need condenses to show waterfall shadow when not at top of page. -->
+      <app-header id="header" effects="waterfall fade-background" reveals condenses>
+
+        <!-- top toolbar -->
+        <app-toolbar>
+          <!-- back button -->
+          <paper-icon-button icon="app:arrow-back" on-tap="_backButtonTapHandler"></paper-icon-button>
+
+          <span class="flex"></span>
+
+          <paper-menu-button horizontal-align="right">
+            <paper-icon-button icon="app:menu" class="dropdown-trigger" alt="menu"></paper-icon-button>
+            <paper-listbox class="dropdown-content">
+              <paper-icon-item>
+                <iron-icon icon="social:share" item-icon></iron-icon>
+                Tweet recipe
+              </paper-icon-item>
+              <paper-icon-item>
+                <iron-icon icon="communication:email" item-icon></iron-icon>
+                Email recipe
+              </paper-icon-item>
+              <paper-icon-item>
+                <iron-icon icon="communication:textsms" item-icon></iron-icon>
+                Message recipe
+              </paper-icon-item>
+              <paper-icon-item>
+                <iron-icon icon="social:group" item-icon></iron-icon>
+                Share on Facebook
+              </paper-icon-item>
+            </paper-listbox>
+          </paper-menu-button>
+        </app-toolbar>
+
+      </app-header>
+
+      <parallax-layer speed="0.5">
+        <img src="https://material-adaptive.firebaseapp.com/pesto/app/assets/recipe_images/recipe1.jpg" style="width:100%" />
+      </parallax-layer>
+
+      <div class="content-container">
+
+        <paper-card heading="{{recipe.title}}">
+          <div class="card-content">
+
+            <p>{{recipe.description}}</p>
+
+            <h4>Ingredients</h4>
+
+            <template is="dom-repeat" items="{{recipe.ingredients}}">
+              <div class="ingredient-item">
+                <div class="ingredient-amount">{{item.amount}}</div>
+                <div class="ingredient-name">{{item.name}}</div>
+              </div>
+            </template>
+
+          </div>
+        </paper-card>
+
+        <paper-fab icon="app:googleplus-reshare"></paper-fab>
+      </div>
+
+    </app-header-layout>
+
+  </template>
+
+  <script>
+
+  Polymer({
+
+    is: 'recipe-detail',
+
+    properties: {
+
+      recipe: Object
+
+    },
+
+    _backButtonTapHandler: function(event, detail) {
+      this.fire('recipe-close');
+    }
+
+  });
+
+  </script>
+
+</dom-module>
