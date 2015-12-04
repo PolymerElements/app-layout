@@ -66,7 +66,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
         </recipe-list>
 
-        <recipe-detail name="detail" recipe="{{selectedRecipe}}"></recipe-detail>
+        <recipe-detail id="detailView" name="detail" recipe="{{selectedRecipe}}"></recipe-detail>
 
       </iron-pages>
 
@@ -97,6 +97,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     __openRecipeDetail: function() {
       this.__lastListPageYOffset = window.pageYOffset;
+      this.$.detailView.$.header.noTransitions = true;
       this.$.views.selected = 'detail';
       window.scrollTo(0, 0);
     },
