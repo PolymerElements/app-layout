@@ -37,9 +37,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     app-header {
       color: white;
-      /* HACK: need a positive dy between app-header and first (only) app-toolbar
-       * so the waterfall effect can properly detect when at top of page.*/
-      height: 65px;
 
       --app-header-condensed-header: {
         background-color: rgb(0, 170, 141);
@@ -112,8 +109,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- main panel -->
     <app-header-layout>
 
-      <!-- HACK: need condenses to show waterfall shadow when not at top of page. -->
-      <app-header id="header" effects="waterfall fade-background" reveals condenses>
+      <app-header id="header" effects="waterfall fade-background" reveals>
 
         <!-- top toolbar -->
         <app-toolbar>
