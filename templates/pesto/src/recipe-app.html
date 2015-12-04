@@ -98,18 +98,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     __openRecipeDetail: function() {
       this.__lastListPageYOffset = window.pageYOffset;
       this.$.views.selected = 'detail';
-      this.__asyncScrollToY(0);
+      window.scrollTo(0, 0);
     },
 
     __closeRecipeDetail: function() {
       this.$.views.selected = 'list';
-      this.__asyncScrollToY(this.__lastListPageYOffset);
-    },
-
-    __asyncScrollToY: function(y) {
-      this.async(function() {
-        window.scrollTo(0, y);
-      });
+      window.scrollTo(0, this.__lastListPageYOffset);
     }
 
   });
