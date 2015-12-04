@@ -29,7 +29,8 @@ Example:
 -->
 
 <dom-module id="app-header">
-
+  <style >
+  </style>
   <style>
 
     :host {
@@ -57,6 +58,7 @@ Example:
       -webkit-transition: opacity 0.4s;
       transition: opacity 0.4s;
       -webkit-transform: translateZ(0);
+      @apply(--app-header-shadow);
     }
 
     :host([shadow])::after {
@@ -121,18 +123,8 @@ Example:
        */
       fixed: {
         type: Boolean,
-        value: false,
-        observer: '_fixedChanged'
-      },
-
-      /**
-       * If true, the condensed header is always shown and does not move away.
-       */
-      alwaysVisible: {
-        type: Boolean,
         value: false
       },
-
       /**
        * If true, a shadow will display below the header.
        */
@@ -184,44 +176,67 @@ Example:
       Polymer.IronResizableBehavior
     ],
 
+    observers: [
+      '_condensesChanged(condenses, isAttached)'
+    ],
+
     listeners: {
       'iron-resize': '_resizeHandler'
     },
 
     /**
      * A cached offsetHeight of the current element.
+     * @type {number}
      */
     _height: 0,
 
     /**
      * The distance in pixels the header will be translated to when scrolling.
+     * @type {number}
      */
     _deltaHeight: 0,
 
     /**
      * The top most app-toolbar.
+     * @type {Element}
      */
     _topbar: null,
-    _title: null,
+
+    /**
+     * List of effects handlers that will take place during scroll
+     * @type {Array<Function>}
+     */
     _effectsRunFn: [],
+
+    /**
+     * List of the effects definitions installed via the `effects` property
+     * @type {Array<Object>}
+     */
     _effects: [],
 
     get _clampedScrollTop() {
-      return Math.max(0,
-          this.alwaysVisible ? Math.min(this._scrollTop, this._deltaHeight) : this._scrollTop);
+      return Math.max(0, this._scrollTop);
     },
 
     get _headerDy() {
-      return this.alwaysVisible ? this._deltaHeight : this._height;
+      return this.fixed ? this._deltaHeight : this._height;
     },
 
     created: function() {
-      this._oldY = 0;
-      this._oldTop = 0;
+      this._oldHeaderY = 0;
+      this._oldScrollTop = 0;
     },
 
     attached: function() {
-      this.async(this.setup, 1);
+      this.debounce('setup', this.setup, 1);
+    },
+
+    detached: function() {
+      this._tearDownEffects();
+    },
+
+    _condensesChanged: function() {
+      this.debounce('setup', this.setup, 1);
     },
 
     /**
@@ -230,30 +245,33 @@ Example:
      * @method setup
      */
     setup: function() {
+      // noop if the header isn't visible
+      if (this.offsetWidth === 0 && this.offsetHeight === 0) {
+        return;
+      }
       var firstSetup = this._height === 0;
-
+      var scrollTop = this._clampedScrollTop;
       this._height = this.offsetHeight;
       this._topbar = Polymer.dom(this).querySelector('app-toolbar');
-      this._title = Polymer.dom(this).querySelector('[title]');
 
       // prepare for measurement
       this._noTransitions = true;
 
-      if (firstSetup || this._clampedScrollTop === 0) {
+      if (firstSetup || scrollTop === 0) {
         this.cancelDebouncer('resize');
         this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
         this._setUpEffect();
+        this._updateHeader(scrollTop, true);
       } else {
         this._updateHeader(0, true);
         this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
         this._setUpEffect();
         // restore the previous scroll state
         // fix issue in mobile
-        this._updateHeader(this._oldTop, true);
+        this._updateHeader(this._oldScrollTop, true);
         this._layoutIfDirty();
       }
       this._noTransitions = false;
-
     },
 
     _layoutIfDirty: function() {
@@ -276,6 +294,7 @@ Example:
 
     _effectsChanged: function(effects) {
       if (!Polymer.AppHeaderEffects) {
+        console.error('app header effects are not loaded');
         return;
       }
       var effectDef;
@@ -285,8 +304,9 @@ Example:
 
       for (var i = 0; i < effectNames.length; i++) {
         if ((effectDef = Polymer.AppHeaderEffects[effectNames[i]])) {
-          this._effectsRunFn.push(effectDef.run.bind(this));
           this._effects.push(effectDef);
+        } else {
+          console.error('undefined effect `' + effectNames[i] + '`');
         }
       }
       // set up new effects
@@ -295,8 +315,12 @@ Example:
 
     _setUpEffect: function() {
       if (this.isAttached) {
+        this._effectsRunFn = [];
         this._effects.forEach(function(effectDef) {
-          effectDef.setUp.call(this);
+          // install the effect only if no error was reported
+          if (effectDef.setUp.call(this) !== false) {
+            this._effectsRunFn.push(effectDef.run.bind(this));
+          }
         }, this);
       }
     },
@@ -318,7 +342,7 @@ Example:
     effect: function(effectName) {
       var effectDef = Polymer.AppHeaderEffects[effectName];
       if (!effectDef) {
-        throw new ReferenceError('undefined effect');
+        throw new ReferenceError('undefined effect `' + effectName + '`');
         return;
       }
       var prop = {
@@ -331,43 +355,54 @@ Example:
     },
 
     _scrollHandler: function() {
-      var scrollTop = this._clampedScrollTop;
-      var headerY = this._updateHeader(scrollTop);
-      this._oldTop = scrollTop;
-      this._oldY = headerY;
+      this._updateHeader(this._clampedScrollTop);
     },
 
-    _updateHeader: function(scrollTop, force) {
+    _updateHeader: function(scrollTop, forceUpdate) {
+      if (this._height == 0) {
+        return;
+      }
       var progress;
-      var top = this.reveals ? this._oldY + scrollTop - this._oldTop : scrollTop;
-      var headerY = Math.min(this._headerDy, Math.max(0, top));
+      var headerY = this.reveals ? this._oldHeaderY + scrollTop - this._oldScrollTop : scrollTop;
+      var clampedHeaderY = Math.min(this._headerDy, Math.max(0, headerY));
+      var mayHeaderMove = !this.fixed || this.condenses;
 
-      if (this._oldTop >= scrollTop && scrollTop > this._deltaHeight && this.condenses) {
-        headerY = Math.max(headerY, this._deltaHeight);
+      // condense header
+      if (this._oldScrollTop >= scrollTop && scrollTop > this._deltaHeight && (!this.reveals || this.condenses)) {
+        clampedHeaderY = Math.max(this._deltaHeight, clampedHeaderY);
       }
-      if (this._oldY !== headerY || force) {
-        progress = headerY/this._deltaHeight;
-        this._runEffects(progress, headerY);
-        this._transformHeader(headerY);
-        this.fire('app-header-transform', {y: headerY, progress: progress}, {bubbles: false});
+      if (this._deltaHeight === 0) {
+        progress = scrollTop > 0 ? 1 : 0;
+      } else {
+        progress = clampedHeaderY / this._deltaHeight;
       }
-      return headerY;
+      if (forceUpdate || clampedHeaderY !== this._oldHeaderY || scrollTop === 0) {
+        this._runEffects(progress, mayHeaderMove ? clampedHeaderY : 0);
+        this._transformHeader(mayHeaderMove ? clampedHeaderY : 0);
+        this.fire('app-header-transform', {y: clampedHeaderY, progress: progress}, {bubbles: false});
+      }
+      if (!forceUpdate) {
+        this._oldHeaderY =  clampedHeaderY;
+        this._oldScrollTop = scrollTop;
+      }
+    },
+
+    _isVisible: function(headerY) {
+      return headerY === 0 || headerY < this._height;
+    },
+
+    _isContentBelow: function(headerY) {
+      if (headerY === 0) {
+        return this._clampedScrollTop > 0;
+      }
+      return this._clampedScrollTop - this._headerDy >= 0;
     },
 
     _transformHeader: function(y) {
-      if (this.fixed) {
-        return;
-      }
       this.transform('translate3d(0,' + (-y) + 'px, 0)');
       if (this._topbar && this.condenses) {
         this.transform('translate3d(0,' + Math.min(y, this._deltaHeight) + 'px, 0)',
             this._topbar);
-      }
-    },
-
-    _fixedChanged: function(fixed) {
-      if (fixed) {
-        this._transformHeader(0);
       }
     },
 
