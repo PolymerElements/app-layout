@@ -101,6 +101,13 @@ Example:
       opacity: 0;
     }
 
+    :host([no-transitions]),
+    :host([no-transitions]) #headerBg,
+    :host([no-transitions]) #condensedHeaderBg,
+    :host([no-transitions]) > ::content > app-toolbar:first-of-type {
+      transition: none !important;
+    }
+
   </style>
 
   <template>
@@ -163,9 +170,9 @@ Example:
         observer: '_effectsChanged'
       },
 
-      _noTransitions: {
+      noTransitions: {
         type: Boolean,
-        observer: '_noTransitionChanged'
+        reflectToAttribute: true
       }
 
     },
@@ -254,7 +261,7 @@ Example:
       this._topbar = Polymer.dom(this).querySelector('app-toolbar');
 
       // prepare for measurement
-      this._noTransitions = true;
+      this.noTransitions = true;
 
       if (firstSetup || scrollTop === 0) {
         this.cancelDebouncer('resize');
@@ -270,25 +277,11 @@ Example:
         this._updateHeader(this._oldScrollTop, true);
         this._layoutIfDirty();
       }
-      this._noTransitions = false;
+      this.noTransitions = false;
     },
 
     _layoutIfDirty: function() {
       return this.offsetWidth;
-    },
-
-    _noTransitionChanged: function(noTransition) {
-      if (noTransition) {
-        this.style.transition = 'none';
-        if (this._topbar) {
-          this._topbar.style.transition = 'none';
-        }
-      } else {
-        this.style.transition = '';
-        if (this._topbar) {
-          this._topbar.style.transition = '';
-        }
-      }
     },
 
     _effectsChanged: function(effects) {
