@@ -79,9 +79,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
     run: function run(p, y) {
       var friction = this._friction;
-      if (this.fixed) {
-        friction = -friction;
-      }
       this.transform('translate3d(0px, ' + (y * friction) + 'px, 0px)', this.$.headerBg);
       this.transform('translate3d(0px, ' + (y * friction) + 'px, 0px)', this.$.condensedHeaderBg);
     }
@@ -92,40 +89,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    */
   Polymer.AppHeaderEffects['resize-title'] = {
     setUp: function setUp() {
+      var title = Polymer.dom(this).querySelector('[title]');
       var condensedTitle = Polymer.dom(this).querySelector('[condensed-title]');
 
       if (!condensedTitle) {
-        throw new ReferenceError('You forgot to place an element with the ' +
-            '`condensed-title` attribute inside the header');
+        console.error('You forgot to place an element with the `condensed-title` attribute inside the header');
+        return false;
       }
-      if (!this._title) {
-        throw new ReferenceError('You forgot to place an element with the ' +
-            '`title` attribute inside the header');
+      if (!title) {
+        console.error('You forgot to place an element with the `title` attribute inside the header');
+        return false;
       }
 
       condensedTitle.style.willChange = 'opacity';
-      this._title.style.willChange = 'opacity';
+      title.style.willChange = 'opacity';
 
       condensedTitle.style.webkitTransform = 'translateZ(0)';
-      this._title.style.webkitTransform = 'translateZ(0)';
+      title.style.webkitTransform = 'translateZ(0)';
 
-      var titleClientRect = this._title.getBoundingClientRect();
+      var titleClientRect = title.getBoundingClientRect();
       var condensedTitleClientRect = condensedTitle.getBoundingClientRect();
 
       this._scale = parseInt(window.getComputedStyle(condensedTitle)['font-size']) /
-          parseInt(window.getComputedStyle(this._title)['font-size']);
+          parseInt(window.getComputedStyle(title)['font-size']);
       this._titleDX = titleClientRect.left - condensedTitleClientRect.left;
       this._titleDY = titleClientRect.top - condensedTitleClientRect.top;
       this._condensedTitle = condensedTitle;
+      this._title = title;
     },
     tearDown: function tearDown() {
-       delete this._condensedTitle;
-       delete this._scale;
-       delete this._titleDX;
-       delete this._titleDY;
+      delete this._title;
+      delete this._condensedTitle;
+      delete this._scale;
+      delete this._titleDX;
+      delete this._titleDY;
     },
     run: function run(p, y) {
-      if (this.fixed) {
+      if (!this.condenses) {
         y = 0;
       }
       if (p >= 1) {
@@ -154,26 +154,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    */
   Polymer.AppHeaderEffects['resize-snapped-title'] = {
     setUp: function setUp() {
+      var title = Polymer.dom(this).querySelector('[title]');
       var condensedTitle = Polymer.dom(this).querySelector('[condensed-title]');
 
       if (!condensedTitle) {
-        throw new ReferenceError('undefined `condensed-title`');
+        console.error('You forgot to place an element with the `condensed-title` attribute inside the header');
+        return false;
       }
-      if (!this._title) {
-        throw new ReferenceError('undefined `title`');
+      if (!title) {
+        console.error('You forgot to place an element with the `title` attribute inside the header');
+        return false;
       }
-      this._condensedTitle = condensedTitle;
-      this._title.style.transition = 'opacity 0.2s';
+
+      title.style.transition = 'opacity 0.2s';
       condensedTitle.style.transition = 'opacity 0.2s';
 
-      if (!condensedTitle) {
-        throw new ReferenceError('invalid');
-      }
+      this._condensedTitle = condensedTitle;
+      this._title = title;
     },
     tearDown: function tearDown() {
       this._title.style.transition = '';
       this._condensedTitle.style.transition = '';
       delete this._condensedTitle;
+      delete this._title;
     },
     run: function run(p, y) {
       if (y > this._deltaHeight * 0.2) {
@@ -195,11 +198,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     setUp: Function(),
     tearDown: Function(),
     run: function run(p, y) {
-      if (this.fixed) {
-        this.shadow = (y > 0);
-      } else {
-        this.shadow = (y >= this._deltaHeight && y < this._headerDy);
-      }
+      this.shadow = this._isContentBelow(y) && this._isVisible(y);
     }
   };
 
@@ -225,7 +224,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     setUp: Function(),
     tearDown: Function(),
     run: function run(p, y) {
-
       this.style.transition = 'transform 0.2s';
       this._topbar.style.transition = 'transform 0.2s';
 
@@ -247,7 +245,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   Polymer.AppHeaderEffects['material'] = {
     setUp: function() {
-      this.effects = 'waterfall resize-title fade-background parallax-background';
+      this.effects = 'waterfall resize-title blend-background parallax-background';
     },
     tearDown: Function(),
     run: Function()
