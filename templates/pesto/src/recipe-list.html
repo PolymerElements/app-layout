@@ -10,6 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../../polymer/polymer.html">
 
+<link rel="import" href="../../../../iron-selector/iron-selector.html">
+
 <link rel="import" href="../../../../paper-card/paper-card.html">
 <link rel="import" href="../../../../paper-fab/paper-fab.html">
 
@@ -19,18 +21,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="recipe-list">
   <template>
+
     <style>
 
+    :host {
+      --app-header-color: rgb(0, 170, 141);
+    }
+
     app-header {
-      background-color: rgb(0, 170, 141);
+      background-color: var(--app-header-color);
+      background-image: url('/components/app-layout/templates/pesto/img/pesto-banner-bottom.png');
+      background-repeat: no-repeat;
+      background-position: bottom;
+      background-size: auto 120px;
       color: #fff;
     }
 
-    .main-title-toolbar {
-      @apply(--layout-center-center);
+    .top-toolbar {
+      background-color: var(--app-header-color);
+      background-image: url('/components/app-layout/templates/pesto/img/pesto-banner-top.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: auto 54px;
     }
 
     .content-container {
+      display: block;
       width: 720px;
       margin: 4px auto;
     }
@@ -78,6 +94,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
     }
+
     </style>
 
     <!-- main panel -->
@@ -85,31 +102,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <app-header id="header" condenses reveals shadow>
         <!-- top toolbar -->
-        <app-toolbar>
+        <app-toolbar class="top-toolbar">
           <!-- menu button -->
           <content select="[drawer-toggle]"></content>
         </app-toolbar>
 
         <app-toolbar></app-toolbar>
-
-        <!-- bottom toolbar -->
-        <app-toolbar class="main-title-toolbar">
-          <div id="mainTitle" class="title">Pesto</div>
-        </app-toolbar>
+        <app-toolbar></app-toolbar>
       </app-header>
 
-      <paper-fab app-header-overlay icon="app:googleplus-reshare"></paper-fab>
+      <paper-fab app-header-overlay icon="app:create"></paper-fab>
 
-      <div class="content-container">
-        <template is="dom-repeat" items="{{recipes.recipes}}">
-          <paper-card image="{{item.imageUrl}}" on-tap="__cardTapHandler" recipe="{{item}}">
+      <iron-selector class="content-container" selected="{{selectedRecipe}}" attr-for-selected="recipe">
+        <template is="dom-repeat" items="{{recipes}}">
+          <paper-card image="{{item.imageUrl}}" recipe="{{item}}">
             <div class="card-content">
               <h2>{{item.title}}</h2>
               <p>By <span>{{item.author}}</span></p>
             </div>
           </paper-card>
         </template>
-      </div>
+      </iron-selector>
 
     </app-header-layout>
   </template>
@@ -127,11 +140,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         type: Object,
         notify: true
       }
-    },
-
-    __cardTapHandler: function(event, detail) {
-      this.selectedRecipe = Polymer.dom(event).event.currentTarget.recipe;
-      this.fire('recipe-open');
     }
 
   });

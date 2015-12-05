@@ -12,8 +12,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../../iron-icon/iron-icon.html">
-<link rel="import" href="../../../../iron-icons/social-icons.html">
-<link rel="import" href="../../../../iron-icons/communication-icons.html">
 
 <link rel="import" href="../../../../paper-card/paper-card.html">
 <link rel="import" href="../../../../paper-fab/paper-fab.html">
@@ -26,7 +24,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../app-header/app-header.html">
 <link rel="import" href="../../../app-toolbar/app-toolbar.html">
 
-<link rel="import" href="app-icons.html">
 <link rel="import" href="parallax-layer.html">
 
 <dom-module id="recipe-detail">
@@ -114,27 +111,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <!-- top toolbar -->
         <app-toolbar>
           <!-- back button -->
-          <paper-icon-button icon="app:arrow-back" on-tap="_backButtonTapHandler"></paper-icon-button>
+          <paper-icon-button icon="app:arrow-back" on-tap="__backButtonTapHandler"></paper-icon-button>
 
           <span class="flex"></span>
 
           <paper-menu-button horizontal-align="right">
-            <paper-icon-button icon="app:menu" class="dropdown-trigger" alt="menu"></paper-icon-button>
+            <paper-icon-button icon="app:more-vert" class="dropdown-trigger" alt="menu"></paper-icon-button>
             <paper-listbox class="dropdown-content">
               <paper-icon-item>
-                <iron-icon icon="social:share" item-icon></iron-icon>
+                <iron-icon icon="app:share" item-icon></iron-icon>
                 Tweet recipe
               </paper-icon-item>
               <paper-icon-item>
-                <iron-icon icon="communication:email" item-icon></iron-icon>
+                <iron-icon icon="app:email" item-icon></iron-icon>
                 Email recipe
               </paper-icon-item>
               <paper-icon-item>
-                <iron-icon icon="communication:textsms" item-icon></iron-icon>
+                <iron-icon icon="app:textsms" item-icon></iron-icon>
                 Message recipe
               </paper-icon-item>
               <paper-icon-item>
-                <iron-icon icon="social:group" item-icon></iron-icon>
+                <iron-icon icon="app:group" item-icon></iron-icon>
                 Share on Facebook
               </paper-icon-item>
             </paper-listbox>
@@ -175,7 +172,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
         </paper-card>
 
-        <paper-fab icon="app:googleplus-reshare"></paper-fab>
+        <paper-fab icon="{{__computeFavIcon(__favorite)}}" on-tap="__toggleFavorite"></paper-fab>
       </div>
 
     </app-header-layout>
@@ -190,12 +187,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     properties: {
 
-      recipe: Object
+      recipe: Object,
+
+      __favorite: {
+        type: Boolean,
+        value: false
+      }
 
     },
 
-    _backButtonTapHandler: function(event, detail) {
+    __backButtonTapHandler: function(event, detail) {
       this.fire('recipe-close');
+    },
+
+    __toggleFavorite: function(event, detail) {
+      this.__favorite = !this.__favorite;
+    },
+
+    __computeFavIcon: function(favorite) {
+      return favorite ? 'app:favorite' : 'app:favorite-border';
     }
 
   });

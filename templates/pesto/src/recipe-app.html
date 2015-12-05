@@ -26,18 +26,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="recipe-detail.html">
 <link rel="import" href="recipe-list.html">
+<link rel="import" href="app-icons.html">
 
 <dom-module id="recipe-app">
 
   <template>
-
-    <style>
-
-      :host {
-        --app-primary-color: #404040;
-      }
-
-    </style>
 
     <app-drawer-layout drawer-width="288px" responsive-width="1280px">
 
@@ -50,23 +43,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header>
 
         <!-- nav menu -->
-        <paper-listbox selected="0">
-          <paper-item>Home</paper-item>
-          <paper-item>Favorite</paper-item>
-          <paper-item>Saved</paper-item>
-          <paper-item>Trending</paper-item>
+        <paper-listbox selected="{{__page}}" attr-for-selected="name">
+          <paper-item name="home">Home</paper-item>
+          <paper-item name="favorites">Favorites</paper-item>
+          <paper-item name="saved">Saved</paper-item>
+          <paper-item name="trending">Trending</paper-item>
         </paper-listbox>
 
       </app-header-layout>
 
-      <!-- list/detail pages -->
-      <iron-pages id="views" selected="list" attr-for-selected="name" main>
+      <app-scrollpos-control selected="{{__page}}" reset="{{__equal(__page, 'detail')}}"></app-scrollpos-control>
 
-        <recipe-list name="list" recipes="{{recipes}}" selected-recipe="{{selectedRecipe}}">
+      <!-- list/detail pages -->
+      <iron-pages selected="{{__page}}" attr-for-selected="name" main>
+
+        <recipe-list name="home" recipes="{{recipes}}" selected-recipe="{{__selectedRecipe}}">
           <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
         </recipe-list>
 
-        <recipe-detail id="detailView" name="detail" recipe="{{selectedRecipe}}"></recipe-detail>
+        <div name="favorites">
+          <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
+        </div>
+
+        <div name="saved">
+          <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
+        </div>
+
+        <div name="trending">
+          <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
+        </div>
+
+        <recipe-detail id="detailView" name="detail" recipe="{{__selectedRecipe}}"></recipe-detail>
 
       </iron-pages>
 
@@ -84,27 +91,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       recipes: Object,
 
-      selectedRecipe: Object,
+      __selectedRecipe: {
+        type: Object,
+        observer: '__selectedRecipeChanged'
+      },
 
-      __lastListPageYOffset: Number
+      __page: {
+        type: String,
+        value: 'home'
+      }
 
     },
 
     listeners: {
-      'recipe-open': '__openRecipeDetail',
       'recipe-close': '__closeRecipeDetail'
     },
 
-    __openRecipeDetail: function() {
-      this.__lastListPageYOffset = window.pageYOffset;
+    __equal: function(a, b) {
+      return a === b;
+    },
+
+    __selectedRecipeChanged: function(newValue, oldValue) {
       this.$.detailView.$.header.noTransitions = true;
-      this.$.views.selected = 'detail';
-      window.scrollTo(0, 0);
+      this.__page = 'detail';
+      // HACK: current impl of <app-header>.setup() already resets noTransitions.
+      // this.$.detailView.$.header.noTransitions = false;
     },
 
     __closeRecipeDetail: function() {
-      this.$.views.selected = 'list';
-      window.scrollTo(0, this.__lastListPageYOffset);
+      this.__page = 'home';
     }
 
   });
