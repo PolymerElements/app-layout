@@ -30,27 +30,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     body {
       margin: 0;
-      font-family: 'Roboto', 'Noto', sans-serif;
+      font-family: arial;
       background-color: #eee;
     }
+  
 
     app-header {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      height: 440px;
+      height: 212px;
       color: #fff;
-      background-image: url(assets/bg3.jpg);
-      background-position: bottom center;
-      background-size: cover;
-
-      --app-header-full-header: {
-        background: -webkit-linear-gradient(top, transparent 0%, transparent 50%, rgba(0,0,0,0.5) 100%);
-      };
-
+      background-color: #388e3c;
       --app-header-condensed-header: {
-        background-color: #303f9f;
+        background-color: #3f51b5;
       };
     }
     
@@ -59,20 +53,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     app-toolbar.tall {
-      height: 400px;
+      height: 148px;
     }
 
     sample-content {
-      padding-top: 440px;
+      padding-top: 212px;
     }
 
     [title] {
-      font-weight: 300;
-      position: absolute;
-      bottom: 40px;
-      left: 180px;
-      font-size: 45px;
-      margin: 0;
+      font-weight: lighter;
+      margin-left: 108px;
     }
 
     [condensed-title] {
@@ -89,7 +79,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     @media (max-width: 639px) {
       [title] {
-        left: 85px;
+        margin-left: 50px;
+        font-size: 30px;
+      }
+      [condensed-title] {
+        font-size: 15px;
       }
     }
   </style>
@@ -97,15 +91,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body class="fullbleed" unresolved>
 <!-- set scroller to "window" to use document scroller -->
-  <app-header scroller="window" condenses fixed
-      effects="waterfall resize-snapped-title fade-background" 
-      effects-config='{"resize-snapped-title": {"startsAt": "80%"}, "fade-background": {"startsAt": "90%", "endsAt": "90%"}}'>
+  <app-header scroller="window" condenses reveals effects="waterfall resize-title blend-background parallax-background">
     <app-toolbar>
      <paper-icon-button icon="menu"></paper-icon-button>
-      <h4 condensed-title>GiveDirectly</h4>
+      <h4 condensed-title>What is material? &mdash; Environment</h4>
       <paper-icon-button icon="search"></paper-icon-button>
     </app-toolbar>
-    <h1 title>GiveDirectly</h1>
+    <app-toolbar class="tall">
+      <h1 title>What is material?</h1>
+    </app-toolbar>
   </app-header>
 
   <sample-content size="100"></sample-content>
