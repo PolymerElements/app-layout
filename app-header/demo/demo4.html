@@ -17,14 +17,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>app-header demo</title>
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
   
-  <link rel="import" href="../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
-  <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../app-toolbar/app-toolbar.html">
-  <link rel="import" href="app-header.html">
-  <link rel="import" href="../demo/sample-content.html">
+  <link rel="import" href="../../../iron-icons/iron-icons.html">
+  <link rel="import" href="../../../iron-flex-layout/classes/iron-flex-layout.html">
+  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../../app-toolbar/app-toolbar.html">
+  <link rel="import" href="../app-header.html">
+  <link rel="import" href="../app-box.html">
+  <link rel="import" href="../../demo/sample-content.html">
 
   <style is="custom-style">
 
@@ -44,7 +45,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       color: #fff;
       background-color: #3f51b5;
       --app-header-full-header: {
-        background-image: url(bg1.jpg);
+        background-image: url(assets/bg1.jpg);
         background-position: left center;
       };
     }
@@ -87,6 +88,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         font-size: 15px;
       }
     }
+
+    .blank {
+      height: 200px;
+    }
+
+    app-box {
+      height: 500px;
+      --app-header-full-header: {
+        background-image: url(https://c1.staticflickr.com/9/8093/8476743612_a839f30949_h.jpg);
+      };
+    }
+
   </style>
 
 </head>
@@ -103,7 +116,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </app-toolbar>
   </app-header>
 
-  <sample-content size="100"></sample-content>
+  <div class="blank"></div>
+
+  <app-box scroller="window" class="first" effects="parallax-background"></app-box>
+
+  <div class="blank"></div>
+
+  <app-box class="second"></app-box>
+  
+  <div class="blank"></div>
+
+  <app-box class="third"></app-box>
+  
+  <div class="blank"></div>
+
+  <app-box class="forth"></app-box>
+  
+  <div class="blank"></div>
 
 </body>
 </html>
