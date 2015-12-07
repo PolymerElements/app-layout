@@ -103,6 +103,7 @@ Example:
     }
 
     :host([no-transitions]),
+    :host([no-transitions])::after,
     :host([no-transitions]) #headerBg,
     :host([no-transitions]) #condensedHeaderBg,
     :host([no-transitions]) > ::content > app-toolbar:first-of-type {
@@ -269,6 +270,7 @@ Example:
       }
       var firstSetup = this._height === 0;
       var scrollTop = this._clampedScrollTop;
+      var currentNoTransition = this.noTransitions;
       this._height = this.offsetHeight;
       this._topbar = Polymer.dom(this).querySelector('app-toolbar');
 
@@ -289,7 +291,8 @@ Example:
         this._updateHeader(this._oldScrollTop, true);
         this._layoutIfDirty();
       }
-      this.noTransitions = false;
+      // restore no transition
+      this.noTransitions = currentNoTransition;
     },
 
     _layoutIfDirty: function() {
