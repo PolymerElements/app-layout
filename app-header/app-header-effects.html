@@ -40,7 +40,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    */
   Polymer.AppHeaderEffects['fade-background'] = {
     setUp: function setUp(config) {
-      var duration = this._styleProperties['--fade-background-duration'] || '0.5s';
+      var duration = config.duration || '0.5s';
       this.$.headerBg.style.willChange = 'opacity';
       this.$.headerBg.style.webkitTransform = 'translateZ(0)';
       this.$.headerBg.style.transitionProperty = 'opacity';
@@ -65,19 +65,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * Use this effect to fade in/out the background images in the header.
    */
   Polymer.AppHeaderEffects['parallax-background'] = {
-    setUp: function setUp() {
-      this._friction = parseFloat(this._styleProperties['--parallax-background-friction']);
-      if (isNaN(this._friction)) {
-        this._friction = 0.8;
+    setUp: function setUp(config) {
+      this._deltaBg = this.$.headerBg.offsetHeight - this.$.clip.offsetHeight;
+      this._scalar = parseFloat(config.scalar);
+      if (isNaN(this._scalar)) {
+        this._scalar = 0;
       }
     },
     tearDown: function() {
-      delete this._friction;
+      delete this._scalar;
     },
     run: function run(p, y) {
-      var friction = this._friction;
-      this.transform('translate3d(0px, ' + (y * friction) + 'px, 0px)', this.$.headerBg);
-      this.transform('translate3d(0px, ' + (y * friction) + 'px, 0px)', this.$.condensedHeaderBg);
+      var scalar = this._scalar;
+      this.transform('translate3d(0px, ' + (this._deltaBg * -Math.min(1, p)) + 'px, 0px)', this.$.headerBg);
+      this.transform('translate3d(0px, ' + (this._deltaBg * -Math.min(1, p)) + 'px, 0px)', this.$.condensedHeaderBg);
+      if (scalar !== 0) {
+        this.transform('translate3d(0px, ' + (y * scalar) + 'px, 0px)', this.$.clip);
+      }
     }
   };
 
@@ -149,9 +153,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * Use this effect to allow the title to transition to the condensed title quickly.
    */
   Polymer.AppHeaderEffects['resize-snapped-title'] = {
-    setUp: function setUp() {
+    setUp: function setUp(config) {
       var title = Polymer.dom(this).querySelector('[title]');
       var condensedTitle = Polymer.dom(this).querySelector('[condensed-title]');
+      var duration = config.duration || '0.2s';
 
       if (!condensedTitle) {
         console.error('You forgot to place an element with the `condensed-title` attribute inside the header');
@@ -162,8 +167,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return false;
       }
 
-      title.style.transition = 'opacity 0.2s';
-      condensedTitle.style.transition = 'opacity 0.2s';
+      title.style.transitionProperty = 'opacity';
+      title.style.transitionDuration = duration;
+      condensedTitle.style.transitionProperty = 'opacity';
+      condensedTitle.style.transitionDuration = duration;
 
       this._condensedTitle = condensedTitle;
       this._title = title;
