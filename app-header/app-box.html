@@ -19,18 +19,17 @@ app-header is a container for app-toolbar. It can add effects to the toolbars ba
 
 Example:
 
-    <app-header>
+    <app-box>
       <app-toolbar>
         <div title>App name</div>
       </app-toolbar>
-    </app-drawer>
+    </app-box>
 
-@demo app-header/demo.html
+@demo app-box/demo.html
 -->
 
-<dom-module id="app-header">
-  <style >
-  </style>
+<dom-module id="app-box">
+
   <style>
 
     :host {
@@ -58,7 +57,6 @@ Example:
       -webkit-transition: opacity 0.4s;
       transition: opacity 0.4s;
       -webkit-transform: translateZ(0);
-      @apply(--app-header-shadow);
     }
 
     :host([shadow])::after {
@@ -91,7 +89,6 @@ Example:
       @apply(--layout-fit);
       pointer-events: none;
       background-size: cover;
-      height: 100%;
     }
 
     #headerBg {
@@ -101,14 +98,6 @@ Example:
     #condensedHeaderBg {
       @apply(--app-header-condensed-header);
       opacity: 0;
-    }
-
-    :host([no-transitions]),
-    :host([no-transitions])::after,
-    :host([no-transitions]) #headerBg,
-    :host([no-transitions]) #condensedHeaderBg,
-    :host([no-transitions]) > ::content > app-toolbar:first-of-type {
-      transition: none !important;
     }
 
   </style>
@@ -124,7 +113,7 @@ Example:
 <script>
   Polymer({
 
-    is: 'app-header',
+    is: 'app-box',
 
     properties: {
       /**
@@ -132,8 +121,18 @@ Example:
        */
       fixed: {
         type: Boolean,
+        value: false,
+        observer: '_fixedChanged'
+      },
+
+      /**
+       * If true, the condensed header is always shown and does not move away.
+       */
+      alwaysVisible: {
+        type: Boolean,
         value: false
       },
+
       /**
        * If true, a shadow will display below the header.
        */
@@ -169,35 +168,20 @@ Example:
        * `waterfall fade-background`
        */
       effects: {
-        type: String
+        type: String,
+        observer: '_effectsChanged'
       },
 
-      noTransitions: {
+      _noTransitions: {
         type: Boolean,
-        reflectToAttribute: true
-      },
-
-      effectsConfig: {
-        type: Object,
-        value: function() {
-          return {};
-        }
-      },
-
-      minScrollTop: {
-        type: Number,
-        value: 0
+        observer: '_noTransitionChanged'
       }
+
     },
 
     behaviors: [
       Polymer.CustomScrollerBehavior,
       Polymer.IronResizableBehavior
-    ],
-
-    observers: [
-      '_condensesChanged(condenses, isAttached)',
-      '_effectsChanged(effects, effectsConfig)'
     ],
 
     listeners: {
@@ -206,57 +190,38 @@ Example:
 
     /**
      * A cached offsetHeight of the current element.
-     * @type {number}
      */
     _height: 0,
 
     /**
      * The distance in pixels the header will be translated to when scrolling.
-     * @type {number}
      */
     _deltaHeight: 0,
 
     /**
      * The top most app-toolbar.
-     * @type {Element}
      */
     _topbar: null,
-
-    /**
-     * List of effects handlers that will take place during scroll
-     * @type {Array<Function>}
-     */
+    _title: null,
     _effectsRunFn: [],
-
-    /**
-     * List of the effects definitions installed via the `effects` property
-     * @type {Array<Object>}
-     */
     _effects: [],
 
     get _clampedScrollTop() {
-      return Math.max(0, this._scrollTop - this.minScrollTop);
+      return Math.max(0,
+          this.alwaysVisible ? Math.min(this._scrollTop, this._deltaHeight) : this._scrollTop);
     },
 
     get _headerDy() {
-      return this.fixed ? this._deltaHeight : this._height;
+      return this.alwaysVisible ? this._deltaHeight : this._height;
     },
 
     created: function() {
-      this._oldHeaderY = 0;
-      this._oldScrollTop = 0;
+      this._oldY = 0;
+      this._oldTop = 0;
     },
 
     attached: function() {
-      this.debounce('setup', this.setup, 1);
-    },
-
-    detached: function() {
-      this._tearDownEffects();
-    },
-
-    _condensesChanged: function() {
-      this.debounce('setup', this.setup, 1);
+      this.async(this.setup, 1);
     },
 
     /**
@@ -265,42 +230,51 @@ Example:
      * @method setup
      */
     setup: function() {
-      // noop if the header isn't visible
-      if (this.offsetWidth === 0 && this.offsetHeight === 0) {
-        return;
-      }
       var firstSetup = this._height === 0;
-      var scrollTop = this._clampedScrollTop;
-      var currentNoTransition = this.noTransitions;
+
       this._height = this.offsetHeight;
       this._topbar = Polymer.dom(this).querySelector('app-toolbar');
+      this._title = Polymer.dom(this).querySelector('[title]');
 
       // prepare for measurement
-      this.noTransitions = true;
+      this._noTransitions = true;
 
-      if (firstSetup || scrollTop === 0) {
+      if (firstSetup || this._clampedScrollTop === 0) {
         this.cancelDebouncer('resize');
         this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
         this._setUpEffect();
-        this._updateHeader(scrollTop, true);
       } else {
         this._updateHeader(0, true);
         this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
         this._setUpEffect();
         // restore the previous scroll state
         // fix issue in mobile
-        this._updateHeader(this._oldScrollTop, true);
+        this._updateHeader(this._oldTop, true);
         this._layoutIfDirty();
       }
-      // restore no transition
-      this.noTransitions = currentNoTransition;
+      this._noTransitions = false;
+
     },
 
     _layoutIfDirty: function() {
       return this.offsetWidth;
     },
 
-    _effectsChanged: function(effects, effectsConfig) {
+    _noTransitionChanged: function(noTransition) {
+      if (noTransition) {
+        this.style.transition = 'none';
+        if (this._topbar) {
+          this._topbar.style.transition = 'none';
+        }
+      } else {
+        this.style.transition = '';
+        if (this._topbar) {
+          this._topbar.style.transition = '';
+        }
+      }
+    },
+
+    _effectsChanged: function(effects) {
       if (!Polymer.AppHeaderEffects) {
         console.error('app header effects are not loaded');
         return;
@@ -312,137 +286,85 @@ Example:
 
       for (var i = 0; i < effectNames.length; i++) {
         if ((effectDef = Polymer.AppHeaderEffects[effectNames[i]])) {
-          this._effects.push(this._boundEffect(effectDef, effectsConfig[effectNames[i]]));
-        } else {
-          console.error('undefined effect `' + effectNames[i] + '`');
+          this._effectsRunFn.push(effectDef.run.bind(this));
+          this._effects.push(effectDef);
         }
       }
       // set up new effects
       this._setUpEffect();
     },
 
-    _unit: function(value) {
-      switch (typeof value) {
-        case 'number':
-          return value;
-        case 'string':
-          if (value.charAt(value.length - 1) === '%') {
-            return parseFloat(value)/100;
-          }
-          return parseFloat(value);
-        default:
-          return 0;
-      }
-    },
-
-    _boundEffect: function(effectDef, effectsConfig) {
-      effectsConfig = effectsConfig || {};
-      var startsAt = this._unit(effectsConfig.startsAt);
-      var endsAt = this._unit(effectsConfig.endsAt || 1);
-      var deltaS = endsAt - startsAt;
-      var noop = Function();
-      var runFn = (startsAt === 0 && endsAt === 1) ? effectDef.run :
-        function(progress, y, scrollTop) {
-          if (this._deltaHeight === 0) {
-            progress = scrollTop > 0 ? 1 : 0;
-          } else { 
-            progress = Math.max(0, ((y / this._deltaHeight) - startsAt) / deltaS);
-          }
-          effectDef.run.call(this, progress, y, scrollTop); 
-        };
-      return {
-        setUp: effectDef.setUp ? effectDef.setUp.bind(this, effectsConfig) : noop,
-        run: effectDef.run ? runFn.bind(this) : noop,
-        tearDown: effectDef.tearDown ? effectDef.tearDown.bind(this) : noop
-      };
-    },
-
     _setUpEffect: function() {
       if (this.isAttached) {
-        this._effectsRunFn = [];
         this._effects.forEach(function(effectDef) {
-          // install the effect only if no error was reported
-          if (effectDef.setUp() !== false) {
-            this._effectsRunFn.push(effectDef.run);
-          }
+          effectDef.setUp.call(this);
         }, this);
       }
     },
 
     _tearDownEffects: function() {
       this._effects.forEach(function(effectDef) {
-        effectDef.tearDown();
+        effectDef.tearDown.call(this);
       }, this);
       this._effectsRunFn = [];
       this._effects = [];
     },
 
-    _runEffects: function(p, y, scrollTop) {
-      console.log('p', p);
+    _runEffects: function(p, y) {
       for (var i = 0; i < this._effectsRunFn.length; i++) {
-        this._effectsRunFn[i](p, y, scrollTop);
+        this._effectsRunFn[i](p, y);
       }
     },
 
-    effect: function(effectName, effectConfig) {
+    effect: function(effectName) {
       var effectDef = Polymer.AppHeaderEffects[effectName];
       if (!effectDef) {
-        throw new ReferenceError('undefined effect `' + effectName + '`');
+        throw new ReferenceError('undefined effect');
         return;
       }
-      var prop = this._boundEffect(effectDef, effectConfig || {});
-      return prop.setUp() && prop;
+      var prop = {
+        run: effectDef.run.bind(this),
+        setUp: effectDef.setUp.bind(this),
+        tearDown: effectDef.tearDown.bind(this)
+      };
+      prop.setUp();
+      return prop;
     },
 
     _scrollHandler: function() {
-      this._updateHeader(this._clampedScrollTop);
+      var scrollTop = this._clampedScrollTop;
+      var headerY = this._updateHeader(scrollTop);
+      this._oldTop = scrollTop;
+      this._oldY = headerY;
     },
 
-    _updateHeader: function(scrollTop, forceUpdate) {
-      if (this._height == 0) {
-        return;
-      }
-      var progress;
-      var headerY = this.reveals ? this._oldHeaderY + scrollTop - this._oldScrollTop : scrollTop;
-      var clampedHeaderY = Math.min(this._headerDy, Math.max(0, headerY));
-      var mayHeaderMove = !this.fixed || this.condenses;
+    _updateHeader: function(scrollTop, force) {
+      var top = this.reveals ? this._oldY + scrollTop - this._oldTop : scrollTop;
+      var headerY = Math.min(this._headerDy, Math.max(0, top));
 
-      // condense header
-      if (this._oldScrollTop >= scrollTop && scrollTop > this._deltaHeight && (!this.reveals || this.condenses)) {
-        clampedHeaderY = Math.max(this._deltaHeight, clampedHeaderY);
+      if (this._oldTop >= scrollTop && scrollTop > this._deltaHeight && this.condenses) {
+        headerY = Math.max(headerY, this._deltaHeight);
       }
-      if (this._deltaHeight === 0) {
-        progress = scrollTop > 0 ? 1 : 0;
-      } else {
-        progress = clampedHeaderY / this._deltaHeight;
+      if (this._oldY !== headerY || force) {
+        this._runEffects(headerY/this._deltaHeight, headerY);
       }
-      if (forceUpdate || clampedHeaderY !== this._oldHeaderY || scrollTop === 0) {
-        this._runEffects(progress, mayHeaderMove ? clampedHeaderY : 0, scrollTop);
-        this._transformHeader(mayHeaderMove ? clampedHeaderY : 0);
-        this.fire('app-header-transform', {y: clampedHeaderY, progress: progress}, {bubbles: false});
-      }
-      if (!forceUpdate) {
-        this._oldHeaderY =  clampedHeaderY;
-        this._oldScrollTop = scrollTop;
-      }
-    },
-
-    _isVisible: function(headerY) {
-      return headerY === 0 || headerY < this._height;
-    },
-
-    _isContentBelow: function(headerY) {
-      if (headerY === 0) {
-        return this._clampedScrollTop > 0;
-      }
-      return this._clampedScrollTop - this._headerDy >= 0;
+      return headerY;
     },
 
     _transformHeader: function(y) {
+      if (this.fixed) {
+        return;
+      }
       this.transform('translate3d(0,' + (-y) + 'px, 0)');
       if (this._topbar && this.condenses) {
         this.transform('translate3d(0,' + Math.min(y, this._deltaHeight) + 'px, 0)',
             this._topbar);
+      }
+    },
+
+    _fixedChanged: function(fixed) {
+      if (fixed) {
+        this._transformHeader(0);
       }
     },
 
