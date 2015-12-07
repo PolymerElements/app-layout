@@ -29,7 +29,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this.$.condensedHeaderBg.style.webkitTransform = 'translateZ(0)';
       this.$.condensedHeaderBg.style.opacity = 0;
     },
-    tearDown: Function(),
     run: function run(p, y) {
       this.$.headerBg.style.opacity = 1 - p;
       this.$.condensedHeaderBg.style.opacity = p;
@@ -40,9 +39,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * Use this effect to fade in/out the background in the header.
    */
   Polymer.AppHeaderEffects['fade-background'] = {
-    setUp: function setUp() {
+    setUp: function setUp(config) {
       var duration = this._styleProperties['--fade-background-duration'] || '0.5s';
-
       this.$.headerBg.style.willChange = 'opacity';
       this.$.headerBg.style.webkitTransform = 'translateZ(0)';
       this.$.headerBg.style.transitionProperty = 'opacity';
@@ -52,7 +50,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this.$.condensedHeaderBg.style.transitionProperty = 'opacity';
       this.$.condensedHeaderBg.style.transitionDuration = duration;
     },
-    tearDown: Function(),
     run: function run(p, y) {
       if (p >= 1) {
         this.$.headerBg.style.opacity = 0;
@@ -135,7 +132,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._title.style.opacity = 1;
         this._condensedTitle.style.opacity = 0;
       }
-
       interpolate(Math.min(1, p), [
         [1,  this._scale],
         [0, -this._titleDX],
@@ -179,7 +175,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       delete this._title;
     },
     run: function run(p, y) {
-      if (y > this._deltaHeight * 0.2) {
+      if (p > 0) {
         this._title.style.opacity = 0;
         this._condensedTitle.style.opacity = 1;
       } else {
@@ -187,7 +183,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._condensedTitle.style.opacity = 0;
       }
 
-      this.transform('translate(0px, ' + y + 'px)', this._title);
     }
   };
 
@@ -195,8 +190,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * Use this effect to dynamically display a shadow below the header.
    */
   Polymer.AppHeaderEffects['waterfall'] = {
-    setUp: Function(),
-    tearDown: Function(),
     run: function run(p, y) {
       this.shadow = this._isContentBelow(y) && this._isVisible(y);
     }
@@ -206,8 +199,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    *
    */
   Polymer.AppHeaderEffects['condense-header'] = {
-    setUp: Function(),
-    tearDown: Function(),
     run: function run(p, y) {
       this.transform('translate3d(0,' + (-y) + 'px, 0)');
       if (this._topbar) {
@@ -221,8 +212,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    *
    */
   Polymer.AppHeaderEffects['condense-snapped-header'] = {
-    setUp: Function(),
-    tearDown: Function(),
     run: function run(p, y) {
       this.style.transition = 'transform 0.2s';
       this._topbar.style.transition = 'transform 0.2s';
@@ -246,9 +235,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   Polymer.AppHeaderEffects['material'] = {
     setUp: function() {
       this.effects = 'waterfall resize-title blend-background parallax-background';
-    },
-    tearDown: Function(),
-    run: Function()
+      return false;
+    }
   };
 
 })();

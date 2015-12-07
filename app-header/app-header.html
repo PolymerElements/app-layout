@@ -167,15 +167,25 @@ Example:
        * `waterfall fade-background`
        */
       effects: {
-        type: String,
-        observer: '_effectsChanged'
+        type: String
       },
 
       noTransitions: {
         type: Boolean,
         reflectToAttribute: true
-      }
+      },
 
+      effectsConfig: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      },
+
+      minScrollTop: {
+        type: Number,
+        value: 0
+      }
     },
 
     behaviors: [
@@ -184,7 +194,8 @@ Example:
     ],
 
     observers: [
-      '_condensesChanged(condenses, isAttached)'
+      '_condensesChanged(condenses, isAttached)',
+      '_effectsChanged(effects, effectsConfig)'
     ],
 
     listeners: {
@@ -222,7 +233,7 @@ Example:
     _effects: [],
 
     get _clampedScrollTop() {
-      return Math.max(0, this._scrollTop);
+      return Math.max(0, this._scrollTop - this.minScrollTop);
     },
 
     get _headerDy() {
@@ -285,7 +296,7 @@ Example:
       return this.offsetWidth;
     },
 
-    _effectsChanged: function(effects) {
+    _effectsChanged: function(effects, effectsConfig) {
       if (!Polymer.AppHeaderEffects) {
         console.error('app header effects are not loaded');
         return;
@@ -297,7 +308,7 @@ Example:
 
       for (var i = 0; i < effectNames.length; i++) {
         if ((effectDef = Polymer.AppHeaderEffects[effectNames[i]])) {
-          this._effects.push(effectDef);
+          this._effects.push(this._boundEffect(effectDef, effectsConfig[effectNames[i]]));
         } else {
           console.error('undefined effect `' + effectNames[i] + '`');
         }
@@ -306,13 +317,49 @@ Example:
       this._setUpEffect();
     },
 
+    _unit: function(value) {
+      switch (typeof value) {
+        case 'number':
+          return value;
+        case 'string':
+          if (value.charAt(value.length - 1) === '%') {
+            return parseFloat(value)/100;
+          }
+          return parseFloat(value);
+        default:
+          return 0;
+      }
+    },
+
+    _boundEffect: function(effectDef, effectsConfig) {
+      effectsConfig = effectsConfig || {};
+      var startsAt = this._unit(effectsConfig.startsAt);
+      var endsAt = this._unit(effectsConfig.endsAt || 1);
+      var deltaS = endsAt - startsAt;
+      var noop = Function();
+      var runFn = (startsAt === 0 && endsAt === 1) ? effectDef.run :
+        function(progress, y, scrollTop) {
+          if (this._deltaHeight === 0) {
+            progress = scrollTop > 0 ? 1 : 0;
+          } else { 
+            progress = Math.max(0, ((y / this._deltaHeight) - startsAt) / deltaS);
+          }
+          effectDef.run.call(this, progress, y, scrollTop); 
+        };
+      return {
+        setUp: effectDef.setUp ? effectDef.setUp.bind(this, effectsConfig) : noop,
+        run: effectDef.run ? runFn.bind(this) : noop,
+        tearDown: effectDef.tearDown ? effectDef.tearDown.bind(this) : noop
+      };
+    },
+
     _setUpEffect: function() {
       if (this.isAttached) {
         this._effectsRunFn = [];
         this._effects.forEach(function(effectDef) {
           // install the effect only if no error was reported
-          if (effectDef.setUp.call(this) !== false) {
-            this._effectsRunFn.push(effectDef.run.bind(this));
+          if (effectDef.setUp() !== false) {
+            this._effectsRunFn.push(effectDef.run);
           }
         }, this);
       }
@@ -320,31 +367,26 @@ Example:
 
     _tearDownEffects: function() {
       this._effects.forEach(function(effectDef) {
-        effectDef.tearDown.call(this);
+        effectDef.tearDown();
       }, this);
       this._effectsRunFn = [];
       this._effects = [];
     },
 
-    _runEffects: function(p, y) {
+    _runEffects: function(p, y, scrollTop) {
       for (var i = 0; i < this._effectsRunFn.length; i++) {
-        this._effectsRunFn[i](p, y);
+        this._effectsRunFn[i](p, y, scrollTop);
       }
     },
 
-    effect: function(effectName) {
+    effect: function(effectName, effectConfig) {
       var effectDef = Polymer.AppHeaderEffects[effectName];
       if (!effectDef) {
         throw new ReferenceError('undefined effect `' + effectName + '`');
         return;
       }
-      var prop = {
-        run: effectDef.run.bind(this),
-        setUp: effectDef.setUp.bind(this),
-        tearDown: effectDef.tearDown.bind(this)
-      };
-      prop.setUp();
-      return prop;
+      var prop = this._boundEffect(effectDef, effectConfig || {});
+      return prop.setUp() && prop;
     },
 
     _scrollHandler: function() {
@@ -370,7 +412,7 @@ Example:
         progress = clampedHeaderY / this._deltaHeight;
       }
       if (forceUpdate || clampedHeaderY !== this._oldHeaderY || scrollTop === 0) {
-        this._runEffects(progress, mayHeaderMove ? clampedHeaderY : 0);
+        this._runEffects(progress, mayHeaderMove ? clampedHeaderY : 0, scrollTop);
         this._transformHeader(mayHeaderMove ? clampedHeaderY : 0);
         this.fire('app-header-transform', {y: clampedHeaderY, progress: progress}, {bubbles: false});
       }
