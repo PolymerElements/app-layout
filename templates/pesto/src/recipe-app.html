@@ -98,7 +98,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       __page: {
         type: String,
-        value: 'home'
+        value: 'home',
+        observer: '__pageChanged'
       }
 
     },
@@ -112,10 +113,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     __selectedRecipeChanged: function(newValue, oldValue) {
-      this.$.detailView.$.header.noTransitions = true;
-      this.__page = 'detail';
-      // HACK: current impl of <app-header>.setup() already resets noTransitions.
-      // this.$.detailView.$.header.noTransitions = false;
+      if (newValue) this.__page = 'detail';
+    },
+
+    __pageChanged: function(newValue, oldValue) {
+      if (newValue !== 'detail') this.__selectedRecipe = null;
     },
 
     __closeRecipeDetail: function() {
