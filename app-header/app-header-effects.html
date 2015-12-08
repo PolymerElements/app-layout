@@ -66,29 +66,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    */
   Polymer.AppHeaderEffects['parallax-background'] = {
     setUp: function setUp(config) {
-      this.bgFriction = parseFloat(config.bgFriction);
-      if (isNaN(this.bgFriction)) {
-        this._bgFriction = 0.8;
-      }
-      this._boxFriction = parseFloat(config.boxFriction);
-      if (isNaN(this._boxFriction)) {
-        this._boxFriction = 0;
+      this._deltaBg = this.$.headerBg.offsetHeight - this.$.clip.offsetHeight;
+      this._scalar = parseFloat(config.scalar);
+      if (isNaN(this._scalar)) {
+        this._scalar = 0;
       }
     },
     tearDown: function() {
-      delete this._bgFriction;
-      delete this._boxFriction;
+      delete this._scalar;
     },
     run: function run(p, y) {
-      var bgFriction = this._bgFriction;
-      var boxFriction = this._boxFriction;
-
-      if (bgFriction !== 0) {
-        this.transform('translate3d(0px, ' + (y * bgFriction) + 'px, 0px)', this.$.headerBg);
-        this.transform('translate3d(0px, ' + (y * bgFriction) + 'px, 0px)', this.$.condensedHeaderBg);
-      }
-      if (boxFriction !== 0) {
-        this.transform('translate3d(0px, ' + (y * boxFriction) + 'px, 0px)', this.$.clip);
+      var scalar = this._scalar;
+      this.transform('translate3d(0px, ' + (this._deltaBg * -Math.min(1, p)) + 'px, 0px)', this.$.headerBg);
+      this.transform('translate3d(0px, ' + (this._deltaBg * -Math.min(1, p)) + 'px, 0px)', this.$.condensedHeaderBg);
+      if (scalar !== 0) {
+        this.transform('translate3d(0px, ' + (y * scalar) + 'px, 0px)', this.$.clip);
       }
     }
   };
