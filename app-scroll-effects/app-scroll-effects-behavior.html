@@ -1,0 +1,279 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../scroll-behaviors/custom-scroller-behavior.html">
+
+<script>
+  (function() {
+    function Unimplemented() {
+      throw new Error('unimplemented method');
+    }
+
+    function getFactor(value) {
+      switch (typeof value) {
+        case 'number':
+          return value;
+        case 'string':
+          if (value.charAt(value.length - 1) === '%') {
+            return parseFloat(value)/100;
+          }
+          return parseFloat(value);
+        default:
+          return 0;
+      }
+    }
+
+    /* @polymerBehavior */
+    Polymer.AppScrollEffectsBehavior = [
+      Polymer.CustomScrollerBehavior,
+      Polymer.IronResizableBehavior,
+     {
+
+      properties: {
+
+        /**
+         * Install visual effects in the header that will be triggered based on the scroll position.
+         *
+         * Effects available in `Polymer.AppScrollEffects`:
+         *
+         *    `fade-background` Use this effect to fade in/out the background images in the header.
+         *
+         *    `resize-title` Use this effect to transform the main title into the condensed title.
+         *
+         *    `snap-resized-title` Use this effect to allow the title to transition to the condensed title quickly.
+         *
+         *    `waterfall` Use this effect to dynamically display a shadow below the header.
+         *
+         * e.g. You may combine the `waterfall` and `fade-background` effects by setting the `effects` property to
+         * `waterfall fade-background`
+         */
+        effects: {
+          type: String
+        },
+
+        /**
+         *
+         */
+        effectsConfig: {
+          type: Object,
+          value: function() {
+            return {};
+          }
+        },
+
+        /**
+         *
+         */
+        noTransitions: {
+          type: Boolean,
+          reflectToAttribute: true
+        }
+      },
+
+      observers: [
+        '_effectsChanged(effects, effectsConfig)'
+      ],
+
+      listeners: {
+        'iron-resize': '_resizeHandler'
+      },
+
+      /**
+       * @abstract
+       * @method _updateContainer
+       */
+      _updateContainer: Unimplemented,
+
+      /**
+       * @abstract
+       * @method isVisible
+       */
+      isVisible: Unimplemented,
+
+      /**
+       * @abstract
+       * @method isContentBelow
+       */
+      isContentBelow: Unimplemented,
+
+      /**
+       * @abstract
+       * @method setup
+       */
+      setup: Unimplemented,
+
+      /**
+       * List of effects handlers that will take place during scroll
+       * @type {Array<Function>}
+       */
+      _effectsRunFn: null,
+
+      /**
+       * List of the effects definitions installed via the `effects` property
+       * @type {Array<Object>}
+       */
+      _effects: null,
+
+      /**
+       *
+       */
+      _oldScrollTop: 0,
+
+      /**
+       *
+       */
+      get _clampedScrollTop() {
+        return Math.max(0, this._scrollTop);
+      },
+
+      /**
+       *
+       */
+      get _headerDy() {
+        return this.fixed ? this._deltaHeight : this._height;
+      },
+
+      created: function() {
+        this._effectsRunFn = [];
+        this._effects = [];
+      },
+
+      attached: function() {
+        this.debounce('_setup', this.setup, 1);
+      },
+
+      detached: function() {
+        this._tearDownEffects();
+      },
+
+      /**
+       *
+       * @param effectName string
+       * @param effectConfig Object
+       * @method effect
+       */
+      effect: function(effectName, effectConfig) {
+        if (!Polymer.AppScrollEffects) {
+          throw new ReferenceError('undefined Polymer.AppScrollEffects');
+          return;
+        }
+        var effectDef = Polymer.AppScrollEffects[effectName];
+        if (!effectDef) {
+          throw new ReferenceError('undefined effect `' + effectName + '`');
+          return;
+        }
+        var prop = this._boundEffect(effectDef, effectConfig || {});
+        prop.setUp();
+        return prop;
+      },
+
+      /**
+       *
+       */
+      _effectsChanged: function(effects, effectsConfig) {
+        if (!Polymer.AppScrollEffects) {
+          this._warn(this._logf('_effectsChanged', '`Polymer.AppScrollEffects` is undefined'));
+          return;
+        }
+        var effectDef;
+        var effectNames = effects.split(' ');
+
+        this._tearDownEffects();
+
+        for (var i = 0; i < effectNames.length; i++) {
+          if ((effectDef = Polymer.AppScrollEffects[effectNames[i]])) {
+            this._effects.push(this._boundEffect(effectDef, effectsConfig[effectNames[i]]));
+          } else {
+            this._warn(this._logf('_effectsChanged', 'undefined effect `', effectNames[i], '`'));
+          }
+        }
+        // set up new effects
+        this._setUpEffect();
+      },
+
+      /**
+       *
+       */
+      _layoutIfDirty: function() {
+        return this.offsetWidth;
+      },
+
+      /**
+       *
+       */
+      _boundEffect: function(effectDef, effectsConfig) {
+        effectsConfig = effectsConfig || {};
+        var startsAt = getFactor(effectsConfig.startsAt);
+        var endsAt = getFactor(effectsConfig.endsAt || 1);
+        var deltaS = endsAt - startsAt;
+        var noop = Function();
+        var runFn = (startsAt === 0 && endsAt === 1) ? effectDef.run :
+          function(progress, y, scrollTop) {
+            effectDef.run.call(this,
+                Math.max(0, (progress - startsAt) / deltaS), y, scrollTop);
+          };
+        return {
+          setUp: effectDef.setUp ? effectDef.setUp.bind(this, effectsConfig) : noop,
+          run: effectDef.run ? runFn.bind(this) : noop,
+          tearDown: effectDef.tearDown ? effectDef.tearDown.bind(this) : noop
+        };
+      },
+
+      /**
+       *
+       */
+      _setUpEffect: function() {
+        if (this.isAttached) {
+          this._effectsRunFn = [];
+          this._effects.forEach(function(effectDef) {
+            // install the effect only if no error was reported
+            if (effectDef.setUp() !== false) {
+              this._effectsRunFn.push(effectDef.run);
+            }
+          }, this);
+        }
+      },
+
+      /**
+       *
+       */
+      _tearDownEffects: function() {
+        this._effects.forEach(function(effectDef) {
+          effectDef.tearDown();
+        }, this);
+        this._effectsRunFn = [];
+        this._effects = [];
+      },
+
+      /**
+       *
+       */
+      _runEffects: function(p, y, scrollTop) {
+        for (var i = 0; i < this._effectsRunFn.length; i++) {
+          this._effectsRunFn[i](p, y, scrollTop);
+        }
+      },
+
+      /**
+       *
+       */
+      _resizeHandler: function(e) {
+        this.debounce('_resize', this.setup, 100);
+      },
+
+      _scrollHandler: function() {
+        this._updateContainer(this._clampedScrollTop);
+      },
+    }];
+
+  })();
+</script>
