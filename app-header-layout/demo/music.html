@@ -24,7 +24,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../../../paper-fab/paper-fab.html">
   <link rel="import" href="../../app-toolbar/app-toolbar.html">
-  <link rel="import" href="../app-header.html">
+  <link rel="import" href="../../app-header/app-header.html">
+  <link rel="import" href="../app-header-layout.html">
 
   <style is="custom-style">
 
@@ -35,10 +36,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .top-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
       color: #fff;
       --app-header-condensed-header: {
         background-color: #ef6c00;
@@ -46,14 +43,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .bg-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
       height: 100vh;
       color: #fff;
       --app-header-full-header: {
-        background-image: url(assets/GIRL_PharrellWilliams.jpg);
+        background-image: url(../../app-header/demo/assets/GIRL_PharrellWilliams.jpg);
         padding-bottom: 100px;
       };
     }
@@ -73,7 +66,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     .content {
       position: relative;
-      margin: 260px 120px 120px;
+      margin: 196px 120px 120px;
       padding: 32px 32px 60px;
       background-color: #fff;
       color: #333;
@@ -140,7 +133,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .content {
-        margin: 360px 0 0 0;
+        margin: 294px 0 0 0;
         box-shadow: none;
       }
 
@@ -156,40 +149,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body unresolved>
 
-  <app-header class="bg-header" scroller="window" effects="parallax-background" effects-config='{"parallax-background": {}}'>
-    <app-toolbar></app-toolbar>
-  </app-header>
+  <app-header-layout>
 
-  <div class="content">
+    <app-header class="top-header" scroller="window" reveals>
+      <app-toolbar>
+       <paper-icon-button icon="arrow-back"></paper-icon-button>
+        <div title></div>
+        <paper-icon-button icon="search"></paper-icon-button>
+      </app-toolbar>
+    </app-header>
+    
+    <app-header class="bg-header" scroller="window" effects="parallax-background" underlay-content>
+      <app-toolbar></app-toolbar>
+    </app-header>
 
-    <h2>GIRL</h2>
-    <div class="artist-date">
-      <div class="artist">Pharrell Williams</div><time>March 3, 2014</time>
-    </div>
-    <summary>
-      Girl is the second studio album by American recording artist and record producer Pharrell Williams. The album was released on March 3, 2014, through Williams' label i Am Other and Columbia Records.
-    </summary>
+    <div class="content">
 
-    <template is="dom-repeat" id="repeater">
-      <div class="song">
-        <div class="no">{{item.no}}</div>
-        <div class="name">{{item.name}}</div>
-        <div class="duration">{{item.duration}}</div>
-        <iron-icon icon="more-vert"></iron-icon>
+      <h2>GIRL</h2>
+      <div class="artist-date">
+        <div class="artist">Pharrell Williams</div><time>March 3, 2014</time>
       </div>
-    </template>
+      <summary>
+        Girl is the second studio album by American recording artist and record producer Pharrell Williams. The album was released on March 3, 2014, through Williams' label i Am Other and Columbia Records.
+      </summary>
 
-  </div>
+      <template is="dom-repeat" id="repeater">
+        <div class="song">
+          <div class="no">{{item.no}}</div>
+          <div class="name">{{item.name}}</div>
+          <div class="duration">{{item.duration}}</div>
+          <iron-icon icon="more-vert"></iron-icon>
+        </div>
+      </template>
 
-  <paper-fab icon="av:play-arrow"></paper-fab>
+    </div>
 
-  <app-header class="top-header" scroller="window" reveals>
-    <app-toolbar>
-     <paper-icon-button icon="arrow-back"></paper-icon-button>
-      <div title></div>
-      <paper-icon-button icon="search"></paper-icon-button>
-    </app-toolbar>
-  </app-header>
+    <paper-fab icon="av:play-arrow"></paper-fab>
+
+  </app-header-layout>
 
   <script>
 

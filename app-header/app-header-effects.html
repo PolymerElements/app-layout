@@ -77,8 +77,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
     run: function run(p, y) {
       var scalar = this._scalar;
-      this.transform('translate3d(0px, ' + (this._deltaBg * -Math.min(1, p)) + 'px, 0px)', this.$.headerBg);
-      this.transform('translate3d(0px, ' + (this._deltaBg * -Math.min(1, p)) + 'px, 0px)', this.$.condensedHeaderBg);
+      this.transform('translate3d(0px, ' + (this._deltaBg * Math.min(1, p)) + 'px, 0px)', this.$.headerBg);
+      this.transform('translate3d(0px, ' + (this._deltaBg * Math.min(1, p)) + 'px, 0px)', this.$.condensedHeaderBg);
       if (scalar !== 0) {
         this.transform('translate3d(0px, ' + (y * scalar) + 'px, 0px)', this.$.clip);
       }

@@ -63,14 +63,16 @@ Using an own scrolling region:
       height: 100%;
     }
 
-    :host > ::content > app-header {
+    :host > ::content > app-header,
+    :host > ::content > [underlay-content] {
       position: fixed;
       top: 0;
       right: 0;
       left: 0;
     }
 
-    :host([has-scrolling-region]) > ::content > app-header {
+    :host([has-scrolling-region]) > ::content > app-header,
+    :host([has-scrolling-region]) > ::content > [underlay-content] {
       position: absolute;
     }
 
@@ -88,9 +90,11 @@ Using an own scrolling region:
   </style>
 
   <template>
+  
+    <content id="underlayContent" select="[underlay-content]"></content>
 
     <div id="contentContainer">
-      <content select=":not(app-header)"></content>
+      <content select=":not(app-header):not([underlay-content])"></content>
     </div>
 
     <content id="header" select="app-header"></content>
@@ -124,7 +128,7 @@ Using an own scrolling region:
       },
 
       listeners: {
-        'iron-resize': '_updateLayout'
+        'iron-resize': '_resize'
       },
 
       get header() {
@@ -132,33 +136,35 @@ Using an own scrolling region:
       },
 
       attached: function() {
-        this.async(this._updateLayout, 1);
+        this.async(this.setup, 1);
       },
 
-      _updateLayout: function() {
+      setup: function() {
         this._updateContentPosition();
         this._updateScroller();
+      },
+
+      _getFixedNodes: function() {
+        return Polymer.dom(this.$.header).getDistributedNodes().
+            concat(Polymer.dom(this.$.underlayContent).getDistributedNodes());
       },
 
       _updateContentPosition: function() {
         var header = this.header;
         if (header) {
           this._headerHeight = header.offsetHeight;
-
-          if (header.hasAttribute('fixed')) {
-            this.$.contentContainer.style.marginTop = this._headerHeight + 'px';
-          } else {
-            this.$.contentContainer.style.paddingTop = this._headerHeight + 'px';
-          }
+          this.$.contentContainer.style.paddingTop = this._headerHeight + 'px';
         }
       },
 
       _updateHeaderPosition: function() {
-        var header = this.header;
-        if (header) {
-          var rect = this.getBoundingClientRect();
-          header.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
-        }
+        var rect = this.getBoundingClientRect();
+        this._getFixedNodes().forEach(function(node) {
+          if (node) {
+            node.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
+            node.style.width = this.hasScrollingRegion ? '' : rect.width + 'px';
+          }
+        });
       },
 
       _hasScrollingRegionChanged: function(hasScrollingRegion) {
@@ -175,6 +181,10 @@ Using an own scrolling region:
             this._updateHeaderPosition();
           }
         }
+      },
+
+      _resize: function() {
+        this.setup();
       }
 
     });

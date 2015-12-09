@@ -182,11 +182,6 @@ Example:
         value: function() {
           return {};
         }
-      },
-
-      minScrollTop: {
-        type: Number,
-        value: 0
       }
     },
 
@@ -235,7 +230,7 @@ Example:
     _effects: [],
 
     get _clampedScrollTop() {
-      return Math.max(0, this._scrollTop - this.minScrollTop);
+      return Math.max(0, this._scrollTop);
     },
 
     get _headerDy() {
@@ -390,7 +385,8 @@ Example:
         return;
       }
       var prop = this._boundEffect(effectDef, effectConfig || {});
-      return prop.setUp() && prop;
+      prop.setUp();
+      return prop;
     },
 
     _scrollHandler: function() {
@@ -446,7 +442,7 @@ Example:
     },
 
     _resizeHandler: function(e) {
-      this.debounce('resize', this.setup, 100);
+      this.debounce('_resize', this.setup, 100);
     }
   });
 </script>

@@ -16,22 +16,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>app-header-layout demo</title>
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../font-roboto/roboto.html">
-  <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
-  <link rel="import" href="../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../app-header/app-header.html">
-  <link rel="import" href="../app-toolbar/app-toolbar.html">
-  <link rel="import" href="app-header-layout.html">
-  <link rel="import" href="../demo/sample-content.html">
+  <link rel="import" href="../../../font-roboto/roboto.html">
+  <link rel="import" href="../../../iron-flex-layout/classes/iron-flex-layout.html">
+  <link rel="import" href="../../../iron-icons/iron-icons.html">
+  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../../app-header/app-header.html">
+  <link rel="import" href="../../app-toolbar/app-toolbar.html">
+  <link rel="import" href="../../demo/sample-content.html">
+  <link rel="import" href="../app-header-layout.html">
 
   <style is="custom-style">
+
+    html, body {
+      height: 100%;
+    }
 
     body {
       margin: 0;
       font-family: 'Roboto', 'Noto', sans-serif;
+    }
+
+    app-header-layout {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       background-color: #eee;
     }
 
@@ -49,10 +61,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <!-- default to use body scroller -->
-  <app-header-layout>
-
-    <app-header condenses waterfall>
+  <!-- app-header-layout provides a scroller -->
+  <app-header-layout has-scrolling-region>
+    <app-header condenses>
       <app-toolbar>
         <paper-icon-button icon="menu"></paper-icon-button>
         <div class="flex"></div>
