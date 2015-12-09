@@ -198,7 +198,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    */
   Polymer.AppHeaderEffects['waterfall'] = {
     run: function run(p, y) {
-      this.shadow = this._isContentBelow(y) && this._isVisible(y);
+      this.shadow = this.isContentBelow(y) && this.isVisible(y);
     }
   };
 

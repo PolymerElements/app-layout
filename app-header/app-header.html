@@ -234,7 +234,7 @@ Example:
     },
 
     get _headerDy() {
-      return this.fixed ? this._deltaHeight : this._height;
+      return this.fixed ? this._deltaHeight + 5 : this._height + 5;
     },
 
     created: function() {
@@ -422,11 +422,12 @@ Example:
       }
     },
 
-    _isVisible: function(headerY) {
+    isVisible: function(headerY) {
+      headerY = arguments.length === 1 ? headerY : this._oldHeaderY;
       return headerY === 0 || headerY < this._height;
     },
 
-    _isContentBelow: function(headerY) {
+    isContentBelow: function(headerY) {
       if (headerY === 0) {
         return this._clampedScrollTop > 0;
       }

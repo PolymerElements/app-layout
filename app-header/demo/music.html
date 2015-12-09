@@ -196,9 +196,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     addEventListener('WebComponentsReady', function() {
 
       var topHeader = document.querySelector('.top-header');
+      var tallHeader =  document.querySelector('.bg-header');
       var fadeBackgroundEffect = topHeader.effect('fade-background');
 
-      document.querySelector('.bg-header').addEventListener('app-header-transform', function(e) {
+      tallHeader.addEventListener('app-header-transform', function(e) {
         var isCondensed = e.detail.progress > 0.25;
         fadeBackgroundEffect.run(isCondensed ? 1 : 0);
         topHeader.shadow = isCondensed;
