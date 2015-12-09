@@ -4,7 +4,7 @@
       "title": "Cake",
       "author": "Johnny Appleseed",
       "description": "Delicious cake will be offered at the end of the test. It is not a lie.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img1.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img1.jpg",
       "ingredients": [
         {
           "name": "Eggs",
@@ -82,7 +82,7 @@
       "title": "Cookies",
       "author": "Johnny Appleseed",
       "description": "Warm, chewey snacks that will satisfy your cravings.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img2.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img2.jpg",
       "ingredients": [
         {
           "name": "Eggs",
@@ -160,7 +160,7 @@
       "title": "Pie",
       "author": "Johnny Appleseed",
       "description": "With a light, flaky crust that complements the warm fresh fruit filling.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img3.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img3.jpg",
       "ingredients": [
         {
           "name": "Eggs",
@@ -238,7 +238,7 @@
       "title": "Cake",
       "author": "Johnny Appleseed",
       "description": "Delicious cake will be offered at the end of the test. It is not a lie.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img1.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img1.jpg",
       "ingredients": [
         {
           "name": "Eggs",
@@ -316,7 +316,7 @@
       "title": "Cookies",
       "author": "Johnny Appleseed",
       "description": "Warm, chewey snacks that will satisfy your cravings.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img2.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img2.jpg",
       "ingredients": [
         {
           "name": "Eggs",
@@ -394,7 +394,7 @@
       "title": "Pie",
       "author": "Johnny Appleseed",
       "description": "With a light, flaky crust that complements the warm fresh fruit filling.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img3.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img3.jpg",
       "ingredients": [
         {
           "name": "Eggs",
@@ -472,7 +472,7 @@
       "title": "Cake",
       "author": "Johnny Appleseed",
       "description": "Delicious cake will be offered at the end of the test. It is not a lie.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img1.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img1.jpg",
       "ingredients": [
         {
           "name": "Eggs",
@@ -550,7 +550,7 @@
       "title": "Cookies",
       "author": "Johnny Appleseed",
       "description": "Warm, chewey snacks that will satisfy your cravings.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img2.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img2.jpg",
       "ingredients": [
         {
           "name": "Eggs",
@@ -628,7 +628,7 @@
       "title": "Pie",
       "author": "Johnny Appleseed",
       "description": "With a light, flaky crust that complements the warm fresh fruit filling.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img3.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img3.jpg",
       "ingredients": [
         {
           "name": "Eggs",
@@ -706,7 +706,7 @@
       "title": "Cake",
       "author": "Johnny Appleseed",
       "description": "Delicious cake will be offered at the end of the test. It is not a lie.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img1.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img1.jpg",
       "ingredients": [
         {
           "name": "Eggs",
@@ -784,7 +784,7 @@
       "title": "Cookies",
       "author": "Johnny Appleseed",
       "description": "Warm, chewey snacks that will satisfy your cravings.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img2.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img2.jpg",
       "ingredients": [
         {
           "name": "Eggs",
@@ -862,7 +862,7 @@
       "title": "Pie",
       "author": "Johnny Appleseed",
       "description": "With a light, flaky crust that complements the warm fresh fruit filling.",
-      "imageUrl": "/components/app-layout/templates/pesto/img/img3.jpg",
+      "imageUrl": "http://app-layout-assets.appspot.com/assets/pesto/img3.jpg",
       "ingredients": [
         {
           "name": "Eggs",
