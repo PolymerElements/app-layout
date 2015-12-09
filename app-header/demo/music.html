@@ -183,7 +183,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <paper-fab icon="av:play-arrow"></paper-fab>
 
-  <app-header class="top-header" scroller="window" effects="fade-background waterfall" min-scroll-top="262" reveals>
+  <app-header class="top-header" scroller="window" reveals>
     <app-toolbar>
      <paper-icon-button icon="arrow-back"></paper-icon-button>
       <div title></div>
@@ -194,6 +194,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
 
     addEventListener('WebComponentsReady', function() {
+
+      var topHeader = document.querySelector('.top-header');
+      var fadeBackgroundEffect = topHeader.effect('fade-background');
+
+      document.querySelector('.bg-header').addEventListener('app-header-transform', function(e) {
+        var isCondensed = e.detail.progress > 0.25;
+        fadeBackgroundEffect.run(isCondensed ? 1 : 0);
+        topHeader.shadow = isCondensed;
+      });
 
       var repeater = document.querySelector('#repeater');
       repeater.items = [

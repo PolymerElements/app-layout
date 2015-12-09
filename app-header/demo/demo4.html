@@ -95,8 +95,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     app-box {
       height: 500px;
-      --app-header-full-header: {
-        background-image: url(https://c1.staticflickr.com/9/8093/8476743612_a839f30949_h.jpg);
+      --app-box-full-header: {
+        background-image: url(assets/bg3.jpg);
+        background-position: bottom;
+        height: 100%;
+        padding-top: 100px;
+        margin-top: -100px;
       };
     }
 
@@ -105,32 +109,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body class="fullbleed" unresolved>
 <!-- set scroller to "window" to use document scroller -->
-  <app-header scroller="window" condenses reveals effects="waterfall resize-title blend-background parallax-background">
-    <app-toolbar>
-     <paper-icon-button icon="menu"></paper-icon-button>
-      <h4 condensed-title>What is material? &mdash; Environment</h4>
-      <paper-icon-button icon="search"></paper-icon-button>
-    </app-toolbar>
-    <app-toolbar class="tall">
-      <h1 title>What is material?</h1>
-    </app-toolbar>
-  </app-header>
-
+ 
   <div class="blank"></div>
 
   <app-box scroller="window" class="first" effects="parallax-background"></app-box>
 
   <div class="blank"></div>
 
-  <app-box class="second"></app-box>
+  <app-box scroller="window" class="first" effects="parallax-background"></app-box>
   
   <div class="blank"></div>
 
-  <app-box class="third"></app-box>
+  <app-box scroller="window" class="first" effects="parallax-background"></app-box>
   
   <div class="blank"></div>
 
-  <app-box class="forth"></app-box>
+  <app-box scroller="window" class="first" effects="parallax-background"></app-box>
   
   <div class="blank"></div>
 

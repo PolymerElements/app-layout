@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../scroll-behaviors/custom-scroller-behavior.html">
 <link rel="import" href="app-header-effects.html">
 
@@ -181,11 +182,6 @@ Example:
         value: function() {
           return {};
         }
-      },
-
-      minScrollTop: {
-        type: Number,
-        value: 0
       }
     },
 
@@ -234,7 +230,7 @@ Example:
     _effects: [],
 
     get _clampedScrollTop() {
-      return Math.max(0, this._scrollTop - this.minScrollTop);
+      return Math.max(0, this._scrollTop);
     },
 
     get _headerDy() {
@@ -389,7 +385,8 @@ Example:
         return;
       }
       var prop = this._boundEffect(effectDef, effectConfig || {});
-      return prop.setUp() && prop;
+      prop.setUp();
+      return prop;
     },
 
     _scrollHandler: function() {
@@ -445,7 +442,7 @@ Example:
     },
 
     _resizeHandler: function(e) {
-      this.debounce('resize', this.setup, 100);
+      this.debounce('_resize', this.setup, 100);
     }
   });
 </script>

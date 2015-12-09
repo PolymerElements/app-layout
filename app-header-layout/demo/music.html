@@ -23,9 +23,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
   <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../../../paper-fab/paper-fab.html">
-
-  <link rel="import" href="../../app-header/app-header.html">
   <link rel="import" href="../../app-toolbar/app-toolbar.html">
+  <link rel="import" href="../../app-header/app-header.html">
   <link rel="import" href="../app-header-layout.html">
 
   <style is="custom-style">
@@ -47,7 +46,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       height: 100vh;
       color: #fff;
       --app-header-full-header: {
-        background-image: url(assets/GIRL_PharrellWilliams.jpg);
+        background-image: url(../../app-header/demo/assets/GIRL_PharrellWilliams.jpg);
         padding-bottom: 100px;
       };
     }
@@ -133,7 +132,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .content {
-        margin: 360px 0 0 0;
+        margin: 294px 0 0 0;
         box-shadow: none;
       }
 
@@ -151,7 +150,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <app-header-layout>
 
-    <app-header underlay-content class="bg-header" effects="parallax-background" effects-config='{"parallax-background": {}}'>
+    <app-header class="top-header" scroller="window" reveals>
+      <app-toolbar>
+       <paper-icon-button icon="arrow-back"></paper-icon-button>
+        <div title></div>
+        <paper-icon-button icon="search"></paper-icon-button>
+      </app-toolbar>
+    </app-header>
+
+    <app-header class="bg-header" scroller="window" effects="parallax-background" underlay-content>
       <app-toolbar></app-toolbar>
     </app-header>
 
@@ -178,19 +185,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <paper-fab icon="av:play-arrow"></paper-fab>
 
-    <app-header class="top-header" effects="fade-background waterfall" min-scroll-top="262" reveals>
-      <app-toolbar>
-       <paper-icon-button icon="arrow-back"></paper-icon-button>
-        <div title></div>
-        <paper-icon-button icon="search"></paper-icon-button>
-      </app-toolbar>
-    </app-header>
-
   </app-header-layout>
 
   <script>
 
     addEventListener('WebComponentsReady', function() {
+
+      var topHeader = document.querySelector('.top-header');
+      var fadeBackgroundEffect = topHeader.effect('fade-background');
+
+      document.querySelector('.bg-header').addEventListener('app-header-transform', function(e) {
+        var isCondensed = e.detail.progress > 0.25;
+        fadeBackgroundEffect.run(isCondensed ? 1 : 0);
+        topHeader.shadow = isCondensed;
+      });
 
       var repeater = document.querySelector('#repeater');
       repeater.items = [
