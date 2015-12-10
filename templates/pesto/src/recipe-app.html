@@ -32,14 +32,59 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template>
 
+    <style>
+    .avatar-container {
+      position: relative;
+      border: 2px solid #00AA8D;
+      border-radius: 50%;
+      height: 90px;
+      padding: 2px;
+      width: 90px;
+      margin: 20px auto;
+    }
+
+    .avatar-container .image {
+      background-image: url('http://app-layout-assets.appspot.com/assets/pesto/avatar.jpg');
+      background-size: contain;
+      border-radius: 50%;
+      height: 100%;
+      width: 100%;
+    }
+
+    .contact-info {
+      margin: 0 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #CCC;
+      text-align: center;
+    }
+
+    .contact-info .name {
+      font-weight: bold;
+    }
+
+    .contact-info .email {
+      color: #999;
+    }
+
+    paper-item {
+      @apply(--layout-center-center);
+      height: 54px;
+    }
+    </style>
+
     <app-drawer-layout drawer-width="288px" responsive-width="1280px">
 
       <!-- nav panel -->
       <app-header-layout drawer has-scrolling-region>
 
         <app-header fixed>
-          <!-- top toolbar -->
-          <app-toolbar></app-toolbar>
+          <div class="avatar-container">
+            <div class="image"></div>
+          </div>
+          <div class="contact-info">
+            <div class="name">Jonathan</div>
+            <div class="email">heyfromjonathan@gmail.com</div>
+          </div>
         </app-header>
 
         <!-- nav menu -->
