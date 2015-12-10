@@ -90,14 +90,16 @@ Using an own scrolling region:
   </style>
 
   <template>
-  
+
     <content id="underlayContent" select="[underlay-content]"></content>
 
     <div id="contentContainer">
-      <content select=":not(app-header):not([underlay-content])"></content>
+      <content select=":not(app-header):not([app-header-overlay])"></content>
     </div>
 
     <content id="header" select="app-header"></content>
+
+    <content select="[app-header-overlay]"></content>
 
   </template>
 
@@ -157,7 +159,7 @@ Using an own scrolling region:
         }
       },
 
-      _updateHeaderPosition: function() {
+      _updateFixedNodesPosition: function() {
         var rect = this.getBoundingClientRect();
         this._getFixedNodes().forEach(function(node) {
           if (node) {
@@ -178,7 +180,7 @@ Using an own scrolling region:
           var header = this.header;
           if (header) {
             header.scroller = this.hasScrollingRegion ? this.$.contentContainer : window;
-            this._updateHeaderPosition();
+            this._updateFixedNodesPosition();
           }
         }
       },

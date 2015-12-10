@@ -340,10 +340,10 @@ Example:
         function(progress, y, scrollTop) {
           if (this._deltaHeight === 0) {
             progress = scrollTop > 0 ? 1 : 0;
-          } else { 
+          } else {
             progress = Math.max(0, ((y / this._deltaHeight) - startsAt) / deltaS);
           }
-          effectDef.run.call(this, progress, y, scrollTop); 
+          effectDef.run.call(this, progress, y, scrollTop);
         };
       return {
         setUp: effectDef.setUp ? effectDef.setUp.bind(this, effectsConfig) : noop,
