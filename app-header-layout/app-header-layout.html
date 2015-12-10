@@ -164,7 +164,7 @@ Using an own scrolling region:
             node.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
             node.style.width = this.hasScrollingRegion ? '' : rect.width + 'px';
           }
-        });
+        }.bind(this));
       },
 
       _hasScrollingRegionChanged: function(hasScrollingRegion) {
