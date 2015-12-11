@@ -24,36 +24,56 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <style>
 
-    :host {
-      --app-header-color: rgb(0, 170, 141);
-    }
-
     app-header {
-      background-color: var(--app-header-color);
-      background-image: url('http://app-layout-assets.appspot.com/assets/pesto/pesto-banner-bottom.png');
-      background-repeat: no-repeat;
-      background-position: bottom;
-      background-size: auto 120px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
       color: #fff;
+      background-color: #00AA8D;
     }
 
-    .top-toolbar {
-      background-color: var(--app-header-color);
-      background-image: url('http://app-layout-assets.appspot.com/assets/pesto/pesto-banner-top.png');
+    app-toolbar {
+      height: 120px;
+    }
+
+    [condensed-title] {
+      background-image: url(http://app-layout-assets.appspot.com/assets/pesto/logo_s.png);
       background-repeat: no-repeat;
-      background-position: center;
-      background-size: auto 54px;
+      background-position: center center;
+      background-size: 76px;
+
+      /* The difference in font size is used to calculate the scale of the title in the transition. */
+      font-size: 16px;
     }
 
-    .content-container {
+    [title] {
+      top: -120px;
+      background-image: url(http://app-layout-assets.appspot.com/assets/pesto/logo_l.png);
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 240px;
+      transform-origin: center top;
+
+      /* The difference in font size is used to calculate the scale of the title in the transition. */
+      font-size: 32px;
+    }
+
+    .content {
       display: block;
-      width: 720px;
-      margin: 4px auto;
+      position: relative;
+      width: 1170px;
+      margin: 5px auto;
+    }
+
+    .card-container {
+      display: inline-block;
+      width: 33.33%;
     }
 
     paper-card {
-      width: 350px;
-      margin: 4px;
+      display: block;
+      margin: 5px;
 
       --paper-card-header-image: {
         height: 200px;
@@ -72,12 +92,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     paper-fab {
       position: absolute;
-      top: 165px;
+      top: 212px;
       right: 40px;
+
+      --paper-fab-background: #EF5458;
     }
 
-    @media (max-width: 940px) {
+    @media (max-width: 1458px) {
+      .content {
+        width: 100%;
+      }
+    }
 
+    @media (max-width: 960px) {
       /* position fab to the bottom right corner of the screen */
       paper-fab {
         position: fixed;
@@ -85,14 +112,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         right: 24px;
         bottom: 24px;
       }
+
+      .card-container {
+        width: 50%;
+      }
     }
 
-    @media (max-width: 720px) {
-
-      .content-container {
-        width: 358px;
+    @media (max-width: 719px) {
+      .card-container {
+        width: 100%;
       }
-
     }
 
     </style>
@@ -100,28 +129,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- main panel -->
     <app-header-layout>
 
-      <app-header id="header" condenses reveals shadow>
-        <!-- top toolbar -->
+      <app-header effects="resize-title" condenses fixed shadow>
         <app-toolbar class="top-toolbar">
-          <!-- menu button -->
           <content select="[drawer-toggle]"></content>
+          <div condensed-title class="fit"></div>
         </app-toolbar>
-
-        <app-toolbar></app-toolbar>
-        <app-toolbar></app-toolbar>
+        <app-toolbar class="bottom-toolbar">
+          <div title class="fit"></div>
+        </app-toolbar>
       </app-header>
 
       <paper-fab app-header-overlay icon="app:create"></paper-fab>
 
-      <iron-selector class="content-container" selected="{{selectedRecipe}}" attr-for-selected="recipe">
-        <template is="dom-repeat" items="{{recipes}}">
-          <paper-card image="{{item.imageUrl}}" recipe="{{item}}">
-            <div class="card-content">
-              <h2>{{item.title}}</h2>
-              <p>By <span>{{item.author}}</span></p>
-            </div>
-          </paper-card>
-        </template>
+      <iron-selector class="content" selected="{{selectedRecipe}}" attr-for-selected="recipe">
+        <template is="dom-repeat" items="{{recipes}}"><!-- No empty text node
+        --><div class="card-container" recipe="{{item}}">
+            <paper-card image="{{item.imageUrl}}">
+              <div class="card-content">
+                <h2>{{item.title}}</h2>
+                <p>By <span>{{item.author}}</span></p>
+              </div>
+            </paper-card>
+          </div><!-- No empty text node
+        --></template>
       </iron-selector>
 
     </app-header-layout>
