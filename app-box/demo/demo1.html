@@ -1,0 +1,122 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html style="-webkit-overflow-scrolling: touch;">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>app-header demo</title>
+
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <link rel="import" href="../../../iron-icons/iron-icons.html">
+  <link rel="import" href="../../../iron-flex-layout/classes/iron-flex-layout.html">
+  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../../app-toolbar/app-toolbar.html">
+  <link rel="import" href="../../demo/sample-content.html">
+  <link rel="import" href="../../app-scroll-effects/app-scroll-effects.html">
+  <link rel="import" href="../app-box.html">
+
+  <style is="custom-style">
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', 'Noto', sans-serif;
+      background-color: #eee;
+    }
+
+    .second {
+      height: 640px;
+      --app-box-layer: {
+        background-image: url(../../demo/assets/bg1.jpg);
+        background-position: bottom;
+        padding-bottom: 120px;
+        margin-top: -20px;
+        height: 100%;
+      };
+    }
+
+    article {
+      font-weight: 100;
+      max-width: 500px;
+      text-align: center;
+      margin: 100px auto;
+    }
+    article h2 {
+      font-weight: 100;
+      font-size: 50px;
+      margin: 5px;
+    }
+    article p {
+      font-size: 18px;
+      line-height: 30px;
+    }
+
+    article hr {
+      width: 100px;
+      height: 1px;
+      border: none;
+      margin: 20px auto;
+      background-color: black;
+    }
+  </style>
+</head>
+<body class="fullbleed" unresolved>
+<!-- set scroller to "window" to use document scroller -->
+
+  <div class="blank"></div>
+    <section>
+      <article>
+        <hr />
+        <h2>Fast and Responsive</h2>
+        <p>The new, leaner core library makes it easier than ever to make fast, beautiful, and interoperable web components.
+          If you haven't used Polymer before, it's time to try it out.</p>
+      </article>
+      <app-box scroller="window" style="height: 640px;" effects="parallax-background">
+        <div style="background-image: url(../../demo/assets/bg1.jpg); width: 100%; height: 900px; background-size: cover; margin-top: -50px;" layer></div>
+      </app-box>
+    </section>
+
+    <section>
+      <article>
+        <hr />
+        <h2>Fast and Responsive</h2>
+        <p>The new, leaner core library makes it easier than ever to make fast, beautiful, and interoperable web components.
+          If you haven't used Polymer before, it's time to try it out.</p>
+      </article>
+      <app-box scroller="window" class="second" effects="parallax-background"></app-box>
+    </section>
+
+    <section>
+      <article>
+        <hr />
+        <h2>Fast and Responsive</h2>
+        <p>The new, leaner core library makes it easier than ever to make fast, beautiful, and interoperable web components.
+          If you haven't used Polymer before, it's time to try it out.</p>
+      </article>
+      <app-box scroller="window" class="second" effects="parallax-background"></app-box>
+    </section>
+
+    <section>
+      <article>
+        <hr />
+        <h2>Fast and Responsive</h2>
+        <p>The new, leaner core library makes it easier than ever to make fast, beautiful, and interoperable web components.
+          If you haven't used Polymer before, it's time to try it out.</p>
+      </article>
+      <app-box scroller="window" class="second" effects="parallax-background"></app-box>
+    </section>
+
+
+</body>
+</html>

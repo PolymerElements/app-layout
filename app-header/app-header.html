@@ -10,16 +10,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="../scroll-behaviors/custom-scroller-behavior.html">
-<link rel="import" href="app-header-effects.html">
+<link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
 
 <!--
-app-header is a container for app-toolbar. It can add effects to the toolbars based on the scroll position.
+app-header is a container for app-toolbars that can have scroll effects.
 
 Example:
 
-    <app-header>
+    <app-header reveals>
       <app-toolbar>
         <div title>App name</div>
       </app-toolbar>
@@ -29,8 +27,6 @@ Example:
 -->
 
 <dom-module id="app-header">
-  <style >
-  </style>
   <style>
 
     :host {
@@ -86,27 +82,27 @@ Example:
       overflow: hidden;
     }
 
-    #headerBg,
-    #condensedHeaderBg {
+    #layer1,
+    #layer2 {
       @apply(--layout-fit);
       pointer-events: none;
       background-size: cover;
       height: 100%;
     }
 
-    #headerBg {
+    #layer1 {
       @apply(--app-header-full-header);
     }
 
-    #condensedHeaderBg {
+    #layer2 {
       @apply(--app-header-condensed-header);
       opacity: 0;
     }
 
     :host([no-transitions]),
     :host([no-transitions])::after,
-    :host([no-transitions]) #headerBg,
-    :host([no-transitions]) #condensedHeaderBg,
+    :host([no-transitions]) #layer1,
+    :host([no-transitions]) #layer2,
     :host([no-transitions]) > ::content > app-toolbar:first-of-type {
       transition: none !important;
     }
@@ -115,8 +111,8 @@ Example:
 
   <template>
     <div id="clip">
-      <div id="condensedHeaderBg"></div>
-      <div id="headerBg"></div>
+      <div id="layer2"></div>
+      <div id="layer1"></div>
     </div>
     <content id="content"></content>
   </template>
@@ -126,7 +122,29 @@ Example:
 
     is: 'app-header',
 
+    behaviors: [
+      Polymer.AppScrollEffectsBehavior
+    ],
+
     properties: {
+
+      /**
+       * If true, the header will automatically collapse when scrolling down.
+       * That is, the first toolbar (as in the DOM) will remain visible when the header is fully condensed
+       * whereas the other toolbars will collapse below the first toolbar.
+       *
+       * e.g.
+       *      <app-header condendes>
+       *        <app-toolbar>This toolbar remains on top</app-toolbar>
+       *        <app-toolbar></app-toolbar>
+       *        <app-toolbar></app-toolbar>
+       *      </app-header>
+       */
+      condenses: {
+        type: Boolean,
+        value: false
+      },
+
       /**
        * If true, the header is fixed to the top and never moves away.
        */
@@ -134,6 +152,15 @@ Example:
         type: Boolean,
         value: false
       },
+
+      /**
+       * If true, the header will slide back in when scrolling back up.
+       */
+      reveals: {
+        type: Boolean,
+        value: false
+      },
+
       /**
        * If true, a shadow will display below the header.
        */
@@ -141,63 +168,16 @@ Example:
         type: Boolean,
         reflectToAttribute: true,
         value: false
-      },
-
-      condenses: {
-        type: Boolean,
-        value: false
-      },
-
-      reveals: {
-        type: Boolean,
-        value: false
-      },
-      /**
-       * Install visual effects in the header that will be triggered based on the scroll position.
-       *
-       * Effects available in `Polymer.AppHeaderEffects`:
-       *
-       *    `fade-background` Use this effect to fade in/out the background images in the header.
-       *
-       *    `resize-title` Use this effect to transform the main title into the condensed title.
-       *
-       *    `snap-resized-title` Use this effect to allow the title to transition to the condensed title quickly.
-       *
-       *    `waterfall` Use this effect to dynamically display a shadow below the header.
-       *
-       * e.g. You may combine the `waterfall` and `fade-background` effects by setting the `effects` property to
-       * `waterfall fade-background`
-       */
-      effects: {
-        type: String
-      },
-
-      noTransitions: {
-        type: Boolean,
-        reflectToAttribute: true
-      },
-
-      effectsConfig: {
-        type: Object,
-        value: function() {
-          return {};
-        }
       }
     },
 
     behaviors: [
-      Polymer.CustomScrollerBehavior,
-      Polymer.IronResizableBehavior
+      Polymer.AppScrollEffectsBehavior
     ],
 
     observers: [
-      '_condensesChanged(condenses, isAttached)',
-      '_effectsChanged(effects, effectsConfig)'
+      '_condensesChanged(condenses, isAttached)'
     ],
-
-    listeners: {
-      'iron-resize': '_resizeHandler'
-    },
 
     /**
      * A cached offsetHeight of the current element.
@@ -218,40 +198,27 @@ Example:
     _topbar: null,
 
     /**
-     * List of effects handlers that will take place during scroll
-     * @type {Array<Function>}
+     * 
+     * @type number
      */
-    _effectsRunFn: [],
+    _oldHeaderY: 0,
 
     /**
-     * List of the effects definitions installed via the `effects` property
-     * @type {Array<Object>}
+     * 
+     * @type number
      */
-    _effects: [],
+    _oldProgress: 0,
 
-    get _clampedScrollTop() {
-      return Math.max(0, this._scrollTop);
-    },
-
+    /**
+     * 
+     * @type number
+     */
     get _headerDy() {
-      return this.fixed ? this._deltaHeight + 5 : this._height + 5;
+      return this.fixed ? this._deltaHeight : this._height + 5;
     },
 
     created: function() {
       this._oldHeaderY = 0;
-      this._oldScrollTop = 0;
-    },
-
-    attached: function() {
-      this.debounce('setup', this.setup, 1);
-    },
-
-    detached: function() {
-      this._tearDownEffects();
-    },
-
-    _condensesChanged: function() {
-      this.debounce('setup', this.setup, 1);
     },
 
     /**
@@ -274,126 +241,27 @@ Example:
       this.noTransitions = true;
 
       if (firstSetup || scrollTop === 0) {
-        this.cancelDebouncer('resize');
+        this.cancelDebouncer('_resize');
         this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
         this._setUpEffect();
-        this._updateHeader(scrollTop, true);
+        this._updateContainer(scrollTop, true);
       } else {
-        this._updateHeader(0, true);
+        this._updateContainer(0, true);
         this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
         this._setUpEffect();
         // restore the previous scroll state
         // fix issue in mobile
-        this._updateHeader(this._oldScrollTop, true);
+        this._updateContainer(this._oldScrollTop, true);
         this._layoutIfDirty();
       }
       // restore no transition
       this.noTransitions = currentNoTransition;
     },
 
-    _layoutIfDirty: function() {
-      return this.offsetWidth;
-    },
-
-    _effectsChanged: function(effects, effectsConfig) {
-      if (!Polymer.AppHeaderEffects) {
-        console.error('app header effects are not loaded');
-        return;
-      }
-      var effectDef;
-      var effectNames = effects.split(' ');
-
-      this._tearDownEffects();
-
-      for (var i = 0; i < effectNames.length; i++) {
-        if ((effectDef = Polymer.AppHeaderEffects[effectNames[i]])) {
-          this._effects.push(this._boundEffect(effectDef, effectsConfig[effectNames[i]]));
-        } else {
-          console.error('undefined effect `' + effectNames[i] + '`');
-        }
-      }
-      // set up new effects
-      this._setUpEffect();
-    },
-
-    _unit: function(value) {
-      switch (typeof value) {
-        case 'number':
-          return value;
-        case 'string':
-          if (value.charAt(value.length - 1) === '%') {
-            return parseFloat(value)/100;
-          }
-          return parseFloat(value);
-        default:
-          return 0;
-      }
-    },
-
-    _boundEffect: function(effectDef, effectsConfig) {
-      effectsConfig = effectsConfig || {};
-      var startsAt = this._unit(effectsConfig.startsAt);
-      var endsAt = this._unit(effectsConfig.endsAt || 1);
-      var deltaS = endsAt - startsAt;
-      var noop = Function();
-      var runFn = (startsAt === 0 && endsAt === 1) ? effectDef.run :
-        function(progress, y, scrollTop) {
-          if (this._deltaHeight === 0) {
-            progress = scrollTop > 0 ? 1 : 0;
-          } else {
-            progress = Math.max(0, ((y / this._deltaHeight) - startsAt) / deltaS);
-          }
-          effectDef.run.call(this, progress, y, scrollTop);
-        };
-      return {
-        setUp: effectDef.setUp ? effectDef.setUp.bind(this, effectsConfig) : noop,
-        run: effectDef.run ? runFn.bind(this) : noop,
-        tearDown: effectDef.tearDown ? effectDef.tearDown.bind(this) : noop
-      };
-    },
-
-    _setUpEffect: function() {
-      if (this.isAttached) {
-        this._effectsRunFn = [];
-        this._effects.forEach(function(effectDef) {
-          // install the effect only if no error was reported
-          if (effectDef.setUp() !== false) {
-            this._effectsRunFn.push(effectDef.run);
-          }
-        }, this);
-      }
-    },
-
-    _tearDownEffects: function() {
-      this._effects.forEach(function(effectDef) {
-        effectDef.tearDown();
-      }, this);
-      this._effectsRunFn = [];
-      this._effects = [];
-    },
-
-    _runEffects: function(p, y, scrollTop) {
-      for (var i = 0; i < this._effectsRunFn.length; i++) {
-        this._effectsRunFn[i](p, y, scrollTop);
-      }
-    },
-
-    effect: function(effectName, effectConfig) {
-      var effectDef = Polymer.AppHeaderEffects[effectName];
-      if (!effectDef) {
-        throw new ReferenceError('undefined effect `' + effectName + '`');
-        return;
-      }
-      var prop = this._boundEffect(effectDef, effectConfig || {});
-      prop.setUp();
-      return prop;
-    },
-
-    _scrollHandler: function() {
-      this._updateHeader(this._clampedScrollTop);
-    },
-
-    _updateHeader: function(scrollTop, forceUpdate) {
+    /**
+     *
+     */
+    _updateContainer: function(scrollTop, forceUpdate) {
       if (this._height == 0) {
         return;
       }
@@ -411,22 +279,29 @@ Example:
       } else {
         progress = clampedHeaderY / this._deltaHeight;
       }
-      if (forceUpdate || clampedHeaderY !== this._oldHeaderY || scrollTop === 0) {
+      if (forceUpdate || progress !== this._oldProgress || clampedHeaderY !== this._oldHeaderY || scrollTop === 0) {
         this._runEffects(progress, mayHeaderMove ? clampedHeaderY : 0, scrollTop);
         this._transformHeader(mayHeaderMove ? clampedHeaderY : 0);
         this.fire('app-header-transform', {y: clampedHeaderY, progress: progress}, {bubbles: false});
       }
       if (!forceUpdate) {
-        this._oldHeaderY =  clampedHeaderY;
+        this._oldHeaderY = clampedHeaderY;
         this._oldScrollTop = scrollTop;
+        this._oldProgress = progress;
       }
     },
 
+    /**
+     *
+     */
     isVisible: function(headerY) {
       headerY = arguments.length === 1 ? headerY : this._oldHeaderY;
       return headerY === 0 || headerY < this._height;
     },
 
+    /**
+     *
+     */
     isContentBelow: function(headerY) {
       if (headerY === 0) {
         return this._clampedScrollTop > 0;
@@ -434,6 +309,9 @@ Example:
       return this._clampedScrollTop - this._headerDy >= 0;
     },
 
+    /**
+     *
+     */
     _transformHeader: function(y) {
       this.transform('translate3d(0,' + (-y) + 'px, 0)');
       if (this._topbar && this.condenses) {
@@ -442,8 +320,8 @@ Example:
       }
     },
 
-    _resizeHandler: function(e) {
-      this.debounce('_resize', this.setup, 100);
+    _condensesChanged: function() {
+      this.debounce('_setup', this.setup, 1);
     }
   });
 </script>

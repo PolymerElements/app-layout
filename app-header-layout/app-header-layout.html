@@ -162,7 +162,8 @@ Using an own scrolling region:
       _updateFixedNodesPosition: function() {
         var rect = this.getBoundingClientRect();
         this._getFixedNodes().forEach(function(node) {
-          if (node) {
+          // if it's a header, check if the scroller is the document
+          if (node && (!node.scroller || node.scroller === window)) {
             node.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
             node.style.width = this.hasScrollingRegion ? '' : rect.width + 'px';
           }
