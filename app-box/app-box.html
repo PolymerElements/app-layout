@@ -15,7 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!--
 app-box is a container that can have scroll effects.
 
-Example:
+For example, the parallax effect can be used to move an image at a slower rate than the foreground.
 
     <app-box style="height: 100px;" effects="parallax-background">
       <img src="picture.png" style="height: 150px;" layer>
@@ -96,15 +96,25 @@ Example:
 
       // disable transitions
       this.noTransitions = true;
-      this._boxTop = this.offsetTop;
+      this._boxTop = this._getBoxTop();
       this._boxHeight = this.offsetHeight;
-      this._viewportHeight = window.innerHeight;
+      this._viewportHeight = (this.scroller === window) ? window.innerHeight : this.offsetHeight;
 
       this.cancelDebouncer('_resize');
       this._setUpEffect();
       this._updateContainer(scrollTop, true);
       // restore transitions
       this.noTransitions = currentNoTransition;
+    },
+
+    _getBoxTop: function() {
+      var currentNode = this;
+      var top = 0;
+      while (currentNode && currentNode !== this.scroller) {
+        top += currentNode.offsetTop - currentNode.scrollTop;
+        currentNode = currentNode.offsetParent;
+      }
+      return top;
     },
 
     _updateContainer: function(scrollTop, forceUpdate) {
