@@ -23,7 +23,14 @@ Example:
       </app-toolbar>
     </app-drawer>
 
-@demo app-header/demo.html
+@demo app-header/demo/demo1.html
+@demo app-header/demo/demo2.html
+@demo app-header/demo/demo3.html
+@demo app-header/demo/music.html
+@demo app-header/demo/notes.html
+@demo app-header/demo/pesto.html
+@demo app-header/demo/give.html
+
 -->
 
 <dom-module id="app-header">
@@ -64,14 +71,12 @@ Example:
     :host > ::content [condensed-title] {
       opacity: 0;
       white-space: nowrap;
-
       -webkit-transform-origin: left top;
       transform-origin: left top;
     }
 
     :host > ::content [title] {
       white-space: nowrap;
-
       -webkit-transform-origin: left top;
       transform-origin: left top;
     }
@@ -111,10 +116,14 @@ Example:
 
   <template>
     <div id="clip">
-      <div id="layer2"></div>
-      <div id="layer1"></div>
+      <div id="layer2">
+        <content select="[condensed-header]"></content>
+      </div>
+      <div id="layer1">
+        <content select="[full-header]"></content>
+      </div>
     </div>
-    <content id="content"></content>
+    <content id="content" select=":not([full-header]):not(condensed-header)"></content>
   </template>
 
 <script>
@@ -198,19 +207,19 @@ Example:
     _topbar: null,
 
     /**
-     * 
+     *
      * @type number
      */
-    _oldHeaderY: 0,
+    _oldY: 0,
 
     /**
-     * 
+     *
      * @type number
      */
     _oldProgress: 0,
 
     /**
-     * 
+     *
      * @type number
      */
     get _headerDy() {
@@ -218,7 +227,7 @@ Example:
     },
 
     created: function() {
-      this._oldHeaderY = 0;
+      this._oldY = 0;
     },
 
     /**
@@ -262,41 +271,45 @@ Example:
      *
      */
     _updateContainer: function(scrollTop, forceUpdate) {
-      if (this._height == 0) {
+      if (this._height === 0) {
         return;
       }
       var progress;
-      var headerY = this.reveals ? this._oldHeaderY + scrollTop - this._oldScrollTop : scrollTop;
-      var clampedHeaderY = Math.min(this._headerDy, Math.max(0, headerY));
       var mayHeaderMove = !this.fixed || this.condenses;
+      var y = Math.min(this._headerDy, Math.max(0,
+          this.reveals ? this._oldY + scrollTop - this._oldScrollTop : scrollTop
+      ));
 
-      // condense header
-      if (this._oldScrollTop >= scrollTop && scrollTop > this._deltaHeight && (!this.reveals || this.condenses)) {
-        clampedHeaderY = Math.max(this._deltaHeight, clampedHeaderY);
+      if (this._shouldCondense(scrollTop)) {
+        y = Math.max(this._deltaHeight, y);
       }
       if (this._deltaHeight === 0) {
         progress = scrollTop > 0 ? 1 : 0;
       } else {
-        progress = clampedHeaderY / this._deltaHeight;
+        progress = y / this._deltaHeight;
       }
-      if (forceUpdate || progress !== this._oldProgress || clampedHeaderY !== this._oldHeaderY || scrollTop === 0) {
-        this._runEffects(progress, mayHeaderMove ? clampedHeaderY : 0, scrollTop);
-        this._transformHeader(mayHeaderMove ? clampedHeaderY : 0);
-        this.fire('app-header-transform', {y: clampedHeaderY, progress: progress}, {bubbles: false});
+      if (forceUpdate || progress !== this._oldProgress || y !== this._oldY || scrollTop === 0) {
+        this._runEffects(progress, mayHeaderMove ? y : 0, scrollTop);
+        this._transformHeader(mayHeaderMove ? y : 0);
+        // fire event
+        this.fire('app-header-transform', { y: y, progress: progress }, { bubbles: false });
       }
       if (!forceUpdate) {
-        this._oldHeaderY = clampedHeaderY;
+        this._oldY = y;
         this._oldScrollTop = scrollTop;
         this._oldProgress = progress;
       }
     },
 
+    _shouldCondense: function(scrollTop) {
+      return this._oldScrollTop >= scrollTop && scrollTop > this._deltaHeight
+          && (!this.reveals || this.condenses);
+    },
     /**
      *
      */
-    isVisible: function(headerY) {
-      headerY = arguments.length === 1 ? headerY : this._oldHeaderY;
-      return headerY === 0 || headerY < this._height;
+    isVisible: function() {
+      return this._height !== 0 && (this._oldY === 0 || this._oldY < this._height);
     },
 
     /**

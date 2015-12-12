@@ -22,6 +22,7 @@ For example, the parallax effect can be used to move an image at a slower rate t
     </app-box>
 
 @demo app-box/demo/demo1.html
+@demo app-box/demo/demo2.html
 -->
 
 <dom-module id="app-box">
@@ -36,6 +37,7 @@ For example, the parallax effect can be used to move an image at a slower rate t
       @apply(--layout-fit);
       z-index: 0;
       overflow: hidden;
+      height: 100%;
     }
 
     #layer1 {
@@ -53,7 +55,6 @@ For example, the parallax effect can be used to move an image at a slower rate t
     }
 
     :host([no-transitions]),
-    :host([no-transitions])::after,
     :host([no-transitions]) #layer1 {
       transition: none !important;
     }
@@ -63,7 +64,7 @@ For example, the parallax effect can be used to move an image at a slower rate t
   <template>
     <div id="clip">
       <div id="layer1">
-        <content id="content" select="[layer]"></content>
+        <content select="[layer]"></content>
       </div>
     </div>
     <div id="contentContainer">
@@ -98,11 +99,11 @@ For example, the parallax effect can be used to move an image at a slower rate t
       this.noTransitions = true;
       this._boxTop = this._getBoxTop();
       this._boxHeight = this.offsetHeight;
-      this._viewportHeight = (this.scroller === window) ? window.innerHeight : this.offsetHeight;
+      this._scrollingRegionHeight = (this.scroller === window) ? window.innerHeight : this.offsetHeight;
 
       this.cancelDebouncer('_resize');
       this._setUpEffect();
-      this._updateContainer(scrollTop, true);
+      this._updateContainer(scrollTop);
       // restore transitions
       this.noTransitions = currentNoTransition;
     },
@@ -111,18 +112,21 @@ For example, the parallax effect can be used to move an image at a slower rate t
       var currentNode = this;
       var top = 0;
       while (currentNode && currentNode !== this.scroller) {
-        top += currentNode.offsetTop - currentNode.scrollTop;
+        top += currentNode.offsetTop;
         currentNode = currentNode.offsetParent;
       }
       return top;
     },
 
-    _updateContainer: function(scrollTop, forceUpdate) {
-      this._runEffects(1 - ((this._boxTop + this._boxHeight - scrollTop) / this._viewportHeight), scrollTop);
-
-      if (!forceUpdate) {
-        this._oldScrollTop = scrollTop;
+    _updateContainer: function(scrollTop) {
+      if (this.isVisible()) {
+        this._runEffects(1 - ((this._boxTop + this._boxHeight - scrollTop) / this._scrollingRegionHeight), scrollTop);
       }
+    },
+
+    isVisible: function() {
+      return this._boxTop < this._scrollTop + this._scrollingRegionHeight 
+          && this._boxTop + this._boxHeight > this._scrollTop;
     }
   });
 </script>
