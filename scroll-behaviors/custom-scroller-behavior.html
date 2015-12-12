@@ -43,8 +43,13 @@ Polymer.CustomScrollerBehavior = (function() {
 
       if (scroller) {
         // sugar for the DOM
-        if (scroller === 'window') {
-          this.scroller = window;
+        if (typeof scroller === 'string') {
+          if (scroller === 'window') {
+            this.scroller = window;
+          } else {
+            var ownerRoot = Polymer.dom(this).getOwnerRoot();
+            this.scroller = (ownerRoot && ownerRoot.$$) ? ownerRoot.$$(scroller) : Polymer.dom(null).querySelector(scroller);
+          }
         } else {
           scroller.addEventListener('scroll', this._boundScrollHandler);
         }
