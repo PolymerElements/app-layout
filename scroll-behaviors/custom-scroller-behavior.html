@@ -26,9 +26,11 @@ Polymer.CustomScrollerBehavior = (function() {
     properties: {
 
       /**
-       * Specifies an element that will handle the scroll event
+       * Specifies the element that will handle the scroll event
        * on the behalf of the current element. This is typically an `HTMLElement`,
        * but it's possible to set it to `window` to use the document scroll.
+       * 
+       * 
        */
       scroller: {
         type: Object,
@@ -58,8 +60,7 @@ Polymer.CustomScrollerBehavior = (function() {
 
    /**
     * Gets the number of pixels that the content of an element is scrolled upward.
-    *
-    * @property _scrollTop
+    * @type {number}
     */
     get _scrollTop() {
       if (this.scroller) {
@@ -71,7 +72,7 @@ Polymer.CustomScrollerBehavior = (function() {
    /**
     * Gets the number of pixels that the content of an element is scrolled to the left.
     *
-    * @property _scrollLeft
+    * @type {number}
     */
     get _scrollLeft() {
       if (this.scroller) {
@@ -83,7 +84,7 @@ Polymer.CustomScrollerBehavior = (function() {
     /**
      * Sets the number of pixels that the content of an element is scrolled upward.
      *
-     * @property _scrollTop
+     * @type {number}
      */
     set _scrollTop(top) {
       if (this.scroller === window) {
@@ -96,7 +97,7 @@ Polymer.CustomScrollerBehavior = (function() {
     /**
      * Sets the number of pixels that the content of an element is scrolled to the left.
      *
-     * @property _scrollLeft
+     * @type {number}
      */
     set _scrollLeft(left) {
       if (this.scroller === window) {
@@ -110,8 +111,8 @@ Polymer.CustomScrollerBehavior = (function() {
      * Scrolls the content to a particular place.
      *
      * @method scroll
-     * @param {number} top
-     * @return {number} left
+     * @param {number} top The top position
+     * @param {number} left The left position
      */
     scroll: function(top, left) {
        if (this.scroller === window) {

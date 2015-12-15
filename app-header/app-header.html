@@ -215,6 +215,8 @@ Example:
      */
     _oldProgress: 0,
 
+    _oldScrollTop: 0,
+
     /**
      *
      * @type number
@@ -286,7 +288,6 @@ Example:
       if (forceUpdate || progress !== this._oldProgress || y !== this._oldY || scrollTop === 0) {
         this._runEffects(progress, mayHeaderMove ? y : 0);
         this._transformHeader(mayHeaderMove ? y : 0);
-        // fire event
         this.fire('app-header-transform', { y: y, progress: progress }, { bubbles: false });
       }
       if (!forceUpdate) {
