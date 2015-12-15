@@ -18,20 +18,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       throw new Error('unimplemented method');
     }
 
-    function getFactor(value) {
-      switch (typeof value) {
-        case 'number':
-          return value;
-        case 'string':
-          if (value.charAt(value.length - 1) === '%') {
-            return parseFloat(value)/100;
-          }
-          return parseFloat(value);
-        default:
-          return 0;
-      }
-    }
-
     /* @polymerBehavior */
     Polymer.AppScrollEffectsBehavior = [
       Polymer.CustomScrollerBehavior,
@@ -41,7 +27,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       properties: {
 
         /**
-         * Install visual effects in the header that will be triggered based on the scroll position.
+         * Installs visual effects in the header that are triggered based on the scroll position.
          *
          * Effects available in `Polymer.AppScrollEffects`:
          *
@@ -89,15 +75,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       /**
        * @abstract
-       * @method _updateContainer
+       * @method _updateScrollState
        */
-      _updateContainer: Unimplemented,
+      _updateScrollState: Unimplemented,
 
       /**
        * @abstract
-       * @method isVisible
+       * @method isOnScreen
        */
-      isVisible: Unimplemented,
+      isOnScreen: Unimplemented,
 
       /**
        * @abstract
@@ -124,19 +110,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _effects: null,
 
       /**
-       *
+       * @type number
        */
       _oldScrollTop: 0,
 
       /**
-       *
+       * @type number
        */
       get _clampedScrollTop() {
         return Math.max(0, this._scrollTop);
       },
 
       /**
-       *
+       * @type number
        */
       get _headerDy() {
         return this.fixed ? this._deltaHeight : this._height;
@@ -184,19 +170,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this._warn(this._logf('_effectsChanged', '`Polymer.AppScrollEffects` is undefined'));
           return;
         }
-        var effectDef;
         var effectNames = effects.split(' ');
 
         this._tearDownEffects();
 
-        for (var i = 0; i < effectNames.length; i++) {
-          if ((effectDef = Polymer.AppScrollEffects[effectNames[i]])) {
-            this._effects.push(this._boundEffect(effectDef, effectsConfig[effectNames[i]]));
-          } else {
-            this._warn(this._logf('_effectsChanged', 'undefined effect `', effectNames[i], '`'));
+        effectNames.forEach(function(effectName) {
+          var effectDef;
+          if (effectName !== '') {
+            if ((effectDef = Polymer.AppScrollEffects[effectName])) {
+              this._effects.push(this._boundEffect(effectDef, effectsConfig[effectName]));
+            } else {
+              this._warn(this._logf('_effectsChanged', 'undefined effect `', effectName, '`'));
+            }
           }
-        }
-        // set up new effects
+        }, this);
         this._setUpEffect();
       },
 
@@ -212,14 +199,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        */
       _boundEffect: function(effectDef, effectsConfig) {
         effectsConfig = effectsConfig || {};
-        var startsAt = getFactor(effectsConfig.startsAt);
-        var endsAt = getFactor(effectsConfig.endsAt || 1);
+        var startsAt = parseFloat(effectsConfig.startsAt || 0);
+        var endsAt = parseFloat(effectsConfig.endsAt || 1);
         var deltaS = endsAt - startsAt;
         var noop = Function();
         var runFn = (startsAt === 0 && endsAt === 1) ? effectDef.run :
-          function(progress, y, scrollTop) {
+          function(progress, y) {
             effectDef.run.call(this,
-                Math.max(0, (progress - startsAt) / deltaS), y, scrollTop);
+                Math.max(0, (progress - startsAt) / deltaS), y);
           };
         return {
           setUp: effectDef.setUp ? effectDef.setUp.bind(this, effectsConfig) : noop,
@@ -249,7 +236,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _tearDownEffects: function() {
         this._effects.forEach(function(effectDef) {
           effectDef.tearDown();
-        }, this);
+        });
         this._effectsRunFn = [];
         this._effects = [];
       },
@@ -257,10 +244,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /**
        *
        */
-      _runEffects: function(p, y, scrollTop) {
-        for (var i = 0; i < this._effectsRunFn.length; i++) {
-          this._effectsRunFn[i](p, y, scrollTop);
-        }
+      _runEffects: function(p, y) {
+        this._effectsRunFn.forEach(function(run) {
+          run(p, y);
+        });
       },
 
       /**
@@ -270,8 +257,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.debounce('_resize', this.setup, 100);
       },
 
+      /**
+       *
+       */
       _scrollHandler: function() {
-        this._updateContainer(this._clampedScrollTop);
+        this._updateScrollState(this._clampedScrollTop);
       },
     }];
 

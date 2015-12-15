@@ -83,31 +83,30 @@ Example:
 
     #clip {
       @apply(--layout-fit);
-      z-index: 0;
       overflow: hidden;
     }
 
-    #layer1,
-    #layer2 {
+    #frontLayer,
+    #backLayer {
       @apply(--layout-fit);
       pointer-events: none;
       background-size: cover;
       height: 100%;
     }
 
-    #layer1 {
+    #frontLayer {
       @apply(--app-header-full-header);
     }
 
-    #layer2 {
+    #backLayer {
       @apply(--app-header-condensed-header);
       opacity: 0;
     }
 
     :host([no-transitions]),
     :host([no-transitions])::after,
-    :host([no-transitions]) #layer1,
-    :host([no-transitions]) #layer2,
+    :host([no-transitions]) #frontLayer,
+    :host([no-transitions]) #backLayer,
     :host([no-transitions]) > ::content > app-toolbar:first-of-type {
       transition: none !important;
     }
@@ -116,14 +115,12 @@ Example:
 
   <template>
     <div id="clip">
-      <div id="layer2">
-        <content select="[condensed-header]"></content>
-      </div>
-      <div id="layer1">
-        <content select="[full-header]"></content>
-      </div>
+      <div id="backLayer"></div>
+      <div id="frontLayer"></div>
     </div>
-    <content id="content" select=":not([full-header]):not(condensed-header)"></content>
+    <div id="contentContainer">
+      <content id="content"></content>
+    </div>
   </template>
 
 <script>
@@ -253,14 +250,12 @@ Example:
         this.cancelDebouncer('_resize');
         this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
         this._setUpEffect();
-        this._updateContainer(scrollTop, true);
+        this._updateScrollState(scrollTop, true);
       } else {
-        this._updateContainer(0, true);
+        this._updateScrollState(0, true);
         this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
         this._setUpEffect();
-        // restore the previous scroll state
-        // fix issue in mobile
-        this._updateContainer(this._oldScrollTop, true);
+        this._updateScrollState(this._oldScrollTop, true);
         this._layoutIfDirty();
       }
       // restore no transition
@@ -270,7 +265,7 @@ Example:
     /**
      *
      */
-    _updateContainer: function(scrollTop, forceUpdate) {
+    _updateScrollState: function(scrollTop, forceUpdate) {
       if (this._height === 0) {
         return;
       }
@@ -289,7 +284,7 @@ Example:
         progress = y / this._deltaHeight;
       }
       if (forceUpdate || progress !== this._oldProgress || y !== this._oldY || scrollTop === 0) {
-        this._runEffects(progress, mayHeaderMove ? y : 0, scrollTop);
+        this._runEffects(progress, mayHeaderMove ? y : 0);
         this._transformHeader(mayHeaderMove ? y : 0);
         // fire event
         this.fire('app-header-transform', { y: y, progress: progress }, { bubbles: false });
@@ -308,7 +303,7 @@ Example:
     /**
      *
      */
-    isVisible: function() {
+    isOnScreen: function() {
       return this._height !== 0 && (this._oldY === 0 || this._oldY < this._height);
     },
 

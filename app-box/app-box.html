@@ -35,27 +35,25 @@ For example, the parallax effect can be used to move an image at a slower rate t
 
     #clip {
       @apply(--layout-fit);
-      z-index: 0;
       overflow: hidden;
       height: 100%;
     }
 
-    #layer1 {
+    #frontLayer {
       pointer-events: none;
       background-size: cover;
       min-height: 100%;
-      @apply(--app-box-layer);
+      @apply(--app-box-background);
     }
 
     #contentContainer {
       position: relative;
-      z-index: 1;
       height: 100%;
       width: 100%;
     }
 
     :host([no-transitions]),
-    :host([no-transitions]) #layer1 {
+    :host([no-transitions]) #frontLayer {
       transition: none !important;
     }
 
@@ -63,12 +61,12 @@ For example, the parallax effect can be used to move an image at a slower rate t
 
   <template>
     <div id="clip">
-      <div id="layer1">
-        <content select="[layer]"></content>
+      <div id="frontLayer">
+        <content select="[background]"></content>
       </div>
     </div>
     <div id="contentContainer">
-      <content id="content" select=":not([layer])"></content>
+      <content id="content"></content>
     </div>
   </template>
 
@@ -95,20 +93,17 @@ For example, the parallax effect can be used to move an image at a slower rate t
       var scrollTop = this._clampedScrollTop;
       var currentNoTransition = this.noTransitions;
 
-      // disable transitions
       this.noTransitions = true;
-      this._boxTop = this._getBoxTop();
-      this._boxHeight = this.offsetHeight;
-      this._scrollingRegionHeight = (this.scroller === window) ? window.innerHeight : this.offsetHeight;
-
+      this._elementTop = this._getElementTop();
+      this._elementHeight = this.offsetHeight;
+      this._scrollingRegionHeight = (this.scroller === window) ? window.innerHeight : this.scroller.offsetHeight;
       this.cancelDebouncer('_resize');
       this._setUpEffect();
-      this._updateContainer(scrollTop);
-      // restore transitions
+      this._updateScrollState(scrollTop);
       this.noTransitions = currentNoTransition;
     },
 
-    _getBoxTop: function() {
+    _getElementTop: function() {
       var currentNode = this;
       var top = 0;
       while (currentNode && currentNode !== this.scroller) {
@@ -118,15 +113,16 @@ For example, the parallax effect can be used to move an image at a slower rate t
       return top;
     },
 
-    _updateContainer: function(scrollTop) {
-      if (this.isVisible()) {
-        this._runEffects(1 - ((this._boxTop + this._boxHeight - scrollTop) / this._scrollingRegionHeight), scrollTop);
+    _updateScrollState: function(scrollTop) {
+      if (this.isOnScreen()) {
+        this._runEffects(1 - ((this._elementTop + this._elementHeight - scrollTop) /
+            this._scrollingRegionHeight), scrollTop);
       }
     },
 
-    isVisible: function() {
-      return this._boxTop < this._scrollTop + this._scrollingRegionHeight 
-          && this._boxTop + this._boxHeight > this._scrollTop;
+    isOnScreen: function() {
+      return this._elementTop < this._scrollTop + this._scrollingRegionHeight 
+          && this._elementTop + this._elementHeight > this._scrollTop;
     }
   });
 </script>

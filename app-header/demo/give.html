@@ -18,7 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <title>app-header demo</title>
 
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
-  
+
   <link rel="import" href="../../../iron-icons/iron-icons.html">
   <link rel="import" href="../../../iron-flex-layout/classes/iron-flex-layout.html">
   <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
@@ -42,7 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       width: 100%;
       height: 440px;
       color: #fff;
-      background-image: url(../../demo/assets/bg3.jpg);
+      background-image: url(http://app-layout-assets.appspot.com/assets/bg3.jpg);
       background-position: bottom center;
       background-size: cover;
 
@@ -54,7 +54,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background-color: #303f9f;
       };
     }
-    
+
     paper-icon-button {
       --paper-icon-button-ink-color: white;
     }
@@ -97,10 +97,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 </head>
 <body class="fullbleed" unresolved>
-<!-- set scroller to "window" to use document scroller -->
-  <app-header scroller="window" condenses fixed
-      effects="waterfall resize-snapped-title fade-background" 
-      effects-config='{"resize-snapped-title": {"startsAt": "80%", "duration": "100ms"}, "fade-background": {"startsAt": "90%", "endsAt": "90%"}}'>
+
+  <app-header condenses fixed
+      effects="waterfall resize-snapped-title fade-background"
+      effects-config='{"resize-snapped-title": {"startsAt": 0.8, "duration": "100ms"}, "fade-background": {"startsAt": 0.9, "endsAt": 0.9}}'>
     <app-toolbar>
      <paper-icon-button icon="menu"></paper-icon-button>
       <h4 condensed-title>GiveDirectly</h4>

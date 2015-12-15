@@ -37,8 +37,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     .second {
       height: 640px;
-      --app-box-layer: {
-        background-image: url(../../demo/assets/bg1.jpg);
+      --app-box-background: {
+        background-image: url(http://app-layout-assets.appspot.com/assets/bg1.jpg);
         background-position: bottom;
         padding-bottom: 120px;
         margin-top: -20px;
@@ -69,31 +69,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       margin: 20px auto;
       background-color: black;
     }
+
   </style>
 </head>
 <body class="fullbleed" unresolved>
-<!-- set scroller to "window" to use document scroller -->
 
   <section>
     <article>
       <hr />
-      <h2>Fast and Responsive</h2>
-      <p>The new, leaner core library makes it easier than ever to make fast, beautiful, and interoperable web components.
-        If you haven't used Polymer before, it's time to try it out.</p>
+      <h2>Built for Speed</h2>
+      <p>Polymer 1.0 replaces the shadow DOM polyfill with a lightweight shim, uses a new, faster data-binding system, and significantly reduces code size.</p>
     </article>
-    <app-box scroller="window" style="height: 640px;" effects="parallax-background">
-      <div style="background-image: url(../../demo/assets/bg1.jpg); width: 100%; height: 900px; background-size: cover; margin-top: -50px;" layer></div>
+    <app-box style="height: 640px;" effects="parallax-background">
+      <div background style="background-image: url(http://app-layout-assets.appspot.com/assets/bg1.jpg); width: 100%; height: 900px; background-size: cover; margin-top: -50px;">
+      </div>
     </app-box>
   </section>
 
   <section>
     <article>
       <hr />
-      <h2>Fast and Responsive</h2>
-      <p>The new, leaner core library makes it easier than ever to make fast, beautiful, and interoperable web components.
-        If you haven't used Polymer before, it's time to try it out.</p>
+      <h2>For Modern Browsers</h2>
+      <p>Polymer is built from the ground up for modern browsers, using the latest web platform APIs. Polyfills provide support on evergreen browsers for APIs that aren't universal yet.</p>
     </article>
-    <app-box scroller="window" class="second" effects="parallax-background"></app-box>
+    <app-box class="second" effects="parallax-background"></app-box>
   </section>
 
   <section>
@@ -103,7 +102,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <p>The new, leaner core library makes it easier than ever to make fast, beautiful, and interoperable web components.
         If you haven't used Polymer before, it's time to try it out.</p>
     </article>
-    <app-box scroller="window" class="second" effects="parallax-background"></app-box>
+    <app-box class="second" effects="parallax-background"></app-box>
   </section>
 
   <section>
@@ -113,7 +112,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <p>The new, leaner core library makes it easier than ever to make fast, beautiful, and interoperable web components.
         If you haven't used Polymer before, it's time to try it out.</p>
     </article>
-    <app-box scroller="window" class="second" effects="parallax-background"></app-box>
+    <app-box class="second" effects="parallax-background"></app-box>
   </section>
 
 </body>
