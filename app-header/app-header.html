@@ -253,7 +253,7 @@ Mixin | Description | Default
      *
      * @type {number}
      */
-    _y: 0,
+    _top: 0,
 
     /**
      * The current scroll progress.
@@ -279,7 +279,7 @@ Mixin | Description | Default
     },
 
     created: function() {
-      this._y = 0;
+      this._top = 0;
     },
 
     /**
@@ -329,25 +329,25 @@ Mixin | Description | Default
       }
       var progress;
       var mayHeaderMove = !this.fixed || this.condenses;
-      var y = Math.min(this._headerDy, Math.max(0,
-          this.reveals ? this._y + scrollTop - this._lastScrollTop : scrollTop
+      var top = Math.min(this._headerDy, Math.max(0,
+          this.reveals ? this._top + scrollTop - this._lastScrollTop : scrollTop
       ));
 
       if (this._shouldCondense(scrollTop)) {
-        y = Math.max(this._deltaHeight, y);
+        top = Math.max(this._deltaHeight, top);
       }
       if (this._deltaHeight === 0) {
         progress = scrollTop > 0 ? 1 : 0;
       } else {
-        progress = y / this._deltaHeight;
+        progress = top / this._deltaHeight;
       }
-      if (forceUpdate || progress !== this._progress || y !== this._y || scrollTop === 0) {
-        this._runEffects(progress, mayHeaderMove ? y : 0);
-        this._transformHeader(mayHeaderMove ? y : 0);
-        this.fire('app-header-transform', { y: y, progress: progress }, { bubbles: false });
+      if (forceUpdate || progress !== this._progress || top !== this._top || scrollTop === 0) {
+        this._runEffects(progress, mayHeaderMove ? top : 0);
+        this._transformHeader(mayHeaderMove ? top : 0);
+        this.fire('app-header-transform', { top: top, progress: progress }, { bubbles: false });
       }
       if (!forceUpdate) {
-        this._y = y;
+        this._top = top;
         this._lastScrollTop = scrollTop;
         this._progress = progress;
       }
@@ -366,19 +366,17 @@ Mixin | Description | Default
 
     /**
      * Returns true if the current element is on the screen.
-     * That is, visible in the current viewport. This method should be
-     * overridden by the consumer of this behavior.
+     * That is, visible in the current viewport.
      *
      * @method isOnScreen
      * @return {boolean}
      */
     isOnScreen: function() {
-      return this._height !== 0 && (this._y === 0 || this._y < this._height);
+      return this._height !== 0 && (this._top === 0 || this._top < this._height);
     },
 
     /**
-     * Returns true if there's content below the current element. This method
-     * should be overridden by the consumer of this behavior.
+     * Returns true if there's content below the current element.
      *
      * @method isContentBelow
      * @return {boolean}
@@ -409,6 +407,15 @@ Mixin | Description | Default
     _condensesChanged: function() {
       this.debounce('_setup', this.setup, 1);
     }
+
+    /**
+     * Fires when the app-header is transformed. That is, when scroll effects are taking place.
+     * This event doesn't bubble.
+     * * `event.detail.top` The top position relative to the viewport.
+     * * `event.detail.progress` The progress value.
+     *
+     * @event app-header-transform
+     */
   });
 </script>
 

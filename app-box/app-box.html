@@ -149,8 +149,8 @@ Mixin | Description | Default
     _updateScrollState: function(scrollTop) {
       if (this.isOnScreen()) {
         var viewportTop = this._elementTop - scrollTop;
-
         var progress = 1 - (viewportTop + this._elementHeight) / this._scrollingRegionHeight;
+
         this._runEffects(progress, scrollTop);
         this.fire('app-box-transform', { top: viewportTop, progress: progress }, { bubbles: false });
       }
@@ -173,7 +173,7 @@ Mixin | Description | Default
      * Fires when the app-box is transformed. That is, when scroll effects are taking place.
      * This event doesn't bubble.
      * * `event.detail.top` The top position relative to the viewport.
-     * * `event.detail.progress` The progress value. This is a scalar.
+     * * `event.detail.progress` The progress value.
      *
      * @event app-box-transform
      */
