@@ -103,81 +103,81 @@ Mixin | Description | Default
     </div>
   </template>
 
-<script>
-  Polymer({
+  <script>
+    Polymer({
 
-    is: 'app-box',
+      is: 'app-box',
 
-    behaviors: [
-      Polymer.AppScrollEffectsBehavior
-    ],
+      behaviors: [
+        Polymer.AppScrollEffectsBehavior
+      ],
 
-    /**
-     * Recalculates the size of the container
-     *
-     * @method setup
-     */
-    setup: function() {
-      // noop if the box isn't in the rendered tree
-      if (this.offsetWidth === 0 && this.offsetHeight === 0) {
-        return;
+      /**
+       * Recalculates the size of the container
+       *
+       * @method setup
+       */
+      setup: function() {
+        // noop if the box isn't in the rendered tree
+        if (this.offsetWidth === 0 && this.offsetHeight === 0) {
+          return;
+        }
+
+        var scrollTop = this._clampedScrollTop;
+        var currentNoTransition = this.noTransitions;
+
+        this.noTransitions = true;
+        this._elementTop = this._getElementTop();
+        this._elementHeight = this.offsetHeight;
+        this._scrollingRegionHeight = (this.scroller === window) ? window.innerHeight : this.scroller.offsetHeight;
+        this.cancelDebouncer('_resize');
+        this._setUpEffect();
+        this._updateScrollState(scrollTop);
+        this.noTransitions = currentNoTransition;
+      },
+
+      _getElementTop: function() {
+        var currentNode = this;
+        var top = 0;
+        while (currentNode && currentNode !== this.scroller) {
+          top += currentNode.offsetTop;
+          currentNode = currentNode.offsetParent;
+        }
+        return top;
+      },
+
+      _updateScrollState: function(scrollTop) {
+        if (this.isOnScreen()) {
+          var viewportTop = this._elementTop - scrollTop;
+          var progress = 1 - (viewportTop + this._elementHeight) / this._scrollingRegionHeight;
+
+          this._runEffects(progress, scrollTop);
+          this.fire('app-box-transform', { top: viewportTop, progress: progress }, { bubbles: false });
+        }
+      },
+
+      /**
+       * Returns true if this app-box is on the screen.
+       * That is, visible in the current viewport.
+       *
+       * @method setup
+       * @return {boolean}
+       */
+
+      isOnScreen: function() {
+        return this._elementTop < this._scrollTop + this._scrollingRegionHeight
+            && this._elementTop + this._elementHeight > this._scrollTop;
       }
 
-      var scrollTop = this._clampedScrollTop;
-      var currentNoTransition = this.noTransitions;
-
-      this.noTransitions = true;
-      this._elementTop = this._getElementTop();
-      this._elementHeight = this.offsetHeight;
-      this._scrollingRegionHeight = (this.scroller === window) ? window.innerHeight : this.scroller.offsetHeight;
-      this.cancelDebouncer('_resize');
-      this._setUpEffect();
-      this._updateScrollState(scrollTop);
-      this.noTransitions = currentNoTransition;
-    },
-
-    _getElementTop: function() {
-      var currentNode = this;
-      var top = 0;
-      while (currentNode && currentNode !== this.scroller) {
-        top += currentNode.offsetTop;
-        currentNode = currentNode.offsetParent;
-      }
-      return top;
-    },
-
-    _updateScrollState: function(scrollTop) {
-      if (this.isOnScreen()) {
-        var viewportTop = this._elementTop - scrollTop;
-        var progress = 1 - (viewportTop + this._elementHeight) / this._scrollingRegionHeight;
-
-        this._runEffects(progress, scrollTop);
-        this.fire('app-box-transform', { top: viewportTop, progress: progress }, { bubbles: false });
-      }
-    },
-
-    /**
-     * Returns true if this app-box is on the screen.
-     * That is, visible in the current viewport.
-     *
-     * @method setup
-     * @return {boolean}
-     */
-
-    isOnScreen: function() {
-      return this._elementTop < this._scrollTop + this._scrollingRegionHeight
-          && this._elementTop + this._elementHeight > this._scrollTop;
-    }
-
-    /**
-     * Fires when the app-box is transformed. That is, when scroll effects are taking place.
-     * This event doesn't bubble.
-     * * `event.detail.top` The top position relative to the viewport.
-     * * `event.detail.progress` The progress value.
-     *
-     * @event app-box-transform
-     */
-  });
-</script>
+      /**
+       * Fires when the app-box is transformed. That is, when scroll effects are taking place.
+       * This event doesn't bubble.
+       * * `event.detail.top` The top position relative to the viewport.
+       * * `event.detail.progress` The progress value.
+       *
+       * @event app-box-transform
+       */
+    });
+  </script>
 
 </dom-module>

@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <!--
 app-header is a container for `app-toolbar`s that can have scroll effects. By default,
-an app-header moves away from the viewport when scrolling down and if using `reveals`, 
+an app-header moves away from the viewport when scrolling down and if using `reveals`,
 the header slides back when scrolling back up. For example,
 
 ```html
@@ -36,7 +36,7 @@ must have a larger height than the first toolbar in the light DOM. For example,
 </app-drawer>
 ```
 
-Notice that when the header is condensed its height is `64px`, whereas the height is 96px 
+Notice that when the header is condensed its height is `64px`, whereas the height is 96px
 if the user scrolls back up to the top.
 
 ## Scroll effects
@@ -164,259 +164,261 @@ Mixin | Description | Default
     </div>
   </template>
 
-<script>
-  Polymer({
+  <script>
 
-    is: 'app-header',
+    Polymer({
 
-    behaviors: [
-      Polymer.AppScrollEffectsBehavior
-    ],
+      is: 'app-header',
 
-    properties: {
+      behaviors: [
+        Polymer.AppScrollEffectsBehavior
+      ],
+
+      properties: {
+
+        /**
+         * If true, the header will automatically collapse when scrolling down.
+         * That is, the first toolbar (as in the DOM) will remain visible when the header is fully condensed
+         * whereas the other toolbars will collapse below the first toolbar. e.g.
+         *
+         *```html
+         * <app-header condendes>
+         *   <app-toolbar>This toolbar remains on top</app-toolbar>
+         *   <app-toolbar></app-toolbar>
+         *   <app-toolbar></app-toolbar>
+         * </app-header>
+         * ```
+         */
+        condenses: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Mantains the header fixed at the top so it never moves away.
+         */
+        fixed: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Slides back the header when scrolling back up.
+         */
+        reveals: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Displays a shadow below the header.
+         */
+        shadow: {
+          type: Boolean,
+          reflectToAttribute: true,
+          value: false
+        }
+      },
+
+      behaviors: [
+        Polymer.AppScrollEffectsBehavior
+      ],
+
+      observers: [
+        '_condensesChanged(condenses, isAttached)'
+      ],
 
       /**
-       * If true, the header will automatically collapse when scrolling down.
-       * That is, the first toolbar (as in the DOM) will remain visible when the header is fully condensed
-       * whereas the other toolbars will collapse below the first toolbar. e.g.
+       * A cached offsetHeight of the current element.
        *
-       *```html
-       * <app-header condendes>
-       *   <app-toolbar>This toolbar remains on top</app-toolbar>
-       *   <app-toolbar></app-toolbar>
-       *   <app-toolbar></app-toolbar>
-       * </app-header>
-       * ```
+       * @type {number}
        */
-      condenses: {
-        type: Boolean,
-        value: false
+      _height: 0,
+
+      /**
+       * The distance in pixels the header will be translated to when scrolling.
+       *
+       * @type {number}
+       */
+      _deltaHeight: 0,
+
+      /**
+       * The top most app-toolbar.
+       *
+       * @type {Element}
+       */
+      _topbar: null,
+
+      /**
+       * The current clampped header top relative to the viewport.
+       *
+       * @type {number}
+       */
+      _top: 0,
+
+      /**
+       * The current scroll progress.
+       *
+       * @type {number}
+       */
+      _progress: 0,
+
+      /**
+       * The previous `scrollTop` to determinate the scroll direction.
+       *
+       * @type {number}
+       */
+      _lastScrollTop: 0,
+
+      /**
+       * The distance the header is allowed to move away.
+       *
+       * @type {number}
+       */
+      get _headerDy() {
+        return this.fixed ? this._deltaHeight : this._height + 5;
+      },
+
+      created: function() {
+        this._top = 0;
       },
 
       /**
-       * Mantains the header fixed at the top so it never moves away.
+       * Recalculates the size of the toolbar.
+       *
+       * @method setup
        */
-      fixed: {
-        type: Boolean,
-        value: false
+      setup: function() {
+        // noop if the header isn't visible
+        if (this.offsetWidth === 0 && this.offsetHeight === 0) {
+          return;
+        }
+        var firstSetup = this._height === 0;
+        var scrollTop = this._clampedScrollTop;
+        var currentNoTransition = this.noTransitions;
+        this._height = this.offsetHeight;
+        this._topbar = Polymer.dom(this).querySelector('app-toolbar');
+
+        // prepare for measurement
+        this.noTransitions = true;
+
+        if (firstSetup || scrollTop === 0) {
+          this.cancelDebouncer('_resize');
+          this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
+          this._setUpEffect();
+          this._updateScrollState(scrollTop, true);
+        } else {
+          this._updateScrollState(0, true);
+          this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
+          this._setUpEffect();
+          this._updateScrollState(this._lastScrollTop, true);
+          this._layoutIfDirty();
+        }
+        // restore no transition
+        this.noTransitions = currentNoTransition;
       },
 
       /**
-       * Slides back the header when scrolling back up.
+       * Updates the scroll state.
+       *
+       * @param {number}
+       * @param {boolean}
        */
-      reveals: {
-        type: Boolean,
-        value: false
+      _updateScrollState: function(scrollTop, forceUpdate) {
+        if (this._height === 0) {
+          return;
+        }
+        var progress;
+        var mayHeaderMove = !this.fixed || this.condenses;
+        var top = Math.min(this._headerDy, Math.max(0,
+            this.reveals ? this._top + scrollTop - this._lastScrollTop : scrollTop
+        ));
+
+        if (this._shouldCondense(scrollTop)) {
+          top = Math.max(this._deltaHeight, top);
+        }
+        if (this._deltaHeight === 0) {
+          progress = scrollTop > 0 ? 1 : 0;
+        } else {
+          progress = top / this._deltaHeight;
+        }
+        if (forceUpdate || progress !== this._progress || top !== this._top || scrollTop === 0) {
+          this._runEffects(progress, mayHeaderMove ? top : 0);
+          this._transformHeader(mayHeaderMove ? top : 0);
+          this.fire('app-header-transform', { top: top, progress: progress }, { bubbles: false });
+        }
+        if (!forceUpdate) {
+          this._top = top;
+          this._lastScrollTop = scrollTop;
+          this._progress = progress;
+        }
       },
 
       /**
-       * Displays a shadow below the header.
+       * Returns true if the current header can condense.
+       *
+       * @param {number} scrollTop
+       * @return {boolean}
        */
-      shadow: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: false
+      _shouldCondense: function(scrollTop) {
+        return this._lastScrollTop >= scrollTop && scrollTop > this._deltaHeight
+            && (!this.reveals || this.condenses);
+      },
+
+      /**
+       * Returns true if the current element is on the screen.
+       * That is, visible in the current viewport.
+       *
+       * @method isOnScreen
+       * @return {boolean}
+       */
+      isOnScreen: function() {
+        return this._height !== 0 && (this._top === 0 || this._top < this._height);
+      },
+
+      /**
+       * Returns true if there's content below the current element.
+       *
+       * @method isContentBelow
+       * @return {boolean}
+       */
+      isContentBelow: function() {
+        if (this._top === 0) {
+          return this._clampedScrollTop > 0;
+        }
+        return this._clampedScrollTop - this._headerDy >= 0;
+      },
+
+      /**
+       * Transforms the header.
+       *
+       * @param {number}
+       */
+      _transformHeader: function(y) {
+        this.transform('translate3d(0,' + (-y) + 'px, 0)');
+        if (this._topbar && this.condenses) {
+          this.transform('translate3d(0,' + Math.min(y, this._deltaHeight) + 'px, 0)',
+              this._topbar);
+        }
+      },
+
+      /**
+       * Runs when the `condenses` changed.
+       */
+      _condensesChanged: function() {
+        this.debounce('_setup', this.setup, 1);
       }
-    },
 
-    behaviors: [
-      Polymer.AppScrollEffectsBehavior
-    ],
+      /**
+       * Fires when the app-header is transformed. That is, when scroll effects are taking place.
+       * This event doesn't bubble.
+       * * `event.detail.top` The top position relative to the viewport.
+       * * `event.detail.progress` The progress value.
+       *
+       * @event app-header-transform
+       */
+    });
 
-    observers: [
-      '_condensesChanged(condenses, isAttached)'
-    ],
-
-    /**
-     * A cached offsetHeight of the current element.
-     *
-     * @type {number}
-     */
-    _height: 0,
-
-    /**
-     * The distance in pixels the header will be translated to when scrolling.
-     *
-     * @type {number}
-     */
-    _deltaHeight: 0,
-
-    /**
-     * The top most app-toolbar.
-     *
-     * @type {Element}
-     */
-    _topbar: null,
-
-    /**
-     * The current clampped header top relative to the viewport.
-     *
-     * @type {number}
-     */
-    _top: 0,
-
-    /**
-     * The current scroll progress.
-     *
-     * @type {number}
-     */
-    _progress: 0,
-
-    /**
-     * The previous `scrollTop` to determinate the scroll direction.
-     *
-     * @type {number}
-     */
-    _lastScrollTop: 0,
-
-    /**
-     * The distance the header is allowed to move away. 
-     *
-     * @type {number}
-     */
-    get _headerDy() {
-      return this.fixed ? this._deltaHeight : this._height + 5;
-    },
-
-    created: function() {
-      this._top = 0;
-    },
-
-    /**
-     * Recalculates the size of the toolbar.
-     *
-     * @method setup
-     */
-    setup: function() {
-      // noop if the header isn't visible
-      if (this.offsetWidth === 0 && this.offsetHeight === 0) {
-        return;
-      }
-      var firstSetup = this._height === 0;
-      var scrollTop = this._clampedScrollTop;
-      var currentNoTransition = this.noTransitions;
-      this._height = this.offsetHeight;
-      this._topbar = Polymer.dom(this).querySelector('app-toolbar');
-
-      // prepare for measurement
-      this.noTransitions = true;
-
-      if (firstSetup || scrollTop === 0) {
-        this.cancelDebouncer('_resize');
-        this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
-        this._setUpEffect();
-        this._updateScrollState(scrollTop, true);
-      } else {
-        this._updateScrollState(0, true);
-        this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
-        this._setUpEffect();
-        this._updateScrollState(this._lastScrollTop, true);
-        this._layoutIfDirty();
-      }
-      // restore no transition
-      this.noTransitions = currentNoTransition;
-    },
-
-    /**
-     * Updates the scroll state.
-     *
-     * @param {number}
-     * @param {boolean}
-     */
-    _updateScrollState: function(scrollTop, forceUpdate) {
-      if (this._height === 0) {
-        return;
-      }
-      var progress;
-      var mayHeaderMove = !this.fixed || this.condenses;
-      var top = Math.min(this._headerDy, Math.max(0,
-          this.reveals ? this._top + scrollTop - this._lastScrollTop : scrollTop
-      ));
-
-      if (this._shouldCondense(scrollTop)) {
-        top = Math.max(this._deltaHeight, top);
-      }
-      if (this._deltaHeight === 0) {
-        progress = scrollTop > 0 ? 1 : 0;
-      } else {
-        progress = top / this._deltaHeight;
-      }
-      if (forceUpdate || progress !== this._progress || top !== this._top || scrollTop === 0) {
-        this._runEffects(progress, mayHeaderMove ? top : 0);
-        this._transformHeader(mayHeaderMove ? top : 0);
-        this.fire('app-header-transform', { top: top, progress: progress }, { bubbles: false });
-      }
-      if (!forceUpdate) {
-        this._top = top;
-        this._lastScrollTop = scrollTop;
-        this._progress = progress;
-      }
-    },
-
-    /**
-     * Returns true if the current header can condense.
-     *
-     * @param {number} scrollTop
-     * @return {boolean}
-     */
-    _shouldCondense: function(scrollTop) {
-      return this._lastScrollTop >= scrollTop && scrollTop > this._deltaHeight
-          && (!this.reveals || this.condenses);
-    },
-
-    /**
-     * Returns true if the current element is on the screen.
-     * That is, visible in the current viewport.
-     *
-     * @method isOnScreen
-     * @return {boolean}
-     */
-    isOnScreen: function() {
-      return this._height !== 0 && (this._top === 0 || this._top < this._height);
-    },
-
-    /**
-     * Returns true if there's content below the current element.
-     *
-     * @method isContentBelow
-     * @return {boolean}
-     */
-    isContentBelow: function() {
-      if (this._top === 0) {
-        return this._clampedScrollTop > 0;
-      }
-      return this._clampedScrollTop - this._headerDy >= 0;
-    },
-
-    /**
-     * Transforms the header.
-     *
-     * @param {number}
-     */
-    _transformHeader: function(y) {
-      this.transform('translate3d(0,' + (-y) + 'px, 0)');
-      if (this._topbar && this.condenses) {
-        this.transform('translate3d(0,' + Math.min(y, this._deltaHeight) + 'px, 0)',
-            this._topbar);
-      }
-    },
-
-    /**
-     * Runs when the `condenses` changed.
-     */
-    _condensesChanged: function() {
-      this.debounce('_setup', this.setup, 1);
-    }
-
-    /**
-     * Fires when the app-header is transformed. That is, when scroll effects are taking place.
-     * This event doesn't bubble.
-     * * `event.detail.top` The top position relative to the viewport.
-     * * `event.detail.progress` The progress value.
-     *
-     * @event app-header-transform
-     */
-  });
-</script>
+  </script>
 
 </dom-module>
