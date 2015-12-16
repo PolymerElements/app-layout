@@ -14,7 +14,7 @@ A set of experimental layout elements for your app. It includes:
 
 - [app-drawer-layout](/app-drawer-layout) - A wrapper that lays out an app-drawer and the content.
 
-- [app-box](/app-box) - A container that can have scroll effects
+- [app-box](/app-box) - A container that can have scroll effects.
 
 - [app-scrim](/app-scrim) - A backdrop under overlays.
 
