@@ -12,31 +12,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 
 <!--
-`app-toolbar` is a horizontal bar containing items that can be used for
+app-toolbar is a horizontal bar containing items that can be used for
 label, navigation, search and actions.
 
 Example:
 
 Add a title to the toolbar.
 
-    <app-toolbar>
-      <div title>App name</div>
-    </app-toolbar>
+```html
+<app-toolbar>
+  <div title>App name</div>
+</app-toolbar>
+```
 
 Add a button in the left and right side of the toolbar.
 
-    <app-toolbar>
-      <paper-icon-button icon="menu"></paper-icon-button>
-      <div title>App name</div>
-      <paper-icon-button icon="search"></paper-icon-button>
-    </app-toolbar>
+```html
+<app-toolbar>
+  <paper-icon-button icon="menu"></paper-icon-button>
+  <div title>App name</div>
+  <paper-icon-button icon="search"></paper-icon-button>
+</app-toolbar>
+```
 
 You can use the attributes `top-item` or `bottom-item` to completely fit an element
 to the top or bottom of the toolbar respectively.
 
 ### Styling
-
-app-toolbar has the following custom properties available for styling:
 
 Custom property              | Description                  | Default
 -----------------------------|------------------------------|-----------------------
