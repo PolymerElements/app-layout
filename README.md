@@ -18,6 +18,8 @@ A set of experimental layout elements for your app. It includes:
 
 - [app-scrim](/app-scrim) - A backdrop under overlays.
 
+- [app-scrollpos-control](/app-scrollpos-control) - A manager for the scroll position when mulitple pages are sharing the same document scroller.
+
 
 ### Install
 
