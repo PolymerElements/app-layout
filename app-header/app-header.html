@@ -381,8 +381,8 @@ Mixin | Description | Default
      * @method isContentBelow
      * @return {boolean}
      */
-    isContentBelow: function(headerY) {
-      if (headerY === 0) {
+    isContentBelow: function() {
+      if (this._top === 0) {
         return this._clampedScrollTop > 0;
       }
       return this._clampedScrollTop - this._headerDy >= 0;
