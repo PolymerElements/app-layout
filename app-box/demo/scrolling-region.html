@@ -40,7 +40,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .second {
-      --app-box-background: {
+      --app-box-front-background: {
         background-image: url(http://app-layout-assets.appspot.com/assets/bg2.jpg);
         background-position: bottom;
         padding-bottom: 120px;
@@ -50,7 +50,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .third {
-      --app-box-background: {
+      --app-box-front-background: {
         background-image: url(http://app-layout-assets.appspot.com/assets/bg3.jpg);
         background-position: bottom;
         padding-bottom: 120px;
@@ -60,7 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .fourth {
-      --app-box-background: {
+      --app-box-front-background: {
         background-image: url(http://app-layout-assets.appspot.com/assets/bg4.jpg);
         background-position: bottom;
         padding-bottom: 120px;
@@ -130,7 +130,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <!-- This app-box uses `#scrollingRegion` as the scroller element -->
         <app-box scroller="#scrollingRegion" effects="parallax-background">
           <!-- 
-            app-box allows to style the mixin `--app-box-background` or create a custom background in the light DOM.
+            app-box allows to style the mixin `--app-box-front-background` or create a custom background in the light DOM.
             In this case, we create a custom background by adding the attribute `background` to the `img` in 
             the light DOM.
           -->
@@ -145,7 +145,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <p>Polymer is built from the ground up for modern browsers, using the latest web platform APIs. Polyfills provide support on evergreen browsers for APIs that aren't universal yet.</p>
         </article>
           <!-- 
-            This app-box uses the class `.second` and the mixin `--app-box-background` to assign the background image. 
+            This app-box uses the class `.second` and the mixin `--app-box-front-background` to assign the background image. 
           -->
         <app-box scroller="#scrollingRegion" class="second" effects="parallax-background"></app-box>
       </section>

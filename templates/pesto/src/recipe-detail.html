@@ -37,7 +37,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     #header {
       color: white;
 
-      --app-header-condensed-header: {
+      --app-header-back-background: {
         background-color: #00AA8D;
       };
     }
@@ -200,7 +200,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     __recipeChanged: function(newValue, oldValue) {
       if (newValue) {
         this.$.bgHeader.updateStyles({
-          '--app-header-full-header': 'background-image: url(' + newValue.imageUrl + ');'
+          '--app-header-front-background': 'background-image: url(' + newValue.imageUrl + ');'
         });
       }
     },

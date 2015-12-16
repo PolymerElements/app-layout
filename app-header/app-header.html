@@ -13,15 +13,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
 
 <!--
-app-header is a container for app-toolbars that can have scroll effects.
+app-header is a container for `app-toolbar`s that can have scroll effects. For example:
 
-Example:
+```html
+<app-header reveals>
+  <app-toolbar>
+    <div title>App name</div>
+  </app-toolbar>
+</app-drawer>
+```
 
-    <app-header reveals>
-      <app-toolbar>
-        <div title>App name</div>
-      </app-toolbar>
-    </app-drawer>
+## Scroll effects
+The following effects can be installed via the `effects` property:
+
+Effect name | Description
+----------------|-------------
+`parallax-background` | A parallax effect
+
+## Styling
+
+Mixin | Description | Default
+----------------|-------------|----------
+`--app-header-front-background` | Applies to the front background | {}
+`--app-header-back-background` | Applies to the back background | {}
 
 @demo app-header/demo/demo1.html
 @demo app-header/demo/demo2.html
@@ -95,12 +109,18 @@ Example:
     }
 
     #frontLayer {
-      @apply(--app-header-full-header);
+      @apply(--app-header-front-background);
     }
 
     #backLayer {
-      @apply(--app-header-condensed-header);
+      @apply(--app-header-back-background);
       opacity: 0;
+    }
+
+    #contentContainer {
+      position: relative;
+      height: 100%;
+      width: 100%;
     }
 
     :host([no-transitions]),
@@ -137,14 +157,15 @@ Example:
       /**
        * If true, the header will automatically collapse when scrolling down.
        * That is, the first toolbar (as in the DOM) will remain visible when the header is fully condensed
-       * whereas the other toolbars will collapse below the first toolbar.
+       * whereas the other toolbars will collapse below the first toolbar. e.g.
        *
-       * e.g.
-       *      <app-header condendes>
-       *        <app-toolbar>This toolbar remains on top</app-toolbar>
-       *        <app-toolbar></app-toolbar>
-       *        <app-toolbar></app-toolbar>
-       *      </app-header>
+       *```html
+       * <app-header condendes>
+       *   <app-toolbar>This toolbar remains on top</app-toolbar>
+       *   <app-toolbar></app-toolbar>
+       *   <app-toolbar></app-toolbar>
+       * </app-header>
+       * ```
        */
       condenses: {
         type: Boolean,
@@ -152,7 +173,7 @@ Example:
       },
 
       /**
-       * If true, the header is fixed to the top and never moves away.
+       * Mantains the header fixed at the top so it never moves away.
        */
       fixed: {
         type: Boolean,
@@ -160,7 +181,7 @@ Example:
       },
 
       /**
-       * If true, the header will slide back in when scrolling back up.
+       * Slides back the header when scrolling back up.
        */
       reveals: {
         type: Boolean,
@@ -168,7 +189,7 @@ Example:
       },
 
       /**
-       * If true, a shadow will display below the header.
+       * Displays a shadow below the header.
        */
       shadow: {
         type: Boolean,

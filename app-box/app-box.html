@@ -24,11 +24,11 @@ the parallax effect can be used to move an image at a slower rate than the foreg
 
 Notice the `background` attribute in the `img` element; this attribute specifies that that image is used as the background.
 By adding the background to the light dom, you can compose backgrounds that can change dynamically.
-Alternatively, the mixin `--app-box-background` allows to style the background. For example:
+Alternatively, the mixin `--app-box-front-background` allows to style the background. For example:
 
 ```css
   .parallaxAppBox {
-    --app-box-background: {
+    --app-box-front-background: {
       background-image: url(picture.png);
     };
   }
@@ -52,7 +52,7 @@ Effect name | Description
 
 Mixin | Description | Default
 ----------------|-------------|----------
-`--app-box-background` | Changes the front background | {}
+`--app-box-front-background` | Applies to the front background | {}
 
 @demo app-box/demo/document-scroll.html
 @demo app-box/demo/scrolling-region.html
@@ -76,7 +76,7 @@ Mixin | Description | Default
       pointer-events: none;
       background-size: cover;
       min-height: 100%;
-      @apply(--app-box-background);
+      @apply(--app-box-front-background);
     }
 
     #contentContainer {
