@@ -251,27 +251,27 @@ Mixin | Description | Default
     /**
      * The current clampped header top relative to the viewport.
      *
-     * @type number
+     * @type {number}
      */
     _y: 0,
 
     /**
      * The current scroll progress.
      *
-     * @type number
+     * @type {number}
      */
     _progress: 0,
 
     /**
      * The previous `scrollTop` to determinate the scroll direction.
      
-     * @type number
+     * @type {number}
      */
     _lastScrollTop: 0,
 
     /**
      * 
-     * @type number
+     * @type {number}
      */
     get _headerDy() {
       return this.fixed ? this._deltaHeight : this._height + 5;
