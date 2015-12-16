@@ -1,0 +1,183 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
+
+<!--
+app-box is a container that can have scroll effects. For example,
+the parallax effect can be used to move an image at a slower rate than the foreground.
+
+```html
+<app-box style="height: 100px;" effects="parallax-background">
+  <img background src="picture.png" style="width: 100%; height: 600px;">
+</app-box>
+```
+
+Notice the `background` attribute in the `img` element; this attribute specifies that that image is used as the background.
+By adding the background to the light dom, you can compose backgrounds that can change dynamically.
+Alternatively, the mixin `--app-box-front-background` allows to style the background. For example:
+
+```css
+  .parallaxAppBox {
+    --app-box-front-background: {
+      background-image: url(picture.png);
+    };
+  }
+```
+
+Finally, app-box can have content inside. For example:
+
+```html
+<app-box effects="parallax-background">
+  <h2>Sub title</h2>
+</app-box>
+```
+
+## Scroll effects
+
+Effect name | Description
+----------------|-------------
+`parallax-background` | A parallax effect
+
+## Styling
+
+Mixin | Description | Default
+----------------|-------------|----------
+`--app-box-front-background` | Applies to the front background | {}
+
+@demo app-box/demo/document-scroll.html
+@demo app-box/demo/scrolling-region.html
+-->
+
+<dom-module id="app-box">
+  <style>
+
+    :host {
+      display: block;
+      position: relative;
+    }
+
+    #clip {
+      @apply(--layout-fit);
+      overflow: hidden;
+      height: 100%;
+    }
+
+    #frontLayer {
+      pointer-events: none;
+      background-size: cover;
+      min-height: 100%;
+      @apply(--app-box-front-background);
+    }
+
+    #contentContainer {
+      position: relative;
+      height: 100%;
+      width: 100%;
+    }
+
+    :host([no-transitions]),
+    :host([no-transitions]) #frontLayer {
+      transition: none !important;
+    }
+
+  </style>
+
+  <template>
+    <div id="clip">
+      <div id="frontLayer">
+        <content select="[background]"></content>
+      </div>
+    </div>
+    <div id="contentContainer">
+      <content id="content"></content>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'app-box',
+
+      behaviors: [
+        Polymer.AppScrollEffectsBehavior
+      ],
+
+      /**
+       * Recalculates the size of the container
+       *
+       * @method setup
+       */
+      setup: function() {
+        // noop if the box isn't in the rendered tree
+        if (this.offsetWidth === 0 && this.offsetHeight === 0) {
+          return;
+        }
+
+        var scrollTop = this._clampedScrollTop;
+        var currentNoTransition = this.noTransitions;
+
+        this.noTransitions = true;
+        this._elementTop = this._getElementTop();
+        this._elementHeight = this.offsetHeight;
+        this._scrollingRegionHeight = (this.scroller === window) ? window.innerHeight : this.scroller.offsetHeight;
+        this.cancelDebouncer('_resize');
+        this._setUpEffect();
+        this._updateScrollState(scrollTop);
+        this.noTransitions = currentNoTransition;
+      },
+
+      _getElementTop: function() {
+        var currentNode = this;
+        var top = 0;
+        while (currentNode && currentNode !== this.scroller) {
+          top += currentNode.offsetTop;
+          currentNode = currentNode.offsetParent;
+        }
+        return top;
+      },
+
+      _updateScrollState: function(scrollTop) {
+        if (this.isOnScreen()) {
+          var viewportTop = this._elementTop - scrollTop;
+          var progress = 1 - (viewportTop + this._elementHeight) / this._scrollingRegionHeight;
+
+          this._runEffects(progress, scrollTop);
+          this.fire('app-box-transform', { top: viewportTop, progress: progress }, { bubbles: false });
+        }
+      },
+
+      /**
+       * Returns true if this app-box is on the screen.
+       * That is, visible in the current viewport.
+       *
+       * @method setup
+       * @return {boolean}
+       */
+
+      isOnScreen: function() {
+        return this._elementTop < this._scrollTop + this._scrollingRegionHeight
+            && this._elementTop + this._elementHeight > this._scrollTop;
+      }
+
+      /**
+       * Fires when the app-box is transformed. That is, when scroll effects are taking place.
+       * This event doesn't bubble.
+       * * `event.detail.top` The top position relative to the viewport.
+       * * `event.detail.progress` The progress value.
+       *
+       * @event app-box-transform
+       */
+    });
+  </script>
+
+</dom-module>

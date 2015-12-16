@@ -1,0 +1,178 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../../polymer/polymer.html">
+
+<link rel="import" href="../../../../iron-selector/iron-selector.html">
+
+<link rel="import" href="../../../../paper-card/paper-card.html">
+<link rel="import" href="../../../../paper-fab/paper-fab.html">
+
+<link rel="import" href="../../../app-header-layout/app-header-layout.html">
+<link rel="import" href="../../../app-header/app-header.html">
+<link rel="import" href="../../../app-toolbar/app-toolbar.html">
+
+<dom-module id="recipe-list">
+  <template>
+
+    <style>
+
+    app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      color: #fff;
+      background-color: #00AA8D;
+    }
+
+    app-toolbar {
+      height: 120px;
+    }
+
+    [condensed-title] {
+      background-image: url(http://app-layout-assets.appspot.com/assets/pesto/logo_s.png);
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 76px;
+
+      /* The difference in font size is used to calculate the scale of the title in the transition. */
+      font-size: 16px;
+    }
+
+    [title] {
+      top: -120px;
+      background-image: url(http://app-layout-assets.appspot.com/assets/pesto/logo_l.png);
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 240px;
+      transform-origin: center top;
+
+      /* The difference in font size is used to calculate the scale of the title in the transition. */
+      font-size: 32px;
+    }
+
+    .content {
+      display: block;
+      position: relative;
+      width: 1170px;
+      margin: 5px auto;
+    }
+
+    .card-container {
+      display: inline-block;
+      width: 33.33%;
+    }
+
+    paper-card {
+      display: block;
+      margin: 5px;
+
+      --paper-card-header-image: {
+        height: 200px;
+      }
+    }
+
+    paper-card h2 {
+      margin: 4px;
+      font-weight: normal;
+    }
+
+    paper-card p {
+      margin: 4px;
+      color: #999;
+    }
+
+    paper-fab {
+      position: absolute;
+      top: 212px;
+      right: 40px;
+
+      --paper-fab-background: #EF5458;
+    }
+
+    @media (max-width: 1458px) {
+      .content {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 960px) {
+      /* position fab to the bottom right corner of the screen */
+      paper-fab {
+        position: fixed;
+        top: auto;
+        right: 24px;
+        bottom: 24px;
+      }
+
+      .card-container {
+        width: 50%;
+      }
+    }
+
+    @media (max-width: 719px) {
+      .card-container {
+        width: 100%;
+      }
+    }
+
+    </style>
+
+    <!-- main panel -->
+    <app-header-layout>
+
+      <app-header effects="resize-title" condenses fixed shadow>
+        <app-toolbar class="top-toolbar">
+          <content select="[drawer-toggle]"></content>
+          <div condensed-title class="fit"></div>
+        </app-toolbar>
+        <app-toolbar class="bottom-toolbar">
+          <div title class="fit"></div>
+        </app-toolbar>
+      </app-header>
+
+      <paper-fab app-header-overlay icon="app:create"></paper-fab>
+
+      <iron-selector class="content" selected="{{selectedRecipe}}" attr-for-selected="recipe">
+        <template is="dom-repeat" items="{{recipes}}"><!-- No empty text node
+        --><div class="card-container" recipe="{{item}}">
+            <paper-card image="{{item.imageUrl}}">
+              <div class="card-content">
+                <h2>{{item.title}}</h2>
+                <p>By <span>{{item.author}}</span></p>
+              </div>
+            </paper-card>
+          </div><!-- No empty text node
+        --></template>
+      </iron-selector>
+
+    </app-header-layout>
+  </template>
+
+  <script>
+
+  Polymer({
+
+    is: 'recipe-list',
+
+    properties: {
+      recipes: Object,
+
+      selectedRecipe: {
+        type: Object,
+        notify: true
+      }
+    }
+
+  });
+
+  </script>
+</dom-module>

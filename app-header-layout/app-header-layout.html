@@ -63,14 +63,16 @@ Using an own scrolling region:
       height: 100%;
     }
 
-    :host > ::content > app-header {
+    :host > ::content > app-header,
+    :host > ::content > [underlay-content] {
       position: fixed;
       top: 0;
       right: 0;
       left: 0;
     }
 
-    :host([has-scrolling-region]) > ::content > app-header {
+    :host([has-scrolling-region]) > ::content > app-header,
+    :host([has-scrolling-region]) > ::content > [underlay-content] {
       position: absolute;
     }
 
@@ -89,11 +91,15 @@ Using an own scrolling region:
 
   <template>
 
+    <content id="underlayContent" select="[underlay-content]"></content>
+
     <div id="contentContainer">
-      <content select=":not(app-header)"></content>
+      <content select=":not(app-header):not([app-header-overlay])"></content>
     </div>
 
     <content id="header" select="app-header"></content>
+
+    <content select="[app-header-overlay]"></content>
 
   </template>
 
@@ -124,7 +130,7 @@ Using an own scrolling region:
       },
 
       listeners: {
-        'iron-resize': '_updateLayout'
+        'iron-resize': '_resize'
       },
 
       get header() {
@@ -132,33 +138,36 @@ Using an own scrolling region:
       },
 
       attached: function() {
-        this.async(this._updateLayout, 1);
+        this.async(this.setup, 1);
       },
 
-      _updateLayout: function() {
+      setup: function() {
         this._updateContentPosition();
         this._updateScroller();
+      },
+
+      _getFixedNodes: function() {
+        return Polymer.dom(this.$.header).getDistributedNodes().
+            concat(Polymer.dom(this.$.underlayContent).getDistributedNodes());
       },
 
       _updateContentPosition: function() {
         var header = this.header;
         if (header) {
           this._headerHeight = header.offsetHeight;
-
-          if (header.hasAttribute('fixed')) {
-            this.$.contentContainer.style.marginTop = this._headerHeight + 'px';
-          } else {
-            this.$.contentContainer.style.paddingTop = this._headerHeight + 'px';
-          }
+          this.$.contentContainer.style.paddingTop = this._headerHeight + 'px';
         }
       },
 
-      _updateHeaderPosition: function() {
-        var header = this.header;
-        if (header) {
-          var rect = this.getBoundingClientRect();
-          header.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
-        }
+      _updateFixedNodesPosition: function() {
+        var rect = this.getBoundingClientRect();
+        this._getFixedNodes().forEach(function(node) {
+          // if it's a header, check if the scroller is the document
+          if (node && (!node.scroller || node.scroller === window)) {
+            node.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
+            node.style.width = this.hasScrollingRegion ? '' : rect.width + 'px';
+          }
+        }.bind(this));
       },
 
       _hasScrollingRegionChanged: function(hasScrollingRegion) {
@@ -172,9 +181,13 @@ Using an own scrolling region:
           var header = this.header;
           if (header) {
             header.scroller = this.hasScrollingRegion ? this.$.contentContainer : window;
-            this._updateHeaderPosition();
+            this._updateFixedNodesPosition();
           }
         }
+      },
+
+      _resize: function() {
+        this.setup();
       }
 
     });

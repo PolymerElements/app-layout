@@ -70,7 +70,8 @@ Custom property              | Description                  | Default
         font-size: 0;
       }
 
-      :host > ::content > [title] {
+      :host > ::content > [title],
+      :host > ::content > [condensed-title] {
         @apply(--layout-flex);
         pointer-events: none;
       }

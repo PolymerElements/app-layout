@@ -19,10 +19,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
   <link rel="import" href="../../font-roboto/roboto.html">
-  <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
   <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../app-drawer/app-drawer.html">
+  <link rel="import" href="../app-scroll-effects/app-scroll-effects.html">
   <link rel="import" href="../app-header/app-header.html">
   <link rel="import" href="../app-toolbar/app-toolbar.html">
   <link rel="import" href="../demo/sample-content.html">
@@ -77,10 +77,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <app-drawer id="rightDrawer" position="right" on-tap="toggleRight"></app-drawer>
 
-    <app-header condenses scroller="window">
+    <app-header condenses reveals effects="waterfall">
       <app-toolbar>
         <paper-icon-button icon="menu" on-tap="toggleLeft"></paper-icon-button>
-        <div class="flex"></div>
+        <div title></div>
         <paper-icon-button icon="shopping-cart" on-tap="toggleRight"></paper-icon-button>
       </app-toolbar>
       <app-toolbar></app-toolbar>
