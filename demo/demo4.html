@@ -18,7 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
+  <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
   <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../../iron-list/iron-list.html">
@@ -54,6 +54,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     iron-list {
       background-color: var(--paper-grey-200, #eee);
       padding-bottom: 16px;
+      @apply(--layout-flex);
     }
 
     .item {
@@ -103,7 +104,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       font-weight: 400;
       margin-left: 30px;
     }
-    
+
     .mainHeader [condensed-title] i {
       font-style: normal;
       font-weight: 100;
@@ -134,7 +135,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <h1 title>Contacts</h1>
           </app-toolbar>
         </app-header>
-        <iron-list items="[[data]]" as="item" scroller="window" class="flex">
+        <iron-list items="[[data]]" as="item" scroller="window">
           <template>
             <div>
               <div class="item">

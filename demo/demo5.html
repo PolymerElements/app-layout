@@ -71,13 +71,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div title>Inbox</div>
           </app-toolbar>
         </app-header>
-        
+
         <template is="dom-repeat" id="menu" items="[[items]]">
           <paper-icon-item class="iconItem">
             <iron-icon class="grayIcon" icon="[[_randomIcon()]]" item-icon></iron-icon> <span>[[item]]</span>
-          </paper-icon-item> 
+          </paper-icon-item>
         </template>
-      
+
       </app-header-layout>
 
       <app-header-layout main>
@@ -85,7 +85,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-header class="blueHeader" condenses reveals effects="waterfall">
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <div class="flex"></div>
+            <div title></div>
             <paper-icon-button icon="search"></paper-icon-button>
             <paper-icon-button icon="more-vert"></paper-icon-button>
           </app-toolbar>
@@ -114,7 +114,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       scope._randomIcon = function() {
         return icons[parseInt(icons.length * Math.random())];
       };
-    
+
       scope.items = items;
 
     })(document.querySelector('template[is=dom-bind]'));
