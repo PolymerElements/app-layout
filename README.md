@@ -24,3 +24,9 @@ A set of experimental layout elements for your app. It includes:
 ```bash
 $ bower install PolymerLabs/app-layout --save
 ```
+
+### Import
+
+```html
+<link rel="import" href="/bower_components/app-layout/app-layout.html">
+```
