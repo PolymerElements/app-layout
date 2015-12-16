@@ -10,7 +10,7 @@ A set of experimental layout elements for your app. It includes:
 
 - [app-header-layout](/app-header-layout) - A wrapper that lays out an app-header and the content.
 
-- [app-drawer](/app-drawer) - An navigation drawers that can slide in from the left, right, bottom or top.
+- [app-drawer](/app-drawer) - A navigation drawers that can slide in from the left, right, bottom or top.
 
 - [app-drawer-layout](/app-drawer-layout) - A wrapper that lays out an app-drawer and the content.
 
