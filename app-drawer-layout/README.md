@@ -6,7 +6,7 @@ to narrow layout. In narrow layout, the drawer will be stacked on top of the mai
 The drawer will slide in/out to hide/reveal the main content.
 
 
-By default the drawer is in the left side of the screen:
+By default the drawer is on the left side of the screen:
 
 ```html
 <app-drawer-layout>
@@ -19,7 +19,7 @@ By default the drawer is in the left side of the screen:
 </app-drawer-layout>
 ```
 
-A drawer in right side of the screen:
+A drawer on the right side of the screen:
 
 ```html
 <app-drawer-layout drawer-position="right">
@@ -32,7 +32,7 @@ A drawer in right side of the screen:
 </app-drawer-layout>
 ```
 
-Add an app-header-layout:
+With an app-header-layout:
 
 ```html
 <app-drawer-layout>

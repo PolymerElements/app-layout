@@ -1,6 +1,6 @@
 ##&lt;app-toolbar&gt;
 
-app-toolbar is a horizontal bar containing items that can be used for
+app-toolbar is a horizontal toolbar containing items that can be used for
 label, navigation, search and actions.
 
 Example:
@@ -13,7 +13,7 @@ Add a title to the toolbar.
 </app-toolbar>
 ```
 
-Add a button in the left and right side of the toolbar.
+Add a button to the left and right side of the toolbar.
 
 ```html
 <app-toolbar>

@@ -1,6 +1,6 @@
 ##&lt;app-scrim&gt;
 
-app-scrim is the backdrop under overlays.
+app-scrim is a backdrop that can be placed under overlays.
 
 Example:
 
