@@ -264,13 +264,14 @@ Mixin | Description | Default
 
     /**
      * The previous `scrollTop` to determinate the scroll direction.
-     
+     *
      * @type {number}
      */
     _lastScrollTop: 0,
 
     /**
-     * 
+     * The distance the header is allowed to move away. 
+     *
      * @type {number}
      */
     get _headerDy() {
@@ -318,6 +319,9 @@ Mixin | Description | Default
 
     /**
      * Updates the scroll state.
+     *
+     * @param {number}
+     * @param {boolean}
      */
     _updateScrollState: function(scrollTop, forceUpdate) {
       if (this._height === 0) {
@@ -352,7 +356,7 @@ Mixin | Description | Default
     /**
      * Returns true if the current header can condense.
      *
-     * @param {number} A scrollTop
+     * @param {number} scrollTop
      * @return {boolean}
      */
     _shouldCondense: function(scrollTop) {
