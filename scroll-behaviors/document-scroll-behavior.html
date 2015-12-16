@@ -40,11 +40,11 @@ Polymer.DocumentScrollBehavior = (function() {
       if (yes) {
         window.removeEventListener('wheel', this._preventScroll);
         window.removeEventListener('mousewheel', this._preventScroll);
-        window.removeEventListener('touchmove', this._preventScroll);
+        // window.removeEventListener('touchmove', this._preventScroll);
       } else {
         window.addEventListener('wheel', this._preventScroll);
         window.addEventListener('mousewheel', this._preventScroll);
-        window.addEventListener('touchmove', this._preventScroll);
+       // window.addEventListener('touchmove', this._preventScroll);
       }
     },
 
@@ -63,15 +63,15 @@ Polymer.DocumentScrollBehavior = (function() {
         el._boundHandleScroll = this._handleScroll.bind(el);
         el.addEventListener('wheel', el._boundHandleScroll);
         el.addEventListener('mousewheel', el._boundHandleScroll);
-        el.addEventListener('touchstart', el._boundHandleScroll);
-        el.addEventListener('touchmove', el._boundHandleScroll);
+        // el.addEventListener('touchstart', el._boundHandleScroll);
+        // el.addEventListener('touchmove', el._boundHandleScroll);
 
       } else if (!yes && el._hasListeners) {
 
         el.removeEventListener('wheel', el._boundHandleScroll);
         el.removeEventListener('mousewheel', el._boundHandleScroll);
-        el.removeEventListener('touchstart', el._boundHandleScroll);
-        el.removeEventListener('touchmove', el._boundHandleScroll);
+        // el.removeEventListener('touchstart', el._boundHandleScroll);
+        // el.removeEventListener('touchmove', el._boundHandleScroll);
         el._boundHandleScroll = null;
 
       }
