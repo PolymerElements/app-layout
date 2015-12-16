@@ -13,7 +13,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
 
 <!--
-app-header is a container for `app-toolbar`s that can have scroll effects. For example:
+app-header is a container for `app-toolbar`s that can have scroll effects. By default,
+an app-header moves away from the viewport when scrolling down and if using `reveals`, 
+the header slides back when scrolling back up. For example,
 
 ```html
 <app-header reveals>
@@ -23,12 +25,31 @@ app-header is a container for `app-toolbar`s that can have scroll effects. For e
 </app-drawer>
 ```
 
+app-header can also condense when scrolling down. To achieve this behavior, the header
+must have a larger height than the first toolbar in the light DOM. For example,
+
+```html
+<app-header style="height: 96px;" condenses fixed>
+  <app-toolbar style="height: 64px;">
+    <div title>App name</div>
+  </app-toolbar>
+</app-drawer>
+```
+
+Notice that when the header is condensed its height is `64px`, whereas the height is 96px 
+if the user scrolls back up to the top.
+
 ## Scroll effects
 The following effects can be installed via the `effects` property:
 
 Effect name | Description
 ----------------|-------------
-`parallax-background` | A parallax effect
+`parallax-background` | Adds a parallax effect.
+`blend-background` | Blends the front and back backgrounds in the header.
+`fade-background` | Fades the backgrounds when the header hits a threshold.
+`resize-title` | Transforms the element with the attribute `title` into the element with the attribute `condensed-title` by resizing it.
+`resize-snapped-title` | Fades the elements with the attributes `title` and `condensed-title` respectively.
+`waterfall` | Controls the `shadow` property of `app-header` such that the shadow appears only when there is content below the header.
 
 ## Styling
 
@@ -208,38 +229,48 @@ Mixin | Description | Default
 
     /**
      * A cached offsetHeight of the current element.
+     *
      * @type {number}
      */
     _height: 0,
 
     /**
      * The distance in pixels the header will be translated to when scrolling.
+     *
      * @type {number}
      */
     _deltaHeight: 0,
 
     /**
      * The top most app-toolbar.
+     *
      * @type {Element}
      */
     _topbar: null,
 
     /**
+     * The current clampped header top relative to the viewport.
      *
      * @type number
      */
-    _oldY: 0,
+    _y: 0,
 
     /**
+     * The current scroll progress.
      *
      * @type number
      */
-    _oldProgress: 0,
-
-    _oldScrollTop: 0,
+    _progress: 0,
 
     /**
-     *
+     * The previous `scrollTop` to determinate the scroll direction.
+     
+     * @type number
+     */
+    _lastScrollTop: 0,
+
+    /**
+     * 
      * @type number
      */
     get _headerDy() {
@@ -247,7 +278,7 @@ Mixin | Description | Default
     },
 
     created: function() {
-      this._oldY = 0;
+      this._y = 0;
     },
 
     /**
@@ -278,7 +309,7 @@ Mixin | Description | Default
         this._updateScrollState(0, true);
         this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
         this._setUpEffect();
-        this._updateScrollState(this._oldScrollTop, true);
+        this._updateScrollState(this._lastScrollTop, true);
         this._layoutIfDirty();
       }
       // restore no transition
@@ -286,7 +317,7 @@ Mixin | Description | Default
     },
 
     /**
-     *
+     * Updates the scroll state.
      */
     _updateScrollState: function(scrollTop, forceUpdate) {
       if (this._height === 0) {
@@ -295,7 +326,7 @@ Mixin | Description | Default
       var progress;
       var mayHeaderMove = !this.fixed || this.condenses;
       var y = Math.min(this._headerDy, Math.max(0,
-          this.reveals ? this._oldY + scrollTop - this._oldScrollTop : scrollTop
+          this.reveals ? this._y + scrollTop - this._lastScrollTop : scrollTop
       ));
 
       if (this._shouldCondense(scrollTop)) {
@@ -306,31 +337,47 @@ Mixin | Description | Default
       } else {
         progress = y / this._deltaHeight;
       }
-      if (forceUpdate || progress !== this._oldProgress || y !== this._oldY || scrollTop === 0) {
+      if (forceUpdate || progress !== this._progress || y !== this._y || scrollTop === 0) {
         this._runEffects(progress, mayHeaderMove ? y : 0);
         this._transformHeader(mayHeaderMove ? y : 0);
         this.fire('app-header-transform', { y: y, progress: progress }, { bubbles: false });
       }
       if (!forceUpdate) {
-        this._oldY = y;
-        this._oldScrollTop = scrollTop;
-        this._oldProgress = progress;
+        this._y = y;
+        this._lastScrollTop = scrollTop;
+        this._progress = progress;
       }
     },
 
-    _shouldCondense: function(scrollTop) {
-      return this._oldScrollTop >= scrollTop && scrollTop > this._deltaHeight
-          && (!this.reveals || this.condenses);
-    },
     /**
+     * Returns true if the current header can condense.
      *
+     * @param {number} A scrollTop
+     * @return {boolean}
      */
-    isOnScreen: function() {
-      return this._height !== 0 && (this._oldY === 0 || this._oldY < this._height);
+    _shouldCondense: function(scrollTop) {
+      return this._lastScrollTop >= scrollTop && scrollTop > this._deltaHeight
+          && (!this.reveals || this.condenses);
     },
 
     /**
+     * Returns true if the current element is on the screen.
+     * That is, visible in the current viewport. This method should be
+     * overridden by the consumer of this behavior.
      *
+     * @method isOnScreen
+     * @return {boolean}
+     */
+    isOnScreen: function() {
+      return this._height !== 0 && (this._y === 0 || this._y < this._height);
+    },
+
+    /**
+     * Returns true if there's content below the current element. This method
+     * should be overridden by the consumer of this behavior.
+     *
+     * @method isContentBelow
+     * @return {boolean}
      */
     isContentBelow: function(headerY) {
       if (headerY === 0) {
@@ -340,7 +387,9 @@ Mixin | Description | Default
     },
 
     /**
+     * Transforms the header.
      *
+     * @param {number}
      */
     _transformHeader: function(y) {
       this.transform('translate3d(0,' + (-y) + 'px, 0)');
@@ -350,6 +399,9 @@ Mixin | Description | Default
       }
     },
 
+    /**
+     * Runs when the `condenses` changed.
+     */
     _condensesChanged: function() {
       this.debounce('_setup', this.setup, 1);
     }
