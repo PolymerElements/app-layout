@@ -32,10 +32,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       font-family: 'Roboto', 'Noto', sans-serif;
     }
 
+    button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+    }
+
     app-drawer {
       background-color: #4285f4;
-      /* app-drawer has default size but one can change it to a different width/height value */
-      width: 500px;
     }
 
   </style>
@@ -43,12 +47,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <app-drawer position="right"></app-drawer>
+  <app-drawer position="left"></app-drawer>
+  <button>Toggle</button>
 
   <script>
 
     var drawer = document.querySelector('app-drawer');
-    document.addEventListener('click', function() {
+    document.querySelector('button').addEventListener('click', function() {
       drawer.toggle();
     });
 

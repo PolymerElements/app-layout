@@ -11,14 +11,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer.html">
 
 <!--
-app-drawer is a navigation drawer that can slide in from the left, right, bottom or top.
+app-drawer is a navigation drawer that can slide in from the left or right.
 
 Example:
 
-Add a drawer on the left side of the screen:
+Add a drawer on the left side of the screen (default):
 
 ```html
-<app-drawer position="left" opened></app-drawer>
+<app-drawer opened></app-drawer>
 ```
 
 Add a drawer on the right side of the screen:
@@ -31,9 +31,8 @@ Add a drawer on the right side of the screen:
 
 Custom property                         | Description                            | Default
 ----------------------------------------|----------------------------------------|---------
-`--app-drawer-background-color`         | Background color                       | white
 `--app-drawer-duration`                 | The duration of the transition         | 0.2s
-`--app-drawer-timing-function`          | The timing function of the transition  | linear
+`--app-drawer-timing-function`          | The timing function of the transition  | ease
 
 @demo app-drawer/demo.html
 -->
@@ -50,49 +49,25 @@ Custom property                         | Description                           
       left: 0;
       width: 256px;
       overflow: hidden;
-      background-color: var(--app-drawer-background-color, white);
-      visibility: hidden;
 
-      -webkit-transform: translate3d(-100%, 0, 0);
-      transform: translate3d(-100%, 0, 0);
+      -webkit-transform: translate(-100%, 0);
+      transform: translate(-100%, 0);
 
-      -webkit-transition-property: -webkit-transform, visibility;
-      transition-property: transform, visibility;
+      -webkit-transition-property: -webkit-transform;
+      transition-property: transform;
 
       -webkit-transition-duration: var(--app-drawer-duration, 0.2s);
       transition-duration: var(--app-drawer-duration, 0.2s);
 
-      -webkit-transition-timing-function: var(--app-drawer-timing-function, linear);
-      transition-timing-function: var(--app-drawer-timing-function, linear);
+      -webkit-transition-timing-function: var(--app-drawer-timing-function, ease);
+      transition-timing-function: var(--app-drawer-timing-function, ease);
     }
 
     :host([position=right]) {
       right: 0;
       left: auto;
-      -webkit-transform: translate3d(100%, 0, 0);
-      transform: translate3d(100%, 0, 0);
-    }
-
-    :host([position=top]) {
-      top: 0;
-      right: 0;
-      bottom: auto;
-      left: 0;
-      width: auto;
-      height: 256px;
-      -webkit-transform: translate3d(0, -100%, 0);
-      transform: translate3d(0, -100%, 0);
-    }
-
-    :host([position=bottom]) {
-      top: auto;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      width: auto;
-      height: 256px;
-      -webkit-transform: translate3d(0, 100%, 0);
-      transform: translate3d(0, 100%, 0);
+      -webkit-transform: translate(100%, 0);
+      transform: translate(100%, 0);
     }
 
     :host([opened]),
@@ -100,10 +75,8 @@ Custom property                         | Description                           
       -webkit-transition-property: -webkit-transform;
       transition-property: transform;
 
-      -webkit-transform: translate3d(0, 0, 0);
-      transform:  translate3d(0, 0, 0);
-
-      visibility: visible;
+      -webkit-transform: translate(0, 0);
+      transform:  translate(0, 0);
     }
 
   </style>
@@ -123,9 +96,19 @@ Custom property                         | Description                           
       properties: {
 
         /**
-         * Specifies whether or not the drawer is opened.
+         * The opened state of the drawer.
          */
         opened: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          reflectToAttribute: true
+        },
+
+        /**
+         * The drawer does not close when tapped or swiped.
+         */
+        sticky: {
           type: Boolean,
           value: false,
           notify: true,
@@ -140,8 +123,15 @@ Custom property                         | Description                           
           type: String,
           value: 'left',
           reflectToAttribute: true
-        }
+        },
 
+        __lastTrackDirection: Number
+
+      },
+
+      listeners: {
+        tap: '__tapHandler',
+        track: '__trackHandler'
       },
 
       /**
@@ -151,6 +141,43 @@ Custom property                         | Description                           
        */
       toggle: function() {
         this.opened = !this.opened;
+      },
+
+      __tapHandler: function() {
+        if (!this.sticky) {
+          this.opened = false;
+        }
+      },
+
+      __trackHandler: function(event) {
+        if (!this.sticky) {
+          switch (event.detail.state) {
+            case 'start':
+              this.style.transitionDuration = this.style.webkitTransitionDuration = '0s';
+              break;
+
+            case 'track':
+              switch (this.position) {
+                case 'left':
+                  this.transform('translate(' + Math.min(0, event.detail.dx) + 'px, 0)');
+                  break;
+                case 'right':
+                  this.transform('translate(' + Math.max(0, event.detail.dx) + 'px, 0)');
+                  break;
+              }
+              if (Math.abs(event.detail.ddx) > 0) {
+                this.__lastTrackDirection = event.detail.ddx;
+              }
+              break;
+
+            case 'end':
+              this.style.transitionDuration = this.style.webkitTransitionDuration = '';
+              this.transform('');
+              this.opened = (this.position === 'left' && this.__lastTrackDirection > 0) ||
+                (this.position === 'right' && this.__lastTrackDirection < 0);
+              break;
+          }
+        }
       }
 
     });
