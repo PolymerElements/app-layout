@@ -38,8 +38,8 @@
     "paper-progress": "polymerelements/paper-progress#~1.0.2",
     "paper-styles": "polymerelements/paper-styles#^1.0.0",
     "test-fixture": "polymerelements/test-fixture#^1.0.0",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.2",
-    "web-component-tester": "*"
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
+    "web-component-tester": "Polymer/web-component-tester#^3.4.0"
   },
   "main": "app-layout.html"
 }
