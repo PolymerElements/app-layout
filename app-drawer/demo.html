@@ -18,28 +18,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
+  <link rel="import" href="../demo/sample-content.html">
   <link rel="import" href="app-drawer.html">
 
   <style is="custom-style">
 
-    html {
-      height: 100%;
-    }
-
     body {
-      height: 100%;
       margin: 0;
       font-family: 'Roboto', 'Noto', sans-serif;
+      background-color: #eee;
     }
 
     button {
-      position: absolute;
-      top: 5px;
-      right: 5px;
+      margin: 24px;
+      padding: 20px;
     }
 
     app-drawer {
-      background-color: #4285f4;
+      --app-drawer-styles: {
+        background-color: #4285f4;
+      }
     }
 
   </style>
@@ -47,8 +45,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <app-drawer position="left"></app-drawer>
+  <app-drawer position="left">
+    <ul>
+      <li>Alpha</li>
+      <li>Bravo</li>
+      <li>Charlie</li>
+      <li>Delta</li>
+      <li>Echo</li>
+    </ul>
+  </app-drawer>
+
   <button>Toggle</button>
+
+  <sample-content size="100"></sample-content>
 
   <script>
 
