@@ -24,17 +24,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <test-fixture id="trivialScrim">
     <template>
-      <app-scrim></app-scrim>
+      <div>
+        <app-scrim id="scrim"></app-scrim>
+        <div id="fakeScrim" style="position: fixed; top: 0; left:0; right: 0; bottom:0;"></div>
+      </div>
     </template>
   </test-fixture>
 
   <script>
 
     suite('basic features', function() {
-      var scrim;
+      var fakeScrim, scrim;
 
       setup(function() {
-        scrim = fixture('trivialScrim');
+        var scrimContainer = fixture('trivialScrim');
+        scrim = scrimContainer.querySelector('#scrim');
+        fakeScrim = scrimContainer.querySelector('#fakeScrim');
       });
 
       test('basic features', function() {
@@ -47,17 +52,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         setTimeout(function() {
           assert.equal(getComputedStyle(scrim).visibility, 'visible');
           done();
-        }, 1000);
+        }, 200);
       });
 
       test('size and position', function() {
         scrim.visible = true;
-
-        var clientRect = scrim.getBoundingClientRect();
-        assert.equal(clientRect.top, 0);
-        assert.equal(clientRect.left, 0);
-        assert.isTrue(clientRect.width >= window.innerWidth);
-        assert.isTrue(clientRect.height >= window.innerHeight);
+        assert.isTrue(scrim.offsetTop <= fakeScrim.offsetTop);
+        assert.isTrue(scrim.offsetLeft <= fakeScrim.offsetLeft);
+        assert.isTrue(scrim.offsetWidth >= fakeScrim.offsetWidth);
+        assert.isTrue(scrim.offsetHeight >= fakeScrim.offsetHeight);
       });
 
     });
