@@ -191,7 +191,8 @@ Mixin | Description | Default
          */
         condenses: {
           type: Boolean,
-          value: false
+          value: false,
+          observer: '_condensesChanged'
         },
 
         /**
@@ -222,10 +223,6 @@ Mixin | Description | Default
 
       behaviors: [
         Polymer.AppScrollEffectsBehavior
-      ],
-
-      observers: [
-        '_condensesChanged(condenses, isAttached)'
       ],
 
       /**
