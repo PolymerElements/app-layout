@@ -1,4 +1,4 @@
-# App Layout
+# App Layout [![Build Status](https://travis-ci.org/PolymerLabs/app-layout.svg?branch=master)](https://travis-ci.org/PolymerLabs/app-layout)
 
 http://polymerlabs.github.io/app-layout/
 
