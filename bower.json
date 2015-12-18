@@ -5,6 +5,14 @@
     "The Polymer Authors"
   ],
   "private": true,
+  "homepage": "https://github.com/PolymerLabs/app-layout",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PolymerLabs/app-layout"
+  },
+  "main": "app-layout.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "ignore": [],
   "dependencies": {
     "polymer": "polymer/polymer#^1.0.0",
     "iron-flex-layout": "polymerelements/iron-flex-layout#^1.0.0",
