@@ -20,24 +20,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../test-fixture/test-fixture.html">
   <link rel="import" href="app-drawer-layout.html">
 
-  <style>
+  <style is="custom-style">
     body {
       margin: 0;
       padding: 0;
     }
 
-    app-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
+    app-drawer-layout {
+      width: 100px;
+      height: 300px;
       background: green;
+      position: absolute;
+      overflow: hidden !important;
+      z-index: 0;
+      --app-drawer-layout-drawer: {
+        background-color: blue;
+      };
+      --app-drawer-duration: 0s;
     }
 
-    .content {
+    [content] {
       width: 1px;
       height: 3000px;
       background-color: red;
+    }
+
+    [drawer] {
+      width: 100%;
     }
   </style>
 
@@ -47,8 +56,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <test-fixture id="trivialDrawerLayout">
     <template>
       <app-drawer-layout>
-        <div drawer></div>
-        <div main> </div>
+        <div drawer>Drawer</div>
+        <div main>Main content</div>
       </app-drawer-layout>
     </template>
   </test-fixture>
@@ -74,7 +83,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('forceNarrow', function() {
         trivialDrawerLayout.responsiveWidth = '0px';
         trivialDrawerLayout.forceNarrow = true;
-
         assert.isTrue(trivialDrawerLayout.narrow);
       });
 
@@ -82,7 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         trivialDrawerLayout.responsiveWidth = '0px';
         assert.isFalse(trivialDrawerLayout.narrow);
 
-        trivialDrawerLayout.responsiveWidth = (window.innerWidth * 2) + 'px';
+        trivialDrawerLayout.responsiveWidth = '10000px';
         assert.isTrue(trivialDrawerLayout.narrow);
       });
 
@@ -91,25 +99,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(trivialDrawerLayout.drawer.offsetWidth, 100);
       });
 
-      test('drawer position', function() {
+      test('drawer position', function(done) {
+        trivialDrawerLayout.responsiveWidth = '10000px'
+        assert.equal(trivialDrawerLayout.drawer.getBoundingClientRect().right, 0);
         trivialDrawerLayout.drawerPosition = 'right';
-        flush(function() {
-          assert.equal(trivialDrawerLayout.drawer.position, 'right');
-        });
+
+        setTimeout(function() {
+          trivialDrawerLayout.opened = true;
+          assert.equal(trivialDrawerLayout.drawer.getBoundingClientRect().right, document.documentElement.clientWidth);
+          done();
+        }, 200);
+
       });
 
       test('open and close drawer', function() {
-        trivialDrawerLayout.responsiveWidth = (window.innerWidth * 2) + 'px';
+        trivialDrawerLayout.responsiveWidth = '10000px';
 
         flush(function() {
           trivialDrawerLayout.toggleDrawer();
-
           assert.isTrue(trivialDrawerLayout.drawer.opened);
-
           assert.isTrue(trivialDrawerLayout.opened);
 
           trivialDrawerLayout.toggleDrawer();
-
           assert.isFalse(trivialDrawerLayout.opened);
           assert.isFalse(trivialDrawerLayout.drawer.opened);
         });

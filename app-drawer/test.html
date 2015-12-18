@@ -19,10 +19,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../test-fixture/test-fixture-mocha.js"></script>
   <link rel="import" href="../../test-fixture/test-fixture.html">
   <link rel="import" href="app-drawer.html">
-  <style>
+  <style is="custom-style">
     body {
       margin: 0;
       padding: 0;
+    }
+
+    .drawerContainer {
+      width: 500px;
+      height: 500px;
+      position: absolute;
+    }
+
+    app-drawer {
+      --app-drawer-duration: 0s;
+      width: 200px;
+      background-color: green;
     }
   </style>
 </head>
@@ -30,7 +42,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <test-fixture id="trivialDrawer">
     <template>
-      <app-drawer></app-drawer>
+      <div class="drawerContainer">
+        <app-drawer></app-drawer>
+      </div>
     </template>
   </test-fixture>
 
@@ -40,46 +54,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var drawer;
 
       setup(function() {
-        drawer = fixture('trivialDrawer');
+        drawerContainer = fixture('trivialDrawer');
+        drawer = drawerContainer.querySelector('app-drawer');
       });
 
       test('basic features', function() {
-        assert.isFalse(drawer.opened);
-        assert.equal(drawer.position, 'left');
+        assert.isFalse(drawer.opened, 'The drawer is closed by default');
+        assert.equal(drawer.position, 'left', 'The drawer is left positioned by default');
       });
 
       test('hidden', function(done) {
-        var clientRect;
-
-        clientRect = drawer.getBoundingClientRect()
-
+        var clientRect = drawer.getBoundingClientRect();
         drawer.position = 'left';
-
-        assert.isTrue(clientRect.left <= -clientRect.width);
+        assert.isTrue(clientRect.left <= -clientRect.width, 'The left drawer is hidden');
 
         drawer.position = 'right';
-
-        Polymer.Base.async(function() {
+        flush(function() {
           clientRect = drawer.getBoundingClientRect();
-          assert.isTrue(clientRect.right >= window.innerWidth + clientRect.width);
+          assert.isTrue(clientRect.right >= window.innerWidth + clientRect.width, 'The right drawer is hidden');
           done();
-        }, 100);
+        });
 
       });
 
-      test('open', function() {
+      test('open', function(done) {
         drawer.position = 'left';
         drawer.opened = true;
 
-        var clientRect = drawer.getBoundingClientRect();
-        assert.equal(clientRect.left, 0);
+        assert.equal(drawer.getBoundingClientRect().left, 0, 'The left drawer is opened');
 
         drawer.position = 'right';
 
-        Polymer.Base.async(function() {
-          clientRect = drawer.getBoundingClientRect();
-          assert.equal(clientRect.right, 0);
-        }, 100);
+        flush(function() {
+          assert.equal(drawer.getBoundingClientRect().right, drawerContainer.offsetWidth, 'The right drawer is opened');
+          done();
+        });
 
       });
 
