@@ -40,5 +40,6 @@
     "test-fixture": "polymerelements/test-fixture#^1.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.2",
     "web-component-tester": "*"
-  }
+  },
+  "main": "app-layout.html"
 }
