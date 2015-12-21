@@ -10,16 +10,16 @@ Example:
 
 <app-drawer-layout>
 
-  <div drawer>
+  <app-drawer>
     <paper-menu selected="{{page}}">
       <paper-item>Home</paper-item>
       <paper-item>About</paper-item>
       <paper-item>Schedule</paper-item>
       <paper-item>Account</paper-item>
     </paper-menu>
-  </div>
+  </app-drawer>
 
-  <div main>
+  <div>
     <app-toolbar>
       <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
     </app-toolbar>

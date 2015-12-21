@@ -17,6 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../app-header/app-header.html">
+<link rel="import" href="../../../app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="../../../app-toolbar/app-toolbar.html">
 
 <dom-module id="recipe-list">
@@ -91,9 +92,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     paper-fab {
-      position: absolute;
-      top: 212px;
-      right: 40px;
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
 
       --paper-fab-background: #EF5458;
     }
@@ -105,14 +106,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     @media (max-width: 960px) {
-      /* position fab to the bottom right corner of the screen */
-      paper-fab {
-        position: fixed;
-        top: auto;
-        right: 24px;
-        bottom: 24px;
-      }
-
       .card-container {
         width: 50%;
       }

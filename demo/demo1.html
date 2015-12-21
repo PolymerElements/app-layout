@@ -35,18 +35,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-color: #eee;
     }
 
-    app-drawer {
-      position: fixed;
-      background-color: #fff;
-      z-index: 2;
-    }
-
     #leftDrawer {
-      box-shadow: 1px 0 2px 1px rgba(0,0,0,0.18);
+      --app-drawer-styles: {
+        box-shadow: 1px 0 2px 1px rgba(0,0,0,0.18);
+      }
     }
 
     #rightDrawer {
-      box-shadow: -1px 0 2px 1px rgba(0,0,0,0.18);
+      --app-drawer-styles: {
+        box-shadow: -1px 0 2px 1px rgba(0,0,0,0.18);
+      }
     }
 
     app-header {
@@ -73,10 +71,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template is="dom-bind" id="app">
 
-    <app-drawer id="leftDrawer" position="left" on-tap="toggleLeft"></app-drawer>
-
-    <app-drawer id="rightDrawer" position="right" on-tap="toggleRight"></app-drawer>
-
     <app-header condenses reveals effects="waterfall">
       <app-toolbar>
         <paper-icon-button icon="menu" on-tap="toggleLeft"></paper-icon-button>
@@ -88,6 +82,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div spacer title>My App</div>
       </app-toolbar>
     </app-header>
+
+    <app-drawer id="leftDrawer" position="left"></app-drawer>
+
+    <app-drawer id="rightDrawer" position="right"></app-drawer>
 
     <sample-content size="100"></sample-content>
 

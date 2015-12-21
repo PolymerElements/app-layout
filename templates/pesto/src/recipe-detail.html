@@ -20,8 +20,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../paper-item/paper-icon-item.html">
 <link rel="import" href="../../../../paper-menu-button/paper-menu-button.html">
 
+<link rel="import" href="../../../app-box/app-box.html">
 <link rel="import" href="../../../app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../app-header/app-header.html">
+<link rel="import" href="../../../app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="../../../app-toolbar/app-toolbar.html">
 
 <dom-module id="recipe-detail">
@@ -31,6 +33,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
 
     #bgHeader {
+      position: absolute;
+      top: -64px;
+      left: 0;
+      right: 0;
       height: 100vh;
     }
 
@@ -42,7 +48,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       };
     }
 
-    .content-container {
+    .card-container {
       position: relative;
       width: 720px;
       margin: 300px auto 40px;
@@ -88,7 +94,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     @media (max-width: 720px) {
 
-      .content-container {
+      .card-container {
         width: 100%;
         margin: 150px 0 0;
       }
@@ -99,10 +105,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <!-- main panel -->
     <app-header-layout>
-
-      <app-header underlay-content id="bgHeader" scroller="window" effects="parallax-background"
-        effects-config='{"parallax-background": {"scalar": 0.5}}'>
-      </app-header>
 
       <app-header id="header" effects="waterfall fade-background" reveals>
 
@@ -138,7 +140,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       </app-header>
 
-      <div class="content-container">
+      <app-box id="bgHeader" effects="parallax-background"
+        effects-config='{"parallax-background": {"scalar": 10}}'></app-box>
+
+      <div class="card-container">
 
         <paper-card heading="{{recipe.title}}">
           <div class="card-content">
@@ -200,7 +205,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     __recipeChanged: function(newValue, oldValue) {
       if (newValue) {
         this.$.bgHeader.updateStyles({
-          '--app-header-front-background': 'background-image: url(' + newValue.imageUrl + ');'
+          '--app-box-front-background': 'background-image: url(' + newValue.imageUrl + '); padding-top: 40px;'
         });
       }
     },

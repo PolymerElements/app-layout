@@ -19,6 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../paper-listbox/paper-listbox.html">
 
 <link rel="import" href="../../../app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../../app-drawer/app-drawer.html">
 <link rel="import" href="../../../app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../app-header/app-header.html">
 <link rel="import" href="../../../app-toolbar/app-toolbar.html">
@@ -79,32 +80,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-drawer-layout drawer-width="288px" responsive-width="1280px">
 
       <!-- nav panel -->
-      <app-header-layout drawer has-scrolling-region>
+      <app-drawer>
+        <app-header-layout has-scrolling-region>
 
-        <app-header fixed>
-          <div class="avatar-container">
-            <div class="image"></div>
-          </div>
-          <div class="contact-info">
-            <div class="name">Jonathan</div>
-            <div class="email">heyfromjonathan@gmail.com</div>
-          </div>
-        </app-header>
+          <app-header fixed>
+            <div class="avatar-container">
+              <div class="image"></div>
+            </div>
+            <div class="contact-info">
+              <div class="name">Jonathan</div>
+              <div class="email">heyfromjonathan@gmail.com</div>
+            </div>
+          </app-header>
 
-        <!-- nav menu -->
-        <paper-listbox selected="{{__page}}" attr-for-selected="name">
-          <paper-item name="home">Home</paper-item>
-          <paper-item name="favorites">Favorites</paper-item>
-          <paper-item name="saved">Saved</paper-item>
-          <paper-item name="trending">Trending</paper-item>
-        </paper-listbox>
+          <!-- nav menu -->
+          <paper-listbox selected="{{__page}}" attr-for-selected="name">
+            <paper-item name="home">Home</paper-item>
+            <paper-item name="favorites">Favorites</paper-item>
+            <paper-item name="saved">Saved</paper-item>
+            <paper-item name="trending">Trending</paper-item>
+          </paper-listbox>
 
-      </app-header-layout>
+        </app-header-layout>
+      </app-drawer>
 
       <app-scrollpos-control selected="{{__page}}" reset="{{__equal(__page, 'detail')}}"></app-scrollpos-control>
 
       <!-- list/detail pages -->
-      <iron-pages selected="{{__page}}" attr-for-selected="name" main>
+      <iron-pages selected="{{__page}}" attr-for-selected="name">
 
         <recipe-list name="home" recipes="{{recipes}}" selected-recipe="{{__selectedRecipe}}">
           <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>

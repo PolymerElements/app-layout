@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../app-drawer/app-drawer.html">
 <link rel="import" href="../../app-header/app-header.html">
 <link rel="import" href="../../app-header-layout/app-header-layout.html">
 <link rel="import" href="../../app-toolbar/app-toolbar.html">
@@ -52,7 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <app-drawer-layout force-narrow>
 
-      <div drawer>
+      <app-drawer>
 
         <app-toolbar></app-toolbar>
 
@@ -63,9 +64,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </template>
         </paper-menu>
 
-      </div>
+      </app-drawer>
 
-      <app-header-layout main>
+      <app-header-layout>
         <app-header class="main-header">
 
           <app-toolbar>
