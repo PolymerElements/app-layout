@@ -32,9 +32,10 @@ Add a drawer on the right side of the screen:
 
 ### Styling
 
-Custom property                         | Description                            | Default
-----------------------------------------|----------------------------------------|--------
-`--app-drawer-styles`                   | Mixin for drawer styles                |
+Custom property          | Description
+-------------------------|-------------------------
+`--app-drawer-styles`    | Mixin for drawer styles
+`--app-scrim-styles`     | Mixin for scrim styles
 
 @demo app-drawer/demo.html
 -->
@@ -75,6 +76,10 @@ Custom property                         | Description                           
     :host[opened] #drawerContent {
       -webkit-transform: translate(0, 0);
       transform:  translate(0, 0);
+    }
+
+    #scrim {
+      @apply(--app-scrim-styles);
     }
 
   </style>
