@@ -53,11 +53,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <test-fixture id="trivialDrawerLayout">
+  <test-fixture id="testDrawerLayout">
     <template>
       <app-drawer-layout>
-        <div drawer>Drawer</div>
-        <div main>Main content</div>
+        <app-drawer>Drawer</app-drawer>
+        <div drawer-toggle>Toggle</div>
+        <p>Content</p>
       </app-drawer-layout>
     </template>
   </test-fixture>
@@ -65,68 +66,70 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
 
     suite('basic features', function() {
-      var trivialDrawerLayout;
+      var drawerLayout, drawer;
 
       setup(function() {
-        trivialDrawerLayout = fixture('trivialDrawerLayout');
+        drawerLayout = fixture('testDrawerLayout');
+        drawer = drawerLayout.querySelector('app-drawer');
       });
 
       test('default values', function() {
-        assert.isFalse(trivialDrawerLayout.forceNarrow);
-        assert.equal(trivialDrawerLayout.responsiveWidth, '640px');
-        assert.equal(trivialDrawerLayout.drawerWidth, '256px');
-        assert.isFalse(trivialDrawerLayout.opened);
-        assert.isFalse(trivialDrawerLayout.fullbleed);
-        assert.equal(trivialDrawerLayout.drawerPosition, 'left');
+        assert.isFalse(drawerLayout.forceNarrow);
+        assert.equal(drawerLayout.responsiveWidth, '640px');
+      });
+
+      test('get drawer', function() {
+        assert.equal(drawerLayout.drawer, drawer);
       });
 
       test('forceNarrow', function() {
-        trivialDrawerLayout.responsiveWidth = '0px';
-        trivialDrawerLayout.forceNarrow = true;
-        assert.isTrue(trivialDrawerLayout.narrow);
+        drawerLayout.responsiveWidth = '0px';
+        drawerLayout.forceNarrow = true;
+
+        assert.isTrue(drawerLayout.narrow);
       });
 
       test('responsiveWidth', function() {
-        trivialDrawerLayout.responsiveWidth = '0px';
-        assert.isFalse(trivialDrawerLayout.narrow);
+        drawerLayout.responsiveWidth = '0px';
 
-        trivialDrawerLayout.responsiveWidth = '10000px';
-        assert.isTrue(trivialDrawerLayout.narrow);
+        assert.isFalse(drawerLayout.narrow);
+
+        drawerLayout.responsiveWidth = '10000px';
+
+        assert.isTrue(drawerLayout.narrow);
       });
 
-      test('drawer width', function() {
-        trivialDrawerLayout.drawerWidth = '100px';
-        assert.equal(trivialDrawerLayout.drawer.offsetWidth, 100);
+      test('drawer-toggle', function() {
+        drawerLayout.responsiveWidth = '10000px';
+
+        assert.isFalse(drawer.opened);
+
+        Polymer.Base.fire('tap', null /* detail */, { node: drawerLayout.querySelector('p') });
+
+        assert.isFalse(drawer.opened);
+
+        Polymer.Base.fire('tap', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
+
+        assert.isTrue(drawer.opened);
       });
 
-      test('drawer position', function(done) {
-        trivialDrawerLayout.responsiveWidth = '10000px'
-        assert.equal(trivialDrawerLayout.drawer.getBoundingClientRect().right, 0);
-        trivialDrawerLayout.drawerPosition = 'right';
+      test('content layout', function() {
+        drawerLayout.responsiveWidth = '0px';
 
-        setTimeout(function() {
-          trivialDrawerLayout.opened = true;
-          assert.equal(trivialDrawerLayout.drawer.getBoundingClientRect().right, document.documentElement.clientWidth);
-          done();
-        }, 200);
+        assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '256px');
+        assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
 
+        drawerLayout.responsiveWidth = '10000px';
+
+        assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
+        assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+
+        drawer.position = 'right';
+        drawerLayout.responsiveWidth = '0px';
+
+        assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
+        assert.equal(drawerLayout.$.contentContainer.style.marginRight, '256px');
       });
-
-      test('open and close drawer', function() {
-        trivialDrawerLayout.responsiveWidth = '10000px';
-
-        flush(function() {
-          trivialDrawerLayout.toggleDrawer();
-          assert.isTrue(trivialDrawerLayout.drawer.opened);
-          assert.isTrue(trivialDrawerLayout.opened);
-
-          trivialDrawerLayout.toggleDrawer();
-          assert.isFalse(trivialDrawerLayout.opened);
-          assert.isFalse(trivialDrawerLayout.drawer.opened);
-        });
-
-      });
-
     });
 
   </script>

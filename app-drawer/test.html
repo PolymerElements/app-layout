@@ -42,20 +42,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <test-fixture id="testDrawer">
     <template>
-      <div>
-        <app-drawer></app-drawer>
-      </div>
+      <app-drawer></app-drawer>
     </template>
   </test-fixture>
 
   <script>
 
     suite('basic features', function() {
-      var container, drawer, drawerContent;
+      var drawer, drawerContent;
 
       setup(function() {
-        container = fixture('testDrawer');
-        drawer = container.querySelector('app-drawer');
+        drawer = fixture('testDrawer');
         drawerContent = drawer.$.drawerContent;
       });
 
