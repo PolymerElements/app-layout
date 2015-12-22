@@ -18,7 +18,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
+  <link rel="import" href="../../font-roboto/roboto.html">
+  <link rel="import" href="../../iron-icons/iron-icons.html">
+  <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../demo/sample-content.html">
+  <link rel="import" href="../app-toolbar/app-toolbar.html">
   <link rel="import" href="app-drawer.html">
 
   <style is="custom-style">
@@ -29,14 +33,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-color: #eee;
     }
 
-    button {
-      margin: 24px;
-      padding: 20px;
+    app-toolbar {
+      background-color: #4285f4;
+      color: #fff;
     }
 
     app-drawer {
       --app-drawer-styles: {
-        background-color: #4285f4;
+        background-color: #B0BEC5;
       }
     }
 
@@ -45,27 +49,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <app-drawer position="left">
-    <ul>
-      <li>Alpha</li>
-      <li>Bravo</li>
-      <li>Charlie</li>
-      <li>Delta</li>
-      <li>Echo</li>
-    </ul>
-  </app-drawer>
-
-  <button>Toggle</button>
+  <app-toolbar>
+    <paper-icon-button icon="menu"></paper-icon-button>
+  </app-toolbar>
 
   <sample-content size="100"></sample-content>
 
-  <script>
+  <app-drawer position="left"></app-drawer>
 
+  <script>
     var drawer = document.querySelector('app-drawer');
-    document.querySelector('button').addEventListener('click', function() {
+    document.querySelector('paper-icon-button').addEventListener('tap', function() {
       drawer.toggle();
     });
-
   </script>
 
 </body>
