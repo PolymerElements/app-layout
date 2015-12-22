@@ -40,9 +40,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <test-fixture id="trivialDrawer">
+  <test-fixture id="testDrawer">
     <template>
-      <div class="drawerContainer">
+      <div>
         <app-drawer></app-drawer>
       </div>
     </template>
@@ -51,47 +51,169 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
 
     suite('basic features', function() {
-      var drawer;
+      var container, drawer, drawerContent;
 
       setup(function() {
-        drawerContainer = fixture('trivialDrawer');
-        drawer = drawerContainer.querySelector('app-drawer');
+        container = fixture('testDrawer');
+        drawer = container.querySelector('app-drawer');
+        drawerContent = drawer.$.drawerContent;
       });
 
-      test('basic features', function() {
-        assert.isFalse(drawer.opened, 'The drawer is closed by default');
-        assert.equal(drawer.position, 'left', 'The drawer is left positioned by default');
+      test('default values', function() {
+        assert.isFalse(drawer.opened);
+        assert.isFalse(drawer.persistent);
+        assert.equal(drawer.position, 'left');
       });
 
-      test('hidden', function(done) {
-        var clientRect = drawer.getBoundingClientRect();
-        drawer.position = 'left';
-        assert.isTrue(clientRect.left <= -clientRect.width, 'The left drawer is hidden');
+      test('left drawer opens and closes', function() {
+        var drawerContentClientRect = drawerContent.getBoundingClientRect();
+        assert.isTrue(drawerContentClientRect.left <= -drawerContentClientRect.width);
 
-        drawer.position = 'right';
-        flush(function() {
-          clientRect = drawer.getBoundingClientRect();
-          assert.isTrue(clientRect.right >= window.innerWidth + clientRect.width, 'The right drawer is hidden');
-          done();
-        });
-
-      });
-
-      test('open', function(done) {
-        drawer.position = 'left';
         drawer.opened = true;
 
-        assert.equal(drawer.getBoundingClientRect().left, 0, 'The left drawer is opened');
+        drawerContentClientRect = drawerContent.getBoundingClientRect();
+        assert.equal(drawerContentClientRect.left, 0);
 
-        drawer.position = 'right';
+        drawer.opened = false;
 
-        flush(function() {
-          assert.equal(drawer.getBoundingClientRect().right, drawerContainer.offsetWidth, 'The right drawer is opened');
-          done();
-        });
-
+        drawerContentClientRect = drawerContent.getBoundingClientRect();
+        assert.isTrue(drawerContentClientRect.left <= -drawerContentClientRect.width);
       });
 
+      test('right drawer opens and closes', function() {
+        drawer.position = 'right';
+
+        var drawerContentClientRect = drawerContent.getBoundingClientRect();
+        assert.isTrue(drawerContentClientRect.right >= drawerContentClientRect.width);
+
+        drawer.opened = true;
+
+        drawerContentClientRect = drawerContent.getBoundingClientRect();
+        assert.equal(drawerContentClientRect.right, window.innerWidth);
+
+        drawer.opened = false;
+
+        drawerContentClientRect = drawerContent.getBoundingClientRect();
+        assert.isTrue(drawerContentClientRect.right >= drawerContentClientRect.width);
+      });
+
+      test('open, close, and toggle', function() {
+        assert.isFalse(drawer.opened);
+
+        drawer.open();
+
+        assert.isTrue(drawer.opened);
+
+        drawer.close();
+
+        assert.isFalse(drawer.opened);
+
+        drawer.toggle();
+
+        assert.isTrue(drawer.opened);
+
+        drawer.toggle();
+
+        assert.isFalse(drawer.opened);
+      });
+
+      test('getDrawerWidth', function() {
+        assert(drawer.getDrawerWidth(), drawerContent.offsetWidth);
+      });
+
+      test('tap closes drawer', function() {
+        drawer.opened = true;
+        drawer.fire('tap');
+
+        assert.isFalse(drawer.opened);
+      });
+
+      test('swipe outside closes drawer', function() {
+        const TRANSITION_DURATION = '0.01s';
+        drawer.updateStyles({'--app-drawer-duration': TRANSITION_DURATION})
+        drawer.opened = true;
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], '0s');
+
+        drawer.fire('track', { state: 'track', ddx: -1 });
+        drawer.fire('track', { state: 'end' });
+
+        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], TRANSITION_DURATION);
+        assert.isFalse(drawer.opened);
+
+        drawer.position = 'right';
+        drawer.opened = true;
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], '0s');
+
+        drawer.fire('track', { state: 'track', ddx: 1 });
+        drawer.fire('track', { state: 'end' });
+
+        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], TRANSITION_DURATION);
+        assert.isFalse(drawer.opened);
+      });
+
+      test('swipe inside keeps drawer open', function() {
+        const TRANSITION_DURATION = '0.01s';
+        drawer.updateStyles({'--app-drawer-duration': TRANSITION_DURATION})
+        drawer.opened = true;
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], '0s');
+
+        drawer.fire('track', { state: 'track', ddx: 1 });
+        drawer.fire('track', { state: 'end' });
+
+        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], TRANSITION_DURATION);
+        assert.isTrue(drawer.opened);
+
+        drawer.position = 'right';
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], '0s');
+
+        drawer.fire('track', { state: 'track', ddx: -1 });
+        drawer.fire('track', { state: 'end' });
+
+        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], TRANSITION_DURATION);
+        assert.isTrue(drawer.opened);
+      });
+
+      test('doc scroll', function() {
+        var shouldEnableDocScrollSpy = sinon.spy();
+        drawer.shouldEnableDocScroll = shouldEnableDocScrollSpy;
+        drawer.opened = true;
+
+        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], false);
+
+        drawer.persistent = true;
+
+        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], true);
+
+        drawer.persistent = false;
+
+        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], false);
+
+        drawer.opened = false;
+
+        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], true);
+      });
+
+      test('scrim', function() {
+        var scrim = drawer.$.scrim;
+
+        assert.isFalse(scrim.visible);
+
+        drawer.opened = true;
+
+        assert.isTrue(scrim.visible);
+
+        drawer.persistent = true;
+
+        assert.isFalse(scrim.visible);
+      });
     });
 
   </script>
