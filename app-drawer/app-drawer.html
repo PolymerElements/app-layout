@@ -45,10 +45,12 @@ Custom property          | Description
   <style>
 
     #drawerContent {
-      @apply(--layout-fixed-left);
-      right: auto;
-      background-color: #FFF;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
       width: 256px;
+      background-color: #FFF;
 
       -webkit-transform: translate(-100%, 0);
       transform: translate(-100%, 0);
@@ -66,11 +68,25 @@ Custom property          | Description
     }
 
     :host[position=right] #drawerContent {
-      @apply(--layout-fixed-right);
       left: auto;
+      right: 0;
 
       -webkit-transform: translate(100%, 0);
       transform: translate(100%, 0);
+    }
+
+    :host[swipe-open] #drawerContent::after {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 100%;
+      width: 15px;
+      content: '';
+    }
+
+    :host[swipe-open][position=right] #drawerContent::after {
+      left: auto;
+      right: 100%;
     }
 
     :host[opened] #drawerContent {
@@ -123,8 +139,6 @@ Custom property          | Description
         persistent: {
           type: Boolean,
           value: false,
-          notify: true,
-          reflectToAttribute: true,
           observer: '_persistentChanged'
         },
 
@@ -137,7 +151,18 @@ Custom property          | Description
           reflectToAttribute: true
         },
 
-        _lastTrackDirection: Number
+        /**
+         * Create an area at the edge of the screen to swipe open the drawer.
+         */
+        swipeOpen: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        _lastTrackDirection: Number,
+
+        _translateOffset: Number
 
       },
 
@@ -188,15 +213,23 @@ Custom property          | Description
             case 'start':
               this.$.drawerContent.style.transitionDuration = '0s';
               this.$.drawerContent.style.webkitTransitionDuration = '0s';
+
+              if (this.opened) {
+                this._translateOffset = 0;
+              } else if (this.position == 'left') {
+                this._translateOffset = -this.getDrawerWidth();
+              } else if (this.position == 'right') {
+                this._translateOffset = this.getDrawerWidth();
+              }
               break;
 
             case 'track':
               switch (this.position) {
                 case 'left':
-                  this._translateDrawer(Math.min(0, event.detail.dx));
+                  this._translateDrawer(Math.min(0, event.detail.dx + this._translateOffset));
                   break;
                 case 'right':
-                  this._translateDrawer(Math.max(0, event.detail.dx));
+                  this._translateDrawer(Math.max(0, event.detail.dx + this._translateOffset));
                   break;
               }
               if (Math.abs(event.detail.ddx) > 0) {
@@ -224,7 +257,7 @@ Custom property          | Description
       },
 
       _translateDrawer: function(x) {
-        this.transform('translate(' + x + 'px, 0)', this.$.drawerContent);
+        this.transform('translateX(' + x + 'px)', this.$.drawerContent);
       },
 
       _updateDocScroll: function() {

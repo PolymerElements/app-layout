@@ -60,6 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isFalse(drawer.opened);
         assert.isFalse(drawer.persistent);
         assert.equal(drawer.position, 'left');
+        assert.isFalse(drawer.swipeOpen);
       });
 
       test('left drawer opens and closes', function() {
@@ -115,7 +116,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('getDrawerWidth', function() {
-        assert(drawer.getDrawerWidth(), drawerContent.offsetWidth);
+        assert.equal(drawer.getDrawerWidth(), drawerContent.offsetWidth);
       });
 
       test('tap closes drawer', function() {
@@ -125,57 +126,68 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isFalse(drawer.opened);
       });
 
-      test('swipe outside closes drawer', function() {
+      test('swiping', function() {
+        const SWIPE_DISTANCE = 17;
         const TRANSITION_DURATION = '0.01s';
-        drawer.updateStyles({'--app-drawer-duration': TRANSITION_DURATION})
-        drawer.opened = true;
+        var transformSpy = sinon.spy();
+        drawer.transform = transformSpy;
+        drawer.updateStyles({'--app-drawer-duration': TRANSITION_DURATION});
         drawer.fire('track', { state: 'start' });
 
         assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], '0s');
 
-        drawer.fire('track', { state: 'track', ddx: -1 });
-        drawer.fire('track', { state: 'end' });
+        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: SWIPE_DISTANCE });
 
-        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], TRANSITION_DURATION);
-        assert.isFalse(drawer.opened);
+        assert.equal(transformSpy.lastCall.args[0], 'translateX(' + (SWIPE_DISTANCE - drawer.getDrawerWidth()) + 'px)');
 
-        drawer.position = 'right';
-        drawer.opened = true;
-        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: 9999, ddx: 9999 });
 
-        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], '0s');
+        assert.equal(transformSpy.lastCall.args[0], 'translateX(0px)');
 
-        drawer.fire('track', { state: 'track', ddx: 1 });
-        drawer.fire('track', { state: 'end' });
-
-        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], TRANSITION_DURATION);
-        assert.isFalse(drawer.opened);
-      });
-
-      test('swipe inside keeps drawer open', function() {
-        const TRANSITION_DURATION = '0.01s';
-        drawer.updateStyles({'--app-drawer-duration': TRANSITION_DURATION})
-        drawer.opened = true;
-        drawer.fire('track', { state: 'start' });
-
-        assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], '0s');
-
-        drawer.fire('track', { state: 'track', ddx: 1 });
+        drawer.fire('track', { state: 'track', dx: 9999, ddx: 0 });
         drawer.fire('track', { state: 'end' });
 
         assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], TRANSITION_DURATION);
         assert.isTrue(drawer.opened);
 
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: -SWIPE_DISTANCE });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translateX(' + -SWIPE_DISTANCE + 'px)');
+
+        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: 0 });
+        drawer.fire('track', { state: 'end' });
+
+        assert.isFalse(drawer.opened);
+
         drawer.position = 'right';
         drawer.fire('track', { state: 'start' });
 
         assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], '0s');
 
-        drawer.fire('track', { state: 'track', ddx: -1 });
+        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: -SWIPE_DISTANCE });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translateX(' + (drawer.getDrawerWidth() - SWIPE_DISTANCE) + 'px)');
+
+        drawer.fire('track', { state: 'track', dx: -9999, ddx: -9999 });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translateX(0px)');
+
+        drawer.fire('track', { state: 'track', dx: -9999, ddx: 0 });
         drawer.fire('track', { state: 'end' });
 
         assert.equal(window.getComputedStyle(drawerContent)['transition-duration'], TRANSITION_DURATION);
         assert.isTrue(drawer.opened);
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: SWIPE_DISTANCE });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translateX(' + SWIPE_DISTANCE + 'px)');
+
+        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: 0 });
+        drawer.fire('track', { state: 'end' });
+
+        assert.isFalse(drawer.opened);
       });
 
       test('doc scroll', function() {
