@@ -5,7 +5,7 @@ app-scrim is a backdrop that can be placed under overlays.
 Example:
 
 ```html
-<app-scrim visible></app-toolbar>
+<app-scrim visible></app-scrim>
 ```
 
 ### Styling
