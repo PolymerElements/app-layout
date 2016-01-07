@@ -16,8 +16,6 @@ A set of experimental layout elements for your app. It includes:
 
 - [app-box](/app-box) - A container that can have scroll effects.
 
-- [app-scrim](/app-scrim) - A backdrop that can be placed under overlays.
-
 - [app-scrollpos-control](/app-scrollpos-control) - A manager for the scroll position when mulitple pages are sharing the same document scroller.
 
 

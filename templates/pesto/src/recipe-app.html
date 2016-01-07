@@ -80,7 +80,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-drawer-layout drawer-width="288px" responsive-width="1280px">
 
       <!-- nav panel -->
-      <app-drawer swipe-open>
+      <app-drawer id="drawer" swipe-open>
         <app-header-layout has-scrolling-region>
 
           <app-header fixed>
@@ -170,6 +170,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     __pageChanged: function(newValue, oldValue) {
       if (newValue !== 'detail') this.__selectedRecipe = null;
+      if (!this.$.drawer.persistent) this.$.drawer.close();
     },
 
     __closeRecipeDetail: function() {

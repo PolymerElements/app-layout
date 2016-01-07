@@ -43,7 +43,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       app-drawer {
-        --app-drawer-styles: {
+        --app-drawer-content-container: {
           background-color: var(--app-primary-color);
           overflow-x: hidden;
         };
@@ -165,7 +165,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-drawer-layout drawer-width="288px" responsive-width="1280px">
 
       <!-- nav panel -->
-      <app-drawer>
+      <app-drawer id="drawer">
         <app-header-layout has-scrolling-region>
 
           <app-header fixed>
@@ -311,6 +311,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _showList: function() {
         this.page = 'list';
+        if (!this.$.drawer.persistent) this.$.drawer.close();
       },
 
       _routeChange: function(route) {

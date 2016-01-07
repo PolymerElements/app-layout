@@ -76,7 +76,7 @@ With an app-header-layout:
       position: relative;
     }
 
-    :host:not([narrow]) > #contentContainer > ::content [drawer-toggle] {
+    :host(:not([narrow])) > #contentContainer > ::content [drawer-toggle] {
       display: none;
     }
 
@@ -140,6 +140,7 @@ With an app-header-layout:
       },
 
       attached: function() {
+        this.listen(this.drawer, 'app-drawer-position-changed', '_resetLayout');
         this._resetLayout();
       },
 
@@ -168,8 +169,8 @@ With an app-header-layout:
         if (this.isAttached) {
           this.drawer.opened = !this.narrow;
           this.drawer.persistent = !this.narrow;
-          this.$.contentContainer.style.marginLeft = (this.narrow || (this.drawer.position == 'right')) ? '' : this.drawer.getDrawerWidth() + 'px';
-          this.$.contentContainer.style.marginRight = (this.narrow || (this.drawer.position == 'left')) ? '' : this.drawer.getDrawerWidth() + 'px';
+          this.$.contentContainer.style.marginLeft = (this.narrow || (this.drawer.position == 'right')) ? '' : this.drawer.getWidth() + 'px';
+          this.$.contentContainer.style.marginRight = (this.narrow || (this.drawer.position == 'left')) ? '' : this.drawer.getWidth() + 'px';
         }
       },
 
