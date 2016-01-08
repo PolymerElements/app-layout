@@ -105,9 +105,26 @@ Custom property                  | Description                            | Defa
       transform:  translateZ(0);
     }
 
-    :host([opened]:not([persistent])) > #scrim {
+    /**
+     * NOTE(keanulee): IE/Edge does not properly update element styles when using
+     * dynamically inserted style tags that match with :not([attribute]) rules,
+     * so we can't do this instead:
+     *
+     *  :host([opened]:not([persistent])) > #scrim {
+     *    opacity: 1;
+     *    visibility: visible;
+     *  }
+     *
+     * Ref https://connect.microsoft.com/IE/feedbackdetail/view/2217046/element-styles-not-updated-when-using-dynamically-inserted-style-tags-that-match-with-not-attribute-rules
+     */
+    :host([opened]) > #scrim {
       opacity: 1;
       visibility: visible;
+    }
+
+    :host([opened][persistent]) > #scrim {
+      opacity: 0;
+      visibility: hidden;
     }
 
   </style>

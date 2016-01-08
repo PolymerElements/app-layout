@@ -90,13 +90,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('responsiveWidth', function() {
+        var drawerToggle = drawerLayout.querySelector('[drawer-toggle]');
         drawerLayout.responsiveWidth = '0px';
 
         assert.isFalse(drawerLayout.narrow);
+        assert.equal(window.getComputedStyle(drawerToggle)['display'], 'none');
 
         drawerLayout.responsiveWidth = '10000px';
 
         assert.isTrue(drawerLayout.narrow);
+        assert.notEqual(window.getComputedStyle(drawerToggle)['display'], 'none');
       });
 
       test('drawer-toggle', function() {

@@ -76,8 +76,23 @@ With an app-header-layout:
       position: relative;
     }
 
-    :host(:not([narrow])) > #contentContainer > ::content [drawer-toggle] {
+    /**
+     * NOTE(keanulee): IE/Edge does not properly update element styles when using
+     * dynamically inserted style tags that match with :not([attribute]) rules,
+     * so we can't do this instead:
+     *
+     *  :host(:not([narrow])) > #contentContainer > ::content [drawer-toggle] {
+     *    display: none;
+     *  }
+     *
+     * Ref https://connect.microsoft.com/IE/feedbackdetail/view/2217046/element-styles-not-updated-when-using-dynamically-inserted-style-tags-that-match-with-not-attribute-rules
+     */
+    :host > #contentContainer > ::content [drawer-toggle] {
       display: none;
+    }
+
+    :host([narrow]) > #contentContainer > ::content [drawer-toggle] {
+      display: initial;
     }
 
   </style>
