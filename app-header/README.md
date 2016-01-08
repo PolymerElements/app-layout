@@ -9,7 +9,7 @@ the header slides back when scrolling back up. For example,
   <app-toolbar>
     <div title>App name</div>
   </app-toolbar>
-</app-drawer>
+</app-header>
 ```
 
 app-header can also condense when scrolling down. To achieve this behavior, the header
@@ -20,7 +20,7 @@ must have a larger height than the first toolbar in the light DOM. For example,
   <app-toolbar style="height: 64px;">
     <div title>App name</div>
   </app-toolbar>
-</app-drawer>
+</app-header>
 ```
 
 Notice that when the header is condensed its height is `64px`, whereas the height is 96px 
