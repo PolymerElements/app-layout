@@ -73,7 +73,15 @@ With an app-header-layout:
 
     :host {
       display: block;
+    }
+
+    :host([fullbleed]) {
+      @apply(--layout-fit);
+    }
+
+    #contentContainer {
       position: relative;
+      height: 100%;
     }
 
     #contentContainer:not(.narrow) > ::content [drawer-toggle] {
@@ -135,11 +143,11 @@ With an app-header-layout:
       },
 
       listeners: {
-        tap: '_tapHandler'
+        'tap': '_tapHandler',
+        'app-drawer-position-changed': '_resetLayout'
       },
 
       attached: function() {
-        this.listen(this.drawer, 'app-drawer-position-changed', '_resetLayout');
         this._resetLayout();
       },
 
