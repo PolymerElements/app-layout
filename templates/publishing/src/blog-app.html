@@ -21,6 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../paper-styles/shadow.html">
 
 <link rel="import" href="../../../app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../../app-drawer/app-drawer.html">
 <link rel="import" href="../../../app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="../../../app-header/app-header.html">
 <link rel="import" href="../../../app-header-layout/app-header-layout.html">
@@ -41,9 +42,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --app-primary-color: #404040;
       }
 
-      app-drawer-layout {
-        /* set the nav drawer background color */
-        --app-drawer-background-color: var(--app-primary-color);
+      app-drawer {
+        --app-drawer-content-container: {
+          background-color: var(--app-primary-color);
+          overflow-x: hidden;
+        };
+      }
+
+      app-drawer app-header {
+        background-color: var(--app-primary-color);
       }
 
       .nav-menu {
@@ -68,14 +75,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background-color: #888;
       }
 
-      [main] app-header {
+      .main-header {
         border-bottom: 1px solid #ddd;
         background-color: #fff;
         color: #444;
       }
 
-      .main-title-toolbar {
+      .title-toolbar {
         @apply(--layout-center-center);
+        width: 100vw;
+        box-sizing: border-box;
       }
 
       .title {
@@ -84,14 +93,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         font-weight: 800;
       }
 
-      #navTitle {
-        position: absolute;
+      .nav-title-toolbar {
         color: #fff;
       }
 
-      /* hide nav title when is not in narrow layout */
-      app-drawer-layout:not([narrow]) #navTitle {
-        display: none;
+      app-drawer-layout:not([narrow]) .nav-title-toolbar {
+        visibility: hidden;
+      }
+
+      app-drawer-layout:not([narrow]) .main-title-toolbar {
+        width: 100%;
       }
 
       article-headline {
@@ -151,39 +162,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- manages page's scroll position -->
     <app-scrollpos-control selected="{{category}}/{{page}}" reset="{{_equal(page, 'detail')}}"></app-scrollpos-control>
 
-    <app-drawer-layout drawer-width="288px" responsive-width="1280px" on-iron-resize="_positionNavTitle">
+    <app-drawer-layout drawer-width="288px" responsive-width="1280px">
 
       <!-- nav panel -->
-      <app-header-layout drawer has-scrolling-region>
+      <app-drawer id="drawer">
+        <app-header-layout has-scrolling-region>
 
-        <app-header fixed>
+          <app-header fixed>
 
-          <!-- top toolbar -->
-          <app-toolbar></app-toolbar>
+            <!-- top toolbar -->
+            <app-toolbar></app-toolbar>
 
-          <!-- bottom toolbar -->
-          <app-toolbar>
-            <div id="navTitle" class="title">ZUPERK&Uuml;LBLOG</div>
-          </app-toolbar>
+            <!-- bottom toolbar -->
+            <app-toolbar class="title-toolbar nav-title-toolbar">
+              <div class="title">ZUPERK&Uuml;LBLOG</div>
+            </app-toolbar>
 
-        </app-header>
+          </app-header>
 
-        <!-- nav menu -->
-        <iron-selector class="nav-menu" selected="{{category}}" attr-for-selected="name" on-iron-activate="_showList">
-          <a name="art" href="#/art/list">Art</a>
-          <a name="film" href="#/film/list">Film</a>
-          <a name="photography" href="#/photography/list">Photography</a>
-          <a name="design" href="#/design/list">Design</a>
-          <a name="topten" href="#/topten/list">Top Ten</a>
-          <a name="aday" href="#/aday/list">A Day in the Life</a>
-        </iron-selector>
+          <!-- nav menu -->
+          <iron-selector class="nav-menu" selected="{{category}}" attr-for-selected="name" on-iron-activate="_showList">
+            <a name="art" href="#/art/list">Art</a>
+            <a name="film" href="#/film/list">Film</a>
+            <a name="photography" href="#/photography/list">Photography</a>
+            <a name="design" href="#/design/list">Design</a>
+            <a name="topten" href="#/topten/list">Top Ten</a>
+            <a name="aday" href="#/aday/list">A Day in the Life</a>
+          </iron-selector>
 
-      </app-header-layout>
+        </app-header-layout>
+      </app-drawer>
 
       <!-- main panel -->
-      <app-header-layout main>
+      <app-header-layout>
 
-        <app-header fixed effects="waterfall">
+        <app-header fixed effects="waterfall" class="main-header">
 
           <!-- top toolbar -->
           <app-toolbar>
@@ -196,8 +209,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </app-toolbar>
 
           <!-- bottom toolbar -->
-          <app-toolbar class="main-title-toolbar">
-            <div id="mainTitle" class="title">ZUPERK&Uuml;LBLOG</div>
+          <app-toolbar class="title-toolbar main-title-toolbar">
+            <div class="title">ZUPERK&Uuml;LBLOG</div>
           </app-toolbar>
 
         </app-header>
@@ -298,6 +311,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _showList: function() {
         this.page = 'list';
+        if (!this.$.drawer.persistent) this.$.drawer.close();
       },
 
       _routeChange: function(route) {
@@ -317,13 +331,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }
         }
-      },
-
-      // position nav title to be on top of the main title.
-      _positionNavTitle: function() {
-        var style = this.$.navTitle.style;
-        style.top = this.$.mainTitle.offsetTop + 'px';
-        style.left = this.$.mainTitle.offsetLeft + 'px';
       }
 
     });

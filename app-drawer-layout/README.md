@@ -10,10 +10,10 @@ By default the drawer is on the left side of the screen:
 
 ```html
 <app-drawer-layout>
-  <div drawer>
+  <app-drawer>
     <!-- drawer content -->
-  </div>
-  <div main>
+  </app-drawer>
+  <div>
     <!-- main content -->
   </div>
 </app-drawer-layout>
@@ -22,11 +22,11 @@ By default the drawer is on the left side of the screen:
 A drawer on the right side of the screen:
 
 ```html
-<app-drawer-layout drawer-position="right">
-  <div drawer>
+<app-drawer-layout>
+  <app-drawer position="right">
     <!-- drawer content -->
-  </div>
-  <div main>
+  </app-drawer>
+  <div>
     <!-- main content -->
   </div>
 </app-drawer-layout>
@@ -36,10 +36,10 @@ With an app-header-layout:
 
 ```html
 <app-drawer-layout>
-  <div drawer>
+  <app-drawer>
     <!-- drawer content -->
-  </div>
-  <app-header-layout main>
+  </app-drawer>
+  <app-header-layout>
     <app-header>
       <app-toolbar>
         <div title>App name</div>

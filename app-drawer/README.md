@@ -7,7 +7,7 @@ Example:
 Add a drawer on the left side of the screen:
 
 ```html
-<app-drawer position="left" opened></app-drawer>
+<app-drawer opened></app-drawer>
 ```
 
 Add a drawer on the right side of the screen:
@@ -18,8 +18,7 @@ Add a drawer on the right side of the screen:
 
 ### Styling
 
-Custom property                         | Description                            | Default
-----------------------------------------|----------------------------------------|---------
-`--app-drawer-background-color`         | Background color                       | white
-`--app-drawer-duration`                 | The duration of the transition         | 0.2s
-`--app-drawer-timing-function`          | The timing function of the transition  | linear
+Custom property                  | Description                            | Default
+---------------------------------|----------------------------------------|--------------------
+`--app-drawer-content-container` | Mixin for the drawer content container | {}
+`--app-drawer-scrim-background`  | Background for the scrim               | rgba(0, 0, 0, 0.5)

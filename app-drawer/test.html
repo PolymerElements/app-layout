@@ -22,76 +22,240 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <style is="custom-style">
     body {
       margin: 0;
-      padding: 0;
     }
 
-    .drawerContainer {
-      width: 500px;
-      height: 500px;
-      position: absolute;
-    }
-
+    /* Remove transition-duration so we can synchronously check the state of the drawer. */
     app-drawer {
-      --app-drawer-duration: 0s;
-      width: 200px;
-      background-color: green;
+      --app-drawer-content-container: {
+        transition-duration: 0s;
+      };
     }
   </style>
 </head>
 <body>
 
-  <test-fixture id="trivialDrawer">
+  <test-fixture id="testDrawer">
     <template>
-      <div class="drawerContainer">
-        <app-drawer></app-drawer>
-      </div>
+      <app-drawer></app-drawer>
     </template>
   </test-fixture>
 
   <script>
 
     suite('basic features', function() {
-      var drawer;
+      var drawer, scrim, contentContainer;
 
       setup(function() {
-        drawerContainer = fixture('trivialDrawer');
-        drawer = drawerContainer.querySelector('app-drawer');
+        drawer = fixture('testDrawer');
+        scrim = drawer.$.scrim;
+        contentContainer = drawer.$.contentContainer;
       });
 
-      test('basic features', function() {
-        assert.isFalse(drawer.opened, 'The drawer is closed by default');
-        assert.equal(drawer.position, 'left', 'The drawer is left positioned by default');
+      test('default values', function() {
+        assert.isFalse(drawer.opened);
+        assert.isFalse(drawer.persistent);
+        assert.equal(drawer.position, 'left');
+        assert.isFalse(drawer.swipeOpen);
       });
 
-      test('hidden', function(done) {
-        var clientRect = drawer.getBoundingClientRect();
-        drawer.position = 'left';
-        assert.isTrue(clientRect.left <= -clientRect.width, 'The left drawer is hidden');
+      test('left drawer opens and closes', function() {
+        var contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.isTrue(contentContainerClientRect.right <= 0);
 
-        drawer.position = 'right';
-        flush(function() {
-          clientRect = drawer.getBoundingClientRect();
-          assert.isTrue(clientRect.right >= window.innerWidth + clientRect.width, 'The right drawer is hidden');
-          done();
-        });
-
-      });
-
-      test('open', function(done) {
-        drawer.position = 'left';
         drawer.opened = true;
 
-        assert.equal(drawer.getBoundingClientRect().left, 0, 'The left drawer is opened');
+        contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.equal(contentContainerClientRect.left, 0);
 
-        drawer.position = 'right';
+        drawer.opened = false;
 
-        flush(function() {
-          assert.equal(drawer.getBoundingClientRect().right, drawerContainer.offsetWidth, 'The right drawer is opened');
-          done();
-        });
-
+        contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.isTrue(contentContainerClientRect.right <= 0);
       });
 
+      test('right drawer opens and closes', function() {
+        drawer.position = 'right';
+
+        var contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.isTrue(contentContainerClientRect.left >= window.innerWidth);
+
+        drawer.opened = true;
+
+        contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.equal(contentContainerClientRect.right, window.innerWidth);
+
+        drawer.opened = false;
+
+        contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.isTrue(contentContainerClientRect.left >= window.innerWidth);
+      });
+
+      test('open(), close(), and toggle()', function() {
+        assert.isFalse(drawer.opened);
+
+        drawer.open();
+
+        assert.isTrue(drawer.opened);
+
+        drawer.close();
+
+        assert.isFalse(drawer.opened);
+
+        drawer.toggle();
+
+        assert.isTrue(drawer.opened);
+
+        drawer.toggle();
+
+        assert.isFalse(drawer.opened);
+      });
+
+      test('getWidth()', function() {
+        assert.equal(drawer.getWidth(), contentContainer.offsetWidth);
+      });
+
+      test('app-drawer-position-changed', function() {
+        var listenerSpy = sinon.spy();
+        drawer.addEventListener('app-drawer-position-changed', listenerSpy);
+        drawer.position = 'right';
+
+        assert.isTrue(listenerSpy.called);
+      });
+
+      test('swiping', function() {
+        const SWIPE_DISTANCE = 32;
+        const TRANSITION_DURATION = '0.01s';
+        var drawerWidth = drawer.getWidth();
+        var transformSpy = sinon.spy();
+        drawer.transform = transformSpy;
+
+        // Set a transition-duration to check if drawer properly resets inline styles on track end.
+        drawer.updateStyles({
+          '--app-drawer-content-container': 'transition-duration: ' + TRANSITION_DURATION
+        });
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], '0s');
+
+        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: SWIPE_DISTANCE });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + (SWIPE_DISTANCE - drawerWidth) + 'px, 0, 0)', 'translate distance is equal when swipe is less than drawer width');
+        assert.equal(scrim.style.opacity, SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: 9999, ddx: 9999 });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(0px, 0, 0)', 'translate distance is bounded when swipe is greater than drawer width');
+        assert.equal(scrim.style.opacity, 1, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: 9999, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: 9999, ddx: 0 });
+
+        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], TRANSITION_DURATION);
+        assert.isTrue(drawer.opened, 'drawer opened if user slides in');
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: -6, ddx: -6 });
+        drawer.fire('track', { state: 'end', dx: -6, ddx: 0 });
+
+        assert.isTrue(drawer.opened, 'drawer stays opened if threshold is not met');
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: -SWIPE_DISTANCE });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + -SWIPE_DISTANCE + 'px, 0, 0)', 'translate distance is correct');
+        assert.equal(scrim.style.opacity, 1 - SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: -SWIPE_DISTANCE, ddx: 0 });
+
+        assert.isFalse(drawer.opened, 'drawer closed if user slides out');
+
+        drawer.position = 'right';
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], '0s');
+
+        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: -SWIPE_DISTANCE });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + (drawerWidth - SWIPE_DISTANCE) + 'px, 0, 0)', 'translate distance is equal when swipe is less than drawer width');
+        assert.equal(scrim.style.opacity, SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: -9999, ddx: -9999 });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(0px, 0, 0)', 'translate distance is bounded when swipe is greater than drawer width');
+        assert.equal(scrim.style.opacity, 1, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: -9999, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: -9999, ddx: 0 });
+
+        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], TRANSITION_DURATION);
+        assert.isTrue(drawer.opened, 'drawer opened if user slides in');
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: 6, ddx: 6 });
+        drawer.fire('track', { state: 'end', dx: 6, ddx: 0 });
+
+        assert.isTrue(drawer.opened, 'drawer stays opened if threshold is not met');
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: SWIPE_DISTANCE });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + SWIPE_DISTANCE + 'px, 0, 0)', 'translate distance is correct');
+        assert.equal(scrim.style.opacity, 1 - SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: SWIPE_DISTANCE, ddx: 0 });
+
+        assert.isFalse(drawer.opened, 'drawer closed if user slides out');
+      });
+
+      test('doc scroll', function() {
+        var shouldEnableDocScrollSpy = sinon.spy();
+        drawer.shouldEnableDocScroll = shouldEnableDocScrollSpy;
+        drawer.opened = true;
+
+        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], false);
+
+        drawer.persistent = true;
+
+        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], true);
+
+        drawer.persistent = false;
+
+        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], false);
+
+        drawer.opened = false;
+
+        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], true);
+      });
+
+      test('scrim', function() {
+        var scrimComputedStyle;
+        scrim.style.transitionDuration = '0s';
+
+        scrimComputedStyle = window.getComputedStyle(scrim);
+        assert.equal(scrimComputedStyle['opacity'], 0);
+        assert.equal(scrimComputedStyle['visibility'], 'hidden');
+
+        drawer.opened = true;
+
+        scrimComputedStyle = window.getComputedStyle(scrim);
+        assert.equal(scrimComputedStyle['opacity'], 1);
+        assert.equal(scrimComputedStyle['visibility'], 'visible');
+
+        drawer.persistent = true;
+
+        scrimComputedStyle = window.getComputedStyle(scrim);
+        assert.equal(scrimComputedStyle['opacity'], 0);
+        assert.equal(scrimComputedStyle['visibility'], 'hidden');
+      });
+
+      test('tap on scrim closes drawer', function() {
+        drawer.opened = true;
+        drawer.fire('tap', null /* detail */, { node: scrim });
+
+        assert.isFalse(drawer.opened);
+      });
     });
 
   </script>

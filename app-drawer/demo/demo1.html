@@ -16,26 +16,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>app-drawer demo</title>
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="app-drawer.html">
+  <link rel="import" href="../../../font-roboto/roboto.html">
+  <link rel="import" href="../../../iron-icons/iron-icons.html">
+  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../../demo/sample-content.html">
+  <link rel="import" href="../../app-toolbar/app-toolbar.html">
+  <link rel="import" href="../app-drawer.html">
 
   <style is="custom-style">
 
-    html {
-      height: 100%;
-    }
-
     body {
-      height: 100%;
       margin: 0;
       font-family: 'Roboto', 'Noto', sans-serif;
+      background-color: #eee;
+    }
+
+    app-toolbar {
+      background-color: #4285f4;
+      color: #fff;
     }
 
     app-drawer {
-      background-color: #4285f4;
-      /* app-drawer has default size but one can change it to a different width/height value */
-      width: 500px;
+      --app-drawer-scrim-background: rgba(0, 0, 100, 0.8);
+
+      --app-drawer-content-container: {
+        background-color: #B0BEC5;
+      }
     }
 
   </style>
@@ -43,15 +51,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <app-drawer position="right"></app-drawer>
+  <app-toolbar>
+    <paper-icon-button icon="menu"></paper-icon-button>
+  </app-toolbar>
+
+  <sample-content size="100"></sample-content>
+
+  <app-drawer swipe-open></app-drawer>
 
   <script>
-
     var drawer = document.querySelector('app-drawer');
-    document.addEventListener('click', function() {
+    document.querySelector('paper-icon-button').addEventListener('tap', function() {
       drawer.toggle();
     });
-
   </script>
 
 </body>
