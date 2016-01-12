@@ -39,6 +39,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     [condensed-title] {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background-image: url(http://app-layout-assets.appspot.com/assets/pesto/logo_s.png);
       background-repeat: no-repeat;
       background-position: center center;
@@ -49,7 +54,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     [title] {
+      position: absolute;
       top: -120px;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background-image: url(http://app-layout-assets.appspot.com/assets/pesto/logo_l.png);
       background-repeat: no-repeat;
       background-position: center center;
@@ -125,10 +134,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-header effects="resize-title" condenses fixed shadow>
         <app-toolbar class="top-toolbar">
           <content select="[drawer-toggle]"></content>
-          <div condensed-title class="fit"></div>
+          <div condensed-title></div>
         </app-toolbar>
         <app-toolbar class="bottom-toolbar">
-          <div title class="fit"></div>
+          <div title></div>
         </app-toolbar>
       </app-header>
 
