@@ -10,7 +10,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../app-scroll-behaviors/app-document-scroll-behavior.html">
 
 <!--
 app-drawer is a navigation drawer that can slide in from the left or right.
@@ -45,11 +44,12 @@ Custom property                  | Description                            | Defa
 
     #contentContainer {
       position: fixed;
-      top: 0;
-      bottom: 0;
+      top: -120px;
+      bottom: -120px;
       left: 0;
       width: 256px;
       background-color: #FFF;
+      padding: 120px 0;
 
       transition: 0.2s ease;
       transition-property: -webkit-transform;
@@ -90,7 +90,7 @@ Custom property                  | Description                            | Defa
 
     #scrim {
       position: fixed;
-      top: 0;
+      top: -120px;
       left: 0;
       right: 0;
       bottom: -120px;
@@ -145,10 +145,6 @@ Custom property                  | Description                            | Defa
 
       is: 'app-drawer',
 
-      behaviors: [
-        Polymer.AppDocumentScrollBehavior
-      ],
-
       properties: {
 
         /**
@@ -199,6 +195,10 @@ Custom property                  | Description                            | Defa
 
       listeners: {
         track: '_trackHandler'
+      },
+
+      attached: function() {
+        this.setScrollDirection('y');
       },
 
       /**
@@ -286,7 +286,7 @@ Custom property                  | Description                            | Defa
               this.transform('', this.$.contentContainer);
 
               // Only toggle the drawer if the user intentionally swipes in one direction.
-              if (Math.abs(event.detail.dx) > 10) {
+              if (Math.abs(event.detail.dx) > 30) {
                 this.opened = (this.position === 'left' && this._lastTrackDirection > 0) ||
                   (this.position === 'right' && this._lastTrackDirection < 0);
               }
@@ -304,7 +304,7 @@ Custom property                  | Description                            | Defa
       },
 
       _positionChanged: function() {
-        this.fire('app-drawer-position-changed');
+        this.fire('app-drawer-layout-changed');
       },
 
       _translateDrawer: function(x) {
@@ -312,13 +312,13 @@ Custom property                  | Description                            | Defa
       },
 
       _updateDocScroll: function() {
-        this.shouldEnableDocScroll(this.persistent || !this.opened);
+        document.body.style.overflow = (this.persistent || !this.opened) ? '' : 'hidden';
       }
 
       /**
-       * Fired when the position of app-drawer is changed.
+       * Fired when the layout of app-drawer has changed.
        *
-       * @event app-drawer-position-changed
+       * @event app-drawer-layout-changed
        */
 
     });

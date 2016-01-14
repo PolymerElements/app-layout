@@ -58,6 +58,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isFalse(drawer.swipeOpen);
       });
 
+      test('set scroll direction', function() {
+        assert.equal(drawer['__polymerGesturesTouchAction'], 'pan-y');
+      });
+
       test('left drawer opens and closes', function() {
         var contentContainerClientRect = contentContainer.getBoundingClientRect();
         assert.isTrue(contentContainerClientRect.right <= 0);
@@ -114,9 +118,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(drawer.getWidth(), contentContainer.offsetWidth);
       });
 
-      test('app-drawer-position-changed', function() {
+      test('app-drawer-layout-changed', function() {
         var listenerSpy = sinon.spy();
-        drawer.addEventListener('app-drawer-position-changed', listenerSpy);
+        drawer.addEventListener('app-drawer-layout-changed', listenerSpy);
         drawer.position = 'right';
 
         assert.isTrue(listenerSpy.called);
@@ -210,23 +214,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('doc scroll', function() {
-        var shouldEnableDocScrollSpy = sinon.spy();
-        drawer.shouldEnableDocScroll = shouldEnableDocScrollSpy;
         drawer.opened = true;
 
-        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], false);
+        assert.equal(document.body.style.overflow, 'hidden');
 
         drawer.persistent = true;
 
-        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], true);
+        assert.equal(document.body.style.overflow, '');
 
         drawer.persistent = false;
 
-        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], false);
+        assert.equal(document.body.style.overflow, 'hidden');
 
         drawer.opened = false;
 
-        assert.equal(shouldEnableDocScrollSpy.lastCall.args[0], true);
+        assert.equal(document.body.style.overflow, '');
       });
 
       test('scrim', function() {
