@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
 
 <!--
@@ -171,7 +172,8 @@ Mixin | Description | Default
       is: 'app-header',
 
       behaviors: [
-        Polymer.AppScrollEffectsBehavior
+        Polymer.AppScrollEffectsBehavior,
+        Polymer.IronResizableBehavior
       ],
 
       properties: {
@@ -221,8 +223,12 @@ Mixin | Description | Default
       },
 
       observers: [
-        '_condensesChanged(condenses, isAttached)'
+        'resetLayout(isAttached, condenses, fixed)'
       ],
+
+      listeners: {
+        'iron-resize': '_resizeHandler'
+      },
 
       /**
        * A cached offsetHeight of the current element.
@@ -275,43 +281,41 @@ Mixin | Description | Default
         return this.fixed ? this._deltaHeight : this._height + 5;
       },
 
-      created: function() {
-        this._top = 0;
-      },
-
       /**
-       * Recalculates the size of the toolbar.
+       * Resets the layout. This method is automatically called when the element is attached to the DOM.
        *
-       * @method setup
+       * @method resetLayout
        */
-      setup: function() {
-        // noop if the header isn't visible
-        if (this.offsetWidth === 0 && this.offsetHeight === 0) {
-          return;
-        }
-        var firstSetup = this._height === 0;
-        var scrollTop = this._clampedScrollTop;
-        var currentNoTransition = this.noTransitions;
-        this._height = this.offsetHeight;
-        this._topbar = Polymer.dom(this).querySelector('app-toolbar');
+      resetLayout: function() {
+        this.debounce('_resetLayout', function() {
+          // noop if the header isn't visible
+          if (this.offsetWidth === 0 && this.offsetHeight === 0) {
+            return;
+          }
+          var firstSetup = this._height === 0;
+          var scrollTop = this._clampedScrollTop;
+          var currentNoTransition = this.noTransitions;
+          this._height = this.offsetHeight;
+          this._topbar = Polymer.dom(this).querySelector('app-toolbar');
 
-        // prepare for measurement
-        this.noTransitions = true;
+          // prepare for measurement
+          this.noTransitions = true;
 
-        if (firstSetup || scrollTop === 0) {
-          this.cancelDebouncer('_resize');
-          this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
-          this._setUpEffect();
-          this._updateScrollState(scrollTop, true);
-        } else {
-          this._updateScrollState(0, true);
-          this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
-          this._setUpEffect();
-          this._updateScrollState(this._lastScrollTop, true);
-          this._layoutIfDirty();
-        }
-        // restore no transition
-        this.noTransitions = currentNoTransition;
+          if (firstSetup || scrollTop === 0) {
+            this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
+            this._setUpEffect();
+            this._updateScrollState(scrollTop, true);
+          } else {
+            this._updateScrollState(0, true);
+            this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
+            this._setUpEffect();
+            this._updateScrollState(this._lastScrollTop, true);
+            this._layoutIfDirty();
+          }
+          // restore no transition
+          this.noTransitions = currentNoTransition;
+          this.fire('app-header-reset-layout');
+        }, 1);
       },
 
       /**
@@ -351,7 +355,8 @@ Mixin | Description | Default
       },
 
       /**
-       * Returns true if the current header can condense.
+       * Returns true if the current header should condense based
+       * on the current scroll position.
        *
        * @param {number} scrollTop
        * @return {boolean}
@@ -359,6 +364,16 @@ Mixin | Description | Default
       _shouldCondense: function(scrollTop) {
         return this._lastScrollTop >= scrollTop && scrollTop > this._deltaHeight
             && (!this.reveals || this.condenses);
+      },
+
+      /**
+       * Returns true if the current header will condense based on the size of the header
+       * and the `consenses` property.
+       *
+       * @return {boolean}
+       */
+      willCondense: function() {
+        return this._deltaHeight > 0 && this.condenses;
       },
 
       /**
@@ -398,20 +413,23 @@ Mixin | Description | Default
         }
       },
 
-      /**
-       * Runs when the `condenses` changed.
-       */
-      _condensesChanged: function() {
-        this.debounce('_setup', this.setup, 1);
+      _resizeHandler: function() {
+        this.resetLayout();
       }
 
       /**
-       * Fires when the app-header is transformed. That is, when scroll effects are taking place.
+       * Fires when the `app-header` is transformed. That is, when scroll effects are taking place.
        * This event doesn't bubble.
        * * `event.detail.top` The top position relative to the viewport.
        * * `event.detail.progress` The progress value.
        *
        * @event app-header-transform
+       */
+
+      /**
+       * Fires when the layout of `app-header` changed.
+       *
+       * @event app-header-reset-layout
        */
     });
 
