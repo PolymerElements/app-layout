@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
 
 <!--
@@ -109,36 +110,47 @@ Mixin | Description | Default
       is: 'app-box',
 
       behaviors: [
-        Polymer.AppScrollEffectsBehavior
+        Polymer.AppScrollEffectsBehavior,
+        Polymer.IronResizableBehavior
       ],
 
+      listeners: {
+        'iron-resize': '_resizeHandler'
+      },
+
+      isAttached: function() {
+        this.resetLayout();
+      },
+
       /**
-       * Recalculates the size of the container
+       * Resets the layout. This method is automatically called when the element is attached to the DOM.
        *
-       * @method setup
+       * @method resetLayout
        */
-      setup: function() {
-        // noop if the box isn't in the rendered tree
-        if (this.offsetWidth === 0 && this.offsetHeight === 0) {
-          return;
-        }
+      resetLayout: function() {
+        this.debounce('_resetLayout', function() {
+          // noop if the box isn't in the rendered tree
+          if (this.offsetWidth === 0 && this.offsetHeight === 0) {
+            return;
+          }
+          var scrollTop = this._clampedScrollTop;
+          var currentNoTransition = this.noTransitions;
 
-        var scrollTop = this._clampedScrollTop;
-        var currentNoTransition = this.noTransitions;
-
-        this.noTransitions = true;
-        this._elementTop = this._getElementTop();
-        this._elementHeight = this.offsetHeight;
-        this._scrollingRegionHeight = (this.scroller === window) ? window.innerHeight : this.scroller.offsetHeight;
-        this.cancelDebouncer('_resize');
-        this._setUpEffect();
-        this._updateScrollState(scrollTop);
-        this.noTransitions = currentNoTransition;
+          this.noTransitions = true;
+          this._elementTop = this._getElementTop();
+          this._elementHeight = this.offsetHeight;
+          this._scrollingRegionHeight = (this.scroller === window) ? window.innerHeight : this.scroller.offsetHeight;
+          this.cancelDebouncer('_resize');
+          this._setUpEffect();
+          this._updateScrollState(scrollTop);
+          this.noTransitions = currentNoTransition;
+        }, 1);
       },
 
       _getElementTop: function() {
         var currentNode = this;
         var top = 0;
+        
         while (currentNode && currentNode !== this.scroller) {
           top += currentNode.offsetTop;
           currentNode = currentNode.offsetParent;
@@ -167,7 +179,11 @@ Mixin | Description | Default
       isOnScreen: function() {
         return this._elementTop < this._scrollTop + this._scrollingRegionHeight
             && this._elementTop + this._elementHeight > this._scrollTop;
-      }
+      },
+
+      _resizeHandler: function() {
+        this.resetLayout();
+      },
 
       /**
        * Fires when the app-box is transformed. That is, when scroll effects are taking place.

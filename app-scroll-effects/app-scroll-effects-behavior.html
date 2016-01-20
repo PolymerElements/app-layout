@@ -9,7 +9,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../app-scroll-behaviors/app-custom-scroller-behavior.html">
 
 <script>
@@ -25,13 +24,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * * `_updateScrollState`
    * * `isOnScreen`
    * * `isContentBelow`
-   * * `setup`
    *
    * @polymerBehavior
    */
   Polymer.AppScrollEffectsBehavior = [
     Polymer.AppCustomScrollerBehavior,
-    Polymer.IronResizableBehavior,
    {
 
     properties: {
@@ -81,10 +78,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       '_effectsChanged(effects, effectsConfig)'
     ],
 
-    listeners: {
-      'iron-resize': '_resizeHandler'
-    },
-
     /**
      * Updates the scroll state. This method should be overridden
      * by the consumer of this behavior.
@@ -120,15 +113,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     /**
-     * Measures the current element and sets up the effects added via
-     * the `effects` property.
-     *
-     * @abstract
-     * @method setup
-     */
-    setup: function() {},
-
-    /**
      * List of effects handlers that will take place during scroll.
      *
      * @type {Array<Function>}
@@ -153,10 +137,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     created: function() {
       this._effectsRunFn = [];
       this._effects = [];
-    },
-
-    attached: function() {
-      this.debounce('_setup', this.setup, 1);
     },
 
     detached: function() {
@@ -289,13 +269,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this._effectsRunFn.forEach(function(run) {
         run(p, y);
       });
-    },
-
-    /**
-     * Handles `iron-resize`.
-     */
-    _resizeHandler: function(e) {
-      this.debounce('_resize', this.setup, 100);
     },
 
     /**
