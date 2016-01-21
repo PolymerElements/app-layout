@@ -113,13 +113,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script>
     var drawerLayout = document.getElementById('drawerLayout');
-    var drawer = drawerLayout.drawer;
-
     document.getElementById('toggle').addEventListener('tap', function() {
       if (drawerLayout.forceNarrow || !drawerLayout.narrow) {
         drawerLayout.forceNarrow = !drawerLayout.forceNarrow;
       } else {
-        drawer.toggle();
+        drawerLayout.drawer.toggle();
       }
     });
   </script>

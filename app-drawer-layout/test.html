@@ -116,21 +116,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(drawer.opened);
       });
 
-      test('content layout', function() {
+      test('content layout', function(done) {
         drawerLayout.responsiveWidth = '10000px';
 
-        assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
-        assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+        window.setTimeout(function() {
+          assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
+          assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
 
-        drawerLayout.responsiveWidth = '0px';
+          drawerLayout.responsiveWidth = '0px';
 
-        assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '256px');
-        assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+          window.setTimeout(function() {
+            assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '256px');
+            assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
 
-        drawer.position = 'right';
+            drawer.position = 'right';
 
-        assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
-        assert.equal(drawerLayout.$.contentContainer.style.marginRight, '256px');
+            window.setTimeout(function() {
+              assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
+              assert.equal(drawerLayout.$.contentContainer.style.marginRight, '256px');
+
+              done();
+            }, 50);
+          }, 50);
+        }, 50);
       });
     });
 

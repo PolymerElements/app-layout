@@ -66,11 +66,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       /**
-       * Disables any CSS transitions in the current element.
+       * Disables CSS transitions and scroll effects on the element.
        */
-      noTransitions: {
+      disabled: {
         type: Boolean,
-        reflectToAttribute: true
+        reflectToAttribute: true,
+        value: false
       }
     },
 
@@ -275,7 +276,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * Overrides the `_scrollHandler`.
      */
     _scrollHandler: function() {
-      this._updateScrollState(this._clampedScrollTop);
+      if (!this.disabled) {
+        this._updateScrollState(this._clampedScrollTop);
+      }
     }
   }];
 

@@ -19,8 +19,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
   <link rel="import" href="../../../font-roboto/roboto.html">
+  <link rel="import" href="../../../paper-styles/paper-styles.html">
   <link rel="import" href="../../../iron-icons/iron-icons.html">
   <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../../../paper-item/paper-icon-item.html">
   <link rel="import" href="../../demo/sample-content.html">
   <link rel="import" href="../../app-toolbar/app-toolbar.html">
   <link rel="import" href="../app-drawer.html">
@@ -49,115 +51,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <app-toolbar>
-    <div title spacer></div>
-    <paper-icon-button icon="menu"></paper-icon-button>
-  </app-toolbar>
+  <template is="dom-bind">
 
-  <sample-content size="100"></sample-content>
+    <app-toolbar>
+      <div title spacer></div>
+      <paper-icon-button icon="menu" on-tap="_toggleDrawer"></paper-icon-button>
+    </app-toolbar>
 
-  <app-drawer position="right" swipe-open>
-    <div style="height: 100%; overflow: auto;">
-      <ul>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-        <li>Alpha</li>
-        <li>Bravo</li>
-        <li>Charlie</li>
-        <li>Delta</li>
-        <li>Echo</li>
-      </ul>
-    </div>
-  </app-drawer>
+    <sample-content size="100"></sample-content>
+
+    <app-drawer id="drawer" position="right" swipe-open>
+      <div style="height: 100%; overflow: auto;">
+        <template is="dom-repeat" id="menu" items="[[items]]">
+          <paper-icon-item class="iconItem">
+            <iron-icon class="grayIcon" icon="[[_randomIcon()]]" item-icon></iron-icon> <span>[[item]]</span>
+          </paper-icon-item>
+        </template>
+      </div>
+    </app-drawer>
+  </template>
 
   <script>
-    var drawer = document.querySelector('app-drawer');
-    document.querySelector('paper-icon-button').addEventListener('tap', function() {
-      drawer.toggle();
-    });
+    (function(scope) {
+      var items = [];
+      var icons = ['inbox', 'favorite', 'polymer', 'question-answer', 'send', 'archive', 'backup', 'dashboard'];
+
+      while (items.length < 100) {
+        items.push('Option Name');
+      }
+
+      scope._randomIcon = function() {
+        return icons[parseInt(icons.length * Math.random())];
+      };
+
+      scope._toggleDrawer = function() {
+        scope.$.drawer.toggle();
+      };
+
+      scope.items = items;
+
+    })(document.querySelector('template[is=dom-bind]'));
   </script>
 
 </body>

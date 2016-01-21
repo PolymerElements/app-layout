@@ -145,11 +145,11 @@ Mixin | Description | Default
       width: 100%;
     }
 
-    :host([no-transitions]),
-    :host([no-transitions])::after,
-    :host([no-transitions]) #frontLayer,
-    :host([no-transitions]) #backLayer,
-    :host([no-transitions]) > ::content > app-toolbar:first-of-type {
+    :host([disabled]),
+    :host([disabled])::after,
+    :host([disabled]) #frontLayer,
+    :host([disabled]) #backLayer,
+    :host([disabled]) > ::content > app-toolbar:first-of-type {
       transition: none !important;
     }
 
@@ -220,6 +220,7 @@ Mixin | Description | Default
           reflectToAttribute: true,
           value: false
         }
+
       },
 
       observers: [
@@ -294,12 +295,12 @@ Mixin | Description | Default
           }
           var firstSetup = this._height === 0;
           var scrollTop = this._clampedScrollTop;
-          var currentNoTransition = this.noTransitions;
+          var savedDisabled = this.disabled;
           this._height = this.offsetHeight;
           this._topbar = Polymer.dom(this).querySelector('app-toolbar');
 
           // prepare for measurement
-          this.noTransitions = true;
+          this.disabled = true;
 
           if (firstSetup || scrollTop === 0) {
             this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
@@ -313,7 +314,7 @@ Mixin | Description | Default
             this._layoutIfDirty();
           }
           // restore no transition
-          this.noTransitions = currentNoTransition;
+          this.disabled = savedDisabled;
           this.fire('app-header-reset-layout');
         }, 1);
       },

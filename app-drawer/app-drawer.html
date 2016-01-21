@@ -163,8 +163,7 @@ Custom property                  | Description                            | Defa
           type: Boolean,
           value: false,
           notify: true,
-          reflectToAttribute: true,
-          observer: '_openedChanged'
+          reflectToAttribute: true
         },
 
         /**
@@ -173,8 +172,7 @@ Custom property                  | Description                            | Defa
         persistent: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true,
-          observer: '_persistentChanged'
+          reflectToAttribute: true
         },
 
         /**
@@ -183,8 +181,7 @@ Custom property                  | Description                            | Defa
         position: {
           type: String,
           value: 'left',
-          reflectToAttribute: true,
-          observer: '_positionChanged'
+          reflectToAttribute: true
         },
 
         /**
@@ -194,11 +191,7 @@ Custom property                  | Description                            | Defa
           type: Boolean,
           value: false,
           reflectToAttribute: true
-        },
-
-        _lastTrackDirection: Number,
-
-        _translateOffset: Number
+        }
 
       },
 
@@ -206,7 +199,17 @@ Custom property                  | Description                            | Defa
         track: '_trackHandler'
       },
 
+      observers: [
+        'resetLayout(position)',
+        '_updateDocScroll(opened, persistent)'
+      ],
+
+      _lastTrackDirection: 0,
+
+      _translateOffset: 0,
+
       attached: function() {
+        // Set the scroll direction so you can vertically scroll inside the drawer.
         this.setScrollDirection('y');
       },
 
@@ -238,6 +241,12 @@ Custom property                  | Description                            | Defa
        */
       getWidth: function() {
         return this.$.contentContainer.offsetWidth;
+      },
+
+      resetLayout: function() {
+        this.debounce('_resetLayout', function() {
+          this.fire('app-drawer-reset-layout');
+        }, 1);
       },
 
       _scrimTapHandler: function() {
@@ -304,18 +313,6 @@ Custom property                  | Description                            | Defa
         }
       },
 
-      _openedChanged: function() {
-        this._updateDocScroll();
-      },
-
-      _persistentChanged: function() {
-        this._updateDocScroll();
-      },
-
-      _positionChanged: function() {
-        this.fire('app-drawer-layout-changed');
-      },
-
       _translateDrawer: function(x) {
         this.transform('translate3d(' + x + 'px, 0, 0)', this.$.contentContainer);
       },
@@ -327,7 +324,7 @@ Custom property                  | Description                            | Defa
       /**
        * Fired when the layout of app-drawer has changed.
        *
-       * @event app-drawer-layout-changed
+       * @event app-drawer-reset-layout
        */
 
     });
