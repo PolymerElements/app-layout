@@ -131,20 +131,28 @@ Using an own scrolling region:
       },
 
       listeners: {
-        'iron-resize': '_resize'
+        'iron-resize': '_resizeHandler',
+        'app-header-reset-layout': 'resetLayout'
       },
+
+      observers: [
+        'resetLayout(isAttached, hasScrollingRegion)'
+      ],
 
       get header() {
         return Polymer.dom(this.$.header).getDistributedNodes()[0];
       },
 
-      attached: function() {
-        this.async(this.setup, 1);
-      },
-
-      setup: function() {
-        this._updateContentPosition();
-        this._updateScroller();
+      /**
+       * Resets the layout. This method is automatically called when the element is attached to the DOM.
+       *
+       * @method resetLayout
+       */
+      resetLayout: function() {
+        this.debounce('_resetLayout', function() {
+          this._updateContentPosition();
+          this._updateScroller();
+        }, 3);
       },
 
       _getFixedNodes: function() {
@@ -154,9 +162,17 @@ Using an own scrolling region:
 
       _updateContentPosition: function() {
         var header = this.header;
-        if (header) {
-          this._headerHeight = header.offsetHeight;
-          this.$.contentContainer.style.paddingTop = this._headerHeight + 'px';
+        var containerStyle = this.$.contentContainer.style;
+        if (!this.isAttached || !header) {
+          return;
+        }
+        this._headerHeight = header.offsetHeight;
+        if (header.fixed && !header.willCondense() && this.hasScrollingRegion) {
+          containerStyle.marginTop = this._headerHeight + 'px';
+          containerStyle.paddingTop = '';
+        } else {
+          containerStyle.paddingTop = this._headerHeight + 'px';
+          containerStyle.marginTop = '';
         }
       },
 
@@ -178,17 +194,18 @@ Using an own scrolling region:
       },
 
       _updateScroller: function() {
-        if (this.isAttached) {
-          var header = this.header;
-          if (header) {
-            header.scroller = this.hasScrollingRegion ? this.$.contentContainer : window;
-            this._updateFixedNodesPosition();
-          }
+        if (!this.isAttached) {
+          return;
+        }
+        var header = this.header;
+        if (header) {
+          header.scroller = this.hasScrollingRegion ? this.$.contentContainer : window;
+          this._updateFixedNodesPosition();
         }
       },
 
-      _resize: function() {
-        this.setup();
+      _resizeHandler: function() {
+        this.resetLayout();
       }
 
     });
