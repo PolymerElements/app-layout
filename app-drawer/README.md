@@ -16,6 +16,15 @@ Add a drawer on the right side of the screen:
 <app-drawer position="right" opened></app-drawer>
 ```
 
+To make the contents of the drawer scrollable, create a wrapper for the scroll
+content, and apply height and overflow styles to it.
+
+```html
+<app-drawer>
+  <div style="height: 100%; overflow: auto;"></div>
+</app-drawer>
+```
+
 ### Styling
 
 Custom property                  | Description                            | Default

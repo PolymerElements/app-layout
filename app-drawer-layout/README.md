@@ -51,3 +51,9 @@ With an app-header-layout:
   </app-header-layout>
 </app-drawer-layout>
 ```
+
+### Styling
+
+Custom property                          | Description                          | Default
+-----------------------------------------|--------------------------------------|---------
+`--app-drawer-layout-content-transition` | Transition for the content container | none

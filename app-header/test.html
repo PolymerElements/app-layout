@@ -368,6 +368,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       });
 
+      test('disabled state', function(done) {
+        header.effects = 'test-effect';
+
+        flush(function() {
+          scrollTestHelper(header.scroller, [
+            {
+              y: 0,
+              callback: function() {
+                assert.isTrue(testEffect.setUp.called);
+                assert.deepEqual(testEffect.run.lastCall.args, [0, 0]);
+
+                header.disabled = true;
+              }
+            }, {
+              y: toolbar.offsetHeight,
+              callback: function() {
+                assert.deepEqual(testEffect.run.lastCall.args, [0, 0]);
+
+                header.disabled = false;
+              }
+            }, {
+              y: toolbar.offsetHeight * 2,
+              callback: function() {
+                assert.deepEqual(testEffect.run.lastCall.args, [2, 128]);
+
+                done();
+              }
+            }
+          ]);
+        });
+      });
+
     });
 
   </script>

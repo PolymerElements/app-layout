@@ -86,8 +86,8 @@ Mixin | Description | Default
       width: 100%;
     }
 
-    :host([no-transitions]),
-    :host([no-transitions]) #frontLayer {
+    :host([disabled]),
+    :host([disabled]) #frontLayer {
       transition: none !important;
     }
 
@@ -134,16 +134,16 @@ Mixin | Description | Default
             return;
           }
           var scrollTop = this._clampedScrollTop;
-          var currentNoTransition = this.noTransitions;
+          var savedDisabled = this.disabled;
 
-          this.noTransitions = true;
+          this.disabled = true;
           this._elementTop = this._getElementTop();
           this._elementHeight = this.offsetHeight;
           this._scrollingRegionHeight = (this.scroller === window) ? window.innerHeight : this.scroller.offsetHeight;
           this.cancelDebouncer('_resize');
           this._setUpEffect();
           this._updateScrollState(scrollTop);
-          this.noTransitions = currentNoTransition;
+          this.disabled = savedDisabled;
         }, 1);
       },
 

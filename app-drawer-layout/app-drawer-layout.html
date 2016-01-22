@@ -64,6 +64,12 @@ With an app-header-layout:
 </app-drawer-layout>
 ```
 
+### Styling
+
+Custom property                          | Description                          | Default
+-----------------------------------------|--------------------------------------|---------
+`--app-drawer-layout-content-transition` | Transition for the content container | none
+
 @demo app-drawer-layout/demo.html
 -->
 
@@ -82,6 +88,7 @@ With an app-header-layout:
     #contentContainer {
       position: relative;
       height: 100%;
+      transition: var(--app-drawer-layout-content-transition, none);
     }
 
     #contentContainer:not(.narrow) > ::content [drawer-toggle] {
@@ -96,7 +103,7 @@ With an app-header-layout:
       <content select=":not(app-drawer)"></content>
     </div>
 
-    <content id="drawerContainer" select="app-drawer"></content>
+    <content id="drawerContent" select="app-drawer"></content>
 
     <iron-media-query query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]"
         on-query-matches-changed="_onQueryMatchesChanged"></iron-media-query>
@@ -145,11 +152,11 @@ With an app-header-layout:
 
       listeners: {
         'tap': '_tapHandler',
-        'app-drawer-position-changed': '_resetLayout'
+        'app-drawer-reset-layout': 'resetLayout'
       },
 
       attached: function() {
-        this._resetLayout();
+        this.resetLayout();
       },
 
       /**
@@ -158,7 +165,7 @@ With an app-header-layout:
        * @property drawer
        */
       get drawer() {
-        return Polymer.dom(this.$.drawerContainer).getDistributedNodes()[0];
+        return Polymer.dom(this.$.drawerContent).getDistributedNodes()[0];
       },
 
       _tapHandler: function(e) {
@@ -170,16 +177,27 @@ With an app-header-layout:
 
       _responsiveChange: function(narrow) {
         this._setNarrow(narrow);
-        this._resetLayout();
+        this.resetLayout();
       },
 
-      _resetLayout: function() {
-        if (this.isAttached) {
+      resetLayout: function() {
+        this.debounce('_resetLayout', function() {
+          if (!this.isAttached) {
+            return;
+          }
           this.drawer.opened = !this.narrow;
           this.drawer.persistent = !this.narrow;
-          this.$.contentContainer.style.marginLeft = (this.narrow || (this.drawer.position == 'right')) ? '' : this.drawer.getWidth() + 'px';
-          this.$.contentContainer.style.marginRight = (this.narrow || (this.drawer.position == 'left')) ? '' : this.drawer.getWidth() + 'px';
-        }
+          if (this.narrow) {
+            this.$.contentContainer.style.marginLeft = '';
+            this.$.contentContainer.style.marginRight = '';
+          } else if (this.drawer.position == 'right') {
+            this.$.contentContainer.style.marginLeft = '';
+            this.$.contentContainer.style.marginRight = this.drawer.getWidth() + 'px';
+          } else {
+            this.$.contentContainer.style.marginLeft = this.drawer.getWidth() + 'px';
+            this.$.contentContainer.style.marginRight = '';
+          }
+        }, 1);
       },
 
       _onQueryMatchesChanged: function(event) {
@@ -189,7 +207,6 @@ With an app-header-layout:
       _computeMediaQuery: function(forceNarrow, responsiveWidth) {
         return forceNarrow ? '' : '(max-width: ' + responsiveWidth + ')';
       },
-
 
       /**
        * NOTE(keanulee): IE/Edge does not properly update element styles when using
