@@ -11,7 +11,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="../app-scroll-behaviors/app-document-scroll-behavior.html">
 
 <!--
 app-header-layout lays out an app-header and a content. This element uses the document scroll
@@ -111,8 +110,7 @@ Using an own scrolling region:
       is: 'app-header-layout',
 
       behaviors: [
-        Polymer.IronResizableBehavior,
-        Polymer.AppDocumentScrollBehavior
+        Polymer.IronResizableBehavior
       ],
 
       properties: {
@@ -124,8 +122,7 @@ Using an own scrolling region:
         hasScrollingRegion: {
           type: Boolean,
           value: false,
-          reflectToAttribute: true,
-          observer: '_hasScrollingRegionChanged'
+          reflectToAttribute: true
         }
 
       },
@@ -179,18 +176,9 @@ Using an own scrolling region:
       _updateFixedNodesPosition: function() {
         var rect = this.getBoundingClientRect();
         this._getFixedNodes().forEach(function(node) {
-          // if it's a header, check if the scroller is the document
-          if (node && (!node.scroller || node.scroller === window)) {
-            node.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
-            node.style.width = this.hasScrollingRegion ? '' : rect.width + 'px';
-          }
+          node.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
+          node.style.width = this.hasScrollingRegion ? '' : rect.width + 'px';
         }.bind(this));
-      },
-
-      _hasScrollingRegionChanged: function(hasScrollingRegion) {
-        // the user should be able to scroll
-        this.shouldEnableScroll(hasScrollingRegion, this.$.contentContainer);
-        this._updateScroller();
       },
 
       _updateScroller: function() {

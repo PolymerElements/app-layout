@@ -76,11 +76,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(header.scroller, window);
       });
 
-      test('scrolling region', function() {
+      test('scrolling region', function(done) {
         headerLayout.hasScrollingRegion = true;
 
-        headerLayout.classList.add('fit');
-        assert.notEqual(header.scroller, window);
+        window.setTimeout(function() {
+          assert.notEqual(header.scroller, window);
+          done();
+        }, 50);
       });
 
     });
