@@ -80,9 +80,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         headerLayout.hasScrollingRegion = true;
 
         window.setTimeout(function() {
-          assert.notEqual(header.scroller, window);
+          /**
+           * Use window.toString() to avoid potential comparisons between window with itself
+           * which causes a misleading "JSON.stringify cannot serialize cyclic structures" error.
+           */
+          assert.notEqual(header.scroller.toString(), window.toString());
           done();
-        }, 50);
+        }, 100);
       });
 
     });
