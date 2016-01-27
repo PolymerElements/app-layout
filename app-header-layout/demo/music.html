@@ -38,7 +38,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     .top-header {
       color: #fff;
-      --app-header-back-background: {
+      --app-header-background-rear-layer: {
         background-color: #ef6c00;
       };
     }
@@ -46,7 +46,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     .bg-header {
       height: 100vh;
       color: #fff;
-      --app-header-front-background: {
+      --app-header-background-front-layer: {
         background-image: url(http://app-layout-assets.appspot.com/assets/GIRL_PharrellWilliams.jpg);
       };
     }
@@ -192,7 +192,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     addEventListener('WebComponentsReady', function() {
 
       var topHeader = document.querySelector('.top-header');
-      var fadeBackgroundEffect = topHeader.effect('fade-background');
+      var fadeBackgroundEffect = topHeader.createEffect('fade-background');
 
       document.querySelector('.bg-header').addEventListener('app-header-transform', function(e) {
         var isCondensed = e.detail.progress > 0.25;

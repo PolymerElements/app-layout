@@ -14,9 +14,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
 
 <!--
-app-header is a container for `app-toolbar`s that can have scroll effects. By default,
-an app-header moves away from the viewport when scrolling down and if using `reveals`,
-the header slides back when scrolling back up. For example,
+app-header is container element for app-toolbars at the top of the screen that can have scroll
+effects - visual effects based on scroll position. By default, an app-header moves away from
+the viewport when scrolling down and if using `reveals`, the header slides back when scrolling
+back up. For example,
 
 ```html
 <app-header reveals>
@@ -56,8 +57,8 @@ Effect name | Description
 
 Mixin | Description | Default
 ----------------|-------------|----------
-`--app-header-front-background` | Applies to the front background | {}
-`--app-header-back-background` | Applies to the back background | {}
+`--app-header-background-front-layer` | Applies to the front layer of the background | {}
+`--app-header-background-rear-layer` | Applies to the rear layer of the background | {}
 
 @demo app-header/demo/demo1.html
 @demo app-header/demo/demo2.html
@@ -117,25 +118,25 @@ Mixin | Description | Default
       transform-origin: left top;
     }
 
-    #clip {
+    #background {
       @apply(--layout-fit);
       overflow: hidden;
     }
 
-    #frontLayer,
-    #backLayer {
+    #backgroundFrontLayer,
+    #backgroundRearLayer {
       @apply(--layout-fit);
       pointer-events: none;
       background-size: cover;
       height: 100%;
     }
 
-    #frontLayer {
-      @apply(--app-header-front-background);
+    #backgroundFrontLayer {
+      @apply(--app-header-background-front-layer);
     }
 
-    #backLayer {
-      @apply(--app-header-back-background);
+    #backgroundRearLayer {
+      @apply(--app-header-background-rear-layer);
       opacity: 0;
     }
 
@@ -147,8 +148,8 @@ Mixin | Description | Default
 
     :host([disabled]),
     :host([disabled])::after,
-    :host([disabled]) #frontLayer,
-    :host([disabled]) #backLayer,
+    :host([disabled]) #backgroundFrontLayer,
+    :host([disabled]) #backgroundRearLayer,
     :host([disabled]) > ::content > app-toolbar:first-of-type {
       transition: none !important;
     }
@@ -156,9 +157,9 @@ Mixin | Description | Default
   </style>
 
   <template>
-    <div id="clip">
-      <div id="backLayer"></div>
-      <div id="frontLayer"></div>
+    <div id="background">
+      <div id="backgroundRearLayer"></div>
+      <div id="backgroundFrontLayer"></div>
     </div>
     <div id="contentContainer">
       <content id="content"></content>

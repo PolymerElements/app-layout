@@ -14,8 +14,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
 
 <!--
-app-box is a container that can have scroll effects. For example,
-the parallax effect can be used to move an image at a slower rate than the foreground.
+app-box is a container element that can have scroll effects - visual effects based on
+scroll position. For example, the parallax effect can be used to move an image at a slower
+rate than the foreground.
 
 ```html
 <app-box style="height: 100px;" effects="parallax-background">
@@ -25,11 +26,11 @@ the parallax effect can be used to move an image at a slower rate than the foreg
 
 Notice the `background` attribute in the `img` element; this attribute specifies that that image is used as the background.
 By adding the background to the light dom, you can compose backgrounds that can change dynamically.
-Alternatively, the mixin `--app-box-front-background` allows to style the background. For example:
+Alternatively, the mixin `--app-box-background-front-layer` allows to style the background. For example:
 
 ```css
   .parallaxAppBox {
-    --app-box-front-background: {
+    --app-box-background-front-layer: {
       background-image: url(picture.png);
     };
   }
@@ -53,7 +54,7 @@ Effect name | Description
 
 Mixin | Description | Default
 ----------------|-------------|----------
-`--app-box-front-background` | Applies to the front background | {}
+`--app-box-background-front-layer` | Applies to the front layer of the background | {}
 
 @demo app-box/demo/document-scroll.html
 @demo app-box/demo/scrolling-region.html
@@ -67,17 +68,17 @@ Mixin | Description | Default
       position: relative;
     }
 
-    #clip {
+    #background {
       @apply(--layout-fit);
       overflow: hidden;
       height: 100%;
     }
 
-    #frontLayer {
+    #backgroundFrontLayer {
       pointer-events: none;
       background-size: cover;
       min-height: 100%;
-      @apply(--app-box-front-background);
+      @apply(--app-box-background-front-layer);
     }
 
     #contentContainer {
@@ -87,15 +88,15 @@ Mixin | Description | Default
     }
 
     :host([disabled]),
-    :host([disabled]) #frontLayer {
+    :host([disabled]) #backgroundFrontLayer {
       transition: none !important;
     }
 
   </style>
 
   <template>
-    <div id="clip">
-      <div id="frontLayer">
+    <div id="background">
+      <div id="backgroundFrontLayer">
         <content select="[background]"></content>
       </div>
     </div>

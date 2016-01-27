@@ -6,17 +6,17 @@ A set of experimental layout elements for your app. It includes:
 
 - [app-toolbar](/app-toolbar) - A horizontal toolbar containing items that can be used for label, navigation, search and actions.
 
-- [app-header](/app-header) - A container for app-toolbars that can have scroll effects.
+- [app-header](/app-header) - A container element for app-toolbars at the top of the screen that can have scroll effects - visual effects based on scroll position.
 
-- [app-header-layout](/app-header-layout) - A wrapper that lays out an app-header and the content.
+- [app-header-layout](/app-header-layout) - A wrapper element that positions an app-header and other content.
 
-- [app-drawer](/app-drawer) - A navigation drawer that can slide in from the left, right, bottom or top.
+- [app-drawer](/app-drawer) - A navigation drawer that can slide in from the left or right.
 
-- [app-drawer-layout](/app-drawer-layout) - A wrapper that lays out an app-drawer and the content.
+- [app-drawer-layout](/app-drawer-layout) - A wrapper element that positions an app-drawer and other content.
 
-- [app-box](/app-box) - A container that can have scroll effects.
+- [app-box](/app-box) - A container element that can have scroll effects - visual effects based on scroll position.
 
-- [app-scrollpos-control](/app-scrollpos-control) - A manager for the scroll position when mulitple pages are sharing the same document scroller.
+- [app-scrollpos-control](/app-scrollpos-control) - A manager for saving and restoring the scroll position when multiple pages are sharing the same document scroller.
 
 
 ### Install

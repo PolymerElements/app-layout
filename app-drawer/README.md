@@ -1,6 +1,6 @@
 ##&lt;app-drawer&gt;
 
-app-drawer is a navigation drawer that can slide in from the left, right, bottom or top.
+app-drawer is a navigation drawer that can slide in from the left or right.
 
 Example:
 

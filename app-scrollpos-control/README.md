@@ -1,7 +1,7 @@
 ##&lt;app-scrollpos-control&gt;
 
-app-scrollpos-control preserves the scroll position when mulitple pages are sharing the same
-document scroller.
+app-scrollpos-control is a manager for saving and restoring the scroll position when multiple
+pages are sharing the same document scroller.
 
 Example:
 
