@@ -19,7 +19,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   Polymer.AppScrollEffects = {};
 
   /**
-   * Use this effect to blend the background images in the header.
+   * While scrolling down, fade in the rear background layer and fade out the front background
+   * layer (opacity interpolated based on scroll position).
    */
   Polymer.AppScrollEffects['blend-background'] = {
     setUp: function setUp() {
@@ -36,7 +37,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   /**
-   * Use this effect to fade in/out the background in the header.
+   * Upon scrolling past a threshold, fade in the rear background layer and fade out the front
+   * background layer (opacity CSS transitioned over time).
    */
   Polymer.AppScrollEffects['fade-background'] = {
     setUp: function setUp(config) {
@@ -62,7 +64,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   /**
-   * Use this effect to fade in/out the background images in the header.
+   * Vertically translate the background based on a factor of the scroll position.
    */
   Polymer.AppScrollEffects['parallax-background'] = {
     setUp: function setUp(config) {
@@ -92,7 +94,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   /**
-   * Use this effect to transform the main title into the condensed title.
+   * Transform the font size of a designated title element between two values based on the scroll
+   * position.
    */
   Polymer.AppScrollEffects['resize-title'] = {
     setUp: function setUp() {
@@ -156,7 +159,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   /**
-   * Use this effect to allow the title to transition to the condensed title quickly.
+   * Upon scrolling past a threshold, CSS transition the font size of a designated title element
+   * between two values.
    */
   Polymer.AppScrollEffects['resize-snapped-title'] = {
     setUp: function setUp(config) {
@@ -202,7 +206,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   /**
-   * Use this effect to dynamically display a shadow below the header.
+   * Toggles the shadow property in app-header when content is scrolled to create a sense of depth
+   * between the element and the content underneath.
    */
   Polymer.AppScrollEffects['waterfall'] = {
     run: function run(p, y) {
@@ -211,7 +216,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   /**
-   *
+   * Shorthand for the waterfall, resize-title, blend-background, and parallax-background effects.
    */
   Polymer.AppScrollEffects['material'] = {
     setUp: function() {
