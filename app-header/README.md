@@ -1,8 +1,9 @@
 ##&lt;app-header&gt;
 
-app-header is a container for `app-toolbar`s that can have scroll effects. By default,
-an app-header moves away from the viewport when scrolling down and if using `reveals`, 
-the header slides back when scrolling back up. For example,
+app-header is container element for app-toolbars at the top of the screen that can have scroll
+effects - visual effects based on scroll position. By default, an app-header moves away from
+the viewport when scrolling down and if using `reveals`, the header slides back when scrolling
+back up. For example,
 
 ```html
 <app-header reveals>
@@ -42,5 +43,5 @@ Effect name | Description
 
 Mixin | Description | Default
 ----------------|-------------|----------
-`--app-header-front-background` | Applies to the front background | {}
-`--app-header-back-background` | Applies to the back background | {}
+`--app-header-background-front-layer` | Applies to the front layer of the background | {}
+`--app-header-background-rear-layer` | Applies to the rear layer of the background | {}

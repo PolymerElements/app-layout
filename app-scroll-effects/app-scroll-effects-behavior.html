@@ -145,11 +145,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     /**
-     * Allows to run effects programmatically.
+     * Creates an effect object from an effect name and configuration that can be used to run
+     * effects programmatically.
      *
-     * @method effect
+     * @method createEffect
      * @param {string} effectName The name of an effect defined in `Polymer.AppScrollEffects`
-     * @param {Object=} effectConfig The effect config object if the effect accepts config values. (Optional)
+     * @param {Object=} effectConfig The effect config object if the effect accepts config
+     *   values. (Optional)
      * @return {Object} The effect object. This object has the following interface:
      *
      *  * `obj.setUp()`, Sets up the requirements for the effect.
@@ -159,12 +161,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      *
      * Example:
      * ```js
-     * var parallax = obj.effect('parallax-background');
+     * var parallax = obj.createEffect('parallax-background');
      * // runs the effect
      * parallax.run(0.5, 0);
      * ```
      */
-    effect: function(effectName, effectConfig) {
+    createEffect: function(effectName, effectConfig) {
       if (!Polymer.AppScrollEffects) {
         throw new ReferenceError('undefined Polymer.AppScrollEffects');
         return;

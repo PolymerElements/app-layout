@@ -1,7 +1,8 @@
 ##&lt;app-box&gt;
 
-app-box is a container that can have scroll effects. For example,
-the parallax effect can be used to move an image at a slower rate than the foreground.
+app-box is a container element that can have scroll effects - visual effects based on
+scroll position. For example, the parallax effect can be used to move an image at a slower
+rate than the foreground.
 
 ```html
 <app-box style="height: 100px;" effects="parallax-background">
@@ -11,11 +12,11 @@ the parallax effect can be used to move an image at a slower rate than the foreg
 
 Notice the `background` attribute in the `img` element; this attribute specifies that that image is used as the background.
 By adding the background to the light dom, you can compose backgrounds that can change dynamically.
-Alternatively, the mixin `--app-box-front-background` allows to style the background. For example:
+Alternatively, the mixin `--app-box-background-front-layer` allows to style the background. For example:
 
 ```css
   .parallaxAppBox {
-    --app-box-front-background: {
+    --app-box-background-front-layer: {
       background-image: url(picture.png);
     };
   }
@@ -31,7 +32,7 @@ Finally, app-box can have content inside. For example:
 
 ## Scroll effects
 
-Effect | Description
+Effect name | Description
 ----------------|-------------
 `parallax-background` | A parallax effect
 
@@ -39,4 +40,4 @@ Effect | Description
 
 Mixin | Description | Default
 ----------------|-------------|----------
-`--app-box-front-background` | Changes the front background | {}
+`--app-box-background-front-layer` | Applies to the front layer of the background | {}

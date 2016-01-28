@@ -14,13 +14,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <title>test for app-header-layout</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../web-component-tester/browser.js"></script>
-  <script src="../../test-fixture/test-fixture-mocha.js"></script>
-  <link rel="import" href="../../test-fixture/test-fixture.html">
-  <link rel="import" href="../app-toolbar/app-toolbar.html">
-  <link rel="import" href="../app-header/app-header.html">
-  <link rel="import" href="app-header-layout.html">
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../web-component-tester/browser.js"></script>
+  <script src="../../../test-fixture/test-fixture-mocha.js"></script>
+  <link rel="import" href="../../../test-fixture/test-fixture.html">
+  <link rel="import" href="../../app-toolbar/app-toolbar.html">
+  <link rel="import" href="../../app-header/app-header.html">
+  <link rel="import" href="../app-header-layout.html">
 
   <style>
     body {
@@ -80,9 +80,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         headerLayout.hasScrollingRegion = true;
 
         window.setTimeout(function() {
-          assert.notEqual(header.scroller, window);
+          /**
+           * Use window.toString() to avoid potential comparisons between window with itself
+           * which causes a misleading "JSON.stringify cannot serialize cyclic structures" error.
+           */
+          assert.notEqual(header.scroller.toString(), window.toString());
           done();
-        }, 50);
+        }, 100);
       });
 
     });
