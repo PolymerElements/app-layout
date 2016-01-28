@@ -30,14 +30,32 @@ if the user scrolls back up to the top.
 ## Scroll effects
 The following effects can be installed via the `effects` property:
 
-Effect name | Description
-----------------|-------------
-`parallax-background` | Adds a parallax effect.
-`blend-background` | Blends the front and back backgrounds in the header.
-`fade-background` | Fades the backgrounds when the header hits a threshold.
-`resize-title` | Transforms the element with the attribute `title` into the element with the attribute `condensed-title` by resizing it.
-`resize-snapped-title` | Fades the elements with the attributes `title` and `condensed-title` respectively.
-`waterfall` | Controls the `shadow` property of `app-header` such that the shadow appears only when there is content below the header.
+* **blend-background**
+While scrolling down, fade in the rear background layer and fade out the front 
+background layer (opacity interpolated based on scroll position).
+
+* **fade-background**
+Upon scrolling past a threshold, fade in the rear background layer and fade out
+the front background layer (opacity CSS transitioned over time).
+
+* **parallax-background**
+Vertically translate the background based on a factor of the scroll position.
+
+* **resize-title** 
+Transform the font size of a designated title element between two values based 
+on the scroll position.
+
+* **resize-snapped-title**
+Upon scrolling past a threshold, CSS transition the font size of a designated
+title element between two values.
+
+* **waterfall**
+Toggles the shadow property in app-header when content is scrolled to create
+a sense of depth between the element and the content underneath.
+
+* **material**
+Shorthand for the waterfall, resize-title, blend-background, and parallax-background 
+effects.
 
 ## Styling
 
