@@ -211,6 +211,15 @@ Custom property                  | Description                            | Defa
       attached: function() {
         // Set the scroll direction so you can vertically scroll inside the drawer.
         this.setScrollDirection('y');
+
+        /**
+         * Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
+         * may need to set the initial opened state which should not be transitioned).
+         */
+        this.$.contentContainer.style.transition = 'none';
+        this.async(function() {
+          this.$.contentContainer.style.transition = '';
+        });
       },
 
       /**
