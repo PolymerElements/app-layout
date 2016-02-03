@@ -11,37 +11,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer.html">
 
 <!--
-app-scrollpos-control preserves the scroll position when mulitple pages are sharing the same
-document scroller.
+app-scrollpos-control is a manager for saving and restoring the scroll position when multiple
+pages are sharing the same document scroller.
 
 Example:
 
-    <app-scrollpos-control selected="{{page}}"></app-scrollpos-control>
+```html
+<app-scrollpos-control selected="{{page}}"></app-scrollpos-control>
 
-    <app-drawer-layout>
+<app-drawer-layout>
 
-      <div drawer>
-        <paper-menu selected="{{page}}">
-          <paper-item>Home</paper-item>
-          <paper-item>About</paper-item>
-          <paper-item>Schedule</paper-item>
-          <paper-item>Account</paper-item>
-        </paper-menu>
-      </div>
+  <app-drawer>
+    <paper-menu selected="{{page}}">
+      <paper-item>Home</paper-item>
+      <paper-item>About</paper-item>
+      <paper-item>Schedule</paper-item>
+      <paper-item>Account</paper-item>
+    </paper-menu>
+  </app-drawer>
 
-      <div main>
-        <app-toolbar>
-          <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-        </app-toolbar>
-        <iron-pages selected="{{page}}">
-          <sample-content size="100"></sample-content>
-          <sample-content size="100"></sample-content>
-          <sample-content size="100"></sample-content>
-          <sample-content size="100"></sample-content>
-        </iron-pages>
-      </div>
+  <div>
+    <app-toolbar>
+      <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+    </app-toolbar>
+    <iron-pages selected="{{page}}">
+      <sample-content size="100"></sample-content>
+      <sample-content size="100"></sample-content>
+      <sample-content size="100"></sample-content>
+      <sample-content size="100"></sample-content>
+    </iron-pages>
+  </div>
 
-    </app-drawer-layout>
+</app-drawer-layout>
+```
 
 @demo app-scrollpos-control/demo.html
 -->
@@ -68,7 +70,8 @@ Example:
          * Reset the scroll position to 0.
          */
         reset: {
-          type: Boolean
+          type: Boolean,
+          value: false
         }
 
       },
@@ -83,10 +86,16 @@ Example:
         }
         var pos = this._scrollposMap[selected];
         if (pos != null && !this.reset) {
-          window.scrollTo(pos.x, pos.y);
+          this._scrollTo(pos.x, pos.y);
         } else {
-          window.scrollTo(0, 0);
+          this._scrollTo(0, 0);
         }
+      },
+
+      _scrollTo: function(x, y) {
+        this.async(function() {
+          window.scrollTo(x, y);
+        }, 1);
       }
 
     });

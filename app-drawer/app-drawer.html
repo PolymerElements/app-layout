@@ -9,29 +9,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 
 <!--
-`app-drawer` is a navigation drawers that can slide in from the left, right, bottom or top.
+app-drawer is a navigation drawer that can slide in from the left or right.
 
 Example:
 
-Add a drawer in the left side of the screen:
+Add a drawer on the left side of the screen (default):
 
-    <app-drawer position="left" opened></app-drawer>
+```html
+<app-drawer opened></app-drawer>
+```
 
-Add a drawer in the right side of the screen:
+Add a drawer on the right side of the screen:
 
-    <app-drawer position="right" opened></app-drawer>
+```html
+<app-drawer position="right" opened></app-drawer>
+```
+
+To make the contents of the drawer scrollable, create a wrapper for the scroll
+content, and apply height and overflow styles to it.
+
+```html
+<app-drawer>
+  <div style="height: 100%; overflow: auto;"></div>
+</app-drawer>
+```
 
 ### Styling
 
-app-drawer has the following custom properties for styling:
-
-Custom property                         | Description                            | Default
-----------------------------------------|----------------------------------------|---------
-`--app-drawer-background-color`         | Background color                       | white
-`--app-drawer-duration`                 | The duration of the transition         | 0.2s
-`--app-drawer-timing-function`          | The timing function of the transition  | linear
+Custom property                  | Description                            | Default
+---------------------------------|----------------------------------------|--------------------
+`--app-drawer-content-container` | Mixin for the drawer content container | {}
+`--app-drawer-scrim-background`  | Background for the scrim               | rgba(0, 0, 0, 0.5)
 
 @demo app-drawer/demo.html
 -->
@@ -40,75 +51,100 @@ Custom property                         | Description                           
 
   <style>
 
-    :host {
-      position: absolute;
-      top: 0;
-      right: auto;
-      bottom: 0;
+    #contentContainer {
+      position: fixed;
+      top: -120px;
+      bottom: -120px;
       left: 0;
       width: 256px;
-      overflow: hidden;
-      background-color: var(--app-drawer-background-color, white);
-      visibility: hidden;
+      background-color: #FFF;
+      padding: 120px 0;
+
+      transition: 0.2s ease;
+      transition-property: -webkit-transform;
+      transition-property: transform;
 
       -webkit-transform: translate3d(-100%, 0, 0);
       transform: translate3d(-100%, 0, 0);
 
-      -webkit-transition-property: -webkit-transform, visibility;
-      transition-property: transform, visibility;
-
-      -webkit-transition-duration: var(--app-drawer-duration, 0.2s);
-      transition-duration: var(--app-drawer-duration, 0.2s);
-
-      -webkit-transition-timing-function: var(--app-drawer-timing-function, linear);
-      transition-timing-function: var(--app-drawer-timing-function, linear);
+      @apply(--app-drawer-content-container);
     }
 
-    :host([position=right]) {
-      right: 0;
+    :host([position=right]) > #contentContainer {
       left: auto;
+      right: 0;
+
       -webkit-transform: translate3d(100%, 0, 0);
       transform: translate3d(100%, 0, 0);
     }
 
-    :host([position=top]) {
+    :host([swipe-open]) > #contentContainer::after {
+      position: fixed;
       top: 0;
-      right: 0;
-      bottom: auto;
-      left: 0;
-      width: auto;
-      height: 256px;
-      -webkit-transform: translate3d(0, -100%, 0);
-      transform: translate3d(0, -100%, 0);
-    }
-
-    :host([position=bottom]) {
-      top: auto;
-      right: 0;
       bottom: 0;
-      left: 0;
-      width: auto;
-      height: 256px;
-      -webkit-transform: translate3d(0, 100%, 0);
-      transform: translate3d(0, 100%, 0);
+      left: 100%;
+      width: 15px;
+      content: '';
     }
 
-    :host([opened]),
-    :host([position][opened]) {
-      -webkit-transition-property: -webkit-transform;
-      transition-property: transform;
+    :host([swipe-open][position=right]) > #contentContainer::after {
+      left: auto;
+      right: 100%;
+    }
 
+    :host([opened]) > #contentContainer {
       -webkit-transform: translate3d(0, 0, 0);
       transform:  translate3d(0, 0, 0);
+    }
 
+    #scrim {
+      position: fixed;
+      top: -120px;
+      left: 0;
+      right: 0;
+      bottom: -120px;
+      background: var(--app-drawer-scrim-background, rgba(0, 0, 0, 0.5));
+      opacity: 0;
+      visibility: hidden;
+
+      transition: 0.2s ease;
+      transition-property: opacity, visibility;
+
+      -webkit-transform: translateZ(0);
+      transform:  translateZ(0);
+    }
+
+    /**
+     * NOTE(keanulee): IE/Edge does not properly update element styles when using
+     * dynamically inserted style tags that match with :not([attribute]) rules,
+     * so we can't do this instead:
+     *
+     *  :host([opened]:not([persistent])) > #scrim {
+     *    opacity: 1;
+     *    visibility: visible;
+     *  }
+     *
+     * Ref https://connect.microsoft.com/IE/feedbackdetail/view/2217046/element-styles-not-updated-when-using-dynamically-inserted-style-tags-that-match-with-not-attribute-rules
+     */
+    :host([opened]) > #scrim {
+      opacity: 1;
       visibility: visible;
+    }
+
+    :host([opened][persistent]) > #scrim {
+      opacity: 0;
+      visibility: hidden;
     }
 
   </style>
 
   <template>
 
-    <content></content>
+    <div id="scrim" on-tap="_scrimTapHandler"></div>
+
+    <div id="contentContainer">
+      <content></content>
+    </div>
 
   </template>
 
@@ -121,7 +157,7 @@ Custom property                         | Description                           
       properties: {
 
         /**
-         * Specifies whether or not the drawer is opened.
+         * The opened state of the drawer.
          */
         opened: {
           type: Boolean,
@@ -131,25 +167,174 @@ Custom property                         | Description                           
         },
 
         /**
-         * Determinates the position of the drawer on the screen.
-         * Options are left, right, top, bottom.
+         * The drawer does not have a scrim and cannot be swiped close.
+         */
+        persistent: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        /**
+         * The position of the drawer on the screen ('left' or 'right').
          */
         position: {
           type: String,
           value: 'left',
           reflectToAttribute: true
+        },
+
+        /**
+         * Create an area at the edge of the screen to swipe open the drawer.
+         */
+        swipeOpen: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
         }
 
       },
 
+      listeners: {
+        track: '_trackHandler'
+      },
+
+      observers: [
+        'resetLayout(position)',
+        '_updateDocScroll(opened, persistent)'
+      ],
+
+      _lastTrackDirection: 0,
+
+      _translateOffset: 0,
+
+      attached: function() {
+        // Set the scroll direction so you can vertically scroll inside the drawer.
+        this.setScrollDirection('y');
+
+        /**
+         * Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
+         * may need to set the initial opened state which should not be transitioned).
+         */
+        this.$.contentContainer.style.transition = 'none';
+        this.async(function() {
+          this.$.contentContainer.style.transition = '';
+        });
+      },
+
       /**
-       * Toggles the drawer in and out.
-       *
-       * @method toggle
+       * Opens the drawer.
+       */
+      open: function() {
+        this.opened = true;
+      },
+
+      /**
+       * Closes the drawer.
+       */
+      close: function() {
+        this.opened = false;
+      },
+
+      /**
+       * Toggles the drawer open and close.
        */
       toggle: function() {
         this.opened = !this.opened;
+      },
+
+      /**
+       * Gets the width of the drawer.
+       *
+       * @return {number} The width of the drawer in pixels.
+       */
+      getWidth: function() {
+        return this.$.contentContainer.offsetWidth;
+      },
+
+      resetLayout: function() {
+        this.debounce('_resetLayout', function() {
+          this.fire('app-drawer-reset-layout');
+        }, 1);
+      },
+
+      _scrimTapHandler: function() {
+        if (!this.persistent) {
+          this.opened = false;
+        }
+      },
+
+      _trackHandler: function(event) {
+        if (!this.persistent) {
+          switch (event.detail.state) {
+            case 'start':
+              // Disable transitions since styles will reflect user track events.
+              this.$.contentContainer.style.transitionDuration = '0s';
+              this.$.scrim.style.transitionDuration = '0s';
+              this.$.scrim.style.visibility = 'visible';
+
+              if (this.opened) {
+                this._translateOffset = 0;
+              } else if (this.position == 'left') {
+                this._translateOffset = -this.getWidth();
+              } else if (this.position == 'right') {
+                this._translateOffset = this.getWidth();
+              }
+              break;
+
+            case 'track':
+              var translateDelta = event.detail.dx + this._translateOffset;
+              switch (this.position) {
+                case 'left':
+                  translateDelta = Math.min(0, translateDelta);
+                  this._translateDrawer(translateDelta);
+                  this.$.scrim.style.opacity = 1 + translateDelta / this.getWidth();
+                  break;
+                case 'right':
+                  translateDelta = Math.max(0, translateDelta);
+                  this._translateDrawer(translateDelta);
+                  this.$.scrim.style.opacity = 1 - translateDelta / this.getWidth();
+                  break;
+              }
+
+              // Keep track of the last user track event with non-zero ddx (which we
+              // need to determine whether to keep the drawer open/closed) since the
+              // very last track event may have zero ddx.
+              if (event.detail.ddx !== 0) {
+                this._lastTrackDirection = event.detail.ddx;
+              }
+              break;
+
+            case 'end':
+              this.$.contentContainer.style.transitionDuration = '';
+              this.$.scrim.style.transitionDuration = '';
+              this.$.scrim.style.visibility = '';
+              this.$.scrim.style.opacity = '';
+              this.transform('', this.$.contentContainer);
+
+              // Only toggle the drawer if the user intentionally swipes in one direction.
+              if (Math.abs(event.detail.dx) > 30) {
+                this.opened = (this.position === 'left' && this._lastTrackDirection > 0) ||
+                  (this.position === 'right' && this._lastTrackDirection < 0);
+              }
+              break;
+          }
+        }
+      },
+
+      _translateDrawer: function(x) {
+        this.transform('translate3d(' + x + 'px, 0, 0)', this.$.contentContainer);
+      },
+
+      _updateDocScroll: function() {
+        document.body.style.overflow = (this.persistent || !this.opened) ? '' : 'hidden';
       }
+
+      /**
+       * Fired when the layout of app-drawer has changed.
+       *
+       * @event app-drawer-reset-layout
+       */
 
     });
 

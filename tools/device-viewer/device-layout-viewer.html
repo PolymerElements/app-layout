@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="device-view.html">
 
 <!--
-Displays a site on different device layouts.
+Displays a page on different device layouts.
 
     <device-layout-viewer device="all" src="https://www.polymer-project.org/"></device-layout-viewer>
 
@@ -28,7 +28,7 @@ Displays a site on different device layouts.
     <div class="canvas" device$="{{device}}">
 
       <iron-selector id="views" selected="{{device}}" attr-for-selected="device"
-          selected-item="{{selectedView}}" device$="{{device}}">
+          selected-item="{{selectedView}}" device$="{{device}}" activate-event="">
 
         <device-view device="laptop" src="{{src}}"></device-view>
         <device-view device="tablet" src="{{src}}" landscape></device-view>
@@ -49,7 +49,7 @@ Displays a site on different device layouts.
       properties: {
 
         /**
-         * The url for the site.
+         * The url of the page to display.
          */
         src: String,
 

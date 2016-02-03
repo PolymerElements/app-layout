@@ -22,7 +22,9 @@ Displays a page on a device layout.
 
   <template>
 
-    <iframe src="{{src}}"></iframe>
+    <div class="container">
+      <iframe src="{{src}}"></iframe>
+    </div>
 
   </template>
 
@@ -35,7 +37,7 @@ Displays a page on a device layout.
       properties: {
 
         /**
-         * The url of the page to show.
+         * The url of the page to display.
          */
         src: String,
 

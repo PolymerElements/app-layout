@@ -1,0 +1,291 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../app-scroll-behaviors/app-custom-scroller-behavior.html">
+
+<script>
+  /**
+   * `Polymer.AppScrollEffectsBehavior` provides an interface that allows to consume scrolls events.
+   * Effects are installed in the `Polymer.AppScrollEffects` namescape.
+   *
+   * A few effects are defined in `app-scroll-effects.html`, but, by default, no effect is imported.
+   * Thus, users need to explicitly import the dependency.
+   *
+   * Elements that consume this behavior are required to override the folllowing methods:
+   *
+   * * `_updateScrollState`
+   * * `isOnScreen`
+   * * `isContentBelow`
+   *
+   * @polymerBehavior
+   */
+  Polymer.AppScrollEffectsBehavior = [
+    Polymer.AppCustomScrollerBehavior,
+   {
+
+    properties: {
+
+      /**
+       * A space-separated list of the effects names that will be triggered when the user scrolls.
+       * e.g. `waterfall parallax-background` installs the `waterfall` and `parallax-background`.
+       */
+      effects: {
+        type: String,
+        value: ''
+      },
+
+      /**
+       * An object that configurates the effects installed via the `effects` property. e.g.
+       * ```js
+       *  element.effectsConfig = {
+       *   "blend-background": {
+       *     "startsAt": 0.5
+       *   }
+       * };
+       * ```
+       * Every effect has at least two config properties: `startsAt` and `endsAt`.
+       * These properties indicate when the event should start and end respectively
+       * and relative to the overall element progress. So for example, if `blend-background`
+       * starts at `0.5`, the effect will only start once the current element reaches 0.5
+       * of its progress. In this context, the progress is a value in the range of `[0, 1]`
+       * that indicates where this element is on the screen relative to the viewport.
+       */
+      effectsConfig: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      },
+
+      /**
+       * Disables CSS transitions and scroll effects on the element.
+       */
+      disabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false
+      }
+    },
+
+    observers: [
+      '_effectsChanged(effects, effectsConfig)'
+    ],
+
+    /**
+     * Updates the scroll state. This method should be overridden
+     * by the consumer of this behavior.
+     *
+     * @abstract
+     * @method _updateScrollState
+     */
+    _updateScrollState: function() {},
+
+    /**
+     * Returns true if the current element is on the screen.
+     * That is, visible in the current viewport. This method should be
+     * overridden by the consumer of this behavior.
+     *
+     * @abstract
+     * @method isOnScreen
+     * @return {boolean}
+     */
+    isOnScreen: function() {
+      return false;
+    },
+
+    /**
+     * Returns true if there's content below the current element. This method
+     * should be overridden by the consumer of this behavior.
+     *
+     * @abstract
+     * @method isContentBelow
+     * @return {boolean}
+     */
+    isContentBelow: function() {
+      return false;
+    },
+
+    /**
+     * List of effects handlers that will take place during scroll.
+     *
+     * @type {Array<Function>}
+     */
+    _effectsRunFn: null,
+
+    /**
+     * List of the effects definitions installed via the `effects` property.
+     *
+     * @type {Array<Object>}
+     */
+    _effects: null,
+
+    /**
+     * The clamped value of `_scrollTop`.
+     * @type number
+     */
+    get _clampedScrollTop() {
+      return Math.max(0, this._scrollTop);
+    },
+
+    created: function() {
+      this._effectsRunFn = [];
+      this._effects = [];
+    },
+
+    detached: function() {
+      this._tearDownEffects();
+    },
+
+    /**
+     * Creates an effect object from an effect name and configuration that can be used to run
+     * effects programmatically.
+     *
+     * @method createEffect
+     * @param {string} effectName The name of an effect defined in `Polymer.AppScrollEffects`
+     * @param {Object=} effectConfig The effect config object if the effect accepts config
+     *   values. (Optional)
+     * @return {Object} The effect object. This object has the following interface:
+     *
+     *  * `obj.setUp()`, Sets up the requirements for the effect.
+     *       This function is called automatically before the `effect` function returns.
+     *  * `obj.run(progress, y)`, Runs the effect given a `progress`.
+     *  * `obj.tearDown()`, Cleans up any DOM nodes or element references used by the effect.
+     *
+     * Example:
+     * ```js
+     * var parallax = obj.createEffect('parallax-background');
+     * // runs the effect
+     * parallax.run(0.5, 0);
+     * ```
+     */
+    createEffect: function(effectName, effectConfig) {
+      if (!Polymer.AppScrollEffects) {
+        throw new ReferenceError('undefined Polymer.AppScrollEffects');
+        return;
+      }
+      var effectDef = Polymer.AppScrollEffects[effectName];
+      if (!effectDef) {
+        throw new ReferenceError('undefined effect `' + effectName + '`');
+        return;
+      }
+      var prop = this._boundEffect(effectDef, effectConfig || {});
+      prop.setUp();
+      return prop;
+    },
+
+    /**
+     * Called when `effects` or `effectsConfig` changes.
+     */
+    _effectsChanged: function(effects, effectsConfig) {
+      this._tearDownEffects();
+
+      if (effects === '') {
+        return;
+      }
+      effects.split(' ').forEach(function(effectName) {
+        var effectDef;
+        if (effectName !== '') {
+          if ((effectDef = Polymer.AppScrollEffects[effectName])) {
+            this._effects.push(this._boundEffect(effectDef, effectsConfig[effectName]));
+          } else {
+            this._warn(this._logf('_effectsChanged', 'undefined effect `', effectName, '`'));
+          }
+        }
+      }, this);
+
+      this._setUpEffect();
+    },
+
+    /**
+     * Forces layout
+     */
+    _layoutIfDirty: function() {
+      return this.offsetWidth;
+    },
+
+    /**
+     * Returns an effect object bound to the current context.
+     *
+     * @param {Object}
+     * @param {Object=} The effect config object if the effect accepts config values. (Optional)
+     */
+    _boundEffect: function(effectDef, effectsConfig) {
+      effectsConfig = effectsConfig || {};
+      var startsAt = parseFloat(effectsConfig.startsAt || 0);
+      var endsAt = parseFloat(effectsConfig.endsAt || 1);
+      var deltaS = endsAt - startsAt;
+      var noop = Function();
+      // fast path if possible
+      var runFn = (startsAt === 0 && endsAt === 1) ? effectDef.run :
+        function(progress, y) {
+          effectDef.run.call(this,
+              Math.max(0, (progress - startsAt) / deltaS), y);
+        };
+      return {
+        setUp: effectDef.setUp ? effectDef.setUp.bind(this, effectsConfig) : noop,
+        run: effectDef.run ? runFn.bind(this) : noop,
+        tearDown: effectDef.tearDown ? effectDef.tearDown.bind(this) : noop
+      };
+    },
+
+    /**
+     * Sets up the effects.
+     */
+    _setUpEffect: function() {
+      if (this.isAttached) {
+        this._effectsRunFn = [];
+        this._effects.forEach(function(effectDef) {
+          // install the effect only if no error was reported
+          if (effectDef.setUp() !== false) {
+            this._effectsRunFn.push(effectDef.run);
+          }
+        }, this);
+      }
+    },
+
+    /**
+     * Tears down the effects.
+     */
+    _tearDownEffects: function() {
+      this._effects.forEach(function(effectDef) {
+        effectDef.tearDown();
+      });
+      this._effectsRunFn = [];
+      this._effects = [];
+    },
+
+    /**
+     * Runs the effects.
+     *
+     * @param {number} The progress
+     * @param {number} The top position of the current element relative to the viewport.
+     */
+    _runEffects: function(p, y) {
+      this._effectsRunFn.forEach(function(run) {
+        run(p, y);
+      });
+    },
+
+    /**
+     * Overrides the `_scrollHandler`.
+     */
+    _scrollHandler: function() {
+      if (!this.disabled) {
+        this._updateScrollState(this._clampedScrollTop);
+      }
+    }
+  }];
+
+  /**
+   * Defines the namespace for the effects
+   */
+  Polymer.AppScrollEffects = Polymer.AppScrollEffects || {};
+</script>

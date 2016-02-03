@@ -1,0 +1,268 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE
+The complete set of authors may be found at http://polymer.github.io/AUTHORS
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS
+-->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>test for app-drawer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../web-component-tester/browser.js"></script>
+  <script src="../../../test-fixture/test-fixture-mocha.js"></script>
+  <link rel="import" href="../../../test-fixture/test-fixture.html">
+  <link rel="import" href="../app-drawer.html">
+  <style is="custom-style">
+    body {
+      margin: 0;
+    }
+
+    /* Remove transition-duration so we can synchronously check the state of the drawer. */
+    app-drawer {
+      --app-drawer-content-container: {
+        transition-duration: 0s;
+      };
+    }
+  </style>
+</head>
+<body>
+
+  <test-fixture id="testDrawer">
+    <template>
+      <app-drawer></app-drawer>
+    </template>
+  </test-fixture>
+
+  <script>
+
+    suite('basic features', function() {
+      var drawer, scrim, contentContainer;
+
+      setup(function() {
+        drawer = fixture('testDrawer');
+        scrim = drawer.$.scrim;
+        contentContainer = drawer.$.contentContainer;
+      });
+
+      test('default values', function() {
+        assert.isFalse(drawer.opened);
+        assert.isFalse(drawer.persistent);
+        assert.equal(drawer.position, 'left');
+        assert.isFalse(drawer.swipeOpen);
+      });
+
+      test('set scroll direction', function() {
+        assert.equal(drawer['__polymerGesturesTouchAction'], 'pan-y');
+      });
+
+      test('left drawer opens and closes', function() {
+        var contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.isTrue(contentContainerClientRect.right <= 0);
+
+        drawer.opened = true;
+
+        contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.equal(contentContainerClientRect.left, 0);
+
+        drawer.opened = false;
+
+        contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.isTrue(contentContainerClientRect.right <= 0);
+      });
+
+      test('right drawer opens and closes', function() {
+        drawer.position = 'right';
+
+        var contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.isTrue(contentContainerClientRect.left >= window.innerWidth);
+
+        drawer.opened = true;
+
+        contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.equal(contentContainerClientRect.right, window.innerWidth);
+
+        drawer.opened = false;
+
+        contentContainerClientRect = contentContainer.getBoundingClientRect();
+        assert.isTrue(contentContainerClientRect.left >= window.innerWidth);
+      });
+
+      test('open(), close(), and toggle()', function() {
+        assert.isFalse(drawer.opened);
+
+        drawer.open();
+
+        assert.isTrue(drawer.opened);
+
+        drawer.close();
+
+        assert.isFalse(drawer.opened);
+
+        drawer.toggle();
+
+        assert.isTrue(drawer.opened);
+
+        drawer.toggle();
+
+        assert.isFalse(drawer.opened);
+      });
+
+      test('getWidth()', function() {
+        assert.equal(drawer.getWidth(), contentContainer.offsetWidth);
+      });
+
+      test('app-drawer-reset-layout', function(done) {
+        var listenerSpy = sinon.spy();
+        drawer.addEventListener('app-drawer-reset-layout', listenerSpy);
+        drawer.position = 'right';
+
+        window.setTimeout(function() {
+          assert.isTrue(listenerSpy.called);
+          done();
+        }, 1);
+      });
+
+      test('swiping', function() {
+        const SWIPE_DISTANCE = 32;
+        const TRANSITION_DURATION = '0.01s';
+        var drawerWidth = drawer.getWidth();
+        var transformSpy = sinon.spy(drawer, 'transform');
+
+        // Set a transition-duration to check if drawer properly resets inline styles on track end.
+        drawer.updateStyles({
+          '--app-drawer-content-container': 'transition-duration: ' + TRANSITION_DURATION
+        });
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], '0s');
+
+        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: SWIPE_DISTANCE });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + (SWIPE_DISTANCE - drawerWidth) + 'px, 0, 0)', 'translate distance is equal when swipe is less than drawer width');
+        assert.equal(scrim.style.opacity, SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: 9999, ddx: 9999 });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(0px, 0, 0)', 'translate distance is bounded when swipe is greater than drawer width');
+        assert.equal(scrim.style.opacity, 1, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: 9999, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: 9999, ddx: 0 });
+
+        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], TRANSITION_DURATION);
+        assert.isTrue(drawer.opened, 'drawer opened if user slides in');
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: -30, ddx: -30 });
+        drawer.fire('track', { state: 'end', dx: -30, ddx: 0 });
+
+        assert.isTrue(drawer.opened, 'drawer stays opened if threshold is not met');
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: -SWIPE_DISTANCE });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + -SWIPE_DISTANCE + 'px, 0, 0)', 'translate distance is correct');
+        assert.equal(scrim.style.opacity, 1 - SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: -SWIPE_DISTANCE, ddx: 0 });
+
+        assert.isFalse(drawer.opened, 'drawer closed if user slides out');
+
+        drawer.position = 'right';
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], '0s');
+
+        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: -SWIPE_DISTANCE });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + (drawerWidth - SWIPE_DISTANCE) + 'px, 0, 0)', 'translate distance is equal when swipe is less than drawer width');
+        assert.equal(scrim.style.opacity, SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: -9999, ddx: -9999 });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(0px, 0, 0)', 'translate distance is bounded when swipe is greater than drawer width');
+        assert.equal(scrim.style.opacity, 1, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: -9999, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: -9999, ddx: 0 });
+
+        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], TRANSITION_DURATION);
+        assert.isTrue(drawer.opened, 'drawer opened if user slides in');
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: 30, ddx: 30 });
+        drawer.fire('track', { state: 'end', dx: 30, ddx: 0 });
+
+        assert.isTrue(drawer.opened, 'drawer stays opened if threshold is not met');
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: SWIPE_DISTANCE });
+
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + SWIPE_DISTANCE + 'px, 0, 0)', 'translate distance is correct');
+        assert.equal(scrim.style.opacity, 1 - SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+
+        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: SWIPE_DISTANCE, ddx: 0 });
+
+        assert.isFalse(drawer.opened, 'drawer closed if user slides out');
+      });
+
+      test('doc scroll', function() {
+        drawer.opened = true;
+
+        assert.equal(document.body.style.overflow, 'hidden');
+
+        drawer.persistent = true;
+
+        assert.equal(document.body.style.overflow, '');
+
+        drawer.persistent = false;
+
+        assert.equal(document.body.style.overflow, 'hidden');
+
+        drawer.opened = false;
+
+        assert.equal(document.body.style.overflow, '');
+      });
+
+      test('scrim', function() {
+        var scrimComputedStyle;
+        scrim.style.transitionDuration = '0s';
+
+        scrimComputedStyle = window.getComputedStyle(scrim);
+        assert.equal(scrimComputedStyle['opacity'], 0);
+        assert.equal(scrimComputedStyle['visibility'], 'hidden');
+
+        drawer.opened = true;
+
+        scrimComputedStyle = window.getComputedStyle(scrim);
+        assert.equal(scrimComputedStyle['opacity'], 1);
+        assert.equal(scrimComputedStyle['visibility'], 'visible');
+
+        drawer.persistent = true;
+
+        scrimComputedStyle = window.getComputedStyle(scrim);
+        assert.equal(scrimComputedStyle['opacity'], 0);
+        assert.equal(scrimComputedStyle['visibility'], 'hidden');
+      });
+
+      test('tap on scrim closes drawer', function() {
+        drawer.opened = true;
+        drawer.fire('tap', null /* detail */, { node: scrim });
+
+        assert.isFalse(drawer.opened);
+      });
+    });
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+  <title>Pesto Demo</title>
+
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <link rel="import" href="../../../iron-icons/iron-icons.html">
+  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../../app-toolbar/app-toolbar.html">
+  <link rel="import" href="../../app-scroll-effects/app-scroll-effects.html">
+  <link rel="import" href="../app-header.html">
+  <link rel="import" href="../../demo/sample-content.html">
+
+  <style is="custom-style">
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', 'Noto', sans-serif;
+      background-color: #eee;
+    }
+
+    app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      color: #fff;
+      background-color: #00AA8D;
+    }
+
+    .top-toolbar,
+    .bottom-toolbar {
+      height: 120px;
+      @apply(--layout-center-center);
+    }
+
+    paper-icon-button {
+      --paper-icon-button-ink-color: white;
+    }
+
+    sample-content {
+      padding-top: 240px;
+    }
+
+    [condensed-title] {
+      height: 80px;
+      max-width: 76px;
+      margin-bottom: -20px;
+      font-size: 16px;
+      background-image: url(http://app-layout-assets.appspot.com/assets/pesto/logo_s.png);
+      background-repeat: no-repeat;
+      background-position: center top;
+      background-size: 76px;
+    }
+
+    [title] {
+      height: 240px;
+      max-width: 240px;
+      margin-bottom: 140px;
+      font-size: 48px;
+      background-image: url(http://app-layout-assets.appspot.com/assets/pesto/logo_l.png);
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      background-size: 240px;
+    }
+
+  </style>
+
+</head>
+<body unresolved>
+
+  <app-header effects="waterfall resize-title" condenses fixed>
+    <app-toolbar class="top-toolbar">
+      <div condensed-title></div>
+    </app-toolbar>
+    <app-toolbar class="bottom-toolbar">
+      <div title></div>
+    </app-toolbar>
+  </app-header>
+
+  <sample-content size="100"></sample-content>
+
+</body>
+</html>

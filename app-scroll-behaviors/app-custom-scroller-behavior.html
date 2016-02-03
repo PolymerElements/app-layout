@@ -1,0 +1,163 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../polymer/polymer.html">
+
+<script>
+
+/**
+ * `Polymer.AppCustomScrollerBehavior` allows an element to respond to scroll events from a
+ * designated scroller (either window or another element).
+ *
+ * Elements that consume this behavior can override the `_scrollHandler`
+ * method to add logic on the scroll event.
+ *
+ * @polymerBehavior
+ */
+Polymer.AppCustomScrollerBehavior = (function() {
+
+  return {
+
+    properties: {
+
+      /**
+       * Specifies the element that will handle the scroll event
+       * on the behalf of the current element. This is typically a reference to an `HTMLElement`,
+       * but there are a few more posibilities:
+       *
+       * ### CSS Selectors
+       * This property can also accept a string containing one CSS selector to an element
+       * accessible within the current scope. e.g.
+       *
+       *```html
+       * <div id="scrollingRegion" style="overflow-y: auto;">
+       *  <app-header scroller="#scrollingRegion">
+       *  </app-header>
+       * </div>
+       *```
+       * In this case, `scroller` will point to the outer div element. Alternatively, 
+       * you can set the property programatically:
+       *
+       *```js
+       * appHeader.scroller = document.querySelector("#scrollingRegion");
+       *```
+       *
+       * ### Window (default)
+       * The scroller property can also point to `window` to use . e.g.
+       *```html
+       * <app-header scroller="window"></app-header>
+       *```
+       * Alternatively, you can set the property programatically:
+       *
+       *```js
+       * appHeader.scroller = window;
+       *```
+       */
+      scroller: {
+        type: Object,
+        value: window,
+        observer: '_scrollerChanged'
+      }
+    },
+
+    _scrollHandler: function noop() {},
+
+    _scrollerChanged: function(scroller, old) {
+      this._boundScrollHandler = this._boundScrollHandler || this._scrollHandler.bind(this);
+
+      if (scroller) {
+        // sugar for the DOM
+        if (typeof scroller === 'string') {
+          if (scroller === 'window') {
+            this.scroller = window;
+          } else {
+            var ownerRoot = Polymer.dom(this).getOwnerRoot();
+            this.scroller = (ownerRoot && ownerRoot.$$) ? ownerRoot.$$(scroller) : Polymer.dom(null).querySelector(scroller);
+          }
+        } else {
+          scroller.addEventListener('scroll', this._boundScrollHandler);
+        }
+      }
+      if (old && old.removeEventListener) {
+        old.removeEventListener('scroll', this._boundScrollHandler);
+      }
+    },
+
+   /**
+    * Gets the number of pixels that the content of an element is scrolled upward.
+    *
+    * @type {number}
+    */
+    get _scrollTop() {
+      if (this.scroller) {
+        return this.scroller === window ? window.pageYOffset : this.scroller.scrollTop;
+      }
+      return 0;
+    },
+
+   /**
+    * Gets the number of pixels that the content of an element is scrolled to the left.
+    *
+    * @type {number}
+    */
+    get _scrollLeft() {
+      if (this.scroller) {
+        return this.scroller === window ? window.pageXOffset : this.scroller.scrollLeft;
+      }
+      return 0;
+    },
+
+    /**
+     * Sets the number of pixels that the content of an element is scrolled upward.
+     *
+     * @type {number}
+     */
+    set _scrollTop(top) {
+      if (this.scroller === window) {
+        window.scrollTo(window.pageXOffset, top);
+      } else if (this.scroller) {
+        this.scroller.scrollTop = top;
+      }
+    },
+
+    /**
+     * Sets the number of pixels that the content of an element is scrolled to the left.
+     *
+     * @type {number}
+     */
+    set _scrollLeft(left) {
+      if (this.scroller === window) {
+        window.scrollTo(left, window.pageYOffset);
+      } else if (this.scroller) {
+        this.scroller.scrollLeft = left;
+      }
+    },
+
+    /**
+     * Scrolls the content to a particular place.
+     *
+     * @method scroll
+     * @param {number} top The top position
+     * @param {number} left The left position
+     */
+    scroll: function(top, left) {
+       if (this.scroller === window) {
+        window.scrollTo(top, left);
+      } else if (this.scroller) {
+        this.scroller.scrollTop = top;
+        this.scroller.scrollLeft = left;
+      }
+    }
+
+  };
+
+})();
+</script>
+

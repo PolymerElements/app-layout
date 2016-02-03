@@ -24,6 +24,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../../paper-item/paper-icon-item.html">
   <link rel="import" href="../app-drawer-layout/app-drawer-layout.html">
+  <link rel="import" href="../app-drawer/app-drawer.html">
+  <link rel="import" href="../app-scroll-effects/app-scroll-effects.html">
   <link rel="import" href="../app-header/app-header.html">
   <link rel="import" href="../app-header-layout/app-header-layout.html">
   <link rel="import" href="../app-toolbar/app-toolbar.html">
@@ -63,28 +65,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template is="dom-bind">
     <app-drawer-layout>
 
-      <app-header-layout has-scrolling-region drawer>
+      <app-drawer swipe-open>
+        <app-header-layout has-scrolling-region>
 
-        <app-header class="whiteHeader" waterfall fixed>
-          <app-toolbar>
-            <div title>Inbox</div>
-          </app-toolbar>
-        </app-header>
-        
-        <template is="dom-repeat" id="menu" items="[[items]]">
-          <paper-icon-item class="iconItem">
-            <iron-icon class="grayIcon" icon="[[_randomIcon()]]" item-icon></iron-icon> <span>[[item]]</span>
-          </paper-icon-item> 
-        </template>
-      
-      </app-header-layout>
+          <app-header class="whiteHeader" waterfall fixed>
+            <app-toolbar>
+              <div title>Inbox</div>
+            </app-toolbar>
+          </app-header>
 
-      <app-header-layout main>
+          <template is="dom-repeat" id="menu" items="[[items]]">
+            <paper-icon-item class="iconItem">
+              <iron-icon class="grayIcon" icon="[[_randomIcon()]]" item-icon></iron-icon> <span>[[item]]</span>
+            </paper-icon-item>
+          </template>
 
-        <app-header class="blueHeader" condenses waterfall always-visible>
+        </app-header-layout>
+      </app-drawer>
+
+      <app-header-layout>
+
+        <app-header class="blueHeader" condenses reveals effects="waterfall">
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <div class="flex"></div>
+            <div title></div>
             <paper-icon-button icon="search"></paper-icon-button>
             <paper-icon-button icon="more-vert"></paper-icon-button>
           </app-toolbar>
@@ -113,7 +117,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       scope._randomIcon = function() {
         return icons[parseInt(icons.length * Math.random())];
       };
-    
+
       scope.items = items;
 
     })(document.querySelector('template[is=dom-bind]'));

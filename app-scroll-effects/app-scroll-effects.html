@@ -1,0 +1,230 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<script>
+
+(function() {
+  function interpolate(progress, points, fn, ctx) {
+    fn.apply(ctx, points.map(function(point) {
+      return point[0] + (point[1] - point[0]) * progress;
+    }));
+  }
+
+  Polymer.AppScrollEffects = {};
+
+  /**
+   * While scrolling down, fade in the rear background layer and fade out the front background
+   * layer (opacity interpolated based on scroll position).
+   */
+  Polymer.AppScrollEffects['blend-background'] = {
+    setUp: function setUp() {
+      this.$.backgroundFrontLayer.style.willChange = 'opacity';
+      this.$.backgroundFrontLayer.style.webkitTransform = 'translateZ(0)';
+      this.$.backgroundRearLayer.style.willChange = 'opacity';
+      this.$.backgroundRearLayer.style.webkitTransform = 'translateZ(0)';
+      this.$.backgroundRearLayer.style.opacity = 0;
+    },
+    run: function run(p, y) {
+      this.$.backgroundFrontLayer.style.opacity = 1 - p;
+      this.$.backgroundRearLayer.style.opacity = p;
+    }
+  };
+
+  /**
+   * Upon scrolling past a threshold, fade in the rear background layer and fade out the front
+   * background layer (opacity CSS transitioned over time).
+   */
+  Polymer.AppScrollEffects['fade-background'] = {
+    setUp: function setUp(config) {
+      var duration = config.duration || '0.5s';
+      this.$.backgroundFrontLayer.style.willChange = 'opacity';
+      this.$.backgroundFrontLayer.style.webkitTransform = 'translateZ(0)';
+      this.$.backgroundFrontLayer.style.transitionProperty = 'opacity';
+      this.$.backgroundFrontLayer.style.transitionDuration = duration;
+      this.$.backgroundRearLayer.style.willChange = 'opacity';
+      this.$.backgroundRearLayer.style.webkitTransform = 'translateZ(0)';
+      this.$.backgroundRearLayer.style.transitionProperty = 'opacity';
+      this.$.backgroundRearLayer.style.transitionDuration = duration;
+    },
+    run: function run(p, y) {
+      if (p >= 1) {
+        this.$.backgroundFrontLayer.style.opacity = 0;
+        this.$.backgroundRearLayer.style.opacity = 1;
+      } else {
+        this.$.backgroundFrontLayer.style.opacity = 1;
+        this.$.backgroundRearLayer.style.opacity = 0;
+      }
+    }
+  };
+
+  /**
+   * Vertically translate the background based on a factor of the scroll position.
+   */
+  Polymer.AppScrollEffects['parallax-background'] = {
+    setUp: function setUp(config) {
+      var scalar = parseFloat(config.scalar);
+      this._deltaBg = this.$.backgroundFrontLayer.offsetHeight - this.$.background.offsetHeight;
+      if (this._deltaBg === 0) {
+        if (isNaN(scalar)) {
+          scalar = 0.8;
+        }
+        this._deltaBg = this._deltaHeight * scalar;
+      } else {
+        if (isNaN(scalar)) {
+          scalar = 1;
+        }
+        this._deltaBg = this._deltaBg * scalar;
+      }
+    },
+    tearDown: function() {
+      delete this._deltaBg;
+    },
+    run: function run(p, y) {
+      this.transform('translate3d(0px, ' + (this._deltaBg * Math.min(1, p)) + 'px, 0px)', this.$.backgroundFrontLayer);
+      if (this.$.backgroundRearLayer) {
+        this.transform('translate3d(0px, ' + (this._deltaBg * Math.min(1, p)) + 'px, 0px)', this.$.backgroundRearLayer);
+      }
+    }
+  };
+
+  /**
+   * Transform the font size of a designated title element between two values based on the scroll
+   * position.
+   */
+  Polymer.AppScrollEffects['resize-title'] = {
+    setUp: function setUp() {
+      var title = Polymer.dom(this).querySelector('[title]');
+      var condensedTitle = Polymer.dom(this).querySelector('[condensed-title]');
+
+      if (!condensedTitle) {
+        this._warn(this._logf('effects[resize-title]', 'undefined `condensed-title`'));
+        return false;
+      }
+      if (!title) {
+        this._warn(this._logf('effects[resize-title]', 'undefined `title`'));
+        return false;
+      }
+
+      condensedTitle.style.willChange = 'opacity';
+      title.style.willChange = 'opacity';
+
+      condensedTitle.style.webkitTransform = 'translateZ(0)';
+      title.style.webkitTransform = 'translateZ(0)';
+
+      var titleClientRect = title.getBoundingClientRect();
+      var condensedTitleClientRect = condensedTitle.getBoundingClientRect();
+      var fx = {};
+
+      fx.scale = parseInt(window.getComputedStyle(condensedTitle)['font-size'], 10) /
+          parseInt(window.getComputedStyle(title)['font-size'], 10);
+      fx.titleDX = titleClientRect.left - condensedTitleClientRect.left;
+      fx.titleDY = titleClientRect.top - condensedTitleClientRect.top;
+      fx.condensedTitle = condensedTitle;
+      fx.title = title;
+
+      this._fxResizeTitle = fx;
+    },
+    tearDown: function tearDown() {
+      delete this._fxResizeTitle;
+    },
+    run: function run(p, y) {
+      var fx = this._fxResizeTitle;
+      if (!this.condenses) {
+        y = 0;
+      }
+      if (p >= 1) {
+        fx.title.style.opacity = 0;
+        fx.condensedTitle.style.opacity = 1;
+      } else {
+        fx.title.style.opacity = 1;
+        fx.condensedTitle.style.opacity = 0;
+      }
+      interpolate(Math.min(1, p), [
+        [1,  fx.scale],
+        [0, -fx.titleDX],
+        [y, y-fx.titleDY]
+      ],
+      function(scale, translateX, translateY) {
+        this.transform('translate(' + translateX + 'px, ' + translateY + 'px) ' +
+            'scale3d(' + scale + ', ' + scale + ', 1)',
+            fx.title);
+      }, this);
+    }
+  };
+
+  /**
+   * Upon scrolling past a threshold, CSS transition the font size of a designated title element
+   * between two values.
+   */
+  Polymer.AppScrollEffects['resize-snapped-title'] = {
+    setUp: function setUp(config) {
+      var title = Polymer.dom(this).querySelector('[title]');
+      var condensedTitle = Polymer.dom(this).querySelector('[condensed-title]');
+      var duration = config.duration || '0.2s';
+      var fx = {};
+
+      if (!condensedTitle) {
+        this._warn(this._logf('effects[resize-snapped-title]', 'undefined `condensed-title`'));
+        return false;
+      }
+      if (!title) {
+        this._warn(this._logf('effects[resize-snapped-title]', 'undefined `title`'));
+        return false;
+      }
+
+      title.style.transitionProperty = 'opacity';
+      title.style.transitionDuration = duration;
+      condensedTitle.style.transitionProperty = 'opacity';
+      condensedTitle.style.transitionDuration = duration;
+
+      fx.condensedTitle = condensedTitle;
+      fx.title = title;
+      this._fxResizeSnappedTitle = fx;
+    },
+    tearDown: function tearDown() {
+      var fx = this._fxResizeSnappedTitle;
+      fx.title.style.transition = '';
+      fx.condensedTitle.style.transition = '';
+      delete this._fxResizeSnappedTitle;
+    },
+    run: function run(p, y) {
+      var fx = this._fxResizeSnappedTitle;
+      if (p > 0) {
+        fx.title.style.opacity = 0;
+        fx.condensedTitle.style.opacity = 1;
+      } else {
+        fx.title.style.opacity = 1;
+        fx.condensedTitle.style.opacity = 0;
+      }
+    }
+  };
+
+  /**
+   * Toggles the shadow property in app-header when content is scrolled to create a sense of depth
+   * between the element and the content underneath.
+   */
+  Polymer.AppScrollEffects['waterfall'] = {
+    run: function run(p, y) {
+      this.shadow = this.isOnScreen() && this.isContentBelow();
+    }
+  };
+
+  /**
+   * Shorthand for the waterfall, resize-title, blend-background, and parallax-background effects.
+   */
+  Polymer.AppScrollEffects['material'] = {
+    setUp: function() {
+      this.effects = 'waterfall resize-title blend-background parallax-background';
+      return false;
+    }
+  };
+
+})();
+
+</script>
