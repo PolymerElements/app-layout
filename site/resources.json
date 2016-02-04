@@ -1,0 +1,50 @@
+{
+  "templates": [
+    {
+      "name": "ZUPERKULBLOG",
+      "thumbnail": "site/images/publishing.png",
+      "demoUrl": "templates/publishing",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/templates/publishing"
+    },
+    {
+      "name": "PESTO",
+      "thumbnail": "site/images/pesto.gif",
+      "demoUrl": "templates/pesto",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/templates/pesto"
+    },
+    {
+      "name": "Shrine",
+      "thumbnail": "site/images/shrine.png",
+      "demoUrl": "templates/shrine",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/templates/shrine"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Transform Navigation",
+      "desc": "As more screen space is available, side navigation can transform into tabs.",
+      "demoUrl": "patterns/transform-navigation",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/patterns/transform-navigation/x-app.html"
+    },
+    {
+      "name": "Expand Card",
+      "desc": "Content cards may expand to take up more horizontal space.",
+      "demoUrl": "patterns/expand-card",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/patterns/expand-card/index.html"
+    }
+  ],
+  "apps": [
+    {
+      "name": "Polymer Summit",
+      "thumbnail": "site/images/polymer-summit.png",
+      "demoUrl": "https://www.polymer-project.org/summit",
+      "sourceUrl": "https://github.com/frankiefu/summit"
+    },
+    {
+      "name": "PICA",
+      "thumbnail": "site/images/pica.png",
+      "demoUrl": "http://frankiefu.github.io/pica",
+      "sourceUrl": "https://github.com/frankiefu/pica"
+    }
+  ]
+}
