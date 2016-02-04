@@ -19,13 +19,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../webcomponentsjs/webcomponents-lite.js"></script>
 
   <link rel="import" href="../font-roboto/roboto.html">
+  <link rel="import" href="../iron-ajax/iron-ajax.html">
   <link rel="import" href="../iron-icons/iron-icons.html">
   <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-  <link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
   <link rel="import" href="../paper-button/paper-button.html">
   <link rel="import" href="../paper-styles/shadow.html">
   <link rel="import" href="app-layout.html">
-  <link rel="import" href="tools/device-viewer/device-layout-viewer.html">
+  <link rel="import" href="site/device-viewer/device-layout-viewer.html">
 
   <style is="custom-style">
 
@@ -87,6 +87,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       height: 600px;
     }
 
+    .horizontal.layout {
+      @apply(--layout-horizontal);
+    }
+
+    .vertical.layout {
+      @apply(--layout-vertical);
+    }
+
+    .center.layout {
+      @apply(--layout-center);
+    }
+
     section {
       text-align: center;
       padding-top: 80px;
@@ -125,28 +137,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       @apply(--shadow-elevation-2dp);
     }
 
-    .coming-soon::after {
-      content: '';
-      @apply(--layout-fit);
-      background-color: rgba(256,256,256,0.7);
-    }
-
-    .coming-soon::before {
-      content: 'Coming Soon!';
-      width: 200px;
-      position: absolute;
-      top: 152px;
-      left: calc(50% - 100px);
-      margin: 0 auto;
-      padding: 16px 8px;
-      z-index: 10;
-      border-radius: 3px;
-      background-color: rgba(0,0,0,0.65);
-      color: #fff;
-      font-size: 36px;
-      font-style: italic;
-    }
-
     .grid-item > .image {
       height: 300px;
       background-repeat: no-repeat;
@@ -154,29 +144,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-size: cover;
     }
 
-    .publishing-image {
-      background-image: url(tools/app/images/publishing.png);
-    }
-
-    .pesto-image {
-      background-image: url(tools/app/images/pesto.png);
-    }
-
-    .grid-item > .music-image {
-      background-image: url(tools/app/images/music.png);
-      background-size: contain;
-      background-color: #ccc;
-    }
-
-    .summit-image {
-      background-image: url(tools/app/images/polymer-summit.png);
-    }
-
-    .pica-image {
-      background-image: url(tools/app/images/pica.png);
-    }
-
     .grid-item > .caption {
+      border-top: 1px solid #ddd;
       text-align: center;
       color: #5c5c5c;
     }
@@ -196,7 +165,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .misc-link {
-      display: block;
+      display: inline-block;
       padding: 12px 0;
       font-size: 24px;
       line-height: 1.25;
@@ -234,7 +203,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       width: 40px;
       height: 40px;
       margin-right: 8px;
-      background: url(tools/app/images/polymer.svg) 50% no-repeat;
+      background: url(site/images/polymer.svg) 50% no-repeat;
       background-size: contain;
     }
 
@@ -305,187 +274,153 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body unresolved>
 
-  <app-header>
+  <template is="dom-bind">
 
-    <app-toolbar class="top-toolbar">
-      <div class="heading">
-        <div class="title">App Layout</div>
-        <div class="sub-title">A collection of elements, along with guidelines and templates that can be used to structure your app’s layout.</div>
+    <iron-ajax url="site/resources.json" auto last-response="{{resources}}"></iron-ajax>
+
+    <app-header fixed>
+
+      <app-toolbar class="top-toolbar">
+        <div class="heading">
+          <div class="title">App Layout</div>
+          <div class="sub-title">A collection of elements, along with guidelines and templates that can be used to structure your app’s layout.</div>
+        </div>
+      </app-toolbar>
+
+      <app-toolbar class="bottom-toolbar">
+        <div class="bottom-tools responsive horizontal layout">
+          <a href="https://github.com/PolymerLabs/app-layout" target="_blank" tabindex="-1">
+            <paper-button raised><iron-icon icon="file-download"></iron-icon>View On GitHub</paper-button>
+          </a>
+          <a href="docs.html" target="_blank" tabindex="-1">
+            <paper-button raised><iron-icon icon="subject"></iron-icon>API Docs</paper-button>
+          </a>
+        </div>
+      </app-toolbar>
+
+    </app-header>
+
+    <section>
+
+      <device-layout-viewer device="all" src="templates/publishing/"></device-layout-viewer>
+
+    </section>
+
+    <section>
+
+      <h1>Templates</h1>
+
+      <p>The templates are a means to define, illustrate and share best practices in app's layout. Select a template and customize to suit your needs.</p>
+
+      <div class="grid">
+
+        <template is="dom-repeat" items="{{resources.templates}}">
+
+          <div class="grid-item">
+            <div class="image" style$="background-image: url({{item.thumbnail}});"></div>
+            <div class="caption">
+              <h3>{{item.name}}</h3>
+              <div>
+                <a href="{{item.demoUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised>View</paper-button>
+                </a>
+                <a href="{{item.sourceUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised>Source</paper-button>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </template>
+
       </div>
-    </app-toolbar>
 
-    <app-toolbar class="bottom-toolbar">
-      <div class="bottom-tools responsive horizontal layout">
-        <a href="https://github.com/PolymerLabs/app-layout" target="_blank" tabindex="-1">
-          <paper-button raised><iron-icon icon="file-download"></iron-icon>View On GitHub</paper-button>
+    </section>
+
+    <section>
+
+      <h1>Patterns</h1>
+
+      <p>Sample code for various UI patterns.</p>
+
+      <div class="grid">
+
+        <template is="dom-repeat" items="{{resources.patterns}}">
+
+          <div class="grid-item">
+            <div class="caption">
+              <h3>{{item.name}}</h3>
+              <p>{{item.desc}}</p>
+              <div>
+                <a href="{{item.demoUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised>View</paper-button>
+                </a>
+                <a href="{{item.sourceUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised>Source</paper-button>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </template>
+
+      </div>
+
+    </section>
+
+    <section>
+
+      <h1>Apps</h1>
+
+      <p>Here are some applications built with App Layout. Get started on your own and we might put it here to showcase and share your work.</p>
+
+      <div class="grid">
+
+        <template is="dom-repeat" items="{{resources.apps}}">
+
+          <div class="grid-item">
+            <div class="image" style$="background-image: url({{item.thumbnail}});"></div>
+            <div class="caption">
+              <h3>{{item.name}}</h3>
+              <div>
+                <a href="{{item.demoUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised>View</paper-button>
+                </a>
+                <a href="{{item.sourceUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised>Source</paper-button>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </template>
+
+      </div>
+
+    </section>
+
+    <section class="vertical center layout">
+
+      <h1>Tools and References</h1>
+
+      <a class="misc-link" href="https://www.google.com/design/spec/layout/adaptive-ui.html#adaptive-ui-patterns" target="_blank">Material Design Adaptive UI Pattern</a>
+      <a class="misc-link" href="https://developers.google.com/web/tools/polymer-starter-kit/" target="_blank">Polymer Starter Kit</a>
+
+    </section>
+
+    <footer>
+      <div class="footer-inner responsive horizontal center layout">
+        <a class="horizontal center layout" target="_blank" href="https://www.polymer-project.org">
+          <div class="logo"></div><div class="title">Polymer</div>
         </a>
-        <a href="docs.html" target="_blank" tabindex="-1">
-          <paper-button raised><iron-icon icon="subject"></iron-icon>API Docs</paper-button>
-        </a>
+        <div class="flex"></div>
+        <a target="_blank" href="http://polymer.github.io/LICENSE.txt" data-outbound="license-txt">&copy; 2015 Polymer Authors</a>
+        <div class="dot-separator wide-only"></div>
+        <a target="_blank" href="https://www.polymer-project.org" data-outbound="about-polymer">About Polymer</a>
       </div>
-    </app-toolbar>
+    </footer>
 
-  </app-header>
-
-  <section>
-
-    <device-layout-viewer device="all" src="templates/publishing/"></device-layout-viewer>
-
-  </section>
-
-  <section>
-
-    <h1>Templates</h1>
-
-    <p>The templates are a means to define, illustrate and share best practices in app's layout. Select a template and customize to suit your needs.</p>
-
-    <div class="grid">
-
-      <div class="grid-item">
-        <div class="image publishing-image"></div>
-        <div class="caption">
-          <h3>ZUPERK&Uuml;LBLOG</h3>
-          <div>
-            <a href="templates/publishing/" target="_blank" tabindex="-1">
-              <paper-button raised>View</paper-button>
-            </a>
-            <a href="https://github.com/PolymerLabs/app-layout/tree/master/templates/publishing" target="_blank" tabindex="-1">
-              <paper-button raised>Source</paper-button>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- <div class="grid-item coming-soon">
-        <div class="image pesto-image"></div>
-        <div class="caption">
-          <h3>PESTO</h3>
-          <div>
-            <paper-button raised disabled>View</paper-button>
-            <paper-button raised disabled>Source</paper-button>
-          </div>
-        </div>
-      </div> -->
-
-      <div class="grid-item coming-soon">
-        <div class="image music-image"></div>
-        <div class="caption">
-          <h3>MUSIC</h3>
-          <div>
-            <paper-button raised disabled>View</paper-button>
-            <paper-button raised disabled>Source</paper-button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <section>
-
-    <h1>Patterns</h1>
-
-    <p>Sample code for various UI patterns.</p>
-
-    <div class="grid">
-
-      <div class="grid-item">
-        <div class="caption">
-          <h3>Transform Navigation</h3>
-          <p>As more screen space is available, side navigation can transform into tabs.</p>
-          <div>
-            <a href="patterns/transform-navigation/" target="_blank" tabindex="-1">
-              <paper-button raised>View</paper-button>
-            </a>
-            <a href="https://github.com/PolymerLabs/app-layout/tree/master/patterns/transform-navigation/x-app.html" target="_blank" tabindex="-1">
-              <paper-button raised>Source</paper-button>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid-item">
-        <div class="caption">
-          <h3>Expand Card</h3>
-          <p>Content cards may expand to take up more horizontal space.</p>
-          <div>
-            <a href="patterns/expand-card/" target="_blank" tabindex="-1">
-              <paper-button raised>View</paper-button>
-            </a>
-            <a href="https://github.com/PolymerLabs/app-layout/tree/master/patterns/expand-card/index.html" target="_blank" tabindex="-1">
-              <paper-button raised>Source</paper-button>
-            </a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <section>
-
-    <h1>Apps</h1>
-
-    <p>Here are some applications built with App Layout. Get started on your own and we might put it here to showcase and share your work.</p>
-
-    <div class="grid">
-
-      <div class="grid-item">
-        <div class="image summit-image"></div>
-        <div class="caption">
-          <h3>Polymer Summit</h3>
-          <div>
-            <a href="https://www.polymer-project.org/summit" target="_blank" tabindex="-1">
-              <paper-button raised>View</paper-button>
-            </a>
-            <a href="https://github.com/frankiefu/summit" target="_blank" tabindex="-1">
-              <paper-button raised>Source</paper-button>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid-item">
-        <div class="image pica-image"></div>
-        <div class="caption">
-          <h3>PICA</h3>
-          <div>
-            <a href="http://frankiefu.github.io/pica" target="_blank" tabindex="-1">
-              <paper-button raised>View</paper-button>
-            </a>
-            <a href="https://github.com/frankiefu/pica" target="_blank" tabindex="-1">
-              <paper-button raised>Source</paper-button>
-            </a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <section class="vertical center layout">
-
-    <h1>Tools and References</h1>
-
-    <a class="misc-link" href="https://www.google.com/design/spec/layout/adaptive-ui.html#adaptive-ui-patterns" target="_blank">Material Design Adaptive UI Pattern</a>
-    <a class="misc-link" href="https://developers.google.com/web/tools/polymer-starter-kit/" target="_blank">Polymer Starter Kit</a>
-
-  </section>
-
-  <footer>
-    <div class="footer-inner responsive horizontal center layout">
-      <a class="horizontal center layout" target="_blank" href="https://www.polymer-project.org">
-        <div class="logo"></div><div class="title">Polymer</div>
-      </a>
-      <div class="flex"></div>
-      <a target="_blank" href="http://polymer.github.io/LICENSE.txt" data-outbound="license-txt">&copy; 2015 Polymer Authors</a>
-      <div class="dot-separator wide-only"></div>
-      <a target="_blank" href="https://www.polymer-project.org" data-outbound="about-polymer">About Polymer</a>
-    </div>
-  </footer>
+  </template>
 
 </body>
 </html>
