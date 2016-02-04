@@ -14312,6 +14312,1049 @@ Note, all features of `custom-style` are available when defining styles as part 
   });
 
 </script>
+<script>function MakePromise (asap) {
+  function Promise(fn) {
+		if (typeof this !== 'object' || typeof fn !== 'function') throw new TypeError();
+		this._state = null;
+		this._value = null;
+		this._deferreds = []
+
+		doResolve(fn, resolve.bind(this), reject.bind(this));
+	}
+
+	function handle(deferred) {
+		var me = this;
+		if (this._state === null) {
+			this._deferreds.push(deferred);
+			return
+		}
+		asap(function() {
+			var cb = me._state ? deferred.onFulfilled : deferred.onRejected
+			if (typeof cb !== 'function') {
+				(me._state ? deferred.resolve : deferred.reject)(me._value);
+				return;
+			}
+			var ret;
+			try {
+				ret = cb(me._value);
+			}
+			catch (e) {
+				deferred.reject(e);
+				return;
+			}
+			deferred.resolve(ret);
+		})
+	}
+
+	function resolve(newValue) {
+		try { //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+			if (newValue === this) throw new TypeError();
+			if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+				var then = newValue.then;
+				if (typeof then === 'function') {
+					doResolve(then.bind(newValue), resolve.bind(this), reject.bind(this));
+					return;
+				}
+			}
+			this._state = true;
+			this._value = newValue;
+			finale.call(this);
+		} catch (e) { reject.call(this, e); }
+	}
+
+	function reject(newValue) {
+		this._state = false;
+		this._value = newValue;
+		finale.call(this);
+	}
+
+	function finale() {
+		for (var i = 0, len = this._deferreds.length; i < len; i++) {
+			handle.call(this, this._deferreds[i]);
+		}
+		this._deferreds = null;
+	}
+
+	/**
+	 * Take a potentially misbehaving resolver function and make sure
+	 * onFulfilled and onRejected are only called once.
+	 *
+	 * Makes no guarantees about asynchrony.
+	 */
+	function doResolve(fn, onFulfilled, onRejected) {
+		var done = false;
+		try {
+			fn(function (value) {
+				if (done) return;
+				done = true;
+				onFulfilled(value);
+			}, function (reason) {
+				if (done) return;
+				done = true;
+				onRejected(reason);
+			})
+		} catch (ex) {
+			if (done) return;
+			done = true;
+			onRejected(ex);
+		}
+	}
+
+	Promise.prototype['catch'] = function (onRejected) {
+		return this.then(null, onRejected);
+	};
+
+	Promise.prototype.then = function(onFulfilled, onRejected) {
+		var me = this;
+		return new Promise(function(resolve, reject) {
+      handle.call(me, {
+        onFulfilled: onFulfilled,
+        onRejected: onRejected,
+        resolve: resolve,
+        reject: reject
+      });
+		})
+	};
+
+	Promise.resolve = function (value) {
+		if (value && typeof value === 'object' && value.constructor === Promise) {
+			return value;
+		}
+
+		return new Promise(function (resolve) {
+			resolve(value);
+		});
+	};
+
+	Promise.reject = function (value) {
+		return new Promise(function (resolve, reject) {
+			reject(value);
+		});
+	};
+
+	
+  return Promise;
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = MakePromise;
+}
+
+</script>
+<script>
+if (!window.Promise) {
+  window.Promise = MakePromise(Polymer.Base.async);
+}
+</script>
+<!--
+iron-request can be used to perform XMLHttpRequests.
+
+    <iron-request id="xhr"></iron-request>
+    ...
+    this.$.xhr.send({url: url, params: params});
+-->
+<script>
+  'use strict';
+
+  Polymer({
+    is: 'iron-request',
+
+    hostAttributes: {
+      hidden: true
+    },
+
+    properties: {
+
+      /**
+       * A reference to the XMLHttpRequest instance used to generate the
+       * network request.
+       *
+       * @type {XMLHttpRequest}
+       */
+      xhr: {
+        type: Object,
+        notify: true,
+        readOnly: true,
+        value: function() {
+          return new XMLHttpRequest();
+        }
+      },
+
+      /**
+       * A reference to the parsed response body, if the `xhr` has completely
+       * resolved.
+       *
+       * @type {*}
+       * @default null
+       */
+      response: {
+        type: Object,
+        notify: true,
+        readOnly: true,
+        value: function() {
+          return null;
+        }
+      },
+
+      /**
+       * A reference to the status code, if the `xhr` has completely resolved.
+       */
+      status: {
+        type: Number,
+        notify: true,
+        readOnly: true,
+        value: 0
+      },
+
+      /**
+       * A reference to the status text, if the `xhr` has completely resolved.
+       */
+      statusText: {
+        type: String,
+        notify: true,
+        readOnly: true,
+        value: ''
+      },
+
+      /**
+       * A promise that resolves when the `xhr` response comes back, or rejects
+       * if there is an error before the `xhr` completes.
+       *
+       * @type {Promise}
+       */
+      completes: {
+        type: Object,
+        readOnly: true,
+        notify: true,
+        value: function() {
+          return new Promise(function (resolve, reject) {
+            this.resolveCompletes = resolve;
+            this.rejectCompletes = reject;
+          }.bind(this));
+        }
+      },
+
+      /**
+       * An object that contains progress information emitted by the XHR if
+       * available.
+       *
+       * @default {}
+       */
+      progress: {
+        type: Object,
+        notify: true,
+        readOnly: true,
+        value: function() {
+          return {};
+        }
+      },
+
+      /**
+       * Aborted will be true if an abort of the request is attempted.
+       */
+      aborted: {
+        type: Boolean,
+        notify: true,
+        readOnly: true,
+        value: false,
+      },
+
+      /**
+       * Errored will be true if the browser fired an error event from the
+       * XHR object (mainly network errors).
+       */
+      errored: {
+        type: Boolean,
+        notify: true,
+        readOnly: true,
+        value: false
+      },
+
+      /**
+       * TimedOut will be true if the XHR threw a timeout event.
+       */
+      timedOut: {
+        type: Boolean,
+        notify: true,
+        readOnly: true,
+        value: false
+      }
+    },
+
+    /**
+     * Succeeded is true if the request succeeded. The request succeeded if it
+     * loaded without error, wasn't aborted, and the status code is ≥ 200, and
+     * < 300, or if the status code is 0.
+     *
+     * The status code 0 is accepted as a success because some schemes - e.g.
+     * file:// - don't provide status codes.
+     *
+     * @return {boolean}
+     */
+    get succeeded() {
+      if (this.errored || this.aborted || this.timedOut) {
+        return false;
+      }
+      var status = this.xhr.status || 0;
+
+      // Note: if we are using the file:// protocol, the status code will be 0
+      // for all outcomes (successful or otherwise).
+      return status === 0 ||
+        (status >= 200 && status < 300);
+    },
+
+    /**
+     * Sends an HTTP request to the server and returns the XHR object.
+     *
+     * The handling of the `body` parameter will vary based on the Content-Type
+     * header. See the docs for iron-ajax's `body` param for details.
+     *
+     * @param {{
+     *   url: string,
+     *   method: (string|undefined),
+     *   async: (boolean|undefined),
+     *   body: (ArrayBuffer|ArrayBufferView|Blob|Document|FormData|null|string|undefined|Object),
+     *   headers: (Object|undefined),
+     *   handleAs: (string|undefined),
+     *   jsonPrefix: (string|undefined),
+     *   withCredentials: (boolean|undefined)}} options -
+     *     url The url to which the request is sent.
+     *     method The HTTP method to use, default is GET.
+     *     async By default, all requests are sent asynchronously. To send synchronous requests,
+     *         set to true.
+     *     body The content for the request body for POST method.
+     *     headers HTTP request headers.
+     *     handleAs The response type. Default is 'text'.
+     *     withCredentials Whether or not to send credentials on the request. Default is false.
+     *   timeout: (Number|undefined)
+     * @return {Promise}
+     */
+    send: function (options) {
+      var xhr = this.xhr;
+
+      if (xhr.readyState > 0) {
+        return null;
+      }
+
+      xhr.addEventListener('progress', function (progress) {
+        this._setProgress({
+          lengthComputable: progress.lengthComputable,
+          loaded: progress.loaded,
+          total: progress.total
+        });
+      }.bind(this))
+
+      xhr.addEventListener('error', function (error) {
+        this._setErrored(true);
+        this._updateStatus();
+        this.rejectCompletes(error);
+      }.bind(this));
+
+      xhr.addEventListener('timeout', function (error) {
+        this._setTimedOut(true);
+        this._updateStatus();
+        this.rejectCompletes(error);
+      }.bind(this));
+
+      xhr.addEventListener('abort', function () {
+        this._updateStatus();
+        this.rejectCompletes(new Error('Request aborted.'));
+      }.bind(this));
+
+
+      // Called after all of the above.
+      xhr.addEventListener('loadend', function () {
+        this._updateStatus();
+
+        if (!this.succeeded) {
+          this.rejectCompletes(new Error('The request failed with status code: ' + this.xhr.status));
+          return;
+        }
+
+        this._setResponse(this.parseResponse());
+        this.resolveCompletes(this);
+      }.bind(this));
+
+      this.url = options.url;
+      xhr.open(
+        options.method || 'GET',
+        options.url,
+        options.async !== false
+      );
+
+      var acceptType = {
+        'json': 'application/json',
+        'text': 'text/plain',
+        'html': 'text/html',
+        'xml': 'application/xml',
+        'arraybuffer': 'application/octet-stream'
+      }[options.handleAs];
+      var headers = options.headers || Object.create(null);
+      var newHeaders = Object.create(null);
+      for (var key in headers) {
+        newHeaders[key.toLowerCase()] = headers[key];
+      }
+      headers = newHeaders;
+
+      if (acceptType && !headers['accept']) {
+        headers['accept'] = acceptType;
+      }
+      Object.keys(headers).forEach(function (requestHeader) {
+        if (/[A-Z]/.test(requestHeader)) {
+          console.error('Headers must be lower case, got', requestHeader);
+        }
+        xhr.setRequestHeader(
+          requestHeader,
+          headers[requestHeader]
+        );
+      }, this);
+
+      if (options.async !== false) {
+        var handleAs = options.handleAs;
+
+        // If a JSON prefix is present, the responseType must be 'text' or the
+        // browser won’t be able to parse the response.
+        if (!!options.jsonPrefix || !handleAs) {
+          handleAs = 'text';
+        }
+
+        // In IE, `xhr.responseType` is an empty string when the response
+        // returns. Hence, caching it as `xhr._responseType`.
+        xhr.responseType = xhr._responseType = handleAs;
+
+        // Cache the JSON prefix, if it exists.
+        if (!!options.jsonPrefix) {
+          xhr._jsonPrefix = options.jsonPrefix;
+        }
+      }
+
+      xhr.withCredentials = !!options.withCredentials;
+      xhr.timeout = options.timeout;
+
+      var body = this._encodeBodyObject(options.body, headers['content-type']);
+
+      xhr.send(
+        /** @type {ArrayBuffer|ArrayBufferView|Blob|Document|FormData|
+                   null|string|undefined} */
+        (body));
+
+      return this.completes;
+    },
+
+    /**
+     * Attempts to parse the response body of the XHR. If parsing succeeds,
+     * the value returned will be deserialized based on the `responseType`
+     * set on the XHR.
+     *
+     * @return {*} The parsed response,
+     * or undefined if there was an empty response or parsing failed.
+     */
+    parseResponse: function () {
+      var xhr = this.xhr;
+      var responseType = xhr.responseType || xhr._responseType;
+      var preferResponseText = !this.xhr.responseType;
+      var prefixLen = (xhr._jsonPrefix && xhr._jsonPrefix.length) || 0;
+
+      try {
+        switch (responseType) {
+          case 'json':
+            // If the xhr object doesn't have a natural `xhr.responseType`,
+            // we can assume that the browser hasn't parsed the response for us,
+            // and so parsing is our responsibility. Likewise if response is
+            // undefined, as there's no way to encode undefined in JSON.
+            if (preferResponseText || xhr.response === undefined) {
+              // Try to emulate the JSON section of the response body section of
+              // the spec: https://xhr.spec.whatwg.org/#response-body
+              // That is to say, we try to parse as JSON, but if anything goes
+              // wrong return null.
+              try {
+                return JSON.parse(xhr.responseText);
+              } catch (_) {
+                return null;
+              }
+            }
+
+            return xhr.response;
+          case 'xml':
+            return xhr.responseXML;
+          case 'blob':
+          case 'document':
+          case 'arraybuffer':
+            return xhr.response;
+          case 'text':
+          default: {
+            // If `prefixLen` is set, it implies the response should be parsed
+            // as JSON once the prefix of length `prefixLen` is stripped from
+            // it. Emulate the behavior above where null is returned on failure
+            // to parse.
+            if (prefixLen) {
+              try {
+                return JSON.parse(xhr.responseText.substring(prefixLen));
+              } catch (_) {
+                return null;
+              }
+            }
+            return xhr.responseText;
+          }
+        }
+      } catch (e) {
+        this.rejectCompletes(new Error('Could not parse response. ' + e.message));
+      }
+    },
+
+    /**
+     * Aborts the request.
+     */
+    abort: function () {
+      this._setAborted(true);
+      this.xhr.abort();
+    },
+
+    /**
+     * @param {*} body The given body of the request to try and encode.
+     * @param {?string} contentType The given content type, to infer an encoding
+     *     from.
+     * @return {*} Either the encoded body as a string, if successful,
+     *     or the unaltered body object if no encoding could be inferred.
+     */
+    _encodeBodyObject: function(body, contentType) {
+      if (typeof body == 'string') {
+        return body;  // Already encoded.
+      }
+      var bodyObj = /** @type {Object} */ (body);
+      switch(contentType) {
+        case('application/json'):
+          return JSON.stringify(bodyObj);
+        case('application/x-www-form-urlencoded'):
+          return this._wwwFormUrlEncode(bodyObj);
+      }
+      return body;
+    },
+
+    /**
+     * @param {Object} object The object to encode as x-www-form-urlencoded.
+     * @return {string} .
+     */
+    _wwwFormUrlEncode: function(object) {
+      if (!object) {
+        return '';
+      }
+      var pieces = [];
+      Object.keys(object).forEach(function(key) {
+        // TODO(rictic): handle array values here, in a consistent way with
+        //   iron-ajax params.
+        pieces.push(
+            this._wwwFormUrlEncodePiece(key) + '=' +
+            this._wwwFormUrlEncodePiece(object[key]));
+      }, this);
+      return pieces.join('&');
+    },
+
+    /**
+     * @param {*} str A key or value to encode as x-www-form-urlencoded.
+     * @return {string} .
+     */
+    _wwwFormUrlEncodePiece: function(str) {
+      // Spec says to normalize newlines to \r\n and replace %20 spaces with +.
+      // jQuery does this as well, so this is likely to be widely compatible.
+      return encodeURIComponent(str.toString().replace(/\r?\n/g, '\r\n'))
+          .replace(/%20/g, '+');
+    },
+
+    /**
+     * Updates the status code and status text.
+     */
+    _updateStatus: function() {
+      this._setStatus(this.xhr.status);
+      this._setStatusText((this.xhr.statusText === undefined) ? '' : this.xhr.statusText);
+    }
+  });
+</script>
+<!--
+The `iron-ajax` element exposes network request functionality.
+
+    <iron-ajax
+        auto
+        url="http://gdata.youtube.com/feeds/api/videos/"
+        params='{"alt":"json", "q":"chrome"}'
+        handle-as="json"
+        on-response="handleResponse"
+        debounce-duration="300"></iron-ajax>
+
+With `auto` set to `true`, the element performs a request whenever
+its `url`, `params` or `body` properties are changed. Automatically generated
+requests will be debounced in the case that multiple attributes are changed
+sequentially.
+
+Note: The `params` attribute must be double quoted JSON.
+
+You can trigger a request explicitly by calling `generateRequest` on the
+element.
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<script>
+  'use strict';
+
+  Polymer({
+
+    is: 'iron-ajax',
+
+    /**
+     * Fired when a request is sent.
+     *
+     * @event request
+     */
+
+    /**
+     * Fired when a response is received.
+     *
+     * @event response
+     */
+
+    /**
+     * Fired when an error is received.
+     *
+     * @event error
+     */
+
+    hostAttributes: {
+      hidden: true
+    },
+
+    properties: {
+      /**
+       * The URL target of the request.
+       */
+      url: {
+        type: String
+      },
+
+      /**
+       * An object that contains query parameters to be appended to the
+       * specified `url` when generating a request. If you wish to set the body
+       * content when making a POST request, you should use the `body` property
+       * instead.
+       */
+      params: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      },
+
+      /**
+       * The HTTP method to use such as 'GET', 'POST', 'PUT', or 'DELETE'.
+       * Default is 'GET'.
+       */
+      method: {
+        type: String,
+        value: 'GET'
+      },
+
+      /**
+       * HTTP request headers to send.
+       *
+       * Example:
+       *
+       *     <iron-ajax
+       *         auto
+       *         url="http://somesite.com"
+       *         headers='{"X-Requested-With": "XMLHttpRequest"}'
+       *         handle-as="json"></iron-ajax>
+       *
+       * Note: setting a `Content-Type` header here will override the value
+       * specified by the `contentType` property of this element.
+       */
+      headers: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      },
+
+      /**
+       * Content type to use when sending data. If the `contentType` property
+       * is set and a `Content-Type` header is specified in the `headers`
+       * property, the `headers` property value will take precedence.
+       *
+       * Varies the handling of the `body` param.
+       */
+      contentType: {
+        type: String,
+        value: null
+      },
+
+      /**
+       * Body content to send with the request, typically used with "POST"
+       * requests.
+       *
+       * If body is a string it will be sent unmodified.
+       *
+       * If Content-Type is set to a value listed below, then
+       * the body will be encoded accordingly.
+       *
+       *    * `content-type="application/json"`
+       *      * body is encoded like `{"foo":"bar baz","x":1}`
+       *    * `content-type="application/x-www-form-urlencoded"`
+       *      * body is encoded like `foo=bar+baz&x=1`
+       *
+       * Otherwise the body will be passed to the browser unmodified, and it
+       * will handle any encoding (e.g. for FormData, Blob, ArrayBuffer).
+       *
+       * @type (ArrayBuffer|ArrayBufferView|Blob|Document|FormData|null|string|undefined|Object)
+       */
+      body: {
+        type: Object,
+        value: null
+      },
+
+      /**
+       * Toggle whether XHR is synchronous or asynchronous. Don't change this
+       * to true unless You Know What You Are Doing™.
+       */
+      sync: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Specifies what data to store in the `response` property, and
+       * to deliver as `event.detail.response` in `response` events.
+       *
+       * One of:
+       *
+       *    `text`: uses `XHR.responseText`.
+       *
+       *    `xml`: uses `XHR.responseXML`.
+       *
+       *    `json`: uses `XHR.responseText` parsed as JSON.
+       *
+       *    `arraybuffer`: uses `XHR.response`.
+       *
+       *    `blob`: uses `XHR.response`.
+       *
+       *    `document`: uses `XHR.response`.
+       */
+      handleAs: {
+        type: String,
+        value: 'json'
+      },
+
+      /**
+       * Set the withCredentials flag on the request.
+       */
+      withCredentials: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Set the timeout flag on the request.
+       */
+      timeout: {
+        type: Number,
+        value: 0
+      },
+
+      /**
+       * If true, automatically performs an Ajax request when either `url` or
+       * `params` changes.
+       */
+      auto: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * If true, error messages will automatically be logged to the console.
+       */
+      verbose: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * The most recent request made by this iron-ajax element.
+       */
+      lastRequest: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      },
+
+      /**
+       * True while lastRequest is in flight.
+       */
+      loading: {
+        type: Boolean,
+        notify: true,
+        readOnly: true
+      },
+
+      /**
+       * lastRequest's response.
+       *
+       * Note that lastResponse and lastError are set when lastRequest finishes,
+       * so if loading is true, then lastResponse and lastError will correspond
+       * to the result of the previous request.
+       *
+       * The type of the response is determined by the value of `handleAs` at
+       * the time that the request was generated.
+       *
+       * @type {Object}
+       */
+      lastResponse: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      },
+
+      /**
+       * lastRequest's error, if any.
+       *
+       * @type {Object}
+       */
+      lastError: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      },
+
+      /**
+       * An Array of all in-flight requests originating from this iron-ajax
+       * element.
+       */
+      activeRequests: {
+        type: Array,
+        notify: true,
+        readOnly: true,
+        value: function() {
+          return [];
+        }
+      },
+
+      /**
+       * Length of time in milliseconds to debounce multiple automatically generated requests.
+       */
+      debounceDuration: {
+        type: Number,
+        value: 0,
+        notify: true
+      },
+
+      /**
+       * Prefix to be stripped from a JSON response before parsing it.
+       *
+       * In order to prevent an attack using CSRF with Array responses
+       * (http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx/)
+       * many backends will mitigate this by prefixing all JSON response bodies
+       * with a string that would be nonsensical to a JavaScript parser.
+       *
+       */
+      jsonPrefix: {
+        type: String,
+        value: ''
+      },
+
+      _boundHandleResponse: {
+        type: Function,
+        value: function() {
+          return this._handleResponse.bind(this);
+        }
+      }
+    },
+
+    observers: [
+      '_requestOptionsChanged(url, method, params.*, headers, contentType, ' +
+          'body, sync, handleAs, jsonPrefix, withCredentials, timeout, auto)'
+    ],
+
+    /**
+     * The query string that should be appended to the `url`, serialized from
+     * the current value of `params`.
+     *
+     * @return {string}
+     */
+    get queryString () {
+      var queryParts = [];
+      var param;
+      var value;
+
+      for (param in this.params) {
+        value = this.params[param];
+        param = window.encodeURIComponent(param);
+
+        if (Array.isArray(value)) {
+          for (var i = 0; i < value.length; i++) {
+            queryParts.push(param + '=' + window.encodeURIComponent(value[i]));
+          }
+        } else if (value !== null) {
+          queryParts.push(param + '=' + window.encodeURIComponent(value));
+        } else {
+          queryParts.push(param);
+        }
+      }
+
+      return queryParts.join('&');
+    },
+
+    /**
+     * The `url` with query string (if `params` are specified), suitable for
+     * providing to an `iron-request` instance.
+     *
+     * @return {string}
+     */
+    get requestUrl() {
+      var queryString = this.queryString;
+
+      if (queryString) {
+        var bindingChar = this.url.indexOf('?') >= 0 ? '&' : '?';
+        return this.url + bindingChar + queryString;
+      }
+
+      return this.url;
+    },
+
+    /**
+     * An object that maps header names to header values, first applying the
+     * the value of `Content-Type` and then overlaying the headers specified
+     * in the `headers` property.
+     *
+     * @return {Object}
+     */
+    get requestHeaders() {
+      var headers = {};
+      var contentType = this.contentType;
+      if (contentType == null && (typeof this.body === 'string')) {
+        contentType = 'application/x-www-form-urlencoded';
+      }
+      if (contentType) {
+        headers['content-type'] = contentType;
+      }
+      var header;
+
+      if (this.headers instanceof Object) {
+        for (header in this.headers) {
+          headers[header] = this.headers[header].toString();
+        }
+      }
+
+      return headers;
+    },
+
+    /**
+     * Request options suitable for generating an `iron-request` instance based
+     * on the current state of the `iron-ajax` instance's properties.
+     *
+     * @return {{
+     *   url: string,
+     *   method: (string|undefined),
+     *   async: (boolean|undefined),
+     *   body: (ArrayBuffer|ArrayBufferView|Blob|Document|FormData|null|string|undefined|Object),
+     *   headers: (Object|undefined),
+     *   handleAs: (string|undefined),
+     *   jsonPrefix: (string|undefined),
+     *   withCredentials: (boolean|undefined)}}
+     */
+    toRequestOptions: function() {
+      return {
+        url: this.requestUrl || '',
+        method: this.method,
+        headers: this.requestHeaders,
+        body: this.body,
+        async: !this.sync,
+        handleAs: this.handleAs,
+        jsonPrefix: this.jsonPrefix,
+        withCredentials: this.withCredentials,
+        timeout: this.timeout
+      };
+    },
+
+    /**
+     * Performs an AJAX request to the specified URL.
+     *
+     * @return {!IronRequestElement}
+     */
+    generateRequest: function() {
+      var request = /** @type {!IronRequestElement} */ (document.createElement('iron-request'));
+      var requestOptions = this.toRequestOptions();
+
+      this.activeRequests.push(request);
+
+      request.completes.then(
+        this._boundHandleResponse
+      ).catch(
+        this._handleError.bind(this, request)
+      ).then(
+        this._discardRequest.bind(this, request)
+      );
+
+      request.send(requestOptions);
+
+      this._setLastRequest(request);
+      this._setLoading(true);
+
+      this.fire('request', {
+        request: request,
+        options: requestOptions
+      }, {bubbles: false});
+
+      return request;
+    },
+
+    _handleResponse: function(request) {
+      if (request === this.lastRequest) {
+        this._setLastResponse(request.response);
+        this._setLastError(null);
+        this._setLoading(false);
+      }
+      this.fire('response', request, {bubbles: false});
+    },
+
+    _handleError: function(request, error) {
+      if (this.verbose) {
+        console.error(error);
+      }
+
+      if (request === this.lastRequest) {
+        this._setLastError({
+          request: request,
+          error: error
+        });
+        this._setLastResponse(null);
+        this._setLoading(false);
+      }
+      this.fire('error', {
+        request: request,
+        error: error
+      }, {bubbles: false});
+    },
+
+    _discardRequest: function(request) {
+      var requestIndex = this.activeRequests.indexOf(request);
+
+      if (requestIndex > -1) {
+        this.activeRequests.splice(requestIndex, 1);
+      }
+    },
+
+    _requestOptionsChanged: function() {
+      this.debounce('generate-request', function() {
+        if (this.url == null) {
+          return;
+        }
+
+        if (this.auto) {
+          this.generateRequest();
+        }
+      }, this.debounceDuration);
+    },
+
+  });
+</script>
 <!--
 `iron-meta` is a generic element you can use for sharing information across the DOM tree.
 It uses [monostate pattern](http://c2.com/cgi/wiki?MonostatePattern) such that any
@@ -15199,594 +16242,6 @@ Custom property | Description | Default
 
   });
 </script>
-<style>
-
-  /*******************************
-            Flex Layout
-  *******************************/
-
-  html /deep/ .layout.horizontal,
-  html /deep/ .layout.horizontal-reverse,
-  html /deep/ .layout.vertical,
-  html /deep/ .layout.vertical-reverse {
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  html /deep/ .layout.inline {
-    display: -ms-inline-flexbox;
-    display: -webkit-inline-flex;
-    display: inline-flex;
-  }
-
-  html /deep/ .layout.horizontal {
-    -ms-flex-direction: row;
-    -webkit-flex-direction: row;
-    flex-direction: row;
-  }
-
-  html /deep/ .layout.horizontal-reverse {
-    -ms-flex-direction: row-reverse;
-    -webkit-flex-direction: row-reverse;
-    flex-direction: row-reverse;
-  }
-
-  html /deep/ .layout.vertical {
-    -ms-flex-direction: column;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-  }
-
-  html /deep/ .layout.vertical-reverse {
-    -ms-flex-direction: column-reverse;
-    -webkit-flex-direction: column-reverse;
-    flex-direction: column-reverse;
-  }
-
-  html /deep/ .layout.wrap {
-    -ms-flex-wrap: wrap;
-    -webkit-flex-wrap: wrap;
-    flex-wrap: wrap;
-  }
-
-  html /deep/ .layout.wrap-reverse {
-    -ms-flex-wrap: wrap-reverse;
-    -webkit-flex-wrap: wrap-reverse;
-    flex-wrap: wrap-reverse;
-  }
-
-  html /deep/ .flex-auto {
-    -ms-flex: 1 1 auto;
-    -webkit-flex: 1 1 auto;
-    flex: 1 1 auto;
-  }
-
-  html /deep/ .flex-none {
-    -ms-flex: none;
-    -webkit-flex: none;
-    flex: none;
-  }
-
-  html /deep/ .flex,
-  html /deep/ .flex-1 {
-    -ms-flex: 1;
-    -webkit-flex: 1;
-    flex: 1;
-  }
-
-  html /deep/ .flex-2 {
-    -ms-flex: 2;
-    -webkit-flex: 2;
-    flex: 2;
-  }
-
-  html /deep/ .flex-3 {
-    -ms-flex: 3;
-    -webkit-flex: 3;
-    flex: 3;
-  }
-
-  html /deep/ .flex-4 {
-    -ms-flex: 4;
-    -webkit-flex: 4;
-    flex: 4;
-  }
-
-  html /deep/ .flex-5 {
-    -ms-flex: 5;
-    -webkit-flex: 5;
-    flex: 5;
-  }
-
-  html /deep/ .flex-6 {
-    -ms-flex: 6;
-    -webkit-flex: 6;
-    flex: 6;
-  }
-
-  html /deep/ .flex-7 {
-    -ms-flex: 7;
-    -webkit-flex: 7;
-    flex: 7;
-  }
-
-  html /deep/ .flex-8 {
-    -ms-flex: 8;
-    -webkit-flex: 8;
-    flex: 8;
-  }
-
-  html /deep/ .flex-9 {
-    -ms-flex: 9;
-    -webkit-flex: 9;
-    flex: 9;
-  }
-
-  html /deep/ .flex-10 {
-    -ms-flex: 10;
-    -webkit-flex: 10;
-    flex: 10;
-  }
-
-  html /deep/ .flex-11 {
-    -ms-flex: 11;
-    -webkit-flex: 11;
-    flex: 11;
-  }
-
-  html /deep/ .flex-12 {
-    -ms-flex: 12;
-    -webkit-flex: 12;
-    flex: 12;
-  }
-
-  /* alignment in cross axis */
-
-  html /deep/ .layout.start {
-    -ms-flex-align: start;
-    -webkit-align-items: flex-start;
-    align-items: flex-start;
-  }
-
-  html /deep/ .layout.center,
-  html /deep/ .layout.center-center {
-    -ms-flex-align: center;
-    -webkit-align-items: center;
-    align-items: center;
-  }
-
-  html /deep/ .layout.end {
-    -ms-flex-align: end;
-    -webkit-align-items: flex-end;
-    align-items: flex-end;
-  }
-
-  /* alignment in main axis */
-
-  html /deep/ .layout.start-justified {
-    -ms-flex-pack: start;
-    -webkit-justify-content: flex-start;
-    justify-content: flex-start;
-  }
-
-  html /deep/ .layout.center-justified,
-  html /deep/ .layout.center-center {
-    -ms-flex-pack: center;
-    -webkit-justify-content: center;
-    justify-content: center;
-  }
-
-  html /deep/ .layout.end-justified {
-    -ms-flex-pack: end;
-    -webkit-justify-content: flex-end;
-    justify-content: flex-end;
-  }
-
-  html /deep/ .layout.around-justified {
-    -ms-flex-pack: around;
-    -webkit-justify-content: space-around;
-    justify-content: space-around;
-  }
-
-  html /deep/ .layout.justified {
-    -ms-flex-pack: justify;
-    -webkit-justify-content: space-between;
-    justify-content: space-between;
-  }
-
-  /* self alignment */
-
-  html /deep/ .self-start {
-    -ms-align-self: flex-start;
-    -webkit-align-self: flex-start;
-    align-self: flex-start;
-  }
-
-  html /deep/ .self-center {
-    -ms-align-self: center;
-    -webkit-align-self: center;
-    align-self: center;
-  }
-
-  html /deep/ .self-end {
-    -ms-align-self: flex-end;
-    -webkit-align-self: flex-end;
-    align-self: flex-end;
-  }
-
-  html /deep/ .self-stretch {
-    -ms-align-self: stretch;
-    -webkit-align-self: stretch;
-    align-self: stretch;
-  }
-
-  /*******************************
-            Other Layout
-  *******************************/
-
-  html /deep/ .block {
-    display: block;
-  }
-
-  /* IE 10 support for HTML5 hidden attr */
-  html /deep/ [hidden] {
-    display: none !important;
-  }
-
-  html /deep/ .invisible {
-    visibility: hidden !important;
-  }
-
-  html /deep/ .relative {
-    position: relative;
-  }
-
-  html /deep/ .fit {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-  }
-
-  body.fullbleed {
-    margin: 0;
-    height: 100vh;
-  }
-
-  html /deep/ .scroll {
-    -webkit-overflow-scrolling: touch;
-    overflow: auto;
-  }
-
-  .fixed-bottom,
-  .fixed-left,
-  .fixed-right,
-  .fixed-top {
-    position: fixed;
-  }
-
-  html /deep/ .fixed-top {
-    top: 0;
-    left: 0;
-    right: 0;
-  }
-
-  html /deep/ .fixed-right {
-    top: 0;
-    right: 0;
-    bottom: 0;
-  }
-
-  html /deep/ .fixed-bottom {
-    right: 0;
-    bottom: 0;
-    left: 0;
-  }
-
-  html /deep/ .fixed-left {
-    top: 0;
-    bottom: 0;
-    left: 0;
-  }
-
-</style>
-<style>
-
-  /*******************************
-            Flex Layout
-  *******************************/
-
-  .layout.horizontal,
-  .layout.horizontal-reverse,
-  .layout.vertical,
-  .layout.vertical-reverse {
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .layout.inline {
-    display: -ms-inline-flexbox;
-    display: -webkit-inline-flex;
-    display: inline-flex;
-  }
-
-  .layout.horizontal {
-    -ms-flex-direction: row;
-    -webkit-flex-direction: row;
-    flex-direction: row;
-  }
-
-  .layout.horizontal-reverse {
-    -ms-flex-direction: row-reverse;
-    -webkit-flex-direction: row-reverse;
-    flex-direction: row-reverse;
-  }
-
-  .layout.vertical {
-    -ms-flex-direction: column;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-  }
-
-  .layout.vertical-reverse {
-    -ms-flex-direction: column-reverse;
-    -webkit-flex-direction: column-reverse;
-    flex-direction: column-reverse;
-  }
-
-  .layout.wrap {
-    -ms-flex-wrap: wrap;
-    -webkit-flex-wrap: wrap;
-    flex-wrap: wrap;
-  }
-
-  .layout.wrap-reverse {
-    -ms-flex-wrap: wrap-reverse;
-    -webkit-flex-wrap: wrap-reverse;
-    flex-wrap: wrap-reverse;
-  }
-
-  .flex-auto {
-    -ms-flex: 1 1 auto;
-    -webkit-flex: 1 1 auto;
-    flex: 1 1 auto;
-  }
-
-  .flex-none {
-    -ms-flex: none;
-    -webkit-flex: none;
-    flex: none;
-  }
-
-  .flex,
-  .flex-1 {
-    -ms-flex: 1;
-    -webkit-flex: 1;
-    flex: 1;
-  }
-
-  .flex-2 {
-    -ms-flex: 2;
-    -webkit-flex: 2;
-    flex: 2;
-  }
-
-  .flex-3 {
-    -ms-flex: 3;
-    -webkit-flex: 3;
-    flex: 3;
-  }
-
-  .flex-4 {
-    -ms-flex: 4;
-    -webkit-flex: 4;
-    flex: 4;
-  }
-
-  .flex-5 {
-    -ms-flex: 5;
-    -webkit-flex: 5;
-    flex: 5;
-  }
-
-  .flex-6 {
-    -ms-flex: 6;
-    -webkit-flex: 6;
-    flex: 6;
-  }
-
-  .flex-7 {
-    -ms-flex: 7;
-    -webkit-flex: 7;
-    flex: 7;
-  }
-
-  .flex-8 {
-    -ms-flex: 8;
-    -webkit-flex: 8;
-    flex: 8;
-  }
-
-  .flex-9 {
-    -ms-flex: 9;
-    -webkit-flex: 9;
-    flex: 9;
-  }
-
-  .flex-10 {
-    -ms-flex: 10;
-    -webkit-flex: 10;
-    flex: 10;
-  }
-
-  .flex-11 {
-    -ms-flex: 11;
-    -webkit-flex: 11;
-    flex: 11;
-  }
-
-  .flex-12 {
-    -ms-flex: 12;
-    -webkit-flex: 12;
-    flex: 12;
-  }
-
-  /* alignment in cross axis */
-
-  .layout.start {
-    -ms-flex-align: start;
-    -webkit-align-items: flex-start;
-    align-items: flex-start;
-  }
-
-  .layout.center,
-  .layout.center-center {
-    -ms-flex-align: center;
-    -webkit-align-items: center;
-    align-items: center;
-  }
-
-  .layout.end {
-    -ms-flex-align: end;
-    -webkit-align-items: flex-end;
-    align-items: flex-end;
-  }
-
-  /* alignment in main axis */
-
-  .layout.start-justified {
-    -ms-flex-pack: start;
-    -webkit-justify-content: flex-start;
-    justify-content: flex-start;
-  }
-
-  .layout.center-justified,
-  .layout.center-center {
-    -ms-flex-pack: center;
-    -webkit-justify-content: center;
-    justify-content: center;
-  }
-
-  .layout.end-justified {
-    -ms-flex-pack: end;
-    -webkit-justify-content: flex-end;
-    justify-content: flex-end;
-  }
-
-  .layout.around-justified {
-    -ms-flex-pack: around;
-    -webkit-justify-content: space-around;
-    justify-content: space-around;
-  }
-
-  .layout.justified {
-    -ms-flex-pack: justify;
-    -webkit-justify-content: space-between;
-    justify-content: space-between;
-  }
-
-  /* self alignment */
-
-  .self-start {
-    -ms-align-self: flex-start;
-    -webkit-align-self: flex-start;
-    align-self: flex-start;
-  }
-
-  .self-center {
-    -ms-align-self: center;
-    -webkit-align-self: center;
-    align-self: center;
-  }
-
-  .self-end {
-    -ms-align-self: flex-end;
-    -webkit-align-self: flex-end;
-    align-self: flex-end;
-  }
-
-  .self-stretch {
-    -ms-align-self: stretch;
-    -webkit-align-self: stretch;
-    align-self: stretch;
-  }
-
-  /*******************************
-            Other Layout
-  *******************************/
-
-  .block {
-    display: block;
-  }
-
-  /* IE 10 support for HTML5 hidden attr */
-  [hidden] {
-    display: none !important;
-  }
-
-  .invisible {
-    visibility: hidden !important;
-  }
-
-  .relative {
-    position: relative;
-  }
-
-  .fit {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-  }
-
-  body.fullbleed {
-    margin: 0;
-    height: 100vh;
-  }
-
-  .scroll {
-    -webkit-overflow-scrolling: touch;
-    overflow: auto;
-  }
-
-  /* fixed position */
-
-  .fixed-bottom,
-  .fixed-left,
-  .fixed-right,
-  .fixed-top {
-    position: fixed;
-  }
-
-  .fixed-top {
-    top: 0;
-    left: 0;
-    right: 0;
-  }
-
-  .fixed-right {
-    top: 0;
-    right: 0;
-    bottom: 0;
-  }
-
-  .fixed-bottom {
-    right: 0;
-    bottom: 0;
-    left: 0;
-  }
-
-  .fixed-left {
-    top: 0;
-    bottom: 0;
-    left: 0;
-  }
-
-</style>
 <script>
   (function() {
     'use strict';
@@ -18659,6 +19114,22 @@ Displays a page on different device layouts.
       height: 600px;
     }
 
+    .horizontal.layout {
+      @apply(--layout-horizontal);
+    }
+
+    .vertical.layout {
+      @apply(--layout-vertical);
+    }
+
+    .center.layout {
+      @apply(--layout-center);
+    }
+
+    .flex {
+      @apply(--layout-flex);
+    }
+
     section {
       text-align: center;
       padding-top: 80px;
@@ -18697,28 +19168,6 @@ Displays a page on different device layouts.
       @apply(--shadow-elevation-2dp);
     }
 
-    .coming-soon::after {
-      content: '';
-      @apply(--layout-fit);
-      background-color: rgba(256,256,256,0.7);
-    }
-
-    .coming-soon::before {
-      content: 'Coming Soon!';
-      width: 200px;
-      position: absolute;
-      top: 152px;
-      left: calc(50% - 100px);
-      margin: 0 auto;
-      padding: 16px 8px;
-      z-index: 10;
-      border-radius: 3px;
-      background-color: rgba(0,0,0,0.65);
-      color: #fff;
-      font-size: 36px;
-      font-style: italic;
-    }
-
     .grid-item > .image {
       height: 300px;
       background-repeat: no-repeat;
@@ -18726,29 +19175,8 @@ Displays a page on different device layouts.
       background-size: cover;
     }
 
-    .publishing-image {
-      background-image: url(tools/app/images/publishing.png);
-    }
-
-    .pesto-image {
-      background-image: url(tools/app/images/pesto.png);
-    }
-
-    .grid-item > .music-image {
-      background-image: url(tools/app/images/music.png);
-      background-size: contain;
-      background-color: #ccc;
-    }
-
-    .summit-image {
-      background-image: url(tools/app/images/polymer-summit.png);
-    }
-
-    .pica-image {
-      background-image: url(tools/app/images/pica.png);
-    }
-
     .grid-item > .caption {
+      border-top: 1px solid #ddd;
       text-align: center;
       color: #5c5c5c;
     }
@@ -18768,7 +19196,7 @@ Displays a page on different device layouts.
     }
 
     .misc-link {
-      display: block;
+      display: inline-block;
       padding: 12px 0;
       font-size: 24px;
       line-height: 1.25;
@@ -18806,7 +19234,7 @@ Displays a page on different device layouts.
       width: 40px;
       height: 40px;
       margin-right: 8px;
-      background: url(tools/app/images/polymer.svg) 50% no-repeat;
+      background: url(site/images/polymer.svg) 50% no-repeat;
       background-size: contain;
     }
 
@@ -20712,16 +21140,6 @@ Displays a page on different device layouts.
          *   <app-toolbar></app-toolbar>
          * </app-header>
          * ```
-         * Additionally, you can specify which toolbar or element remains visible in condensed mode. For example, 
-         * if we want the last toolbar to remain visible, we can add the `primary` attribute to it.
-         *
-         *```html
-         * <app-header condenses>
-         *   <app-toolbar></app-toolbar>
-         *   <app-toolbar></app-toolbar>
-         *   <app-toolbar primary>This toolbar remains on top</app-toolbar>
-         * </app-header>
-         * ```
          */
         condenses: {
           type: Boolean,
@@ -20776,13 +21194,6 @@ Displays a page on different device layouts.
        * @type {number}
        */
       _deltaHeight: 0,
-      
-      /**
-       * The offsetTop of `_topBar`
-       *
-       * @type {number}
-       */
-      _topbarTop: 0,
 
       /**
        * The top most app-toolbar.
@@ -20822,26 +21233,6 @@ Displays a page on different device layouts.
       },
 
       /**
-       * Returns a  a reference to the element that remains visible in condensed mode.
-       *
-       * @return {HTMLElement}?
-       */
-      _getTopBar: function() {
-        var nodes = Polymer.dom(this.$.content).getDistributedNodes();
-        var topBar;
-        nodes.forEach(function(node) {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            if (node.hasAttribute('primary')) {
-              topBar = node;
-            } else if (!topBar) {
-              topBar = node;
-            }
-          }
-        }, this);
-        return topBar;
-      },
-
-      /**
        * Resets the layout. This method is automatically called when the element is attached to the DOM.
        *
        * @method resetLayout
@@ -20856,20 +21247,18 @@ Displays a page on different device layouts.
           var scrollTop = this._clampedScrollTop;
           var savedDisabled = this.disabled;
           this._height = this.offsetHeight;
-          this._topbar = this._getTopBar();
+          this._topbar = Polymer.dom(this).querySelector('app-toolbar');
 
           // prepare for measurement
           this.disabled = true;
 
           if (firstSetup || scrollTop === 0) {
             this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
-            this._topbarTop = this._topbar ? this._topbar.offsetTop : 0;
             this._setUpEffect();
             this._updateScrollState(scrollTop, true);
           } else {
             this._updateScrollState(0, true);
             this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
-            this._topbarTop = this._topbar ? this._topbar.offsetTop : 0;
             this._setUpEffect();
             this._updateScrollState(this._lastScrollTop, true);
             this._layoutIfDirty();
@@ -20969,8 +21358,8 @@ Displays a page on different device layouts.
        */
       _transformHeader: function(y) {
         this.transform('translate3d(0,' + (-y) + 'px, 0)');
-        if (this._topbar && this.condenses && y >= this._topbarTop) {
-          this.translate3d(0, (Math.min(y, this._deltaHeight) - this._topbarTop) + 'px', 0,
+        if (this._topbar && this.condenses) {
+          this.transform('translate3d(0,' + Math.min(y, this._deltaHeight) + 'px, 0)',
               this._topbar);
         }
       },
@@ -21408,138 +21797,130 @@ Displays a page on different device layouts.
   </script>
 
 </dom-module>
-<dom-module id="device-view" assetpath="tools/device-viewer/">
-
-  <style>
-/*
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-
-:host {
-  display: block;
-  position: relative;
-}
-
-.container {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-
-:host([device=phone]) {
-  width: 360px;
-  height: 600px;
-  margin: 60px 0 96px;
-}
-
-:host([device=phone][landscape]) {
-  width: 600px;
-  height: 360px;
-  margin: 0;
-}
-
-:host([device=tablet]) {
-  width: 720px;
-  height: 1024px;
-  margin: 60px 0 96px;
-}
-
-:host([device=tablet][landscape]) {
-  width: 1024px;
-  height: 720px;
-  margin: 0;
-}
-
-:host([device=laptop]) {
-  width: 1366px;
-  height: 800px;
-}
-
-:host([device=phone]):before,
-:host([device=tablet]):before {
-  display: block;
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  margin: -60px -16px -96px -16px;
-  border-radius: 32px;
-  background: #666;
-}
-
-:host([device=phone][landscape]):before,
-:host([device=tablet][landscape]):before {
-  margin: -16px -96px -16px -60px;
-}
-
-:host([device=phone]):after,
-:host([device=tablet]):after {
-  display: block;
-  content: "";
-  position: absolute;
-  bottom: -76px;
-  left: 50%;
-  width: 56px;
-  height: 56px;
-  margin-left: -28px;
-  border-radius: 28px;
-  background: #fff;
-}
-
-:host([device=phone][landscape]):after,
-:host([device=tablet][landscape]):after {
-  top: 50%;
-  right: -76px;
-  bottom: auto;
-  left: auto;
-  margin-top: -28px;
-}
-
-:host([device=laptop]):before {
-  display: block;
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  margin: -24px;
-  border-radius: 12px;
-  background: #666;
-}
-
-:host([device=laptop]):after {
-  display: block;
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: -56px;
-  left: -140px;
-  height: 56px;
-  margin: -24px;
-  border-bottom-right-radius: 12px;
-  border-bottom-left-radius: 12px;
-  background: #777;
-}
-
-iframe {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background-color: #fff;
-  border: 0;
-}
-
-</style>
+<dom-module id="device-view" assetpath="site/device-viewer/">
 
   <template>
+
+    <style>
+
+      :host {
+        display: block;
+        position: relative;
+      }
+
+      .container {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      :host([device=phone]) {
+        width: 360px;
+        height: 600px;
+        margin: 60px 0 96px;
+      }
+
+      :host([device=phone][landscape]) {
+        width: 600px;
+        height: 360px;
+        margin: 0;
+      }
+
+      :host([device=tablet]) {
+        width: 720px;
+        height: 1024px;
+        margin: 60px 0 96px;
+      }
+
+      :host([device=tablet][landscape]) {
+        width: 1024px;
+        height: 720px;
+        margin: 0;
+      }
+
+      :host([device=laptop]) {
+        width: 1366px;
+        height: 800px;
+      }
+
+      :host([device=phone]):before,
+      :host([device=tablet]):before {
+        display: block;
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: -60px -16px -96px -16px;
+        border-radius: 32px;
+        background: #666;
+      }
+
+      :host([device=phone][landscape]):before,
+      :host([device=tablet][landscape]):before {
+        margin: -16px -96px -16px -60px;
+      }
+
+      :host([device=phone]):after,
+      :host([device=tablet]):after {
+        display: block;
+        content: "";
+        position: absolute;
+        bottom: -76px;
+        left: 50%;
+        width: 56px;
+        height: 56px;
+        margin-left: -28px;
+        border-radius: 28px;
+        background: #fff;
+      }
+
+      :host([device=phone][landscape]):after,
+      :host([device=tablet][landscape]):after {
+        top: 50%;
+        right: -76px;
+        bottom: auto;
+        left: auto;
+        margin-top: -28px;
+      }
+
+      :host([device=laptop]):before {
+        display: block;
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: -24px;
+        border-radius: 12px;
+        background: #666;
+      }
+
+      :host([device=laptop]):after {
+        display: block;
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: -56px;
+        left: -140px;
+        height: 56px;
+        margin: -24px;
+        border-bottom-right-radius: 12px;
+        border-bottom-left-radius: 12px;
+        background: #777;
+      }
+
+      iframe {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+        border: 0;
+      }
+
+    </style>
 
     <div class="container">
       <iframe src="{{src}}"></iframe>
@@ -21592,126 +21973,118 @@ iframe {
   </script>
 
 </dom-module>
-<dom-module id="device-layout-viewer" assetpath="tools/device-viewer/">
-
-  <style>
-/*
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-
-:host {
-  @apply(--layout-horizontal);
-  overflow: hidden;
-}
-
-.canvas {
-  @apply(--layout-flex);
-  @apply(--layout-horizontal);
-  @apply(--layout-center-center);
-  position: relative;
-  overflow: auto;
-}
-
-.canvas[device=laptop] {
-  overflow: hidden;
-}
-
-#views:not([device=all]) {
-  @apply(--layout-horizontal);
-  @apply(--layout-center-center);
-  margin: auto 0;
-}
-
-#views:not([device=all]) device-view:not(.iron-selected) {
-  display: none;
-}
-
-#views[device=all] {
-  display: block;
-  width: 1000px;
-  height: 600px;
-  margin-left: 32px;
-}
-
-#views[device=all] device-view {
-  position: absolute;
-  -webkit-transform-origin: left top;
-  transform-origin: left top;
-}
-
-#views:not([device=all]) device-view[device=laptop] {
-  @apply(--layout-fit);
-  width: auto;
-  height: auto;
-}
-
-#views[device=all] device-view[device=laptop] {
-  -webkit-transform: translate3d(0px, 40px, 0) scale(0.5);
-  transform: translate3d(0px, 40px, 0) scale(0.5);
-}
-
-#views[device=all] device-view[device=tablet] {
-  -webkit-transform: translate3d(380px, 130px, 0) scale(0.5);
-  transform: translate3d(380px, 130px, 0) scale(0.5);
-}
-
-#views[device=all] device-view[device=phone] {
-  -webkit-transform: translate3d(800px, 110px, 0) scale(0.5);
-  transform: translate3d(800px, 110px, 0) scale(0.5);
-}
-
-@media (max-width: 1024px) {
-
-  #views:not([device=all]):not([device=laptop]) {
-    width: 1400px;
-    height: 800px;
-    -webkit-transform: scale(0.5);
-    transform: scale(0.5);
-    @apply(--layout-flex-none);
-  }
-
-  #views[device=all] {
-    width: 500px;
-    height: 300px;
-    margin-left: -64px;
-    -webkit-transform-origin: 0 0;
-    transform-origin: 0 0;
-    -webkit-transform: scale(0.6);
-    transform: scale(0.6);
-  }
-
-}
-
-@media (max-width: 600px) {
-
-  #views:not([device=all]):not([device=laptop]) {
-    width: 1400px;
-    height: 800px;
-    -webkit-transform: scale(0.5);
-    transform: scale(0.5);
-    @apply(--layout-flex-none);
-  }
-
-  #views[device=all] {
-    width: 250px;
-    height: 150px;
-    margin-left: -80px;
-    -webkit-transform-origin: 0 0;
-    transform-origin: 0 0;
-    -webkit-transform: scale(0.35);
-    transform: scale(0.35);
-  }
-
-}
-
-</style>
+<dom-module id="device-layout-viewer" assetpath="site/device-viewer/">
 
   <template>
+
+    <style>
+
+      :host {
+        @apply(--layout-horizontal);
+        overflow: hidden;
+      }
+
+      .canvas {
+        @apply(--layout-flex);
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        position: relative;
+        overflow: auto;
+      }
+
+      .canvas[device=laptop] {
+        overflow: hidden;
+      }
+
+      #views:not([device=all]) {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        margin: auto 0;
+      }
+
+      #views:not([device=all]) device-view:not(.iron-selected) {
+        display: none;
+      }
+
+      #views[device=all] {
+        display: block;
+        width: 1000px;
+        height: 600px;
+        margin-left: 32px;
+      }
+
+      #views[device=all] device-view {
+        position: absolute;
+        -webkit-transform-origin: left top;
+        transform-origin: left top;
+      }
+
+      #views:not([device=all]) device-view[device=laptop] {
+        @apply(--layout-fit);
+        width: auto;
+        height: auto;
+      }
+
+      #views[device=all] device-view[device=laptop] {
+        -webkit-transform: translate3d(0px, 40px, 0) scale(0.5);
+        transform: translate3d(0px, 40px, 0) scale(0.5);
+      }
+
+      #views[device=all] device-view[device=tablet] {
+        -webkit-transform: translate3d(380px, 130px, 0) scale(0.5);
+        transform: translate3d(380px, 130px, 0) scale(0.5);
+      }
+
+      #views[device=all] device-view[device=phone] {
+        -webkit-transform: translate3d(800px, 110px, 0) scale(0.5);
+        transform: translate3d(800px, 110px, 0) scale(0.5);
+      }
+
+      @media (max-width: 1024px) {
+
+        #views:not([device=all]):not([device=laptop]) {
+          width: 1400px;
+          height: 800px;
+          -webkit-transform: scale(0.5);
+          transform: scale(0.5);
+          @apply(--layout-flex-none);
+        }
+
+        #views[device=all] {
+          width: 500px;
+          height: 300px;
+          margin-left: -64px;
+          -webkit-transform-origin: 0 0;
+          transform-origin: 0 0;
+          -webkit-transform: scale(0.6);
+          transform: scale(0.6);
+        }
+
+      }
+
+      @media (max-width: 600px) {
+
+        #views:not([device=all]):not([device=laptop]) {
+          width: 1400px;
+          height: 800px;
+          -webkit-transform: scale(0.5);
+          transform: scale(0.5);
+          @apply(--layout-flex-none);
+        }
+
+        #views[device=all] {
+          width: 250px;
+          height: 150px;
+          margin-left: -80px;
+          -webkit-transform-origin: 0 0;
+          transform-origin: 0 0;
+          -webkit-transform: scale(0.35);
+          transform: scale(0.35);
+        }
+
+      }
+
+    </style>
 
     <div class="canvas" device$="{{device}}">
 
@@ -21776,187 +22149,153 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </dom-module>
 </div>
 
-  <app-header>
+  <template is="dom-bind">
 
-    <app-toolbar class="top-toolbar">
-      <div class="heading">
-        <div class="title">App Layout</div>
-        <div class="sub-title">A collection of elements, along with guidelines and templates that can be used to structure your app’s layout.</div>
+    <iron-ajax url="site/resources.json" auto="" last-response="{{resources}}"></iron-ajax>
+
+    <app-header fixed="">
+
+      <app-toolbar class="top-toolbar">
+        <div class="heading">
+          <div class="title">App Layout</div>
+          <div class="sub-title">A collection of elements, along with guidelines and templates that can be used to structure your app’s layout.</div>
+        </div>
+      </app-toolbar>
+
+      <app-toolbar class="bottom-toolbar">
+        <div class="bottom-tools responsive horizontal layout">
+          <a href="https://github.com/PolymerLabs/app-layout" target="_blank" tabindex="-1">
+            <paper-button raised=""><iron-icon icon="file-download"></iron-icon>View On GitHub</paper-button>
+          </a>
+          <a href="docs.html" target="_blank" tabindex="-1">
+            <paper-button raised=""><iron-icon icon="subject"></iron-icon>API Docs</paper-button>
+          </a>
+        </div>
+      </app-toolbar>
+
+    </app-header>
+
+    <section>
+
+      <device-layout-viewer device="all" src="templates/publishing/"></device-layout-viewer>
+
+    </section>
+
+    <section>
+
+      <h1>Templates</h1>
+
+      <p>The templates are a means to define, illustrate and share best practices in app's layout. Select a template and customize to suit your needs.</p>
+
+      <div class="grid">
+
+        <template is="dom-repeat" items="{{resources.templates}}">
+
+          <div class="grid-item">
+            <div class="image" style$="background-image: url({{item.thumbnail}});"></div>
+            <div class="caption">
+              <h3>{{item.name}}</h3>
+              <div>
+                <a href="{{item.demoUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised="">View</paper-button>
+                </a>
+                <a href="{{item.sourceUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised="">Source</paper-button>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </template>
+
       </div>
-    </app-toolbar>
 
-    <app-toolbar class="bottom-toolbar">
-      <div class="bottom-tools responsive horizontal layout">
-        <a href="https://github.com/PolymerLabs/app-layout" target="_blank" tabindex="-1">
-          <paper-button raised=""><iron-icon icon="file-download"></iron-icon>View On GitHub</paper-button>
+    </section>
+
+    <section>
+
+      <h1>Patterns</h1>
+
+      <p>Sample code for various UI patterns.</p>
+
+      <div class="grid">
+
+        <template is="dom-repeat" items="{{resources.patterns}}">
+
+          <div class="grid-item">
+            <div class="caption">
+              <h3>{{item.name}}</h3>
+              <p>{{item.desc}}</p>
+              <div>
+                <a href="{{item.demoUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised="">View</paper-button>
+                </a>
+                <a href="{{item.sourceUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised="">Source</paper-button>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </template>
+
+      </div>
+
+    </section>
+
+    <section>
+
+      <h1>Apps</h1>
+
+      <p>Here are some applications built with App Layout. Get started on your own and we might put it here to showcase and share your work.</p>
+
+      <div class="grid">
+
+        <template is="dom-repeat" items="{{resources.apps}}">
+
+          <div class="grid-item">
+            <div class="image" style$="background-image: url({{item.thumbnail}});"></div>
+            <div class="caption">
+              <h3>{{item.name}}</h3>
+              <div>
+                <a href="{{item.demoUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised="">View</paper-button>
+                </a>
+                <a href="{{item.sourceUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised="">Source</paper-button>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </template>
+
+      </div>
+
+    </section>
+
+    <section class="vertical center layout">
+
+      <h1>Tools and References</h1>
+
+      <a class="misc-link" href="https://www.google.com/design/spec/layout/adaptive-ui.html#adaptive-ui-patterns" target="_blank">Material Design Adaptive UI Pattern</a>
+      <a class="misc-link" href="https://developers.google.com/web/tools/polymer-starter-kit/" target="_blank">Polymer Starter Kit</a>
+
+    </section>
+
+    <footer>
+      <div class="footer-inner responsive horizontal center layout">
+        <a class="horizontal center layout" target="_blank" href="https://www.polymer-project.org">
+          <div class="logo"></div><div class="title">Polymer</div>
         </a>
-        <a href="docs.html" target="_blank" tabindex="-1">
-          <paper-button raised=""><iron-icon icon="subject"></iron-icon>API Docs</paper-button>
-        </a>
+        <div class="flex"></div>
+        <a target="_blank" href="http://polymer.github.io/LICENSE.txt" data-outbound="license-txt">© 2015 Polymer Authors</a>
+        <div class="dot-separator wide-only"></div>
+        <a target="_blank" href="https://www.polymer-project.org" data-outbound="about-polymer">About Polymer</a>
       </div>
-    </app-toolbar>
+    </footer>
 
-  </app-header>
-
-  <section>
-
-    <device-layout-viewer device="all" src="templates/publishing/"></device-layout-viewer>
-
-  </section>
-
-  <section>
-
-    <h1>Templates</h1>
-
-    <p>The templates are a means to define, illustrate and share best practices in app's layout. Select a template and customize to suit your needs.</p>
-
-    <div class="grid">
-
-      <div class="grid-item">
-        <div class="image publishing-image"></div>
-        <div class="caption">
-          <h3>ZUPERKÜLBLOG</h3>
-          <div>
-            <a href="templates/publishing/" target="_blank" tabindex="-1">
-              <paper-button raised="">View</paper-button>
-            </a>
-            <a href="https://github.com/PolymerLabs/app-layout/tree/master/templates/publishing" target="_blank" tabindex="-1">
-              <paper-button raised="">Source</paper-button>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- <div class="grid-item coming-soon">
-        <div class="image pesto-image"></div>
-        <div class="caption">
-          <h3>PESTO</h3>
-          <div>
-            <paper-button raised disabled>View</paper-button>
-            <paper-button raised disabled>Source</paper-button>
-          </div>
-        </div>
-      </div> -->
-
-      <div class="grid-item coming-soon">
-        <div class="image music-image"></div>
-        <div class="caption">
-          <h3>MUSIC</h3>
-          <div>
-            <paper-button raised="" disabled="">View</paper-button>
-            <paper-button raised="" disabled="">Source</paper-button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <section>
-
-    <h1>Patterns</h1>
-
-    <p>Sample code for various UI patterns.</p>
-
-    <div class="grid">
-
-      <div class="grid-item">
-        <div class="caption">
-          <h3>Transform Navigation</h3>
-          <p>As more screen space is available, side navigation can transform into tabs.</p>
-          <div>
-            <a href="patterns/transform-navigation/" target="_blank" tabindex="-1">
-              <paper-button raised="">View</paper-button>
-            </a>
-            <a href="https://github.com/PolymerLabs/app-layout/tree/master/patterns/transform-navigation/x-app.html" target="_blank" tabindex="-1">
-              <paper-button raised="">Source</paper-button>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid-item">
-        <div class="caption">
-          <h3>Expand Card</h3>
-          <p>Content cards may expand to take up more horizontal space.</p>
-          <div>
-            <a href="patterns/expand-card/" target="_blank" tabindex="-1">
-              <paper-button raised="">View</paper-button>
-            </a>
-            <a href="https://github.com/PolymerLabs/app-layout/tree/master/patterns/expand-card/index.html" target="_blank" tabindex="-1">
-              <paper-button raised="">Source</paper-button>
-            </a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <section>
-
-    <h1>Apps</h1>
-
-    <p>Here are some applications built with App Layout. Get started on your own and we might put it here to showcase and share your work.</p>
-
-    <div class="grid">
-
-      <div class="grid-item">
-        <div class="image summit-image"></div>
-        <div class="caption">
-          <h3>Polymer Summit</h3>
-          <div>
-            <a href="https://www.polymer-project.org/summit" target="_blank" tabindex="-1">
-              <paper-button raised="">View</paper-button>
-            </a>
-            <a href="https://github.com/frankiefu/summit" target="_blank" tabindex="-1">
-              <paper-button raised="">Source</paper-button>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid-item">
-        <div class="image pica-image"></div>
-        <div class="caption">
-          <h3>PICA</h3>
-          <div>
-            <a href="http://frankiefu.github.io/pica" target="_blank" tabindex="-1">
-              <paper-button raised="">View</paper-button>
-            </a>
-            <a href="https://github.com/frankiefu/pica" target="_blank" tabindex="-1">
-              <paper-button raised="">Source</paper-button>
-            </a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <section class="vertical center layout">
-
-    <h1>Tools and References</h1>
-
-    <a class="misc-link" href="https://www.google.com/design/spec/layout/adaptive-ui.html#adaptive-ui-patterns" target="_blank">Material Design Adaptive UI Pattern</a>
-    <a class="misc-link" href="https://developers.google.com/web/tools/polymer-starter-kit/" target="_blank">Polymer Starter Kit</a>
-
-  </section>
-
-  <footer>
-    <div class="footer-inner responsive horizontal center layout">
-      <a class="horizontal center layout" target="_blank" href="https://www.polymer-project.org">
-        <div class="logo"></div><div class="title">Polymer</div>
-      </a>
-      <div class="flex"></div>
-      <a target="_blank" href="http://polymer.github.io/LICENSE.txt" data-outbound="license-txt">© 2015 Polymer Authors</a>
-      <div class="dot-separator wide-only"></div>
-      <a target="_blank" href="https://www.polymer-project.org" data-outbound="about-polymer">About Polymer</a>
-    </div>
-  </footer>
+  </template>
 
 
 

@@ -23913,16 +23913,6 @@ Mixin | Description | Default
          *   <app-toolbar></app-toolbar>
          * </app-header>
          * ```
-         * Additionally, you can specify which toolbar or element remains visible in condensed mode. For example, 
-         * if we want the last toolbar to remain visible, we can add the `primary` attribute to it.
-         *
-         *```html
-         * <app-header condenses>
-         *   <app-toolbar></app-toolbar>
-         *   <app-toolbar></app-toolbar>
-         *   <app-toolbar primary>This toolbar remains on top</app-toolbar>
-         * </app-header>
-         * ```
          */
         condenses: {
           type: Boolean,
@@ -23977,13 +23967,6 @@ Mixin | Description | Default
        * @type {number}
        */
       _deltaHeight: 0,
-      
-      /**
-       * The offsetTop of `_topBar`
-       *
-       * @type {number}
-       */
-      _topbarTop: 0,
 
       /**
        * The top most app-toolbar.
@@ -24023,26 +24006,6 @@ Mixin | Description | Default
       },
 
       /**
-       * Returns a  a reference to the element that remains visible in condensed mode.
-       *
-       * @return {HTMLElement}?
-       */
-      _getTopBar: function() {
-        var nodes = Polymer.dom(this.$.content).getDistributedNodes();
-        var topBar;
-        nodes.forEach(function(node) {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            if (node.hasAttribute('primary')) {
-              topBar = node;
-            } else if (!topBar) {
-              topBar = node;
-            }
-          }
-        }, this);
-        return topBar;
-      },
-
-      /**
        * Resets the layout. This method is automatically called when the element is attached to the DOM.
        *
        * @method resetLayout
@@ -24057,20 +24020,18 @@ Mixin | Description | Default
           var scrollTop = this._clampedScrollTop;
           var savedDisabled = this.disabled;
           this._height = this.offsetHeight;
-          this._topbar = this._getTopBar();
+          this._topbar = Polymer.dom(this).querySelector('app-toolbar');
 
           // prepare for measurement
           this.disabled = true;
 
           if (firstSetup || scrollTop === 0) {
             this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
-            this._topbarTop = this._topbar ? this._topbar.offsetTop : 0;
             this._setUpEffect();
             this._updateScrollState(scrollTop, true);
           } else {
             this._updateScrollState(0, true);
             this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
-            this._topbarTop = this._topbar ? this._topbar.offsetTop : 0;
             this._setUpEffect();
             this._updateScrollState(this._lastScrollTop, true);
             this._layoutIfDirty();
@@ -24170,8 +24131,8 @@ Mixin | Description | Default
        */
       _transformHeader: function(y) {
         this.transform('translate3d(0,' + (-y) + 'px, 0)');
-        if (this._topbar && this.condenses && y >= this._topbarTop) {
-          this.translate3d(0, (Math.min(y, this._deltaHeight) - this._topbarTop) + 'px', 0,
+        if (this._topbar && this.condenses) {
+          this.transform('translate3d(0,' + Math.min(y, this._deltaHeight) + 'px, 0)',
               this._topbar);
         }
       },
