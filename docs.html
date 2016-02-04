@@ -44012,6 +44012,13 @@ A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `
         this._resetKeyEventListeners();
       },
 
+      /**
+       * Returns true if a keyboard event matches `eventString`.
+       *
+       * @param {KeyboardEvent} event
+       * @param {string} eventString
+       * @return {boolean}
+       */
       keyboardEventMatchesKeys: function(event, eventString) {
         var keyCombos = parseEventString(eventString);
         for (var i = 0; i < keyCombos.length; ++i) {
@@ -46636,6 +46643,10 @@ how to create a custom iconset.
 See the [iron-icons demo](iron-icons?view=demo:demo/index.html) to see the icons available
 in the various iconsets.
 
+To load a subset of icons from one of the default `iron-icons` sets, you can
+use the [poly-icon](https://poly-icon.appspot.com/) tool. It allows you
+to select individual icons, and creates an iconset from them that you can
+use directly in your elements.
 
 ### Styling
 
@@ -47813,7 +47824,7 @@ documentation page including demos (if available).
      * Unindents the markdown source that will be rendered.
      */
     unindent: function(text) {
-      this._unindent(text);
+      return this._unindent(text);
     },
 
     get outputElement () {
@@ -47825,6 +47836,14 @@ documentation page including demos (if available).
       this.toggleClass('hidden', false, this.$.content);
       return this.$.content;
     },
+
+    /**
+     * The `marked-render-complete` event is fired once Markdown to HTML
+     * conversion has finished, and the DOM has been populated via the resulting
+     * HTML.
+     *
+     * @event marked-render-complete
+     */
 
     /**
      * Renders `markdown` into this element's DOM.
@@ -47848,6 +47867,7 @@ documentation page including demos (if available).
         smartypants: this.smartypants
       };
       Polymer.dom(this._outputElement).innerHTML = marked(this.markdown, opts);
+      this.fire('marked-render-complete');
     },
 
     _highlight: function(code, lang) {
@@ -47867,7 +47887,7 @@ documentation page including demos (if available).
       }, null);
 
       return lines.map(function(l) { return l.substr(indent); }).join('\n');
-    },
+    }
 
   });
 

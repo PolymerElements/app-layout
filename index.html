@@ -14995,6 +14995,10 @@ how to create a custom iconset.
 See the [iron-icons demo](iron-icons?view=demo:demo/index.html) to see the icons available
 in the various iconsets.
 
+To load a subset of icons from one of the default `iron-icons` sets, you can
+use the [poly-icon](https://poly-icon.appspot.com/) tool. It allows you
+to select individual icons, and creates an iconset from them that you can
+use directly in your elements.
 
 ### Styling
 
@@ -16086,6 +16090,13 @@ Custom property | Description | Default
         this._resetKeyEventListeners();
       },
 
+      /**
+       * Returns true if a keyboard event matches `eventString`.
+       *
+       * @param {KeyboardEvent} event
+       * @param {string} eventString
+       * @return {boolean}
+       */
       keyboardEventMatchesKeys: function(event, eventString) {
         var keyCombos = parseEventString(eventString);
         for (var i = 0; i < keyCombos.length; ++i) {
@@ -20701,6 +20712,16 @@ Displays a page on different device layouts.
          *   <app-toolbar></app-toolbar>
          * </app-header>
          * ```
+         * Additionally, you can specify which toolbar or element remains visible in condensed mode. For example, 
+         * if we want the last toolbar to remain visible, we can add the `primary` attribute to it.
+         *
+         *```html
+         * <app-header condenses>
+         *   <app-toolbar></app-toolbar>
+         *   <app-toolbar></app-toolbar>
+         *   <app-toolbar primary>This toolbar remains on top</app-toolbar>
+         * </app-header>
+         * ```
          */
         condenses: {
           type: Boolean,
@@ -20755,6 +20776,13 @@ Displays a page on different device layouts.
        * @type {number}
        */
       _deltaHeight: 0,
+      
+      /**
+       * The offsetTop of `_topBar`
+       *
+       * @type {number}
+       */
+      _topbarTop: 0,
 
       /**
        * The top most app-toolbar.
@@ -20794,6 +20822,26 @@ Displays a page on different device layouts.
       },
 
       /**
+       * Returns a  a reference to the element that remains visible in condensed mode.
+       *
+       * @return {HTMLElement}?
+       */
+      _getTopBar: function() {
+        var nodes = Polymer.dom(this.$.content).getDistributedNodes();
+        var topBar;
+        nodes.forEach(function(node) {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.hasAttribute('primary')) {
+              topBar = node;
+            } else if (!topBar) {
+              topBar = node;
+            }
+          }
+        }, this);
+        return topBar;
+      },
+
+      /**
        * Resets the layout. This method is automatically called when the element is attached to the DOM.
        *
        * @method resetLayout
@@ -20808,18 +20856,20 @@ Displays a page on different device layouts.
           var scrollTop = this._clampedScrollTop;
           var savedDisabled = this.disabled;
           this._height = this.offsetHeight;
-          this._topbar = Polymer.dom(this).querySelector('app-toolbar');
+          this._topbar = this._getTopBar();
 
           // prepare for measurement
           this.disabled = true;
 
           if (firstSetup || scrollTop === 0) {
             this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
+            this._topbarTop = this._topbar ? this._topbar.offsetTop : 0;
             this._setUpEffect();
             this._updateScrollState(scrollTop, true);
           } else {
             this._updateScrollState(0, true);
             this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
+            this._topbarTop = this._topbar ? this._topbar.offsetTop : 0;
             this._setUpEffect();
             this._updateScrollState(this._lastScrollTop, true);
             this._layoutIfDirty();
@@ -20919,8 +20969,8 @@ Displays a page on different device layouts.
        */
       _transformHeader: function(y) {
         this.transform('translate3d(0,' + (-y) + 'px, 0)');
-        if (this._topbar && this.condenses) {
-          this.transform('translate3d(0,' + Math.min(y, this._deltaHeight) + 'px, 0)',
+        if (this._topbar && this.condenses && y >= this._topbarTop) {
+          this.translate3d(0, (Math.min(y, this._deltaHeight) - this._topbarTop) + 'px', 0,
               this._topbar);
         }
       },

@@ -16520,10 +16520,8 @@ Example:
     </script>
 
 @group Iron Elements
-@class iron-pages
 @hero hero.svg
 @demo demo/index.html
-@extends iron-selector
 -->
 
 <script>
@@ -17063,6 +17061,10 @@ how to create a custom iconset.
 See the [iron-icons demo](iron-icons?view=demo:demo/index.html) to see the icons available
 in the various iconsets.
 
+To load a subset of icons from one of the default `iron-icons` sets, you can
+use the [poly-icon](https://poly-icon.appspot.com/) tool. It allows you
+to select individual icons, and creates an iconset from them that you can
+use directly in your elements.
 
 ### Styling
 
@@ -17385,6 +17387,13 @@ Custom property | Description | Default
         this._resetKeyEventListeners();
       },
 
+      /**
+       * Returns true if a keyboard event matches `eventString`.
+       *
+       * @param {KeyboardEvent} event
+       * @param {string} eventString
+       * @return {boolean}
+       */
       keyboardEventMatchesKeys: function(event, eventString) {
         var keyCombos = parseEventString(eventString);
         for (var i = 0; i < keyCombos.length; ++i) {
@@ -19943,60 +19952,54 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
 </dom-module>
 <dom-module id="iron-pages" assetpath="../../../iron-pages/">
 
-  <style>
-
-    :host {
-      display: block;
-    }
-
-    :host > ::content > :not(.iron-selected) {
-      display: none !important;
-    }
-
-  </style>
-
   <template>
-
-    <content></content>
-
-  </template>
-
-</dom-module>
-
-<script>
-
-  Polymer({
-
-    is: 'iron-pages',
-
-    behaviors: [
-      Polymer.IronResizableBehavior,
-      Polymer.IronSelectableBehavior
-    ],
-
-    properties: {
-
-      // as the selected page is the only one visible, activateEvent
-      // is both non-sensical and problematic; e.g. in cases where a user
-      // handler attempts to change the page and the activateEvent
-      // handler immediately changes it back
-      activateEvent: {
-        type: String,
-        value: null
+    <style>
+      :host {
+        display: block;
       }
 
-    },
+      :host > ::content > :not(.iron-selected) {
+        display: none !important;
+      }
+    </style>
 
-    observers: [
-      '_selectedPageChanged(selected)'
-    ],
+    <content></content>
+  </template>
 
-    _selectedPageChanged: function(selected, old) {
-      this.async(this.notifyResize);
-    }
-  });
+  <script>
+    Polymer({
 
-</script>
+      is: 'iron-pages',
+
+      behaviors: [
+        Polymer.IronResizableBehavior,
+        Polymer.IronSelectableBehavior
+      ],
+
+      properties: {
+
+        // as the selected page is the only one visible, activateEvent
+        // is both non-sensical and problematic; e.g. in cases where a user
+        // handler attempts to change the page and the activateEvent
+        // handler immediately changes it back
+        activateEvent: {
+          type: String,
+          value: null
+        }
+
+      },
+
+      observers: [
+        '_selectedPageChanged(selected)'
+      ],
+
+      _selectedPageChanged: function(selected, old) {
+        this.async(this.notifyResize);
+      }
+    });
+
+  </script>
+</dom-module>
 <dom-module id="iron-icon" assetpath="../../../iron-icon/">
 
   <style>
@@ -20864,6 +20867,7 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
       :host([disabled]) {
         color: var(--paper-fab-disabled-text, --paper-grey-500);
         background: var(--paper-fab-disabled-background, --paper-grey-300);
+
         @apply(--paper-fab-disabled);
       }
 
@@ -21583,6 +21587,16 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
          *   <app-toolbar></app-toolbar>
          * </app-header>
          * ```
+         * Additionally, you can specify which toolbar or element remains visible in condensed mode. For example, 
+         * if we want the last toolbar to remain visible, we can add the `primary` attribute to it.
+         *
+         *```html
+         * <app-header condenses>
+         *   <app-toolbar></app-toolbar>
+         *   <app-toolbar></app-toolbar>
+         *   <app-toolbar primary>This toolbar remains on top</app-toolbar>
+         * </app-header>
+         * ```
          */
         condenses: {
           type: Boolean,
@@ -21637,6 +21651,13 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
        * @type {number}
        */
       _deltaHeight: 0,
+      
+      /**
+       * The offsetTop of `_topBar`
+       *
+       * @type {number}
+       */
+      _topbarTop: 0,
 
       /**
        * The top most app-toolbar.
@@ -21676,6 +21697,26 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
       },
 
       /**
+       * Returns a  a reference to the element that remains visible in condensed mode.
+       *
+       * @return {HTMLElement}?
+       */
+      _getTopBar: function() {
+        var nodes = Polymer.dom(this.$.content).getDistributedNodes();
+        var topBar;
+        nodes.forEach(function(node) {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.hasAttribute('primary')) {
+              topBar = node;
+            } else if (!topBar) {
+              topBar = node;
+            }
+          }
+        }, this);
+        return topBar;
+      },
+
+      /**
        * Resets the layout. This method is automatically called when the element is attached to the DOM.
        *
        * @method resetLayout
@@ -21690,18 +21731,20 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
           var scrollTop = this._clampedScrollTop;
           var savedDisabled = this.disabled;
           this._height = this.offsetHeight;
-          this._topbar = Polymer.dom(this).querySelector('app-toolbar');
+          this._topbar = this._getTopBar();
 
           // prepare for measurement
           this.disabled = true;
 
           if (firstSetup || scrollTop === 0) {
             this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
+            this._topbarTop = this._topbar ? this._topbar.offsetTop : 0;
             this._setUpEffect();
             this._updateScrollState(scrollTop, true);
           } else {
             this._updateScrollState(0, true);
             this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
+            this._topbarTop = this._topbar ? this._topbar.offsetTop : 0;
             this._setUpEffect();
             this._updateScrollState(this._lastScrollTop, true);
             this._layoutIfDirty();
@@ -21801,8 +21844,8 @@ to single column when 2 columns (plus a defined gutter margin) no longer fit on 
        */
       _transformHeader: function(y) {
         this.transform('translate3d(0,' + (-y) + 'px, 0)');
-        if (this._topbar && this.condenses) {
-          this.transform('translate3d(0,' + Math.min(y, this._deltaHeight) + 'px, 0)',
+        if (this._topbar && this.condenses && y >= this._topbarTop) {
+          this.translate3d(0, (Math.min(y, this._deltaHeight) - this._topbarTop) + 'px', 0,
               this._topbar);
         }
       },
