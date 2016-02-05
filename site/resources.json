@@ -16,7 +16,8 @@
       "name": "Shrine",
       "thumbnail": "site/images/shrine.png",
       "demoUrl": "templates/shrine",
-      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/templates/shrine"
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/templates/shrine",
+      "className": "coming-soon"
     }
   ],
   "patterns": [
