@@ -2542,7 +2542,7 @@ window.CustomElements.addModule(function(scope) {
       var options = {
         prototype: prototype
       };
-      // NOTE: we're specifically supporting older Chrome versions here
+      // NOTE: we're specifically supporting older Chrome versions here 
       // (specifically Chrome 39) that throw when options.extends is undefined.
       if (prototype.extends) {
         options.extends = prototype.extends;
@@ -2621,11 +2621,11 @@ window.CustomElements.addModule(function(scope) {
    * Helper for determining when first render occurs.
    * Call `Polymer.RenderStatus.whenReady(callback)` to be notified when
    * first render occurs or immediately if it has already occured.
-   * Note that since HTML Imports are designed to load before rendering,
+   * Note that since HTML Imports are designed to load before rendering, 
    * this call can also be used to guarantee that imports have loaded.
    * This behavior is normalized to function correctly with the HTMLImports
    * polyfill which does not otherwise maintain this rendering guarantee.
-   * Querying style and layout data before first render is currently
+   * Querying style and layout data before first render is currently 
    * problematic on some browsers (Blink/Webkit) so this helper can be used
    * to prevent doing so until a safe time.
    */
@@ -2963,7 +2963,7 @@ window.CustomElements.addModule(function(scope) {
       var doc = script && script.ownerDocument || document;
       // find all dom-modules
       var modules = doc.querySelectorAll('dom-module');
-      // minimize work by going backwards and stopping if we find an
+      // minimize work by going backwards and stopping if we find an 
       // upgraded module.
       for (var i= modules.length-1, m; (i >=0) && (m=modules[i]); i--) {
         if (m.__upgraded__) {
@@ -3134,7 +3134,7 @@ window.CustomElements.addModule(function(scope) {
 
   });
 
-  // special properties on behaviors are not mixed in and are instead
+  // special properties on behaviors are not mixed in and are instead 
   // either processed specially (e.g. listeners, properties) or available
   // for calling via doBehavior (e.g. created, ready)
   Polymer.Base._behaviorProperties = {
@@ -3227,19 +3227,19 @@ window.CustomElements.addModule(function(scope) {
 
   /**
    * Generates a boilerplate constructor.
-   *
+   * 
    *     XFoo = Polymer({
    *       is: 'x-foo'
    *     });
    *     ASSERT(new XFoo() instanceof XFoo);
-   *
-   * You can supply a custom constructor on the prototype. But remember that
+   *  
+   * You can supply a custom constructor on the prototype. But remember that 
    * this constructor will only run if invoked **manually**. Elements created
    * via `document.createElement` or from HTML _will not invoke this method_.
-   *
-   * Instead, we reuse the concept of `constructor` for a factory method which
-   * can take arguments.
-   *
+   * 
+   * Instead, we reuse the concept of `constructor` for a factory method which 
+   * can take arguments. 
+   * 
    *     MyFoo = Polymer({
    *       is: 'my-foo',
    *       constructor: function(foo) {
@@ -3247,7 +3247,7 @@ window.CustomElements.addModule(function(scope) {
    *       }
    *       ...
    *     });
-   *
+   * 
    * @class base feature: constructor
    */
 
@@ -3259,16 +3259,16 @@ window.CustomElements.addModule(function(scope) {
       // support both possible `createElement` signatures
       this._factoryArgs = this.extends ? [this.extends, this.is] : [this.is];
       // thunk the constructor to delegate allocation to `createElement`
-      var ctor = function() {
-        return this._factory(arguments);
+      var ctor = function() { 
+        return this._factory(arguments); 
       };
       if (this.hasOwnProperty('extends')) {
-        ctor.extends = this.extends;
+        ctor.extends = this.extends; 
       }
       // ensure constructor is set. The `constructor` property is
       // not writable on Safari; note: Chrome requires the property
       // to be configurable.
-      Object.defineProperty(this, 'constructor', {value: ctor,
+      Object.defineProperty(this, 'constructor', {value: ctor, 
         writable: true, configurable: true});
       ctor.prototype = this;
     },
@@ -3471,9 +3471,9 @@ window.CustomElements.addModule(function(scope) {
       if (dash.indexOf('-') < 0) {
         return Polymer.CaseMap._caseMap[dash] = dash;
       }
-      return Polymer.CaseMap._caseMap[dash] = dash.replace(/-([a-z])/g,
+      return Polymer.CaseMap._caseMap[dash] = dash.replace(/-([a-z])/g, 
         function(m) {
-          return m[1].toUpperCase();
+          return m[1].toUpperCase(); 
         }
       );
     },
@@ -3483,9 +3483,9 @@ window.CustomElements.addModule(function(scope) {
       if (mapped) {
         return mapped;
       }
-      return Polymer.CaseMap._caseMap[camel] = camel.replace(/([a-z][A-Z])/g,
-        function (g) {
-          return g[0] + '-' + g[1].toLowerCase()
+      return Polymer.CaseMap._caseMap[camel] = camel.replace(/([a-z][A-Z])/g, 
+        function (g) { 
+          return g[0] + '-' + g[1].toLowerCase() 
         }
       );
     }
@@ -3896,7 +3896,7 @@ window.CustomElements.addModule(function(scope) {
     // never changes
     _registerHost: function(host) {
       // NOTE: The `dataHost` of an element never changes.
-      this.dataHost = host = host ||
+      this.dataHost = host = host || 
         Polymer.Base._hostStack[Polymer.Base._hostStack.length-1];
       if (host && host._clients) {
         host._clients.push(this);
@@ -4007,7 +4007,7 @@ window.CustomElements.addModule(function(scope) {
 <script>
 
 Polymer.ArraySplice = (function() {
-
+  
   function newSplice(index, removed, addedCount) {
     return {
       index: index,
@@ -4365,7 +4365,7 @@ Polymer.domInnerHTML = (function() {
       node = node.content;
     var s = '';
     var c$ = Polymer.dom(node).childNodes;
-    for (var i=0, l=c$.length, child; (i<l) && (child=c$[i]); i++) {
+    for (var i=0, l=c$.length, child; (i<l) && (child=c$[i]); i++) {  
       s += getOuterHTML(child, node, composed);
     }
     return s;
@@ -4380,20 +4380,20 @@ Polymer.domInnerHTML = (function() {
 </script>
 <script>
 (function() {
-
+  
   'use strict';
 
   // native add/remove
   var nativeInsertBefore = Element.prototype.insertBefore;
   var nativeAppendChild = Element.prototype.appendChild;
   var nativeRemoveChild = Element.prototype.removeChild;
-
+  
   /**
-   * TreeApi is a dom manipulation library used by Shady/Polymer.dom to
+   * TreeApi is a dom manipulation library used by Shady/Polymer.dom to 
    * manipulate composed and logical trees.
    */
   var TreeApi = Polymer.TreeApi = {
-
+    
     // sad but faster than slice...
     arrayCopyChildNodes: function(parent) {
       var copy=[], i=0;
@@ -4431,7 +4431,7 @@ Polymer.domInnerHTML = (function() {
     hasChildNodes: function(node) {
       return Boolean(node.__dom && node.__dom.childNodes !== undefined);
     },
-
+    
     getChildNodes: function(node) {
       // note: we're distinguishing here between undefined and false-y:
       // hasChildNodes uses undefined check to see if this element has logical
@@ -4446,7 +4446,7 @@ Polymer.domInnerHTML = (function() {
         node.__dom.childNodes = [];
         for (var n=node.__dom.firstChild; n; n=n.__dom.nextSibling) {
           node.__dom.childNodes.push(n);
-        }
+        } 
       }
       return node.__dom.childNodes;
     },
@@ -4458,32 +4458,32 @@ Polymer.domInnerHTML = (function() {
     // the mere existence of __dom is not enough to know if the requested
     // logical data is available and instead we do an explicit undefined check.
     getParentNode: function(node) {
-      return node.__dom && node.__dom.parentNode !== undefined ?
+      return node.__dom && node.__dom.parentNode !== undefined ? 
         node.__dom.parentNode : node.parentNode;
     },
 
     getFirstChild: function(node) {
-      return node.__dom && node.__dom.firstChild !== undefined ?
+      return node.__dom && node.__dom.firstChild !== undefined ? 
         node.__dom.firstChild : node.firstChild;
     },
 
     getLastChild: function(node) {
-      return node.__dom && node.__dom.lastChild  !== undefined ?
+      return node.__dom && node.__dom.lastChild  !== undefined ? 
         node.__dom.lastChild : node.lastChild;
     },
 
     getNextSibling: function(node) {
-      return node.__dom && node.__dom.nextSibling  !== undefined ?
+      return node.__dom && node.__dom.nextSibling  !== undefined ? 
         node.__dom.nextSibling : node.nextSibling;
     },
 
     getPreviousSibling: function(node) {
-      return node.__dom && node.__dom.previousSibling  !== undefined ?
+      return node.__dom && node.__dom.previousSibling  !== undefined ? 
         node.__dom.previousSibling : node.previousSibling;
     },
 
     getFirstElementChild: function(node) {
-      return node.__dom && node.__dom.firstChild !== undefined ?
+      return node.__dom && node.__dom.firstChild !== undefined ?  
         this._getFirstElementChild(node) : node.firstElementChild;
     },
 
@@ -4576,9 +4576,9 @@ Polymer.domInnerHTML = (function() {
       container.__dom = container.__dom || {};
       if (ref_node) {
         ref_node.__dom = ref_node.__dom || {};
-      }
+      }      
       // update ref_node.previousSibling <-> node
-      node.__dom.previousSibling = ref_node ? ref_node.__dom.previousSibling :
+      node.__dom.previousSibling = ref_node ? ref_node.__dom.previousSibling : 
         container.__dom.lastChild;
       if (node.__dom.previousSibling) {
         node.__dom.previousSibling.__dom.nextSibling = node;
@@ -4624,7 +4624,7 @@ Polymer.domInnerHTML = (function() {
       // When an element is removed, logical data is no longer tracked.
       // Explicitly set `undefined` here to indicate this. This is disginguished
       // from `null` which is set if info is null.
-      node.__dom.parentNode = node.__dom.previousSibling =
+      node.__dom.parentNode = node.__dom.previousSibling = 
         node.__dom.nextSibling = undefined;
       // remove caching of childNodes
       container.__dom.childNodes = null;
@@ -4646,8 +4646,8 @@ Polymer.domInnerHTML = (function() {
     },
 
     // composed tracking needs to reset composed children here in case
-    // they may have already been set (this shouldn't happen but can
-    // if dependency ordering is incorrect and as a result upgrade order
+    // they may have already been set (this shouldn't happen but can 
+    // if dependency ordering is incorrect and as a result upgrade order 
     // is unexpected)
     clearChildNodes: function(node) {
       node.textContent = '';
@@ -4798,11 +4798,11 @@ Polymer.domInnerHTML = (function() {
 
       // NOTE: `_query` is used primarily for ShadyDOM's querySelector impl,
       // but it's also generally useful to recurse through the element tree
-      // and is used by Polymer's styling system.
+      // and is used by Polymer's styling system. 
       _query: function(matcher, node, halter) {
         node = node || this.node;
         var list = [];
-        this._queryElements(TreeApi.Logical.getChildNodes(node), matcher,
+        this._queryElements(TreeApi.Logical.getChildNodes(node), matcher, 
           halter, list);
         return list;
       },
@@ -4825,7 +4825,7 @@ Polymer.domInnerHTML = (function() {
         if (halter && halter(result)) {
           return result;
         }
-        this._queryElements(TreeApi.Logical.getChildNodes(node), matcher,
+        this._queryElements(TreeApi.Logical.getChildNodes(node), matcher, 
           halter, list);
       }
 
@@ -4949,7 +4949,7 @@ Polymer.domInnerHTML = (function() {
       if (root) {
         // note: we always need to see if an insertion point is added
         // since this saves logical tree info; however, invalidation state
-        // needs
+        // needs 
         var ipAdded = this._maybeAddInsertionPoint(node, this.node);
         // invalidate insertion points IFF not already invalid!
         if (!root._invalidInsertionPoints) {
@@ -4963,14 +4963,14 @@ Polymer.domInnerHTML = (function() {
       // if not distributing and not adding to host, do a fast path addition
       var handled = this._maybeDistribute(node) ||
         this.node.shadyRoot;
-      // if shady is handling this node,
+      // if shady is handling this node, 
       // the actual dom may not be removed if the node or fragment contents
       // remain undistributed so we ensure removal here.
       // NOTE: we only remove from existing location iff shady dom is involved.
       // This is because a node fragment is passed to the native add method
       // which expects to see fragment children. Regular elements must also
-      // use this check because not doing so causes separation of
-      // attached/detached and breaks, for example,
+      // use this check because not doing so causes separation of 
+      // attached/detached and breaks, for example, 
       // dom-if's attached/detached checks.
       if (handled) {
         if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
@@ -4993,7 +4993,7 @@ Polymer.domInnerHTML = (function() {
     */
     removeChild: function(node) {
       if (TreeApi.Logical.getParentNode(node) !== this.node) {
-        throw Error('The node to be removed is not a child of this node: ' +
+        throw Error('The node to be removed is not a child of this node: ' + 
           node);
       }
       if (!this._removeNode(node)) {
@@ -5010,7 +5010,7 @@ Polymer.domInnerHTML = (function() {
       return node;
     },
 
-    // Try to remove node: update logical info and perform distribution iff
+    // Try to remove node: update logical info and perform distribution iff 
     // needed. Return true if the removal has been handled.
     // note that it's possible for both the node's host and its parent
     // to require distribution... both cases are handled here.
@@ -5070,7 +5070,7 @@ Polymer.domInnerHTML = (function() {
         }
         // memo-ize result for performance but only memo-ize a false-y
         // result if node is in the document. This avoids a problem where a root
-        // can be cached while an element is inside a fragment.
+        // can be cached while an element is inside a fragment. 
         // If this happens and we cache the result, the value can become stale
         // because for perf we avoid processing the subtree of added fragments.
         if (root || document.documentElement.contains(node)) {
@@ -5154,7 +5154,7 @@ Polymer.domInnerHTML = (function() {
     },
 
     _nodeNeedsDistribution: function(node) {
-      return node && node.shadyRoot &&
+      return node && node.shadyRoot && 
         DomApi.hasInsertionPoint(node.shadyRoot);
     },
 
@@ -5828,8 +5828,8 @@ Polymer.EventApi = (function() {
   var useShadow = Polymer.Settings.useShadow;
 
   /**
-   * DomApi.classList allows maniuplation of `classList` compatible with
-   * Polymer.dom. The general usage is
+   * DomApi.classList allows maniuplation of `classList` compatible with 
+   * Polymer.dom. The general usage is 
    * `Polymer.dom(node).classList.method(arguments)` where methods and arguments
    * match native DOM.
    */
@@ -5887,8 +5887,8 @@ Polymer.EventApi = (function() {
     var hasDomApi = Polymer.DomApi.hasDomApi;
 
     /**
-     * DomApi.EffectiveNodesObserver tracks changes to an element's
-     * effective child nodes, the same list returned from
+     * DomApi.EffectiveNodesObserver tracks changes to an element's 
+     * effective child nodes, the same list returned from 
      * `Polymer.dom(node).getEffectiveChildNodes()`.
      * It is not meant to be used directly; it is used by
      * `Polymer.dom(node).observeNodes(callback)` to observe changes.
@@ -5940,7 +5940,7 @@ Polymer.EventApi = (function() {
         if (this._debouncer) {
           this._debouncer.stop();
         }
-        this._debouncer = Polymer.Debounce(this._debouncer,
+        this._debouncer = Polymer.Debounce(this._debouncer, 
           this._notify);
         this._debouncer.context = this;
         Polymer.dom.addDebouncer(this._debouncer);
@@ -6063,7 +6063,7 @@ Polymer.EventApi = (function() {
         .prototype._beforeCallListeners;
 
       Polymer.Base.extend(DomApi.EffectiveNodesObserver.prototype, {
-
+        
         _setup: function() {
           if (!this._observer) {
             var self = this;
@@ -6080,7 +6080,7 @@ Polymer.EventApi = (function() {
             // NOTE: subtree true is way too aggressive, but it easily catches
             // attribute changes on children. These changes otherwise require
             // attribute observers on every child. Testing has shown this
-            // approach to be more efficient.
+            // approach to be more efficient. 
             // TODO(sorvell): do we still need to include an option to defeat
             // attribute tracking?
             this._observer.observe(this.node, { childList: true });
@@ -6109,7 +6109,7 @@ Polymer.EventApi = (function() {
             // affect lower distributions.
             this._makeContentListenersAlwaysNotify();
             this._observer.disconnect();
-            this._observer.observe(this.node, {
+            this._observer.observe(this.node, { 
               childList: true,
               attributes: true,
               subtree: true
@@ -6143,7 +6143,7 @@ Polymer.EventApi = (function() {
     var Settings = Polymer.Settings;
 
     /**
-     * DomApi.DistributedNodesObserver notifies when the list returned by
+     * DomApi.DistributedNodesObserver notifies when the list returned by 
      * a <content> element's `getDistributedNodes()` may have changed.
      * It is not meant to be used directly; it is used by
      * `Polymer.dom(node).observeNodes(callback)` to observe changes to
@@ -6153,7 +6153,7 @@ Polymer.EventApi = (function() {
       DomApi.EffectiveNodesObserver.call(this, domApi);
     };
 
-    DomApi.DistributedNodesObserver.prototype =
+    DomApi.DistributedNodesObserver.prototype = 
       Object.create(DomApi.EffectiveNodesObserver.prototype);
 
     Polymer.Base.extend(DomApi.DistributedNodesObserver.prototype, {
@@ -6175,9 +6175,9 @@ Polymer.EventApi = (function() {
     });
 
     if (Settings.useShadow) {
-
+      
       Polymer.Base.extend(DomApi.DistributedNodesObserver.prototype, {
-
+        
         // NOTE: Under ShadowDOM we must observe the host element for
         // changes.
         _setup: function() {
@@ -6190,8 +6190,8 @@ Polymer.EventApi = (function() {
                 self._scheduleNotify();
               });
               // NOTE: we identify this listener as needed for <content>
-              // notification so that enableShadowAttributeTracking
-              // can find these observers an ensure that we pass always
+              // notification so that enableShadowAttributeTracking 
+              // can find these observers an ensure that we pass always 
               // pass notifications down.
               this._observer._isContentListener = true;
               if (this._hasAttrSelect()) {
@@ -6216,7 +6216,7 @@ Polymer.EventApi = (function() {
         }
 
       });
-
+    
     }
 
 })();
@@ -6281,12 +6281,12 @@ Polymer.EventApi = (function() {
         this.shadyRoot._isShadyRoot = true;
         this.shadyRoot._dirtyRoots = [];
         // capture insertion point list
-        var i$ = this.shadyRoot._insertionPoints = !this._notes ||
+        var i$ = this.shadyRoot._insertionPoints = !this._notes || 
           this._notes._hasContent ?
           this.shadyRoot.querySelectorAll('content') : [];
         // save logical tree info
-        // a. for shadyRoot
-        // b. for insertion points (fallback)
+        // a. for shadyRoot 
+        // b. for insertion points (fallback) 
         // c. for parents of insertion points
         TreeApi.Logical.saveChildNodes(this.shadyRoot);
         for (var i=0, c; i < i$.length; i++) {
@@ -6323,7 +6323,7 @@ Polymer.EventApi = (function() {
        */
       distributeContent: function(updateInsertionPoints) {
         if (this.shadyRoot) {
-          this.shadyRoot._invalidInsertionPoints =
+          this.shadyRoot._invalidInsertionPoints = 
             this.shadyRoot._invalidInsertionPoints || updateInsertionPoints;
           // Distribute the host that's the top of this element's distribution
           // tree. Distributing that host will *always* distibute this element.
@@ -6368,7 +6368,7 @@ Polymer.EventApi = (function() {
         // compose self
         if (this._useContent) {
           // note: it's important to mark this clean before distribution
-          // so that attachment that provokes additional distribution (e.g.
+          // so that attachment that provokes additional distribution (e.g. 
           // adding something to your parentNode) works
           this.shadyRoot._distributionClean = true;
           if (DomApi.hasInsertionPoint(this.shadyRoot)) {
@@ -6535,7 +6535,7 @@ Polymer.EventApi = (function() {
         for (var i=0, d=0, s; (i<splices.length) && (s=splices[i]); i++) {
           for (var j=0, n; (j < s.removed.length) && (n=s.removed[j]); j++) {
             // check if the node is still where we expect it is before trying
-            // to remove it; this can happen if Polymer.dom moves a node and
+            // to remove it; this can happen if Polymer.dom moves a node and 
             // then schedules its previous host for distribution resulting in
             // the node being removed here.
             if (TreeApi.Composed.getParentNode(n) === container) {
@@ -6687,7 +6687,7 @@ Polymer.EventApi = (function() {
 
 </script>
 <script>
-
+  
   /**
     Implements `shadyRoot` compatible dom scoping using native ShadowDOM.
   */
@@ -6704,7 +6704,7 @@ Polymer.EventApi = (function() {
       distributeContent: function() {},
       _distributeContent: function() {},
       _finishDistribute: function() {},
-
+      
       // create a shadowRoot
       _createLocalRoot: function() {
         this.createShadowRoot();
@@ -6781,18 +6781,18 @@ new window.MutationObserver(function() {
 <script>
 
 Polymer.Debounce = (function() {
-
+  
   // usage
-
+  
   // invoke cb.call(this) in 100ms, unless the job is re-registered,
   // which resets the timer
-  //
+  // 
   // this.job = this.debounce(this.job, cb, 100)
   //
   // returns a handle which can be used to re-register a job
 
   var Async = Polymer.Async;
-
+  
   var Debouncer = function(context) {
     this.context = context;
     var self = this;
@@ -6800,7 +6800,7 @@ Polymer.Debounce = (function() {
       self.complete();
     }
   };
-
+  
   Debouncer.prototype = {
     go: function(callback, wait) {
       var h;
@@ -6833,11 +6833,11 @@ Polymer.Debounce = (function() {
     debouncer.go(callback, wait);
     return debouncer;
   }
-
-  // exports
+  
+  // exports 
 
   return debounce;
-
+  
 })();
 
 </script>
@@ -7332,7 +7332,7 @@ Polymer.Debounce = (function() {
         Polymer.Annotations.findAnnotatedNode(root, annote.parent);
       // unwind the stack, returning the indexed node at each level
       if (parent) {
-        // note: marginally faster than indexing via childNodes
+        // note: marginally faster than indexing via childNodes 
         // (http://jsperf.com/childnodes-lookup)
         for (var n=parent.firstChild, i=0; n; n=n.nextSibling) {
           if (annote.index === i++) {
@@ -7351,17 +7351,17 @@ Polymer.Debounce = (function() {
 
   (function() {
 
-    // path fixup for urls in cssText that's expected to
+    // path fixup for urls in cssText that's expected to 
     // come from a given ownerDocument
     function resolveCss(cssText, ownerDocument) {
       return cssText.replace(CSS_URL_RX, function(m, pre, url, post) {
-        return pre + '\'' +
-          resolve(url.replace(/["']/g, ''), ownerDocument) +
+        return pre + '\'' + 
+          resolve(url.replace(/["']/g, ''), ownerDocument) + 
           '\'' + post;
       });
     }
 
-    // url fixup for urls in an element's attributes made relative to
+    // url fixup for urls in an element's attributes made relative to 
     // ownerDoc's base url
     function resolveAttrs(element, ownerDocument) {
       for (var name in URL_ATTRS) {
@@ -7384,7 +7384,7 @@ Polymer.Debounce = (function() {
       // do not resolve '#' links, they are used for routing
       if (url && url[0] === '#') {
         return url;
-      }
+      }      
       var resolver = getUrlResolver(ownerDocument);
       resolver.href = url;
       return resolver.href || url;
@@ -7403,7 +7403,7 @@ Polymer.Debounce = (function() {
     }
 
     function getUrlResolver(ownerDocument) {
-      return ownerDocument.__urlResolver ||
+      return ownerDocument.__urlResolver || 
         (ownerDocument.__urlResolver = ownerDocument.createElement('a'));
     }
 
@@ -9049,7 +9049,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
       _notifyChange: function(source, event, value) {
         value = value === undefined ? this[source] : value;
         event = event || Polymer.CaseMap.camelToDashCase(source) + '-changed';
-        this.fire(event, {value: value},
+        this.fire(event, {value: value}, 
           {bubbles: false, cancelable: false, _useCache: true});
       },
 
@@ -9247,8 +9247,8 @@ TODO(sjmiles): this module should produce either syntactic metadata
         } else {
           // TODO(sorvell): even though we have a `value` argument, we *must*
           // lookup the current value of the property. Multiple listeners and
-          // queued events during configuration can theoretically lead to
-          // divergence of the passed value from the current value, but we
+          // queued events during configuration can theoretically lead to 
+          // divergence of the passed value from the current value, but we 
           // really need to track down a specific case where this happens.
           value = target[property];
           if (!isStructured) {
@@ -11174,7 +11174,7 @@ Polymer.StyleExtends = (function() {
   var styleUtil = Polymer.StyleUtil;
 
   return {
-
+    
     hasExtends: function(cssText) {
       return Boolean(cssText.match(this.rx.EXTEND));
     },
@@ -11230,7 +11230,7 @@ Polymer.StyleExtends = (function() {
       // TODO: this misses `%foo, .bar` as an unetended selector but
       // this seems rare and could possibly be unsupported.
       source.selector = source.selector.replace(this.rx.STRIP, '');
-      source.selector = (source.selector && source.selector + ',\n') +
+      source.selector = (source.selector && source.selector + ',\n') + 
         target.selector;
       if (source.extends) {
         source.extends.forEach(function(e) {
@@ -11781,7 +11781,7 @@ Polymer.StyleExtends = (function() {
   };
 
   Polymer.StyleCache.prototype = {
-
+    
     MAX: 100,
 
     store: function(is, data, keyValues, keyStyles) {
@@ -11813,13 +11813,13 @@ Polymer.StyleExtends = (function() {
     },
 
     // note, this is intentially limited to support just the cases we need
-    // right now. The objects we're checking here are either objects that must
+    // right now. The objects we're checking here are either objects that must 
     // always have the same keys OR arrays.
     _objectsEqual: function(target, source) {
       var t, s;
       for (var i in target) {
         t = target[i], s = source[i];
-        if (!(typeof t === 'object' && t ? this._objectsStrictlyEqual(t, s) :
+        if (!(typeof t === 'object' && t ? this._objectsStrictlyEqual(t, s) : 
             t === s)) {
           return false;
         }
@@ -11831,7 +11831,7 @@ Polymer.StyleExtends = (function() {
     },
 
     _objectsStrictlyEqual: function(target, source) {
-      return this._objectsEqual(target, source) &&
+      return this._objectsEqual(target, source) && 
         this._objectsEqual(source, target);
     }
 
@@ -11891,8 +11891,8 @@ Polymer.StyleExtends = (function() {
        * been made that affect the values of custom properties.
        *
        * @method updateStyles
-       * @param {Object=} properties Properties object which is mixed into
-       * the document root `customStyle` property. This argument provides a
+       * @param {Object=} properties Properties object which is mixed into 
+       * the document root `customStyle` property. This argument provides a 
        * shortcut for setting `customStyle` and then calling `updateStyles`.
       */
       updateStyles: function(properties) {
@@ -12261,7 +12261,7 @@ Polymer.StyleExtends = (function() {
       // acquire instance behaviors
       this._marshalBehaviors();
       /*
-      TODO(sorvell): It's *slightly() more efficient to marshal attributes prior
+      TODO(sorvell): It's *slightly() more efficient to marshal attributes prior 
       to installing hostAttributes, but then hostAttributes must be separately
       funneled to configure, which is cumbersome.
       Since this delta seems hard to measure we will not bother atm.
@@ -12934,11 +12934,11 @@ Note, all features of `custom-style` are available when defining styles as part 
   /**
    * Creates a pseudo-custom-element that maps property values to bindings
    * in DOM.
-   *
+   * 
    * `stamp` method creates an instance of the pseudo-element. The instance
    * references a document-fragment containing the stamped and bound dom
-   * via it's `root` property.
-   *
+   * via it's `root` property. 
+   *  
    */
   Polymer({
 
@@ -13225,9 +13225,9 @@ Note, all features of `custom-style` are available when defining styles as part 
 
       /**
        * Count of currently rendered items after `filter` (if any) has been applied.
-       * If "chunking mode" is enabled, `renderedItemCount` is updated each time a
+       * If "chunking mode" is enabled, `renderedItemCount` is updated each time a 
        * set of template instances is rendered.
-       *
+       * 
        */
       renderedItemCount: {
         type: Number,
@@ -13488,7 +13488,7 @@ Note, all features of `custom-style` are available when defining styles as part 
       // `item` may not be sufficient if the pooled instance happens to be
       // the same item.
       this._pool.length = 0;
-      // Set rendered item count
+      // Set rendered item count 
       this._setRenderedItemCount(this._instances.length);
       // Notify users
       this.fire('dom-change');
@@ -14432,7 +14432,7 @@ Note, all features of `custom-style` are available when defining styles as part 
 		});
 	};
 
-
+	
   return Promise;
 }
 
@@ -17617,13 +17617,13 @@ Custom property                          | Description                          
    * size or hidden state of their children) and "resizables" (elements that need to be
    * notified when they are resized or un-hidden by their parents in order to take
    * action on their new measurements).
-   *
+   * 
    * Elements that perform measurement should add the `IronResizableBehavior` behavior to
    * their element definition and listen for the `iron-resize` event on themselves.
    * This event will be fired when they become showing after having been hidden,
    * when they are resized explicitly by another resizable, or when the window has been
    * resized.
-   *
+   * 
    * Note, the `iron-resize` event is non-bubbling.
    *
    * @polymerBehavior Polymer.IronResizableBehavior
@@ -17825,7 +17825,7 @@ Polymer.AppCustomScrollerBehavior = (function() {
        *  </app-header>
        * </div>
        *```
-       * In this case, `scroller` will point to the outer div element. Alternatively,
+       * In this case, `scroller` will point to the outer div element. Alternatively, 
        * you can set the property programatically:
        *
        *```js
@@ -18253,14 +18253,32 @@ if the user scrolls back up to the top.
 ## Scroll effects
 The following effects can be installed via the `effects` property:
 
-Effect name | Description
-----------------|-------------
-`parallax-background` | Adds a parallax effect.
-`blend-background` | Blends the front and back backgrounds in the header.
-`fade-background` | Fades the backgrounds when the header hits a threshold.
-`resize-title` | Transforms the element with the attribute `title` into the element with the attribute `condensed-title` by resizing it.
-`resize-snapped-title` | Fades the elements with the attributes `title` and `condensed-title` respectively.
-`waterfall` | Controls the `shadow` property of `app-header` such that the shadow appears only when there is content below the header.
+* **blend-background**
+While scrolling down, fade in the rear background layer and fade out the front 
+background layer (opacity interpolated based on scroll position).
+
+* **fade-background**
+Upon scrolling past a threshold, fade in the rear background layer and fade out
+the front background layer (opacity CSS transitioned over time).
+
+* **parallax-background**
+Vertically translate the background based on a factor of the scroll position.
+
+* **resize-title** 
+Transform the font size of a designated title element between two values based 
+on the scroll position.
+
+* **resize-snapped-title**
+Upon scrolling past a threshold, CSS transition the font size of a designated
+title element between two values.
+
+* **waterfall**
+Toggles the shadow property in app-header when content is scrolled to create
+a sense of depth between the element and the content underneath.
+
+* **material**
+Shorthand for the waterfall, resize-title, blend-background, and parallax-background 
+effects.
 
 ## Styling
 
@@ -19201,28 +19219,6 @@ Displays a page on different device layouts.
       font-size: 24px;
       line-height: 1.25;
       color: #147BCC;
-    }
-
-    .coming-soon::after {
-      content: '';
-      @apply(--layout-fit);
-      background-color: rgba(256,256,256,0.7);
-    }
-
-    .coming-soon::before {
-      content: 'Coming Soon!';
-      width: 200px;
-      position: absolute;
-      top: 152px;
-      left: calc(50% - 100px);
-      margin: 0 auto;
-      padding: 16px 8px;
-      z-index: 10;
-      border-radius: 3px;
-      background-color: rgba(0,0,0,0.65);
-      color: #fff;
-      font-size: 36px;
-      font-style: italic;
     }
 
     footer {
@@ -21162,6 +21158,16 @@ Displays a page on different device layouts.
          *   <app-toolbar></app-toolbar>
          * </app-header>
          * ```
+         * Additionally, you can specify which toolbar or element remains visible in condensed mode. For example, 
+         * if we want the last toolbar to remain visible, we can add the `primary` attribute to it.
+         *
+         *```html
+         * <app-header condenses>
+         *   <app-toolbar></app-toolbar>
+         *   <app-toolbar></app-toolbar>
+         *   <app-toolbar primary>This toolbar remains on top</app-toolbar>
+         * </app-header>
+         * ```
          */
         condenses: {
           type: Boolean,
@@ -21216,13 +21222,20 @@ Displays a page on different device layouts.
        * @type {number}
        */
       _deltaHeight: 0,
+      
+      /**
+       * The offsetTop of `_primaryEl`
+       *
+       * @type {number}
+       */
+      _primaryElTop: 0,
 
       /**
-       * The top most app-toolbar.
+       * The element that remains visible when the header condenses.
        *
        * @type {Element}
        */
-      _topbar: null,
+      _primaryEl: null,
 
       /**
        * The current clampped header top relative to the viewport.
@@ -21255,6 +21268,27 @@ Displays a page on different device layouts.
       },
 
       /**
+       * Returns a reference to the element that remains visible when the header condenses.
+       *
+       * @return {HTMLElement}?
+       */
+      _getPrimaryEl: function() {
+        var primaryEl;
+        var nodes = Polymer.dom(this.$.content).getDistributedNodes();
+
+        for (var i = 0; i < nodes.length; i++) {
+          if (nodes[i].nodeType === Node.ELEMENT_NODE) {
+            if (nodes[i].hasAttribute('primary')) {
+              return nodes[i];
+            } else if (!primaryEl) {
+              primaryEl = nodes[i];
+            }
+          }
+        }
+        return primaryEl;
+      },
+
+      /**
        * Resets the layout. This method is automatically called when the element is attached to the DOM.
        *
        * @method resetLayout
@@ -21269,18 +21303,20 @@ Displays a page on different device layouts.
           var scrollTop = this._clampedScrollTop;
           var savedDisabled = this.disabled;
           this._height = this.offsetHeight;
-          this._topbar = Polymer.dom(this).querySelector('app-toolbar');
+          this._primaryEl = this._getPrimaryEl();
 
           // prepare for measurement
           this.disabled = true;
 
           if (firstSetup || scrollTop === 0) {
-            this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
+            this._deltaHeight = this._primaryEl ? this._height - this._primaryEl.offsetHeight : 0;
+            this._primaryElTop = this._primaryEl ? this._primaryEl.offsetTop : 0;
             this._setUpEffect();
             this._updateScrollState(scrollTop, true);
           } else {
             this._updateScrollState(0, true);
-            this._deltaHeight = this._topbar ? this._height - this._topbar.offsetHeight : 0;
+            this._deltaHeight = this._primaryEl ? this._height - this._primaryEl.offsetHeight : 0;
+            this._primaryElTop = this._primaryEl ? this._primaryEl.offsetTop : 0;
             this._setUpEffect();
             this._updateScrollState(this._lastScrollTop, true);
             this._layoutIfDirty();
@@ -21379,10 +21415,10 @@ Displays a page on different device layouts.
        * @param {number}
        */
       _transformHeader: function(y) {
-        this.transform('translate3d(0,' + (-y) + 'px, 0)');
-        if (this._topbar && this.condenses) {
-          this.transform('translate3d(0,' + Math.min(y, this._deltaHeight) + 'px, 0)',
-              this._topbar);
+        this.translate3d(0, (-y) + 'px', 0);
+        if (this._primaryEl && this.condenses && y >= this._primaryElTop) {
+          this.translate3d(0, (Math.min(y, this._deltaHeight) - this._primaryElTop) + 'px', 0,
+              this._primaryEl);
         }
       },
 
@@ -21772,7 +21808,7 @@ Displays a page on different device layouts.
       _getElementTop: function() {
         var currentNode = this;
         var top = 0;
-
+        
         while (currentNode && currentNode !== this.scroller) {
           top += currentNode.offsetTop;
           currentNode = currentNode.offsetParent;
@@ -22213,7 +22249,7 @@ Displays a page on different device layouts.
 
         <template is="dom-repeat" items="{{resources.templates}}">
 
-          <div class$="grid-item {{item.className}}">
+          <div class="grid-item">
             <div class="image" style$="background-image: url({{item.thumbnail}});"></div>
             <div class="caption">
               <h3>{{item.name}}</h3>

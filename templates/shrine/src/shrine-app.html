@@ -1,0 +1,375 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../../polymer/polymer.html">
+<link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../iron-media-query/iron-media-query.html">
+<link rel="import" href="../../../../iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../paper-tabs/paper-tabs.html">
+<link rel="import" href="../../../../iron-icons/iron-icons.html">
+<link rel="import" href="../../../../iron-page-url/iron-page-url.html">
+<link rel="import" href="../../../app-layout.html">
+<link rel="import" href="../../../app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="shrine-list.html">
+<link rel="import" href="shrine-detail.html">
+
+<dom-module id="shrine-app">
+
+  <template>
+
+    <style>
+
+      :host {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+
+      app-header {
+        position: fixed;
+        background-color: rgba(255, 255, 255, 0.95);
+        top: 0;
+        left: 0;
+        right: 0;
+        --app-header-shadow: {
+          box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.2);
+          height: 10px;
+          bottom: -10px;
+        };
+      }
+
+      app-header:not([shadow]) {
+        border-bottom: 1px solid #ddd;
+      }
+
+      app-drawer {
+        --app-drawer-content-container: {
+          background-color: #f3f3f3;
+        };
+      }
+
+      #mainToolbar {
+        height: 110px;
+      }
+
+      paper-icon-button {
+        color: #7c7c7c;
+        --paper-icon-button-ink-color: #31f0ef;
+      }
+
+      .navItem {
+        @apply(--layout-self-start);
+        margin-top: 13px;
+        width: 88px;
+      }
+
+      .spacer {
+        @apply(--layout);
+        @apply(--layout-flex-auto);
+        @apply(--layout-center-center);
+      }
+
+      .logo {
+        background-image: url(//app-layout-assets.appspot.com/assets/shrine/shrine_logo_withicon.svg);
+        width: 120px;
+        height: 40px;
+        background-size: 100% 100%;
+      }
+
+      .leftItem [icon] {
+        display: none;
+      }
+
+      :host(.detail) #mainToolbar {
+        height: 64px;
+      }
+
+      shrine-detail {
+        height: calc(100vh - 65px);
+      }
+
+      :host(.detail) paper-tabs {
+        display: none;
+      }
+
+      :host(.detail) .leftItem [icon=arrow-back] {
+        display: block;
+      }
+
+      :host(.detail) .leftItem [icon=menu] {
+        display: none;
+      }
+
+      paper-tabs {
+        --paper-tabs-selection-bar-color: #31f0ef;
+        margin-left: -55px;
+        color: #31f0ef;
+        font-size: 13px;
+      }
+
+      paper-tab {
+        @apply(--layout-flex-none);
+        padding: 0;
+        --paper-tab-ink: #31f0ef;
+      }
+
+      paper-tab a {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        text-decoration: none;
+        text-transform: uppercase;
+        color: #7c7c7c;
+        font-weight: 500;
+        padding: 0 20px;
+      }
+
+      .list {
+        margin-left: 20px;
+        margin-right: 20px;
+      }
+
+      .list a {
+        display: block;
+        line-height: 40px;
+        text-decoration: none;
+        text-transform: uppercase;
+        color: #7c7c7c;
+      }
+
+      .list a.active {
+        color: black;
+        font-weight: bold;
+      }
+
+      .profileBar {
+        margin-bottom: 40px;
+      }
+
+      .profilePic {
+        border-radius: 50% 50%;
+      }
+
+      .profileName {
+        @apply(--layout-flex);
+        margin-left: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #0a3142;
+      }
+
+      [icon=settings] {
+        width: 35px;
+        height: 35px;
+        color: #0a3142;
+      }
+
+      /**
+       * Desktop small, tablet
+       */
+      @media (max-width: 1200px) {
+        .logo {
+          background-image: url(//app-layout-assets.appspot.com/assets/shrine/shrine_logo.svg);
+          width: 89px;
+          height: 17px;
+        }
+
+        #mainToolbar {
+          height: 64px;
+        }
+
+        shrine-detail {
+          height: auto;
+        }
+      }
+
+      /**
+       * Phone
+       */
+      @media (max-width: 400px) {
+        .leftItem [icon=menu] {
+          display: block;
+        }
+
+        paper-tabs {
+          display: none;
+        }
+      }
+
+    </style>
+
+    <iron-ajax url="../data/items.json" auto last-response="{{items}}"></iron-ajax>
+    <iron-ajax url="../data/featured.json" auto last-response="{{featuredItems}}"></iron-ajax>
+    <iron-page-url hash="{{urlHash}}"></iron-page-url>
+    <iron-media-query query="max-width: 400px" query-matches="{{smallScreen}}"></iron-media-query>
+
+    <app-drawer-layout drawer-width="288px" force-narrow>
+      <!-- navigation drawer for small screen sizes -->
+      <app-drawer id="drawer" swipe-open>
+        <app-toolbar class="profileBar">
+          <img class="profilePic" src="//app-layout-assets.appspot.com/assets/shrine/profile_pic.jpg"  width="30" height="30">
+          <div class="profileName">Stella</div>
+          <paper-icon-button icon="settings"></paper-icon-button>
+        </app-toolbar>
+        <div class="list">
+          <template is="dom-repeat" items="[[sections]]" as="section" initial-count="1">
+            <a href="#[[section]]" class$="[[_getSectionClass(index, selectedTab)]]">[[section]]</a>
+          </template>
+        </div>
+      </app-drawer>
+
+      <app-header-layout>
+        <!-- main header -->
+        <app-header id="header" effects="waterfall" fixed="[[smallScreen]]" condenses="[[!smallScreen]]" reveals="[[!smallScreen]]">
+          <app-toolbar id="mainToolbar">
+            <div class="navItem leftItem">
+              <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+              <a href="#"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
+            </div>
+            <div class="spacer">
+              <div class="logo"></div>
+            </div>
+            <div class="navItem">
+              <paper-icon-button icon="shopping-cart"></paper-icon-button>
+              <paper-icon-button icon="more-vert"></paper-icon-button>
+            </div>
+          </app-toolbar>
+          <paper-tabs selected="{{selectedTab}}" scrollable primary$="[[!_isItemHash(urlHash)]]">
+            <template is="dom-repeat" items="[[sections]]" as="section" initial-count="1">
+              <paper-tab>
+                <a href="#[[section]]">[[section]]</a>
+              </paper-tab>
+            </template>
+          </paper-tabs>
+        </app-header>
+
+        <!-- detail of item -->
+        <template is="dom-if" if="[[_isItemHash(urlHash)]]">
+          <shrine-detail related-items="[[items]]" item="[[detailItem]]"></shrine-detail>
+        </template>
+
+        <!-- list of items -->
+        <template is="dom-if" if="[[!_isItemHash(urlHash)]]">
+          <shrine-list items="[[listItems]]" featured-item="[[listFeaturedItem]]"></shrine-list>
+        </template>
+      </app-header-layout>
+    </app-drawer-layout>
+
+  </template>
+
+  <script>
+
+  Polymer({
+
+    is: 'shrine-app',
+
+    properties: {
+
+      sections: {
+        type: Array,
+        value: function() {
+          return [
+            'feature',
+            'latest',
+            'fashion',
+            'furniture',
+            'beauty',
+            'food',
+            'travel'
+          ];
+        }
+      },
+
+      selectedTab: {
+        type: Number,
+        value: 0
+      },
+
+      urlHash: {
+        type: String
+      },
+
+      items: {
+        type: Array
+      },
+
+      featuredItems: {
+        type: Array
+      },
+
+      listItems: {
+        type: Array
+      },
+
+      listFeaturedItem: {
+        type: Object
+      },
+
+      detailItem: {
+        type: Object
+      }
+    },
+
+    observers: [
+      '_hashDidChange(urlHash, items, featuredItems)'
+    ],
+
+    _hashDidChange: function(urlHash, items, featuredItems) {
+      var filteredItems;
+      var itemId = this._getItemIdFromHash(urlHash);
+
+      if (itemId !== null) {
+
+        this.detailItem = items.filter(function(item) {
+          return item.id === itemId;
+        }).pop();
+
+        this.classList.add('detail');
+
+      } else {
+        var category = urlHash.toLowerCase() || this.sections[0];
+        var secIdx = this.sections.indexOf(category);
+
+        this.listFeaturedItem = featuredItems.filter(function(item) {
+          return item.category.toLowerCase() === category;
+        }).pop();
+
+        if (secIdx === -1) {
+          this.selectedTab = -1;
+          this.listItems = [];
+        } else {
+          this.selectedTab = secIdx;
+          this.listItems = items.slice();
+        }
+        this.classList.remove('detail');
+      }
+
+      this.$.header._scrollTop = 0;
+      this.$.header.resetLayout();
+      this.$.drawer.close();
+    },
+
+    _getItemIdFromHash: function(urlHash) {
+      var parts = /^item\/([0-9]+)/i.exec(urlHash);
+      return parts && parts[1] ? +parts[1] : null;
+    },
+
+    _isItemHash: function(urlHash) {
+      return this._getItemIdFromHash(urlHash) !== null;
+    },
+
+    _getSectionClass: function(index, selectedTab) {
+      return index === selectedTab ? 'active' : '';
+    }
+
+  });
+
+  </script>
+
+</dom-module>
