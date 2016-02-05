@@ -212,10 +212,8 @@ Custom property                  | Description                            | Defa
         // Set the scroll direction so you can vertically scroll inside the drawer.
         this.setScrollDirection('y');
 
-        /**
-         * Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
-         * may need to set the initial opened state which should not be transitioned).
-         */
+        // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
+        // may need to set the initial opened state which should not be transitioned).
         this.$.contentContainer.style.transition = 'none';
         this.async(function() {
           this.$.contentContainer.style.transition = '';
@@ -260,15 +258,20 @@ Custom property                  | Description                            | Defa
 
       _scrimTapHandler: function() {
         if (!this.persistent) {
-          this.opened = false;
+          this.debounce('_scrimTapHandler', function() {
+            this.opened = false;
+          }, 1);
         }
       },
 
       _trackHandler: function(event) {
         if (!this.persistent) {
+          // Disable user selection.
+          event.preventDefault();
+
           switch (event.detail.state) {
             case 'start':
-              // Disable transitions since styles will reflect user track events.
+              // Disable transitions since style attributes will reflect user track events.
               this.$.contentContainer.style.transitionDuration = '0s';
               this.$.scrim.style.transitionDuration = '0s';
               this.$.scrim.style.visibility = 'visible';
@@ -280,6 +283,8 @@ Custom property                  | Description                            | Defa
               } else if (this.position == 'right') {
                 this._translateOffset = this.getWidth();
               }
+
+              this._trackEvents = [];
               break;
 
             case 'track':
@@ -297,29 +302,84 @@ Custom property                  | Description                            | Defa
                   break;
               }
 
-              // Keep track of the last user track event with non-zero ddx (which we
-              // need to determine whether to keep the drawer open/closed) since the
-              // very last track event may have zero ddx.
-              if (event.detail.ddx !== 0) {
-                this._lastTrackDirection = event.detail.ddx;
-              }
+              this._trackEvents.push(event);
               break;
 
             case 'end':
-              this.$.contentContainer.style.transitionDuration = '';
-              this.$.scrim.style.transitionDuration = '';
-              this.$.scrim.style.visibility = '';
-              this.$.scrim.style.opacity = '';
-              this.transform('', this.$.contentContainer);
+              // Save translate progress made during track events for this._animateDrawer.
+              this._translateOffset = event.detail.dx + this._translateOffset;
+              this._lastTimeStamp = performance.now();
 
-              // Only toggle the drawer if the user intentionally swipes in one direction.
-              if (Math.abs(event.detail.dx) > 30) {
-                this.opened = (this.position === 'left' && this._lastTrackDirection > 0) ||
-                  (this.position === 'right' && this._lastTrackDirection < 0);
+              // Track handler takes precedence over scrim tap handler.
+              this.cancelDebouncer('_scrimTapHandler');
+
+              // Calculate the velocity with the first track event that is recent enough, if
+              // it exists
+              this._velocity = 0;
+              var timeLowerBound = Date.now() - 100;
+              for (var i = 0; i < this._trackEvents.length; ++i) {
+                var trackEvent = this._trackEvents[i];
+                if (trackEvent.timeStamp >= timeLowerBound) {
+                  var dx = event.detail.dx - trackEvent.detail.dx;
+                  var dt = event.timeStamp - trackEvent.timeStamp;
+                  this._velocity = dx / dt;
+                  break;
+                }
               }
+
+              // At most one of slideLeft and slideRight will be true, but both could be false,
+              // which is why we need two variables.
+              var slideLeft = false;
+              var slideRight = false;
+              if (this._velocity < -0.5) {
+                slideLeft = true;
+                requestAnimationFrame(this._animateDrawer.bind(this));
+              } else if (this._velocity > 0.5) {
+                slideRight = true;
+                requestAnimationFrame(this._animateDrawer.bind(this));
+              } else {
+                slideLeft = (event.detail.dx < -this.getWidth() / 2);
+                slideRight = (event.detail.dx > this.getWidth() / 2);
+                this._resetStyleAttributes();
+              }
+
+              if (slideLeft) {
+                this.opened = (this.position === 'right');
+              } else if (slideRight) {
+                this.opened = (this.position === 'left');
+              }
+
+              // No longer need the track events - allow the GC to deallocate them.
+              this._trackEvents = null;
               break;
           }
         }
+      },
+
+      _animateDrawer: function(now) {
+        if (this._velocity !== 0) {
+          var drawerWidth = this.getWidth();
+          var deltaTime = now - this._lastTimeStamp;
+          var translateDelta = this._velocity * deltaTime + this._translateOffset;
+
+          if ((this.position == 'left' && -drawerWidth < translateDelta && translateDelta < 0) ||
+              (this.position == 'right' && 0 < translateDelta && translateDelta < drawerWidth)) {
+            this._translateDrawer(translateDelta);
+            this.$.scrim.style.opacity = 1 + translateDelta / drawerWidth;
+            requestAnimationFrame(this._animateDrawer.bind(this));
+            return;
+          }
+        }
+
+        this._resetStyleAttributes();
+      },
+
+      _resetStyleAttributes: function() {
+        this.$.contentContainer.style.transitionDuration = '';
+        this.$.scrim.style.transitionDuration = '';
+        this.$.scrim.style.visibility = '';
+        this.$.scrim.style.opacity = '';
+        this.transform('', this.$.contentContainer);
       },
 
       _translateDrawer: function(x) {
