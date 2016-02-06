@@ -271,106 +271,97 @@ Custom property                  | Description                            | Defa
 
           switch (event.detail.state) {
             case 'start':
-              // Disable transitions since style attributes will reflect user track events.
-              this.$.contentContainer.style.transitionDuration = '0s';
-              this.$.scrim.style.transitionDuration = '0s';
-              this.$.scrim.style.visibility = 'visible';
-
-              if (this.opened) {
-                this._translateOffset = 0;
-              } else if (this.position == 'left') {
-                this._translateOffset = -this.getWidth();
-              } else if (this.position == 'right') {
-                this._translateOffset = this.getWidth();
-              }
-
-              this._trackEvents = [];
+              this._trackStart(event);
               break;
-
             case 'track':
-              var translateDelta = event.detail.dx + this._translateOffset;
-              switch (this.position) {
-                case 'left':
-                  translateDelta = Math.min(0, translateDelta);
-                  this._translateDrawer(translateDelta);
-                  this.$.scrim.style.opacity = 1 + translateDelta / this.getWidth();
-                  break;
-                case 'right':
-                  translateDelta = Math.max(0, translateDelta);
-                  this._translateDrawer(translateDelta);
-                  this.$.scrim.style.opacity = 1 - translateDelta / this.getWidth();
-                  break;
-              }
-
-              this._trackEvents.push(event);
+              this._track(event);
               break;
-
             case 'end':
-              // Save translate progress made during track events for this._animateDrawer.
-              this._translateOffset = event.detail.dx + this._translateOffset;
-              this._lastTimeStamp = performance.now();
-
-              // Track handler takes precedence over scrim tap handler.
-              this.cancelDebouncer('_scrimTapHandler');
-
-              // Calculate the velocity with the first track event that is recent enough, if
-              // it exists
-              this._velocity = 0;
-              var timeLowerBound = Date.now() - 100;
-              for (var i = 0; i < this._trackEvents.length; ++i) {
-                var trackEvent = this._trackEvents[i];
-                if (trackEvent.timeStamp >= timeLowerBound) {
-                  var dx = event.detail.dx - trackEvent.detail.dx;
-                  var dt = event.timeStamp - trackEvent.timeStamp;
-                  this._velocity = dx / dt;
-                  break;
-                }
-              }
-
-              // At most one of slideLeft and slideRight will be true, but both could be false,
-              // which is why we need two variables.
-              var slideLeft = false;
-              var slideRight = false;
-              if (this._velocity < -0.5) {
-                slideLeft = true;
-                requestAnimationFrame(this._animateDrawer.bind(this));
-              } else if (this._velocity > 0.5) {
-                slideRight = true;
-                requestAnimationFrame(this._animateDrawer.bind(this));
-              } else {
-                slideLeft = (event.detail.dx < -this.getWidth() / 2);
-                slideRight = (event.detail.dx > this.getWidth() / 2);
-                this._resetStyleAttributes();
-              }
-
-              if (slideLeft) {
-                this.opened = (this.position === 'right');
-              } else if (slideRight) {
-                this.opened = (this.position === 'left');
-              }
-
-              // No longer need the track events - allow the GC to deallocate them.
-              this._trackEvents = null;
+              this._trackEnd(event);
               break;
           }
         }
       },
 
-      _animateDrawer: function(now) {
-        if (this._velocity !== 0) {
-          var drawerWidth = this.getWidth();
-          var deltaTime = now - this._lastTimeStamp;
-          var translateDelta = this._velocity * deltaTime + this._translateOffset;
+      _trackStart: function(event) {
+        // Disable transitions since style attributes will reflect user track events.
+        this.$.contentContainer.style.transitionDuration = '0s';
+        this.$.scrim.style.transitionDuration = '0s';
+        this.$.scrim.style.visibility = 'visible';
 
-          if ((this.position == 'left' && -drawerWidth < translateDelta && translateDelta < 0) ||
-              (this.position == 'right' && 0 < translateDelta && translateDelta < drawerWidth)) {
-            this._translateDrawer(translateDelta);
-            this.$.scrim.style.opacity = 1 + translateDelta / drawerWidth;
-            requestAnimationFrame(this._animateDrawer.bind(this));
-            return;
+        if (this.opened) {
+          this._translateOffset = 0;
+        } else if (this.position == 'left') {
+          this._translateOffset = -this.getWidth();
+        } else if (this.position == 'right') {
+          this._translateOffset = this.getWidth();
+        }
+
+        this._trackEvents = [];
+      },
+
+      _track: function(event) {
+        this._translateDrawer(event.detail.dx + this._translateOffset);
+        this._trackEvents.push(event);
+      },
+
+      _trackEnd: function(event) {
+        // Save translate progress made during track events for this._rafAnimate.
+        this._translateOffset = event.detail.dx + this._translateOffset;
+        this._lastTimeStamp = performance.now();
+
+        // Track handler takes precedence over scrim tap handler.
+        this.cancelDebouncer('_scrimTapHandler');
+
+        // Calculate the velocity with the first track event that is recent enough, if
+        // it exists
+        this._velocity = 0;
+        var timeLowerBound = Date.now() - 100;
+        for (var i = 0; i < this._trackEvents.length; ++i) {
+          var trackEvent = this._trackEvents[i];
+          if (trackEvent.timeStamp >= timeLowerBound) {
+            var dx = event.detail.dx - trackEvent.detail.dx;
+            var dt = event.timeStamp - trackEvent.timeStamp;
+            this._velocity = dx / dt;
+            break;
           }
         }
 
+        if (this._velocity < -0.5 || this._velocity > 0.5) {
+          // If velocity is above the threshold, animate the drawer with the same velocity.
+          requestAnimationFrame(this._rafAnimate.bind(this));
+        } else {
+          // Otherwise, toggle the opened state only if the user tracks over half the
+          // drawer width.
+          if (event.detail.dx < -this.getWidth() / 2) {
+            this.opened = (this.position === 'right');
+          } else if (event.detail.dx > this.getWidth() / 2) {
+            this.opened = (this.position === 'left');
+          }
+          this._resetStyleAttributes();
+        }
+
+        // No longer need the track events - allow the GC to deallocate them.
+        this._trackEvents = null;
+      },
+
+      _rafAnimate: function(now) {
+        if (this._velocity !== 0) {
+          var dt = now - this._lastTimeStamp;
+          if (this._translateDrawer(this._velocity * dt + this._translateOffset)) {
+            requestAnimationFrame(this._rafAnimate.bind(this));
+          } else {
+            requestAnimationFrame(this._rafAnimateEnd.bind(this));
+          }
+        }
+      },
+
+      _rafAnimateEnd: function() {
+        if (this._velocity < 0) {
+          this.opened = (this.position === 'right');
+        } else {
+          this.opened = (this.position === 'left');
+        }
         this._resetStyleAttributes();
       },
 
@@ -382,8 +373,24 @@ Custom property                  | Description                            | Defa
         this.transform('', this.$.contentContainer);
       },
 
+      /**
+       * @return {boolean} True if the given position is valid, false otherwise.
+       */
       _translateDrawer: function(x) {
-        this.transform('translate3d(' + x + 'px, 0, 0)', this.$.contentContainer);
+        var drawerWidth = this.getWidth();
+        var clampedX = x;
+
+        if (this.position == 'left') {
+          clampedX = Math.max(-drawerWidth, Math.min(x, 0));
+          this.$.scrim.style.opacity = 1 + clampedX / drawerWidth;
+        } else {
+          clampedX = Math.max(0, Math.min(x, drawerWidth));
+          this.$.scrim.style.opacity = 1 - clampedX / this.getWidth();
+        }
+
+        this.transform('translate3d(' + clampedX + 'px, 0, 0)', this.$.contentContainer);
+
+        return (clampedX === x);
       },
 
       _updateDocScroll: function() {
