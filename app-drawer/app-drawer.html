@@ -204,9 +204,11 @@ Custom property                  | Description                            | Defa
         '_updateDocScroll(opened, persistent)'
       ],
 
-      _lastTrackDirection: 0,
-
       _translateOffset: 0,
+
+      _trackEvents: null,
+
+      _startTimeStamp: 0,
 
       attached: function() {
         // Set the scroll direction so you can vertically scroll inside the drawer.
@@ -266,7 +268,7 @@ Custom property                  | Description                            | Defa
 
       _trackHandler: function(event) {
         if (!this.persistent) {
-          // Disable user selection.
+          // Disable user selection on desktop.
           event.preventDefault();
 
           switch (event.detail.state) {
@@ -308,7 +310,7 @@ Custom property                  | Description                            | Defa
       _trackEnd: function(event) {
         // Save translate progress made during track events for this._rafAnimate.
         this._translateOffset = event.detail.dx + this._translateOffset;
-        this._lastTimeStamp = performance.now();
+        this._startTimeStamp = performance.now();
 
         // Track handler takes precedence over scrim tap handler.
         this.cancelDebouncer('_scrimTapHandler');
@@ -347,7 +349,7 @@ Custom property                  | Description                            | Defa
 
       _rafAnimate: function(now) {
         if (this._velocity !== 0) {
-          var dt = now - this._lastTimeStamp;
+          var dt = now - this._startTimeStamp;
           if (this._translateDrawer(this._velocity * dt + this._translateOffset)) {
             requestAnimationFrame(this._rafAnimate.bind(this));
           } else {

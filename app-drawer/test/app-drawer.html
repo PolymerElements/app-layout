@@ -43,12 +43,52 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
 
     suite('basic features', function() {
-      var drawer, scrim, contentContainer;
+      var drawer, scrim, contentContainer, transformSpy;
+
+      function rafTestHelper(tests) {
+        var mockTimer = 0;
+        var callbacks = [];
+        var raf = window.requestAnimationFrame;
+        window.requestAnimationFrame = function(callback) {
+          callbacks.push(callback);
+        }
+
+        function rafCallback() {
+          if (tests.length > 1) {
+            ++mockTimer;
+
+            // Create a new callbacks array because last callbacks may call requestAnimationFrame.
+            var lastCallbacks = callbacks;
+            callbacks = [];
+            lastCallbacks.forEach(function(callback) {
+              callback(mockTimer);
+            });
+
+            tests.shift()(mockTimer);
+            raf(rafCallback);
+          } else {
+            // Reset the real requestAnimationFrame before calling the last test.
+            window.requestAnimationFrame = raf;
+            callbacks.forEach(function(callback) {
+              callback(mockTimer);
+            });
+            tests[0](mockTimer);
+          }
+        }
+
+        rafCallback();
+      }
+
+      function assertDrawerStyles(translateX, opacity, desc) {
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + translateX + 'px, 0, 0)', desc);
+        assert.equal(parseFloat(scrim.style.opacity).toFixed(4), opacity.toFixed(4), desc);
+      }
 
       setup(function() {
         drawer = fixture('testDrawer');
         scrim = drawer.$.scrim;
         contentContainer = drawer.$.contentContainer;
+        transformSpy = sinon.spy(drawer, 'transform');
       });
 
       test('default values', function() {
@@ -129,90 +169,257 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }, 1);
       });
 
-      test('swiping', function() {
-        const SWIPE_DISTANCE = 32;
-        const TRANSITION_DURATION = '0.01s';
+      test('track events block user selection', function() {
+        var ev = drawer.fire('track', null /* detail */, { cancelable: true });
+
+        assert.isTrue(ev.defaultPrevented);
+      });
+
+      test('track events block scrim tap', function(done) {
+        drawer.opened = true;
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('tap', null /* detail */, { node: scrim });
+        drawer.fire('track', { state: 'end', dx: 0, ddx: 0 });
+
+        window.setTimeout(function() {
+          assert.isTrue(drawer.opened);
+          done();
+        }, 1);
+      });
+
+      test('styles reset after swiping', function() {
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(contentContainer.style.transitionDuration, '0s');
+        assert.equal(scrim.style.transitionDuration, '0s');
+        assert.equal(scrim.style.visibility, 'visible');
+
+        drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
+
+        assert.equal(contentContainer.style.transitionDuration, '');
+        assert.equal(contentContainer.style.transform, '');
+        assert.equal(scrim.style.transitionDuration, '');
+        assert.equal(scrim.style.visibility, '');
+        assert.equal(scrim.style.opacity, '');
+      });
+
+      test('left drawer swiping', function() {
         var drawerWidth = drawer.getWidth();
-        var transformSpy = sinon.spy(drawer, 'transform');
-
-        // Set a transition-duration to check if drawer properly resets inline styles on track end.
-        drawer.updateStyles({
-          '--app-drawer-content-container': 'transition-duration: ' + TRANSITION_DURATION
-        });
+        var halfWidth = drawerWidth / 2;
         drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: -halfWidth, ddx: -halfWidth });
 
-        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], '0s');
+        assertDrawerStyles(-drawerWidth, 0, 'styles are lower bounded');
 
-        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: SWIPE_DISTANCE });
+        drawer.fire('track', { state: 'track', dx: halfWidth, ddx: drawerWidth });
 
-        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + (SWIPE_DISTANCE - drawerWidth) + 'px, 0, 0)', 'translate distance is equal when swipe is less than drawer width');
-        assert.equal(scrim.style.opacity, SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+        assertDrawerStyles(-halfWidth, 0.5, 'style by track distance');
 
-        drawer.fire('track', { state: 'track', dx: 9999, ddx: 9999 });
+        drawer.fire('track', { state: 'track', dx: halfWidth + drawerWidth, ddx: drawerWidth });
 
-        assert.equal(transformSpy.lastCall.args[0], 'translate3d(0px, 0, 0)', 'translate distance is bounded when swipe is greater than drawer width');
-        assert.equal(scrim.style.opacity, 1, 'scrim opacity correct');
+        assertDrawerStyles(0, 1, 'styles are upper bounded');
 
-        drawer.fire('track', { state: 'track', dx: 9999, ddx: 0 });
-        drawer.fire('track', { state: 'end', dx: 9999, ddx: 0 });
+        // Simulate break of track events.
+        drawer._trackEvents = [];
+        drawer.fire('track', { state: 'end', dx: halfWidth, ddx: -drawerWidth });
 
-        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], TRANSITION_DURATION);
-        assert.isTrue(drawer.opened, 'drawer opened if user slides in');
+        assert.isFalse(drawer.opened, 'drawer stays closed when track distance is small');
 
         drawer.fire('track', { state: 'start' });
-        drawer.fire('track', { state: 'track', dx: -30, ddx: -30 });
-        drawer.fire('track', { state: 'end', dx: -30, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: halfWidth + 1, ddx: halfWidth + 1 });
 
-        assert.isTrue(drawer.opened, 'drawer stays opened if threshold is not met');
+        assert.isTrue(drawer.opened, 'drawer opens when track distance is large');
 
         drawer.fire('track', { state: 'start' });
-        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: -SWIPE_DISTANCE });
+        drawer.fire('track', { state: 'end', dx: -halfWidth, ddx: -halfWidth });
 
-        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + -SWIPE_DISTANCE + 'px, 0, 0)', 'translate distance is correct');
-        assert.equal(scrim.style.opacity, 1 - SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+        assert.isTrue(drawer.opened, 'drawer stays opened when track distance is small');
 
-        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: 0 });
-        drawer.fire('track', { state: 'end', dx: -SWIPE_DISTANCE, ddx: 0 });
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'end', dx: -halfWidth - 1, ddx: -halfWidth - 1 });
 
-        assert.isFalse(drawer.opened, 'drawer closed if user slides out');
+        assert.isFalse(drawer.opened, 'drawer closes when track distance is large');
+      });
 
+      test('right drawer swiping', function() {
+        var drawerWidth = drawer.getWidth();
+        var halfWidth = drawerWidth / 2;
         drawer.position = 'right';
         drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: halfWidth, ddx: halfWidth });
 
-        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], '0s');
+        assertDrawerStyles(drawerWidth, 0, 'styles are lower bounded');
 
-        drawer.fire('track', { state: 'track', dx: -SWIPE_DISTANCE, ddx: -SWIPE_DISTANCE });
+        drawer.fire('track', { state: 'track', dx: -halfWidth, ddx: -drawerWidth });
 
-        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + (drawerWidth - SWIPE_DISTANCE) + 'px, 0, 0)', 'translate distance is equal when swipe is less than drawer width');
-        assert.equal(scrim.style.opacity, SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+        assertDrawerStyles(halfWidth, 0.5, 'style by track distance');
 
-        drawer.fire('track', { state: 'track', dx: -9999, ddx: -9999 });
+        drawer.fire('track', { state: 'track', dx: -halfWidth - drawerWidth, ddx: -drawerWidth });
 
-        assert.equal(transformSpy.lastCall.args[0], 'translate3d(0px, 0, 0)', 'translate distance is bounded when swipe is greater than drawer width');
-        assert.equal(scrim.style.opacity, 1, 'scrim opacity correct');
+        assertDrawerStyles(0, 1, 'styles are upper bounded');
 
-        drawer.fire('track', { state: 'track', dx: -9999, ddx: 0 });
-        drawer.fire('track', { state: 'end', dx: -9999, ddx: 0 });
+        // Simulate break of track events.
+        drawer._trackEvents = [];
+        drawer.fire('track', { state: 'end', dx: -halfWidth, ddx: drawerWidth });
 
-        assert.equal(window.getComputedStyle(contentContainer)['transition-duration'], TRANSITION_DURATION);
-        assert.isTrue(drawer.opened, 'drawer opened if user slides in');
-
-        drawer.fire('track', { state: 'start' });
-        drawer.fire('track', { state: 'track', dx: 30, ddx: 30 });
-        drawer.fire('track', { state: 'end', dx: 30, ddx: 0 });
-
-        assert.isTrue(drawer.opened, 'drawer stays opened if threshold is not met');
+        assert.isFalse(drawer.opened, 'drawer stays closed when track distance is small');
 
         drawer.fire('track', { state: 'start' });
-        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: SWIPE_DISTANCE });
+        drawer.fire('track', { state: 'end', dx: -halfWidth - 1, ddx: -halfWidth - 1 });
 
-        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + SWIPE_DISTANCE + 'px, 0, 0)', 'translate distance is correct');
-        assert.equal(scrim.style.opacity, 1 - SWIPE_DISTANCE / drawerWidth, 'scrim opacity correct');
+        assert.isTrue(drawer.opened, 'drawer opens when track distance is large');
 
-        drawer.fire('track', { state: 'track', dx: SWIPE_DISTANCE, ddx: 0 });
-        drawer.fire('track', { state: 'end', dx: SWIPE_DISTANCE, ddx: 0 });
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'end', dx: halfWidth, ddx: halfWidth });
 
-        assert.isFalse(drawer.opened, 'drawer closed if user slides out');
+        assert.isTrue(drawer.opened, 'drawer stays opened when track distance is small');
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'end', dx: halfWidth + 1, ddx: halfWidth + 1 });
+
+        assert.isFalse(drawer.opened, 'drawer closes when track distance is large');
+      });
+
+      test('styles reset after flicking', function(done) {
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(contentContainer.style.transitionDuration, '0s');
+        assert.equal(scrim.style.transitionDuration, '0s');
+        assert.equal(scrim.style.visibility, 'visible');
+
+        drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
+
+        // Styles should be reset after two requestAnimationFrame's.
+        rafTestHelper([
+          function() {
+            // Wait for two frames.
+          }, function() {
+          }, function() {
+            assert.equal(contentContainer.style.transitionDuration, '');
+            assert.equal(contentContainer.style.transform, '');
+            assert.equal(scrim.style.transitionDuration, '');
+            assert.equal(scrim.style.visibility, '');
+            assert.equal(scrim.style.opacity, '');
+
+            done();
+          }
+        ]);
+      });
+
+      test('left drawer flicking', function(done) {
+        var drawerWidth = drawer.getWidth();
+
+        rafTestHelper([
+          function() {
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            drawer.fire('track', { state: 'end', dx: 0.49, ddx: 0.49 });
+          }, function(now) {
+            assert.isFalse(drawer.opened, 'drawer stays closed when velocity is small');
+
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            // Make dx large enough to force the velocity to be above the threshold, since
+            // we can't determine the timestamps of events.
+            drawer.fire('track', { state: 'end', dx: 9999, ddx: 9999 });
+            // Mock _translateOffset, _startTimeStamp, and _velocity for testing.
+            drawer._translateOffset = -drawerWidth + 100;
+            drawer._startTimeStamp = now;
+            drawer._velocity = 100;
+          }, function(now) {
+            var dt = now - drawer._startTimeStamp;
+            var translateX = drawer._velocity * dt - drawerWidth + 100;
+            assertDrawerStyles(translateX, 1 + translateX / drawerWidth);
+          }, function() {
+            assertDrawerStyles(0, 1);
+          }, function() {
+            assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
+
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            drawer.fire('track', { state: 'end', dx: -0.49, ddx: -0.49 });
+          }, function(now) {
+            assert.isTrue(drawer.opened, 'drawer stays open when velocity is small');
+
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            // Make dx large enough to force the velocity to be above the threshold, since
+            // we can't determine the timestamps of events.
+            drawer.fire('track', { state: 'end', dx: -9999, ddx: -9999 });
+            // Mock _translateOffset, _startTimeStamp, and _velocity for testing.
+            drawer._translateOffset = -100;
+            drawer._startTimeStamp = now;
+            drawer._velocity = -100;
+          }, function(now) {
+            var dt = now - drawer._startTimeStamp;
+            var translateX = drawer._velocity * dt - 100;
+            assertDrawerStyles(translateX, 1 + translateX / drawerWidth);
+          }, function() {
+            assertDrawerStyles(-drawerWidth, 0);
+          }, function() {
+            assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
+            done();
+          }
+        ]);
+      });
+
+      test('right drawer flicking', function(done) {
+        var drawerWidth = drawer.getWidth();
+        drawer.position = 'right';
+
+        rafTestHelper([
+          function() {
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            drawer.fire('track', { state: 'end', dx: -0.49, ddx: -0.49 });
+          }, function(now) {
+            assert.isFalse(drawer.opened, 'drawer stays closed when velocity is small');
+
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            // Make dx large enough to force the velocity to be above the threshold, since
+            // we can't determine the timestamps of events.
+            drawer.fire('track', { state: 'end', dx: -9999, ddx: -9999 });
+            // Mock _translateOffset, _startTimeStamp, and _velocity for testing.
+            drawer._translateOffset = drawerWidth - 100;
+            drawer._startTimeStamp = now;
+            drawer._velocity = -100;
+          }, function(now) {
+            var dt = now - drawer._startTimeStamp;
+            var translateX = drawer._velocity * dt + drawerWidth - 100;
+            assertDrawerStyles(translateX, 1 - translateX / drawerWidth);
+          }, function() {
+            assertDrawerStyles(0, 1);
+          }, function() {
+            assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
+
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            drawer.fire('track', { state: 'end', dx: 0.49, ddx: 0.49 });
+          }, function(now) {
+            assert.isTrue(drawer.opened, 'drawer stays open when velocity is small');
+
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            // Make dx large enough to force the velocity to be above the threshold, since
+            // we can't determine the timestamps of events.
+            drawer.fire('track', { state: 'end', dx: 9999, ddx: 9999 });
+            // Mock _translateOffset, _startTimeStamp, and _velocity for testing.
+            drawer._translateOffset = 100;
+            drawer._startTimeStamp = now;
+            drawer._velocity = 100;
+          }, function(now) {
+            var dt = now - drawer._startTimeStamp;
+            var translateX = drawer._velocity * dt + 100;
+            assertDrawerStyles(translateX, 1 - translateX / drawerWidth);
+          }, function() {
+            assertDrawerStyles(drawerWidth, 0);
+          }, function() {
+            assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
+            done();
+          }
+        ]);
       });
 
       test('doc scroll', function() {
@@ -254,11 +461,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(scrimComputedStyle['visibility'], 'hidden');
       });
 
-      test('tap on scrim closes drawer', function() {
+      test('tap on scrim closes drawer', function(done) {
         drawer.opened = true;
         drawer.fire('tap', null /* detail */, { node: scrim });
 
-        assert.isFalse(drawer.opened);
+        window.setTimeout(function() {
+          assert.isFalse(drawer.opened);
+          done();
+        }, 1);
       });
     });
 
