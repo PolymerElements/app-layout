@@ -80,7 +80,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       function assertDrawerStyles(translateX, opacity, desc) {
-        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + translateX + 'px, 0, 0)', desc);
+        assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + translateX + 'px,0,0)', desc);
         assert.equal(parseFloat(scrim.style.opacity).toFixed(4), opacity.toFixed(4), desc);
       }
 
@@ -197,10 +197,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
 
         assert.equal(contentContainer.style.transitionDuration, '');
-        assert.equal(contentContainer.style.transform, '');
         assert.equal(scrim.style.transitionDuration, '');
         assert.equal(scrim.style.visibility, '');
         assert.equal(scrim.style.opacity, '');
+        assert.equal(transformSpy.lastCall.args[0], '');
       });
 
       test('left drawer swiping', function() {
@@ -297,10 +297,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }, function() {
           }, function() {
             assert.equal(contentContainer.style.transitionDuration, '');
-            assert.equal(contentContainer.style.transform, '');
             assert.equal(scrim.style.transitionDuration, '');
             assert.equal(scrim.style.visibility, '');
             assert.equal(scrim.style.opacity, '');
+            assert.equal(transformSpy.lastCall.args[0], '');
 
             done();
           }

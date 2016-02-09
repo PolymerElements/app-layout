@@ -390,7 +390,7 @@ Custom property                  | Description                            | Defa
           this.$.scrim.style.opacity = 1 - clampedX / this.getWidth();
         }
 
-        this.transform('translate3d(' + clampedX + 'px, 0, 0)', this.$.contentContainer);
+        this.translate3d(clampedX + 'px', '0', '0', this.$.contentContainer);
 
         return (clampedX === x);
       },
