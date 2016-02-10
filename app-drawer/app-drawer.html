@@ -335,9 +335,10 @@ Custom property                  | Description                            | Defa
         } else {
           // Otherwise, toggle the opened state only if the user tracks over half the
           // drawer width.
-          if (event.detail.dx < -this.getWidth() / 2) {
+          var halfWidth = this.getWidth() / 2;
+          if (event.detail.dx < -halfWidth) {
             this.opened = (this.position === 'right');
-          } else if (event.detail.dx > this.getWidth() / 2) {
+          } else if (event.detail.dx > halfWidth) {
             this.opened = (this.position === 'left');
           }
           this._resetStyleAttributes();
@@ -387,7 +388,7 @@ Custom property                  | Description                            | Defa
           this.$.scrim.style.opacity = 1 + clampedX / drawerWidth;
         } else {
           clampedX = Math.max(0, Math.min(x, drawerWidth));
-          this.$.scrim.style.opacity = 1 - clampedX / this.getWidth();
+          this.$.scrim.style.opacity = 1 - clampedX / drawerWidth;
         }
 
         this.translate3d(clampedX + 'px', '0', '0', this.$.contentContainer);
