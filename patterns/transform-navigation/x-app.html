@@ -53,7 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <app-drawer-layout force-narrow>
 
-      <app-drawer>
+      <app-drawer id="drawer">
 
         <app-toolbar></app-toolbar>
 
@@ -103,15 +103,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: 'Item One'
         },
 
+        wideLayout: {
+          type: Boolean,
+          value: false,
+          observer: 'onLayoutChange',
+        },
+
         items: {
           type: Array,
           value: function() {
             return ['Item One', 'Item Two', 'Item Three', 'Item Four', 'Item Five'];
           }
         }
+      },
 
+      onLayoutChange: function(wide) {
+        var drawer = this.$.drawer;
+
+        if (wide && drawer.opened) {
+          drawer.opened = false;
+        }
       }
-
     });
 
   </script>
