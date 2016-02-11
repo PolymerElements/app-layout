@@ -210,6 +210,8 @@ Custom property                  | Description                            | Defa
 
       _trackEvents: null,
 
+      _drawerIsFlinging: false,
+
       attached: function() {
         // Set the scroll direction so you can vertically scroll inside the drawer.
         this.setScrollDirection('y');
@@ -259,30 +261,34 @@ Custom property                  | Description                            | Defa
       },
 
       _scrimTapHandler: function() {
-        if (!this.persistent) {
-          // This debouncer is needed because of Polymer/polymer#3405.
-          this.debounce('_scrimTapHandler', function() {
-            this.opened = false;
-          }, 1);
+        if (this.persistent) {
+          return;
         }
+
+        // This debouncer is needed because of Polymer/polymer#3405.
+        this.debounce('_scrimTapHandler', function() {
+          this.opened = false;
+        }, 1);
       },
 
       _track: function(event) {
-        if (!this.persistent) {
-          // Disable user selection on desktop.
-          event.preventDefault();
+        if (this.persistent) {
+          return;
+        }
 
-          switch (event.detail.state) {
-            case 'start':
-              this._trackStart(event);
-              break;
-            case 'track':
-              this._trackMove(event);
-              break;
-            case 'end':
-              this._trackEnd(event);
-              break;
-          }
+        // Disable user selection on desktop.
+        event.preventDefault();
+
+        switch (event.detail.state) {
+          case 'start':
+            this._trackStart(event);
+            break;
+          case 'track':
+            this._trackMove(event);
+            break;
+          case 'end':
+            this._trackEnd(event);
+            break;
         }
       },
 
@@ -338,6 +344,7 @@ Custom property                  | Description                            | Defa
         var trackEvent;
         var min = 0;
         var max = this._trackEvents.length - 1;        
+
         while (min <= max) {
           // Floor of average of min and max.
           var mid = (min + max) >> 1;
@@ -349,6 +356,7 @@ Custom property                  | Description                            | Defa
             min = mid + 1;
           }
         }
+
         if (trackEvent) {
           var dx = event.detail.dx - trackEvent.detail.dx;
           var dt = event.timeStamp - trackEvent.timeStamp;
@@ -377,6 +385,7 @@ Custom property                  | Description                            | Defa
         const timingFunction = 'cubic-bezier(.667, 1, .667, 1)';
         const initialSlope = 1.5;
         var duration;
+
         if (isClosingLeft) {
           duration = (initialSlope * -(x + drawerWidth) / this._velocity) + 'ms';
         } else if (isClosingRight) {
@@ -384,6 +393,7 @@ Custom property                  | Description                            | Defa
         } else {
           duration = (initialSlope * -x / this._velocity) + 'ms';
         }
+
         this.$.contentContainer.style.transitionDuration = duration;
         this.$.contentContainer.style.transitionTimingFunction = timingFunction;
         this.$.scrim.style.transitionDuration = duration;
@@ -397,24 +407,34 @@ Custom property                  | Description                            | Defa
         } else {
           this._translateDrawer(0);
         }
+
+        this._drawerIsFlinging = true;
       },
 
-      _transitionEnd: function() {
-        // Only set the opened state and reset transition timing function if this
-        // transition end event was the end of a fling transition.
-        if (this.$.contentContainer.style.transitionTimingFunction) {
-          if (this._velocity < 0) {
-            this.opened = this.position === 'right';
-          } else {
-            this.opened = this.position === 'left';
-          }
-
-          this.$.contentContainer.style.transitionTimingFunction = '';
-          this.$.scrim.style.transitionTimingFunction = '';
-          this._resetStyleAttributes();
+      _transitionEnd: function(event) {
+        if (Polymer.dom(event).localTarget !== this) {
+          return;
         }
 
         this._updateDocScroll();
+
+        // Only set the opened state and reset transition timing function if this
+        // transition end event was the end of a fling transition.
+        if (!this._drawerIsFlinging) {
+          return;
+        }
+
+        this._drawerIsFlinging = false;
+
+        if (this._velocity < 0) {
+          this.opened = this.position === 'right';
+        } else {
+          this.opened = this.position === 'left';
+        }
+
+        this.$.contentContainer.style.transitionTimingFunction = '';
+        this.$.scrim.style.transitionTimingFunction = '';
+        this._resetStyleAttributes();
       },
 
       _resetStyleAttributes: function() {
@@ -425,24 +445,18 @@ Custom property                  | Description                            | Defa
         this.transform('', this.$.contentContainer);
       },
 
-      /**
-       * @return {boolean} True if the given position is valid, false otherwise.
-       */
       _translateDrawer: function(x) {
         var drawerWidth = this.getWidth();
-        var clampedX = x;
 
         if (this.position === 'left') {
-          clampedX = Math.max(-drawerWidth, Math.min(x, 0));
-          this.$.scrim.style.opacity = 1 + clampedX / drawerWidth;
+          x = Math.max(-drawerWidth, Math.min(x, 0));
+          this.$.scrim.style.opacity = 1 + x / drawerWidth;
         } else {
-          clampedX = Math.max(0, Math.min(x, drawerWidth));
-          this.$.scrim.style.opacity = 1 - clampedX / drawerWidth;
+          x = Math.max(0, Math.min(x, drawerWidth));
+          this.$.scrim.style.opacity = 1 - x / drawerWidth;
         }
 
-        this.translate3d(clampedX + 'px', '0', '0', this.$.contentContainer);
-
-        return (clampedX === x);
+        this.translate3d(x + 'px', '0', '0', this.$.contentContainer);
       },
 
       _updateDocScroll: function() {
