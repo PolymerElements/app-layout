@@ -45,40 +45,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     suite('basic features', function() {
       var drawer, scrim, contentContainer, transformSpy;
 
-      function rafTestHelper(tests) {
-        var mockTimer = 0;
-        var callbacks = [];
-        var raf = window.requestAnimationFrame;
-        window.requestAnimationFrame = function(callback) {
-          callbacks.push(callback);
-        }
-
-        function rafCallback() {
-          if (tests.length > 1) {
-            ++mockTimer;
-
-            // Create a new callbacks array because last callbacks may call requestAnimationFrame.
-            var lastCallbacks = callbacks;
-            callbacks = [];
-            lastCallbacks.forEach(function(callback) {
-              callback(mockTimer);
-            });
-
-            tests.shift()(mockTimer);
-            raf(rafCallback);
-          } else {
-            // Reset the real requestAnimationFrame before calling the last test.
-            window.requestAnimationFrame = raf;
-            callbacks.forEach(function(callback) {
-              callback(mockTimer);
-            });
-            tests[0](mockTimer);
-          }
-        }
-
-        rafCallback();
-      }
-
       function assertDrawerStyles(translateX, opacity, desc) {
         assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + translateX + 'px,0,0)', desc);
         assert.equal(parseFloat(scrim.style.opacity).toFixed(4), opacity.toFixed(4), desc);
@@ -280,7 +246,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isFalse(drawer.opened, 'drawer closes when track distance is large');
       });
 
-      test('styles reset after flicking', function(done) {
+      test('styles reset after flicking', function() {
         drawer.fire('track', { state: 'start' });
 
         assert.equal(contentContainer.style.transitionDuration, '0s');
@@ -289,141 +255,116 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
         drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
+        drawer.fire('transitionend');
 
-        // Styles should be reset after two requestAnimationFrame's.
-        rafTestHelper([
-          function() {
-            // Wait for two frames.
-          }, function() {
-          }, function() {
-            assert.equal(contentContainer.style.transitionDuration, '');
-            assert.equal(scrim.style.transitionDuration, '');
-            assert.equal(scrim.style.visibility, '');
-            assert.equal(scrim.style.opacity, '');
-            assert.equal(transformSpy.lastCall.args[0], '');
-
-            done();
-          }
-        ]);
+        assert.equal(contentContainer.style.transitionTimingFunction, '');
+        assert.equal(contentContainer.style.transitionDuration, '');
+        assert.equal(scrim.style.transitionTimingFunction, '');
+        assert.equal(scrim.style.transitionDuration, '');
+        assert.equal(scrim.style.visibility, '');
+        assert.equal(scrim.style.opacity, '');
+        assert.equal(transformSpy.lastCall.args[0], '');
       });
 
-      test('left drawer flicking', function(done) {
+      test('left drawer flicking', function() {
         var drawerWidth = drawer.getWidth();
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: 0.1, ddx: 0.1 });
 
-        rafTestHelper([
-          function() {
-            drawer.fire('track', { state: 'start' });
-            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-            drawer.fire('track', { state: 'end', dx: 0.49, ddx: 0.49 });
-          }, function(now) {
-            assert.isFalse(drawer.opened, 'drawer stays closed when velocity is small');
+        assert.notEqual(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
 
-            drawer.fire('track', { state: 'start' });
-            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-            // Make dx large enough to force the velocity to be above the threshold, since
-            // we can't determine the timestamps of events.
-            drawer.fire('track', { state: 'end', dx: 9999, ddx: 9999 });
-            // Mock _translateOffset, _startTimeStamp, and _velocity for testing.
-            drawer._translateOffset = -drawerWidth + 100;
-            drawer._startTimeStamp = now;
-            drawer._velocity = 100;
-          }, function(now) {
-            var dt = now - drawer._startTimeStamp;
-            var translateX = drawer._velocity * dt - drawerWidth + 100;
-            assertDrawerStyles(translateX, 1 + translateX / drawerWidth);
-          }, function() {
-            assertDrawerStyles(0, 1);
-          }, function() {
-            assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+        // Make dx large enough to force the velocity to be above the threshold, since
+        // we can't determine the timestamps of events.
+        drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
 
-            drawer.fire('track', { state: 'start' });
-            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-            drawer.fire('track', { state: 'end', dx: -0.49, ddx: -0.49 });
-          }, function(now) {
-            assert.isTrue(drawer.opened, 'drawer stays open when velocity is small');
+        assert.equal(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isAbove(parseFloat(contentContainer.style.transitionDuration), 0);
+        assert.equal(scrim.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isAbove(parseFloat(scrim.style.transitionDuration), 0);
+        assertDrawerStyles(0, 1);
 
-            drawer.fire('track', { state: 'start' });
-            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-            // Make dx large enough to force the velocity to be above the threshold, since
-            // we can't determine the timestamps of events.
-            drawer.fire('track', { state: 'end', dx: -9999, ddx: -9999 });
-            // Mock _translateOffset, _startTimeStamp, and _velocity for testing.
-            drawer._translateOffset = -100;
-            drawer._startTimeStamp = now;
-            drawer._velocity = -100;
-          }, function(now) {
-            var dt = now - drawer._startTimeStamp;
-            var translateX = drawer._velocity * dt - 100;
-            assertDrawerStyles(translateX, 1 + translateX / drawerWidth);
-          }, function() {
-            assertDrawerStyles(-drawerWidth, 0);
-          }, function() {
-            assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
-            done();
-          }
-        ]);
+        drawer.fire('transitionend');
+        
+        assert.isTrue(drawer.opened);
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: -0.1, ddx: -0.1 });
+
+        assert.notEqual(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+        // Make dx large enough to force the velocity to be above the threshold, since
+        // we can't determine the timestamps of events.
+        drawer.fire('track', { state: 'end', dx: -200, ddx: -200 });
+
+        assert.equal(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isAbove(parseFloat(contentContainer.style.transitionDuration), 0);
+        assert.equal(scrim.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isAbove(parseFloat(scrim.style.transitionDuration), 0);
+        assertDrawerStyles(-drawerWidth, 0);
+
+        drawer.fire('transitionend');
+
+        assert.isFalse(drawer.opened);
       });
 
-      test('right drawer flicking', function(done) {
+      test('right drawer flicking', function() {
         var drawerWidth = drawer.getWidth();
         drawer.position = 'right';
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: -0.1, ddx: -0.1 });
 
-        rafTestHelper([
-          function() {
-            drawer.fire('track', { state: 'start' });
-            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-            drawer.fire('track', { state: 'end', dx: -0.49, ddx: -0.49 });
-          }, function(now) {
-            assert.isFalse(drawer.opened, 'drawer stays closed when velocity is small');
+        assert.notEqual(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
 
-            drawer.fire('track', { state: 'start' });
-            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-            // Make dx large enough to force the velocity to be above the threshold, since
-            // we can't determine the timestamps of events.
-            drawer.fire('track', { state: 'end', dx: -9999, ddx: -9999 });
-            // Mock _translateOffset, _startTimeStamp, and _velocity for testing.
-            drawer._translateOffset = drawerWidth - 100;
-            drawer._startTimeStamp = now;
-            drawer._velocity = -100;
-          }, function(now) {
-            var dt = now - drawer._startTimeStamp;
-            var translateX = drawer._velocity * dt + drawerWidth - 100;
-            assertDrawerStyles(translateX, 1 - translateX / drawerWidth);
-          }, function() {
-            assertDrawerStyles(0, 1);
-          }, function() {
-            assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+        // Make dx large enough to force the velocity to be above the threshold, since
+        // we can't determine the timestamps of events.
+        drawer.fire('track', { state: 'end', dx: -200, ddx: -200 });
 
-            drawer.fire('track', { state: 'start' });
-            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-            drawer.fire('track', { state: 'end', dx: 0.49, ddx: 0.49 });
-          }, function(now) {
-            assert.isTrue(drawer.opened, 'drawer stays open when velocity is small');
+        assert.equal(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isAbove(parseFloat(contentContainer.style.transitionDuration), 0);
+        assert.equal(scrim.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isAbove(parseFloat(scrim.style.transitionDuration), 0);
+        assertDrawerStyles(0, 1);
 
-            drawer.fire('track', { state: 'start' });
-            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-            // Make dx large enough to force the velocity to be above the threshold, since
-            // we can't determine the timestamps of events.
-            drawer.fire('track', { state: 'end', dx: 9999, ddx: 9999 });
-            // Mock _translateOffset, _startTimeStamp, and _velocity for testing.
-            drawer._translateOffset = 100;
-            drawer._startTimeStamp = now;
-            drawer._velocity = 100;
-          }, function(now) {
-            var dt = now - drawer._startTimeStamp;
-            var translateX = drawer._velocity * dt + 100;
-            assertDrawerStyles(translateX, 1 - translateX / drawerWidth);
-          }, function() {
-            assertDrawerStyles(drawerWidth, 0);
-          }, function() {
-            assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
-            done();
-          }
-        ]);
+        drawer.fire('transitionend');
+
+        assert.isTrue(drawer.opened);
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: 0.1, ddx: 0.1 });
+
+        assert.notEqual(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+        // Make dx large enough to force the velocity to be above the threshold, since
+        // we can't determine the timestamps of events.
+        drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
+
+        assert.equal(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isAbove(parseFloat(contentContainer.style.transitionDuration), 0);
+        assert.equal(scrim.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isAbove(parseFloat(scrim.style.transitionDuration), 0);
+        assertDrawerStyles(drawerWidth, 0);
+
+        drawer.fire('transitionend');
+
+        assert.isFalse(drawer.opened);
       });
 
       test('doc scroll', function() {
+
         drawer.opened = true;
+        drawer.fire('transitionend');
 
         assert.equal(document.body.style.overflow, 'hidden');
 
@@ -436,6 +377,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(document.body.style.overflow, 'hidden');
 
         drawer.opened = false;
+        drawer.fire('transitionend');
 
         assert.equal(document.body.style.overflow, '');
       });

@@ -209,7 +209,7 @@ Custom property                  | Description                            | Defa
 
       _trackEvents: null,
 
-      _drawerIsFlinging: false,
+      _isDrawerFlinging: false,
 
       attached: function() {
         // Set the scroll direction so you can vertically scroll inside the drawer.
@@ -379,24 +379,21 @@ Custom property                  | Description                            | Defa
           this._velocity = Math.min(this._velocity, -this.MIN_TRANSITION_VELOCITY);
         }
 
-        // Using this timing function, calculate the amount of time needed to finish the
-        // transition.
-        const timingFunction = 'cubic-bezier(.667, 1, .667, 1)';
-        const initialSlope = 1.5;
+        // Calculate the amount of time needed to finish the transition based on the initial
+        // slope of the timing function.
         var duration;
-
         if (isClosingLeft) {
-          duration = (initialSlope * -(x + drawerWidth) / this._velocity) + 'ms';
+          duration = (this.FLING_INITIAL_SLOPE * -(x + drawerWidth) / this._velocity) + 'ms';
         } else if (isClosingRight) {
-          duration = (initialSlope * (drawerWidth - x) / this._velocity) + 'ms';
+          duration = (this.FLING_INITIAL_SLOPE * (drawerWidth - x) / this._velocity) + 'ms';
         } else {
-          duration = (initialSlope * -x / this._velocity) + 'ms';
+          duration = (this.FLING_INITIAL_SLOPE * -x / this._velocity) + 'ms';
         }
 
         this.$.contentContainer.style.transitionDuration = duration;
-        this.$.contentContainer.style.transitionTimingFunction = timingFunction;
+        this.$.contentContainer.style.transitionTimingFunction = this.FLING_TIMING_FUNCTION;
         this.$.scrim.style.transitionDuration = duration;
-        this.$.scrim.style.transitionTimingFunction = timingFunction;
+        this.$.scrim.style.transitionTimingFunction = this.FLING_TIMING_FUNCTION;
 
         // Transform instead of toggling opened to avoid calling Polymer setters.
         if (isClosingLeft) {
@@ -407,7 +404,7 @@ Custom property                  | Description                            | Defa
           this._translateDrawer(0);
         }
 
-        this._drawerIsFlinging = true;
+        this._isDrawerFlinging = true;
       },
 
       _transitionEnd: function(event) {
@@ -419,11 +416,11 @@ Custom property                  | Description                            | Defa
 
         // Only set the opened state and reset transition timing function if this
         // transition end event was the end of a fling transition.
-        if (!this._drawerIsFlinging) {
+        if (!this._isDrawerFlinging) {
           return;
         }
 
-        this._drawerIsFlinging = false;
+        this._isDrawerFlinging = false;
 
         if (this._velocity < 0) {
           this.opened = this.position === 'right';
@@ -464,7 +461,11 @@ Custom property                  | Description                            | Defa
 
       MIN_FLING_VELOCITY: 0.2,
 
-      MIN_TRANSITION_VELOCITY: 1.2
+      MIN_TRANSITION_VELOCITY: 1.2,
+
+      FLING_TIMING_FUNCTION: 'cubic-bezier(0.667, 1, 0.667, 1)',
+
+      FLING_INITIAL_SLOPE: 1.5
 
       /**
        * Fired when the layout of app-drawer has changed.
