@@ -358,7 +358,7 @@ Custom property                  | Description                            | Defa
 
         if (trackEvent) {
           var dx = event.detail.dx - trackEvent.detail.dx;
-          var dt = event.timeStamp - trackEvent.timeStamp;
+          var dt = (event.timeStamp - trackEvent.timeStamp) || 1;
           return dx / dt;
         }
         return 0;
