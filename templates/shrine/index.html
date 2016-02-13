@@ -179,7 +179,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this._fragment = "#";
           state = "fragment";
         } else {
-          if (EOF != c && "	" != c && "\n" != c && "\r" != c) {
+          if (EOF != c && " " != c && "\n" != c && "\r" != c) {
             this._schemeData += percentEscape(c);
           }
         }
@@ -310,7 +310,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           seenAt = true;
           for (var i = 0; i < buffer.length; i++) {
             var cp = buffer[i];
-            if ("	" == cp || "\n" == cp || "\r" == cp) {
+            if (" " == cp || "\n" == cp || "\r" == cp) {
               err("Invalid whitespace in authority.");
               continue;
             }
@@ -344,7 +344,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             state = "relative path start";
           }
           continue;
-        } else if ("	" == c || "\n" == c || "\r" == c) {
+        } else if ("  " == c || "\n" == c || "\r" == c) {
           err("Invalid whitespace in file host.");
         } else {
           buffer += c;
@@ -368,7 +368,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             break loop;
           }
           continue;
-        } else if ("	" != c && "\n" != c && "\r" != c) {
+        } else if ("  " != c && "\n" != c && "\r" != c) {
           if ("[" == c) {
             seenBracket = true;
           } else if ("]" == c) {
@@ -396,7 +396,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
           state = "relative path start";
           continue;
-        } else if ("	" == c || "\n" == c || "\r" == c) {
+        } else if ("  " == c || "\n" == c || "\r" == c) {
           err("Invalid code point in port: " + c);
         } else {
           invalid.call(this);
@@ -441,7 +441,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this._fragment = "#";
             state = "fragment";
           }
-        } else if ("	" != c && "\n" != c && "\r" != c) {
+        } else if ("  " != c && "\n" != c && "\r" != c) {
           buffer += percentEscape(c);
         }
         break;
@@ -450,13 +450,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (!stateOverride && "#" == c) {
           this._fragment = "#";
           state = "fragment";
-        } else if (EOF != c && "	" != c && "\n" != c && "\r" != c) {
+        } else if (EOF != c && "  " != c && "\n" != c && "\r" != c) {
           this._query += percentEscapeQuery(c);
         }
         break;
 
        case "fragment":
-        if (EOF != c && "	" != c && "\n" != c && "\r" != c) {
+        if (EOF != c && " " != c && "\n" != c && "\r" != c) {
           this._fragment += c;
         }
         break;
@@ -2563,6 +2563,8 @@ window.CustomElements.addModule(function(scope) {
       return prototype.constructor;
     };
 
+    window.Polymer = Polymer;
+
     if (userPolymer) {
       for (var i in userPolymer) {
         Polymer[i] = userPolymer[i];
@@ -2599,6 +2601,7 @@ window.CustomElements.addModule(function(scope) {
   };
 
 </script>
+
 <script>
 
   // a tiny bit of sugar for `document.currentScript.ownerDocument`
@@ -2616,11 +2619,11 @@ window.CustomElements.addModule(function(scope) {
    * Helper for determining when first render occurs.
    * Call `Polymer.RenderStatus.whenReady(callback)` to be notified when
    * first render occurs or immediately if it has already occured.
-   * Note that since HTML Imports are designed to load before rendering,
+   * Note that since HTML Imports are designed to load before rendering, 
    * this call can also be used to guarantee that imports have loaded.
    * This behavior is normalized to function correctly with the HTMLImports
    * polyfill which does not otherwise maintain this rendering guarantee.
-   * Querying style and layout data before first render is currently
+   * Querying style and layout data before first render is currently 
    * problematic on some browsers (Blink/Webkit) so this helper can be used
    * to prevent doing so until a safe time.
    */
@@ -2688,7 +2691,7 @@ window.CustomElements.addModule(function(scope) {
       for (var i=0, h; i < callbacks.length; i++) {
         h = callbacks[i];
         h[1].apply(h[0], h[2] || Polymer.nar);
-      }
+      };
     }
   };
 
@@ -2704,8 +2707,7 @@ window.CustomElements.addModule(function(scope) {
   Polymer.ImportStatus = Polymer.RenderStatus;
   Polymer.ImportStatus.whenLoaded = Polymer.ImportStatus.whenReady;
 
-</script>
-<script>
+</script><script>
 
   Polymer.Base = {
 
@@ -2901,7 +2903,7 @@ window.CustomElements.addModule(function(scope) {
      * @param {String} id The id at which to register the dom-module.
      */
     register: function(id) {
-      id = id || this.id ||
+      var id = id || this.id ||
         this.getAttribute('name') || this.getAttribute('is');
       if (id) {
         this.id = id;
@@ -2959,7 +2961,7 @@ window.CustomElements.addModule(function(scope) {
       var doc = script && script.ownerDocument || document;
       // find all dom-modules
       var modules = doc.querySelectorAll('dom-module');
-      // minimize work by going backwards and stopping if we find an
+      // minimize work by going backwards and stopping if we find an 
       // upgraded module.
       for (var i= modules.length-1, m; (i >=0) && (m=modules[i]); i--) {
         if (m.__upgraded__) {
@@ -3389,7 +3391,7 @@ window.CustomElements.addModule(function(scope) {
           if (info) {
             return info;
           }
-        }
+        };
       }
       return info || Polymer.nob;
     },
@@ -3411,7 +3413,7 @@ window.CustomElements.addModule(function(scope) {
     // union properties, behaviors.properties, and propertyEffects
     _prepPropertyInfo: function() {
       this._propertyInfo = {};
-      for (var i=0; i < this.behaviors.length; i++) {
+      for (var i=0, p; i < this.behaviors.length; i++) {
         this._addPropertyInfo(this._propertyInfo, this.behaviors[i].properties);
       }
       this._addPropertyInfo(this._propertyInfo, this.properties);
@@ -3447,7 +3449,7 @@ window.CustomElements.addModule(function(scope) {
           }
         }
       }
-    }
+    },
 
   });
 
@@ -3457,24 +3459,32 @@ window.CustomElements.addModule(function(scope) {
   Polymer.CaseMap = {
 
     _caseMap: {},
-    _rx: {
-      dashToCamel: /-[a-z]/g,
-      camelToDash: /([A-Z])/g
-    },
 
     dashToCamelCase: function(dash) {
-      return this._caseMap[dash] || (
-        this._caseMap[dash] = dash.indexOf('-') < 0 ? dash : dash.replace(this._rx.dashToCamel,
-          function(m) {
-            return m[1].toUpperCase();
-          }
-        )
+      var mapped = Polymer.CaseMap._caseMap[dash];
+      if (mapped) {
+        return mapped;
+      }
+      // TODO(sjmiles): is rejection test actually helping perf?
+      if (dash.indexOf('-') < 0) {
+        return Polymer.CaseMap._caseMap[dash] = dash;
+      }
+      return Polymer.CaseMap._caseMap[dash] = dash.replace(/-([a-z])/g, 
+        function(m) {
+          return m[1].toUpperCase(); 
+        }
       );
     },
 
     camelToDashCase: function(camel) {
-      return this._caseMap[camel] || (
-        this._caseMap[camel] = camel.replace(this._rx.camelToDash, '-$1').toLowerCase()
+      var mapped = Polymer.CaseMap._caseMap[camel];
+      if (mapped) {
+        return mapped;
+      }
+      return Polymer.CaseMap._caseMap[camel] = camel.replace(/([a-z][A-Z])/g, 
+        function (g) { 
+          return g[0] + '-' + g[1].toLowerCase() 
+        }
       );
     }
 
@@ -3579,7 +3589,7 @@ window.CustomElements.addModule(function(scope) {
     _setAttributeToProperty: function(model, attribute, property, info) {
       // Don't deserialize back to property if currently reflecting
       if (!this._serializing) {
-        property = (property || Polymer.CaseMap.dashToCamelCase(attribute));
+        var property = property || Polymer.CaseMap.dashToCamelCase(attribute);
         // fallback to property lookup
         // TODO(sorvell): check for _propertyInfo existence because of dom-bind
         info = info || (this._propertyInfo && this._propertyInfo[property]);
@@ -3707,7 +3717,6 @@ window.CustomElements.addModule(function(scope) {
      * @return {string} String serialized from the provided property value.
      */
     serialize: function(value) {
-      /* eslint-disable no-fallthrough */
       switch (typeof value) {
         case 'boolean':
           return value ? '' : undefined;
@@ -3727,7 +3736,7 @@ window.CustomElements.addModule(function(scope) {
           return value != null ? value : undefined;
       }
     }
-    /* eslint-enable no-fallthrough */
+
   });
 
 </script>
@@ -3996,7 +4005,7 @@ window.CustomElements.addModule(function(scope) {
 <script>
 
 Polymer.ArraySplice = (function() {
-
+  
   function newSplice(index, removed, addedCount) {
     return {
       index: index,
@@ -4042,8 +4051,8 @@ Polymer.ArraySplice = (function() {
       for (var j = 0; j < columnCount; j++)
         distances[0][j] = j;
 
-      for (i = 1; i < rowCount; i++) {
-        for (j = 1; j < columnCount; j++) {
+      for (var i = 1; i < rowCount; i++) {
+        for (var j = 1; j < columnCount; j++) {
           if (this.equals(current[currentStart + j - 1], old[oldStart + i - 1]))
             distances[i][j] = distances[i - 1][j - 1];
           else {
@@ -4167,7 +4176,7 @@ Polymer.ArraySplice = (function() {
           this.calcEditDistances(current, currentStart, currentEnd,
                                  old, oldStart, oldEnd));
 
-      splice = undefined;
+      var splice = undefined;
       var splices = [];
       var index = currentStart;
       var oldIndex = oldStart;
@@ -4245,8 +4254,7 @@ Polymer.ArraySplice = (function() {
   return new ArraySplice();
 
 })();
-</script>
-<script>
+</script><script>
 
 Polymer.domInnerHTML = (function() {
 
@@ -4328,7 +4336,7 @@ Polymer.domInnerHTML = (function() {
         var tagName = node.localName;
         var s = '<' + tagName;
         var attrs = node.attributes;
-        for (var i = 0, attr; (attr = attrs[i]); i++) {
+        for (var i = 0, attr; attr = attrs[i]; i++) {
           s += ' ' + attr.name + '="' + escapeAttr(attr.value) + '"';
         }
         s += '>';
@@ -4355,7 +4363,7 @@ Polymer.domInnerHTML = (function() {
       node = node.content;
     var s = '';
     var c$ = Polymer.dom(node).childNodes;
-    for (var i=0, l=c$.length, child; (i<l) && (child=c$[i]); i++) {
+    for (var i=0, l=c$.length, child; (i<l) && (child=c$[i]); i++) {  
       s += getOuterHTML(child, node, composed);
     }
     return s;
@@ -4370,20 +4378,20 @@ Polymer.domInnerHTML = (function() {
 </script>
 <script>
 (function() {
-
+  
   'use strict';
 
   // native add/remove
   var nativeInsertBefore = Element.prototype.insertBefore;
   var nativeAppendChild = Element.prototype.appendChild;
   var nativeRemoveChild = Element.prototype.removeChild;
-
+  
   /**
-   * TreeApi is a dom manipulation library used by Shady/Polymer.dom to
+   * TreeApi is a dom manipulation library used by Shady/Polymer.dom to 
    * manipulate composed and logical trees.
    */
-  Polymer.TreeApi = {
-
+  var TreeApi = Polymer.TreeApi = {
+    
     // sad but faster than slice...
     arrayCopyChildNodes: function(parent) {
       var copy=[], i=0;
@@ -4421,7 +4429,7 @@ Polymer.domInnerHTML = (function() {
     hasChildNodes: function(node) {
       return Boolean(node.__dom && node.__dom.childNodes !== undefined);
     },
-
+    
     getChildNodes: function(node) {
       // note: we're distinguishing here between undefined and false-y:
       // hasChildNodes uses undefined check to see if this element has logical
@@ -4436,7 +4444,7 @@ Polymer.domInnerHTML = (function() {
         node.__dom.childNodes = [];
         for (var n=node.__dom.firstChild; n; n=n.__dom.nextSibling) {
           node.__dom.childNodes.push(n);
-        }
+        } 
       }
       return node.__dom.childNodes;
     },
@@ -4448,32 +4456,32 @@ Polymer.domInnerHTML = (function() {
     // the mere existence of __dom is not enough to know if the requested
     // logical data is available and instead we do an explicit undefined check.
     getParentNode: function(node) {
-      return node.__dom && node.__dom.parentNode !== undefined ?
+      return node.__dom && node.__dom.parentNode !== undefined ? 
         node.__dom.parentNode : node.parentNode;
     },
 
     getFirstChild: function(node) {
-      return node.__dom && node.__dom.firstChild !== undefined ?
+      return node.__dom && node.__dom.firstChild !== undefined ? 
         node.__dom.firstChild : node.firstChild;
     },
 
     getLastChild: function(node) {
-      return node.__dom && node.__dom.lastChild  !== undefined ?
+      return node.__dom && node.__dom.lastChild  !== undefined ? 
         node.__dom.lastChild : node.lastChild;
     },
 
     getNextSibling: function(node) {
-      return node.__dom && node.__dom.nextSibling  !== undefined ?
+      return node.__dom && node.__dom.nextSibling  !== undefined ? 
         node.__dom.nextSibling : node.nextSibling;
     },
 
     getPreviousSibling: function(node) {
-      return node.__dom && node.__dom.previousSibling  !== undefined ?
+      return node.__dom && node.__dom.previousSibling  !== undefined ? 
         node.__dom.previousSibling : node.previousSibling;
     },
 
     getFirstElementChild: function(node) {
-      return node.__dom && node.__dom.firstChild !== undefined ?
+      return node.__dom && node.__dom.firstChild !== undefined ?  
         this._getFirstElementChild(node) : node.firstElementChild;
     },
 
@@ -4566,9 +4574,9 @@ Polymer.domInnerHTML = (function() {
       container.__dom = container.__dom || {};
       if (ref_node) {
         ref_node.__dom = ref_node.__dom || {};
-      }
+      }      
       // update ref_node.previousSibling <-> node
-      node.__dom.previousSibling = ref_node ? ref_node.__dom.previousSibling :
+      node.__dom.previousSibling = ref_node ? ref_node.__dom.previousSibling : 
         container.__dom.lastChild;
       if (node.__dom.previousSibling) {
         node.__dom.previousSibling.__dom.nextSibling = node;
@@ -4614,7 +4622,7 @@ Polymer.domInnerHTML = (function() {
       // When an element is removed, logical data is no longer tracked.
       // Explicitly set `undefined` here to indicate this. This is disginguished
       // from `null` which is set if info is null.
-      node.__dom.parentNode = node.__dom.previousSibling =
+      node.__dom.parentNode = node.__dom.previousSibling = 
         node.__dom.nextSibling = undefined;
       // remove caching of childNodes
       container.__dom.childNodes = null;
@@ -4636,8 +4644,8 @@ Polymer.domInnerHTML = (function() {
     },
 
     // composed tracking needs to reset composed children here in case
-    // they may have already been set (this shouldn't happen but can
-    // if dependency ordering is incorrect and as a result upgrade order
+    // they may have already been set (this shouldn't happen but can 
+    // if dependency ordering is incorrect and as a result upgrade order 
     // is unexpected)
     clearChildNodes: function(node) {
       node.textContent = '';
@@ -4939,7 +4947,7 @@ Polymer.domInnerHTML = (function() {
       if (root) {
         // note: we always need to see if an insertion point is added
         // since this saves logical tree info; however, invalidation state
-        // needs
+        // needs 
         var ipAdded = this._maybeAddInsertionPoint(node, this.node);
         // invalidate insertion points IFF not already invalid!
         if (!root._invalidInsertionPoints) {
@@ -4953,14 +4961,14 @@ Polymer.domInnerHTML = (function() {
       // if not distributing and not adding to host, do a fast path addition
       var handled = this._maybeDistribute(node) ||
         this.node.shadyRoot;
-      // if shady is handling this node,
+      // if shady is handling this node, 
       // the actual dom may not be removed if the node or fragment contents
       // remain undistributed so we ensure removal here.
       // NOTE: we only remove from existing location iff shady dom is involved.
       // This is because a node fragment is passed to the native add method
       // which expects to see fragment children. Regular elements must also
-      // use this check because not doing so causes separation of
-      // attached/detached and breaks, for example,
+      // use this check because not doing so causes separation of 
+      // attached/detached and breaks, for example, 
       // dom-if's attached/detached checks.
       if (handled) {
         if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
@@ -4983,7 +4991,7 @@ Polymer.domInnerHTML = (function() {
     */
     removeChild: function(node) {
       if (TreeApi.Logical.getParentNode(node) !== this.node) {
-        throw Error('The node to be removed is not a child of this node: ' +
+        throw Error('The node to be removed is not a child of this node: ' + 
           node);
       }
       if (!this._removeNode(node)) {
@@ -5000,7 +5008,7 @@ Polymer.domInnerHTML = (function() {
       return node;
     },
 
-    // Try to remove node: update logical info and perform distribution iff
+    // Try to remove node: update logical info and perform distribution iff 
     // needed. Return true if the removal has been handled.
     // note that it's possible for both the node's host and its parent
     // to require distribution... both cases are handled here.
@@ -5060,7 +5068,7 @@ Polymer.domInnerHTML = (function() {
         }
         // memo-ize result for performance but only memo-ize a false-y
         // result if node is in the document. This avoids a problem where a root
-        // can be cached while an element is inside a fragment.
+        // can be cached while an element is inside a fragment. 
         // If this happens and we cache the result, the value can become stale
         // because for perf we avoid processing the subtree of added fragments.
         if (root || document.documentElement.contains(node)) {
@@ -5144,7 +5152,7 @@ Polymer.domInnerHTML = (function() {
     },
 
     _nodeNeedsDistribution: function(node) {
-      return node && node.shadyRoot &&
+      return node && node.shadyRoot && 
         DomApi.hasInsertionPoint(node.shadyRoot);
     },
 
@@ -5433,7 +5441,7 @@ Polymer.domInnerHTML = (function() {
           return this.node.textContent;
         } else {
           var tc = [];
-          for (var i = 0, cn = this.childNodes, c; (c = cn[i]); i++) {
+          for (var i = 0, cn = this.childNodes, c; c = cn[i]; i++) {
             if (c.nodeType !== Node.COMMENT_NODE) {
               tc.push(c.textContent);
             }
@@ -5874,10 +5882,11 @@ Polymer.EventApi = (function() {
 
     var DomApi = Polymer.DomApi.ctor;
     var Settings = Polymer.Settings;
+    var hasDomApi = Polymer.DomApi.hasDomApi;
 
     /**
-     * DomApi.EffectiveNodesObserver tracks changes to an element's
-     * effective child nodes, the same list returned from
+     * DomApi.EffectiveNodesObserver tracks changes to an element's 
+     * effective child nodes, the same list returned from 
      * `Polymer.dom(node).getEffectiveChildNodes()`.
      * It is not meant to be used directly; it is used by
      * `Polymer.dom(node).observeNodes(callback)` to observe changes.
@@ -5929,7 +5938,7 @@ Polymer.EventApi = (function() {
         if (this._debouncer) {
           this._debouncer.stop();
         }
-        this._debouncer = Polymer.Debounce(this._debouncer,
+        this._debouncer = Polymer.Debounce(this._debouncer, 
           this._notify);
         this._debouncer.context = this;
         Polymer.dom.addDebouncer(this._debouncer);
@@ -5941,7 +5950,7 @@ Polymer.EventApi = (function() {
         }
       },
 
-      _notify: function() {
+      _notify: function(mxns) {
         this._beforeCallListeners();
         this._callListeners();
       },
@@ -6023,8 +6032,8 @@ Polymer.EventApi = (function() {
           }
         }
         // process adds
-        for (i=0, s; (i<splices.length) && (s=splices[i]); i++) {
-          for (j=s.index; j < s.index + s.addedCount; j++) {
+        for (var i=0, s; (i<splices.length) && (s=splices[i]); i++) {
+          for (var j=s.index; j < s.index + s.addedCount; j++) {
             info.addedNodes.push(newNodes[j]);
           }
         }
@@ -6048,8 +6057,11 @@ Polymer.EventApi = (function() {
       var baseSetup = DomApi.EffectiveNodesObserver.prototype._setup;
       var baseCleanup = DomApi.EffectiveNodesObserver.prototype._cleanup;
 
-      Polymer.Base.extend(DomApi.EffectiveNodesObserver.prototype, {
+      var beforeCallListeners = DomApi.EffectiveNodesObserver
+        .prototype._beforeCallListeners;
 
+      Polymer.Base.extend(DomApi.EffectiveNodesObserver.prototype, {
+        
         _setup: function() {
           if (!this._observer) {
             var self = this;
@@ -6066,7 +6078,7 @@ Polymer.EventApi = (function() {
             // NOTE: subtree true is way too aggressive, but it easily catches
             // attribute changes on children. These changes otherwise require
             // attribute observers on every child. Testing has shown this
-            // approach to be more efficient.
+            // approach to be more efficient. 
             // TODO(sorvell): do we still need to include an option to defeat
             // attribute tracking?
             this._observer.observe(this.node, { childList: true });
@@ -6095,7 +6107,7 @@ Polymer.EventApi = (function() {
             // affect lower distributions.
             this._makeContentListenersAlwaysNotify();
             this._observer.disconnect();
-            this._observer.observe(this.node, {
+            this._observer.observe(this.node, { 
               childList: true,
               attributes: true,
               subtree: true
@@ -6121,8 +6133,7 @@ Polymer.EventApi = (function() {
 
 })();
 
-</script>
-<script>
+</script><script>
 (function() {
   'use strict';
 
@@ -6268,12 +6279,12 @@ Polymer.EventApi = (function() {
         this.shadyRoot._isShadyRoot = true;
         this.shadyRoot._dirtyRoots = [];
         // capture insertion point list
-        var i$ = this.shadyRoot._insertionPoints = !this._notes ||
+        var i$ = this.shadyRoot._insertionPoints = !this._notes || 
           this._notes._hasContent ?
           this.shadyRoot.querySelectorAll('content') : [];
         // save logical tree info
-        // a. for shadyRoot
-        // b. for insertion points (fallback)
+        // a. for shadyRoot 
+        // b. for insertion points (fallback) 
         // c. for parents of insertion points
         TreeApi.Logical.saveChildNodes(this.shadyRoot);
         for (var i=0, c; i < i$.length; i++) {
@@ -6310,7 +6321,7 @@ Polymer.EventApi = (function() {
        */
       distributeContent: function(updateInsertionPoints) {
         if (this.shadyRoot) {
-          this.shadyRoot._invalidInsertionPoints =
+          this.shadyRoot._invalidInsertionPoints = 
             this.shadyRoot._invalidInsertionPoints || updateInsertionPoints;
           // Distribute the host that's the top of this element's distribution
           // tree. Distributing that host will *always* distibute this element.
@@ -6355,7 +6366,7 @@ Polymer.EventApi = (function() {
         // compose self
         if (this._useContent) {
           // note: it's important to mark this clean before distribution
-          // so that attachment that provokes additional distribution (e.g.
+          // so that attachment that provokes additional distribution (e.g. 
           // adding something to your parentNode) works
           this.shadyRoot._distributionClean = true;
           if (DomApi.hasInsertionPoint(this.shadyRoot)) {
@@ -6522,7 +6533,7 @@ Polymer.EventApi = (function() {
         for (var i=0, d=0, s; (i<splices.length) && (s=splices[i]); i++) {
           for (var j=0, n; (j < s.removed.length) && (n=s.removed[j]); j++) {
             // check if the node is still where we expect it is before trying
-            // to remove it; this can happen if Polymer.dom moves a node and
+            // to remove it; this can happen if Polymer.dom moves a node and 
             // then schedules its previous host for distribution resulting in
             // the node being removed here.
             if (TreeApi.Composed.getParentNode(n) === container) {
@@ -6533,9 +6544,9 @@ Polymer.EventApi = (function() {
           d -= s.addedCount;
         }
         // process adds
-        for (var i=0, s, next; (i<splices.length) && (s=splices[i]); i++) { //eslint-disable-line no-redeclare
+        for (var i=0, s, next; (i<splices.length) && (s=splices[i]); i++) {
           next = composed[s.index];
-          for (j=s.index, n; j < s.index + s.addedCount; j++) {
+          for (var j=s.index, n; j < s.index + s.addedCount; j++) {
             n = children[j];
             TreeApi.Composed.insertBefore(container, n, next);
             // TODO(sorvell): is this splice strictly needed?
@@ -7259,7 +7270,7 @@ Polymer.Debounce = (function() {
           });
         }
         // bindings (other attributes)
-        else if ((b = this._parseNodeAttributeAnnotation(node, n, v))) {
+        else if (b = this._parseNodeAttributeAnnotation(node, n, v)) {
           annotation.bindings.push(b);
         }
         // static id
@@ -7298,14 +7309,12 @@ Polymer.Debounce = (function() {
         // (properties) are case sensitive. Gambit is to map dash-case to
         // camel-case: `foo-bar` becomes `fooBar`.
         // Attribute bindings are excepted.
-        var propertyName = Polymer.CaseMap.dashToCamelCase(name);
         if (kind === 'property') {
-          name = propertyName;
+          name = Polymer.CaseMap.dashToCamelCase(name);
         }
         return {
           kind: kind,
           name: name,
-          propertyName: propertyName,
           parts: parts,
           literal: literal,
           isCompound: parts.length !== 1
@@ -7321,7 +7330,7 @@ Polymer.Debounce = (function() {
         Polymer.Annotations.findAnnotatedNode(root, annote.parent);
       // unwind the stack, returning the indexed node at each level
       if (parent) {
-        // note: marginally faster than indexing via childNodes
+        // note: marginally faster than indexing via childNodes 
         // (http://jsperf.com/childnodes-lookup)
         for (var n=parent.firstChild, i=0; n; n=n.nextSibling) {
           if (annote.index === i++) {
@@ -7628,7 +7637,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
     },
 
     // push configuration references at configure time
-    _configureAnnotationReferences: function() {
+    _configureAnnotationReferences: function(config) {
       var notes = this._notes;
       var nodes = this._nodes;
       for (var i=0; i<notes.length; i++) {
@@ -8132,7 +8141,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
         }
       }
       // enforce gesture recognizer order
-      for (i = 0, r; i < recognizers.length; i++) {
+      for (var i = 0, r; i < recognizers.length; i++) {
         r = recognizers[i];
         if (gs[r.name] && !handled[r.name]) {
           handled[r.name] = true;
@@ -8734,7 +8743,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
     getEffectiveTextContent: function() {
       var cn = this.getEffectiveChildNodes();
       var tc = [];
-      for (var i=0, c; (c = cn[i]); i++) {
+      for (var i=0, c; c = cn[i]; i++) {
         if (c.nodeType !== Node.COMMENT_NODE) {
           tc.push(Polymer.dom(c).textContent);
         }
@@ -8805,7 +8814,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
     fire: function(type, detail, options) {
       options = options || Polymer.nob;
       var node = options.node || this;
-      detail = (detail === null || detail === undefined) ? {} : detail;
+      var detail = (detail === null || detail === undefined) ? {} : detail;
       var bubbles = options.bubbles === undefined ? true : options.bubbles;
       var cancelable = Boolean(options.cancelable);
       var useCache = options._useCache;
@@ -9038,7 +9047,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
       _notifyChange: function(source, event, value) {
         value = value === undefined ? this[source] : value;
         event = event || Polymer.CaseMap.camelToDashCase(source) + '-changed';
-        this.fire(event, {value: value},
+        this.fire(event, {value: value}, 
           {bubbles: false, cancelable: false, _useCache: true});
       },
 
@@ -9236,8 +9245,8 @@ TODO(sjmiles): this module should produce either syntactic metadata
         } else {
           // TODO(sorvell): even though we have a `value` argument, we *must*
           // lookup the current value of the property. Multiple listeners and
-          // queued events during configuration can theoretically lead to
-          // divergence of the passed value from the current value, but we
+          // queued events during configuration can theoretically lead to 
+          // divergence of the passed value from the current value, but we 
           // really need to track down a specific case where this happens.
           value = target[property];
           if (!isStructured) {
@@ -9271,7 +9280,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
         //if (node._prepParentProperties || !node._propertyInfo || (p && p.notify)) {
           this._addNotifyListener(node, inst, info.event, info.changedFn);
         //}
-      }
+      };
     },
 
     // TODO(sorvell): note, adding these synchronously may impact performance,
@@ -9556,7 +9565,6 @@ TODO(sjmiles): this module should produce either syntactic metadata
             kind: note.kind,
             index: index,
             name: note.name,
-            propertyName: note.propertyName,
             value: part.value,
             isCompound: note.isCompound,
             compoundIndex: part.compoundIndex,
@@ -9599,7 +9607,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
     // method expressions are of the form: `name([arg1, arg2, .... argn])`
     _parseMethod: function(expression) {
       // tries to match valid javascript property names
-      var m = expression.match(/([^\s]+?)\(([\s\S]*)\)/);
+      var m = expression.match(/([^\s]+?)\((.*)\)/);
       if (m) {
         var sig = { method: m[1], static: true };
         if (m[2].trim()) {
@@ -9852,16 +9860,11 @@ TODO(sjmiles): this module should produce either syntactic metadata
               // are excluded from top-down configure for now; to be revisited
               if (x.kind === 'annotation' && !x.isCompound) {
                 var node = this._nodes[x.effect.index];
-                var name = x.effect.propertyName;
                 // seeding configuration only
-                if (node._propertyEffects && node._propertyEffects[name]) {
+                if (node._configValue) {
                   var value = (p === x.effect.value) ? config[p] :
                     this._get(x.effect.value, config);
-                  if (x.effect.kind == 'attribute') {
-                    value = node.deserialize(value,
-                      node._propertyInfo[name].type);
-                  }
-                  node._configValue(name, value);
+                  node._configValue(x.effect.name, value);
                 }
               }
             }
@@ -10107,19 +10110,18 @@ TODO(sjmiles): this module should produce either syntactic metadata
           // item in collection associated with key for that item
           if (array) {
             var coll = Polymer.Collection.get(array);
-            var old, key;
             if (last[0] == '#') {
               // Part was key; lookup item in collection
-              key = last;
-              old = coll.getItem(key);
+              var key = last;
+              var old = coll.getItem(key);
               // Update last part from key to index: O(n) lookup unavoidable
               last = array.indexOf(old);
               // Replace item associated with key in collection
               coll.setItem(key, value);
             } else if (parseInt(last, 10) == last) {
               // Dereference index & lookup collection key
-              old = prop[last];
-              key = coll.getKey(old);
+              var old = prop[last];
+              var key = coll.getKey(old);
               // Translate array indices to collection keys for path notificaiton
               parts[i] = key;
               // Replace item associated with key in collection
@@ -10452,7 +10454,7 @@ TODO(sjmiles): this module should produce either syntactic metadata
        * @param {...any} var_args Items to insert into array.
        * @return {Array} Array of removed items.
        */
-      splice: function(path, start) {
+      splice: function(path, start, deleteCount) {
         var info = {};
         var array = this._get(path, this, info);
         // Normalize fancy native splice handling of crazy start values
@@ -10648,8 +10650,6 @@ Polymer.CssParse = (function() {
             node.type = this.types.MEDIA_RULE;
           } else if (s.match(this._rx.keyframesRule)) {
             node.type = this.types.KEYFRAMES_RULE;
-            node.keyframesName =
-                node.selector.split(this._rx.multipleSpaces).pop();
           }
         } else {
           if (s.indexOf(this.VAR_START) === 0) {
@@ -10779,18 +10779,15 @@ Polymer.CssParse = (function() {
           rules = this.parser.parse(rules);
         }
         if (callback) {
-          this.forEachRule(rules, callback);
+          this.forEachStyleRule(rules, callback);
         }
         return this.parser.stringify(rules, preserveProperties);
       },
 
-      forRulesInStyles: function(styles, styleRuleCallback, keyframesRuleCallback) {
+      forRulesInStyles: function(styles, callback) {
         if (styles) {
           for (var i=0, l=styles.length, s; (i<l) && (s=styles[i]); i++) {
-            this.forEachRule(
-                this.rulesForStyle(s),
-                styleRuleCallback,
-                keyframesRuleCallback);
+            this.forEachStyleRule(this.rulesForStyle(s), callback);
           }
         }
       },
@@ -10802,31 +10799,21 @@ Polymer.CssParse = (function() {
         return style.__cssRules;
       },
 
-      // Tests if a rule is a keyframes selector, which looks almost exactly
-      // like a normal selector but is not (it has nothing to do with scoping
-      // for example).
-      isKeyframesSelector: function(rule) {
-        return rule.parent &&
-            rule.parent.type === this.ruleTypes.KEYFRAMES_RULE;
-      },
-
-      forEachRule: function(node, styleRuleCallback, keyframesRuleCallback) {
+      forEachStyleRule: function(node, callback) {
         if (!node) {
           return;
         }
         var skipRules = false;
         if (node.type === this.ruleTypes.STYLE_RULE) {
-          styleRuleCallback(node);
-        } else if (keyframesRuleCallback &&
-                   node.type === this.ruleTypes.KEYFRAMES_RULE) {
-          keyframesRuleCallback(node);
-        } else if (node.type === this.ruleTypes.MIXIN_RULE) {
+          callback(node);
+        } else if (node.type === this.ruleTypes.KEYFRAMES_RULE ||
+            node.type === this.ruleTypes.MIXIN_RULE) {
           skipRules = true;
         }
         var r$ = node.rules;
         if (r$ && !skipRules) {
           for (var i=0, l=r$.length, r; (i<l) && (r=r$[i]); i++) {
-            this.forEachRule(r, styleRuleCallback, keyframesRuleCallback);
+            this.forEachStyleRule(r, callback);
           }
         }
       },
@@ -10935,7 +10922,9 @@ Polymer.CssParse = (function() {
 
      * :host(...) -> scopeName...
 
-     * ::content -> ' '
+     * ::content -> ' ' NOTE: requires use of scoping selector and selectors
+       cannot otherwise be scoped:
+       e.g. :host ::content > .bar -> x-foo > .bar
 
      * ::shadow, /deep/: processed similar to ::content
 
@@ -11051,12 +11040,8 @@ Polymer.CssParse = (function() {
       // transforms a css rule to a scoped rule.
       _transformRule: function(rule, transformer, scope, hostScope) {
         var p$ = rule.selector.split(COMPLEX_SELECTOR_SEP);
-        // we want to skip transformation of rules that appear in keyframes,
-        // because they are keyframe selectors, not element selectors.
-        if (!styleUtil.isKeyframesSelector(rule)) {
-          for (var i=0, l=p$.length, p; (i<l) && (p=p$[i]); i++) {
-            p$[i] = transformer.call(this, p, scope, hostScope);
-          }
+        for (var i=0, l=p$.length, p; (i<l) && (p=p$[i]); i++) {
+          p$[i] = transformer.call(this, p, scope, hostScope);
         }
         // NOTE: save transformedSelector for subsequent matching of elements
         // against selectors (e.g. when calculating style properties)
@@ -11068,7 +11053,6 @@ Polymer.CssParse = (function() {
         var stop = false;
         var hostContext = false;
         var self = this;
-        selector = selector.replace(CONTENT_START, HOST + ' $1');
         selector = selector.replace(SIMPLE_SELECTOR_SEP, function(m, c, s) {
           if (!stop) {
             var info = self._transformCompoundSelector(s, c, scope, hostScope);
@@ -11164,7 +11148,7 @@ Polymer.CssParse = (function() {
     // NOTE: this supports 1 nested () pair for things like
     // :host(:not([selected]), more general support requires
     // parsing which seems like overkill
-    var HOST_PAREN = /(:host)(?:\(((?:\([^)(]*\)|[^)(]*)+?)\))/g;
+    var HOST_PAREN = /(\:host)(?:\(((?:\([^)(]*\)|[^)(]*)+?)\))/g;
     var HOST_CONTEXT = ':host-context';
     var HOST_CONTEXT_PAREN = /(.*)(?::host-context)(?:\(((?:\([^)(]*\)|[^)(]*)+?)\))(.*)/;
     var CONTENT = '::content';
@@ -11174,7 +11158,6 @@ Polymer.CssParse = (function() {
     var CSS_ATTR_SUFFIX = ']';
     var PSEUDO_PREFIX = ':';
     var CLASS = 'class';
-    var CONTENT_START = new RegExp('^(' + CONTENT + ')');
 
     // exports
     return api;
@@ -11189,7 +11172,7 @@ Polymer.StyleExtends = (function() {
   var styleUtil = Polymer.StyleUtil;
 
   return {
-
+    
     hasExtends: function(cssText) {
       return Boolean(cssText.match(this.rx.EXTEND));
     },
@@ -11197,11 +11180,11 @@ Polymer.StyleExtends = (function() {
     transform: function(style) {
       var rules = styleUtil.rulesForStyle(style);
       var self = this;
-      styleUtil.forEachRule(rules, function(rule) {
-        self._mapRuleOntoParent(rule);
+      styleUtil.forEachStyleRule(rules, function(rule) {
+        var map = self._mapRule(rule);
         if (rule.parent) {
           var m;
-          while ((m = self.rx.EXTEND.exec(rule.cssText))) {
+          while (m = self.rx.EXTEND.exec(rule.cssText)) {
             var extend = m[1];
             var extendor = self._findExtendor(extend, rule);
             if (extendor) {
@@ -11219,7 +11202,7 @@ Polymer.StyleExtends = (function() {
       }, true);
     },
 
-    _mapRuleOntoParent: function(rule) {
+    _mapRule: function(rule) {
       if (rule.parent) {
         var map = rule.parent.map || (rule.parent.map = {});
         var parts = rule.selector.split(',');
@@ -11245,7 +11228,7 @@ Polymer.StyleExtends = (function() {
       // TODO: this misses `%foo, .bar` as an unetended selector but
       // this seems rare and could possibly be unsupported.
       source.selector = source.selector.replace(this.rx.STRIP, '');
-      source.selector = (source.selector && source.selector + ',\n') +
+      source.selector = (source.selector && source.selector + ',\n') + 
         target.selector;
       if (source.extends) {
         source.extends.forEach(function(e) {
@@ -11433,15 +11416,11 @@ Polymer.StyleExtends = (function() {
       // decorates styles with rule info and returns an array of used style
       // property names
       decorateStyles: function(styles) {
-        var self = this, props = {}, keyframes = [];
+        var self = this, props = {};
         styleUtil.forRulesInStyles(styles, function(rule) {
           self.decorateRule(rule);
           self.collectPropertiesInCssText(rule.propertyInfo.cssText, props);
-        }, function onKeyframesRule(rule) {
-          keyframes.push(rule);
         });
-        // Cache all found keyframes rules for later reference:
-        styles._keyframes = keyframes;
         // return this list of property names *consumes* in these styles.
         var names = [];
         for (var i in props) {
@@ -11479,7 +11458,7 @@ Polymer.StyleExtends = (function() {
           var m, rx = this.rx.VAR_ASSIGN;
           var cssText = rule.parsedCssText;
           var any;
-          while ((m = rx.exec(cssText))) {
+          while (m = rx.exec(cssText)) {
             // note: group 2 is var, 3 is mixin
             properties[m[1]] = (m[2] || m[3]).trim();
             any = true;
@@ -11499,10 +11478,7 @@ Polymer.StyleExtends = (function() {
         var parts = cssText.split(';');
         for (var i=0, p; i<parts.length; i++) {
           p = parts[i];
-          if (p.match(this.rx.MIXIN_MATCH) ||
-              p.match(this.rx.VAR_MATCH) ||
-              this.rx.ANIMATION_MATCH.test(p) ||
-              styleUtil.isKeyframesSelector(rule)) {
+          if (p.match(this.rx.MIXIN_MATCH) || p.match(this.rx.VAR_MATCH)) {
             customCssText += p + ';\n';
           }
         }
@@ -11511,7 +11487,7 @@ Polymer.StyleExtends = (function() {
 
       collectPropertiesInCssText: function(cssText, props) {
         var m;
-        while ((m = this.rx.VAR_CAPTURE.exec(cssText))) {
+        while (m = this.rx.VAR_CAPTURE.exec(cssText)) {
           props[m[1]] = true;
           var def = m[2];
           if (def && def.match(this.rx.IS_VAR)) {
@@ -11563,7 +11539,7 @@ Polymer.StyleExtends = (function() {
       valueForProperties: function(property, props) {
         var parts = property.split(';');
         for (var i=0, p, m; i<parts.length; i++) {
-          if ((p = parts[i])) {
+          if (p = parts[i]) {
             m = p.match(this.rx.MIXIN_MATCH);
             if (m) {
               p = this.valueForProperty(props[m[1]], props);
@@ -11592,46 +11568,6 @@ Polymer.StyleExtends = (function() {
         }
         if (rule.propertyInfo.cssText) {
           output = this.valueForProperties(rule.propertyInfo.cssText, props);
-        }
-        rule.cssText = output;
-      },
-
-      // Apply keyframe transformations to the cssText of a given rule. The
-      // keyframeTransforms object is a map of keyframe names to transformer
-      // functions which take in cssText and spit out transformed cssText.
-      applyKeyframeTransforms: function(rule, keyframeTransforms) {
-        var input = rule.cssText;
-        var output = rule.cssText;
-        if (rule.hasAnimations == null) {
-          // Cache whether or not the rule has any animations to begin with:
-          rule.hasAnimations = this.rx.ANIMATION_MATCH.test(input);
-        }
-        // If there are no animations referenced, we can skip transforms:
-        if (rule.hasAnimations) {
-          var transform;
-          // If we haven't transformed this rule before, we iterate over all
-          // transforms:
-          if (rule.keyframeNamesToTransform == null) {
-            rule.keyframeNamesToTransform = [];
-            for (var keyframe in keyframeTransforms) {
-              transform = keyframeTransforms[keyframe];
-              output = transform(input);
-              // If the transform actually changed the CSS text, we cache the
-              // transform name for future use:
-              if (input !== output) {
-                input = output;
-                rule.keyframeNamesToTransform.push(keyframe);
-              }
-            }
-          } else {
-            // If we already have a list of keyframe names that apply to this
-            // rule, we apply only those keyframe name transforms:
-            for (var i = 0; i < rule.keyframeNamesToTransform.length; ++i) {
-              transform = keyframeTransforms[rule.keyframeNamesToTransform[i]];
-              input = transform(input);
-            }
-            output = input;
-          }
         }
         rule.cssText = output;
       },
@@ -11711,58 +11647,13 @@ Polymer.StyleExtends = (function() {
           hostSelector;
         var hostRx = new RegExp(this.rx.HOST_PREFIX + rxHostSelector +
           this.rx.HOST_SUFFIX);
-        var keyframeTransforms =
-          this._elementKeyframeTransforms(element, scopeSelector);
         return styleTransformer.elementStyles(element, function(rule) {
           self.applyProperties(rule, properties);
-          if (!nativeShadow &&
-              !Polymer.StyleUtil.isKeyframesSelector(rule) &&
-              rule.cssText) {
-            // NOTE: keyframe transforms only scope munge animation names, so it
-            // is not necessary to apply them in ShadowDOM.
-            self.applyKeyframeTransforms(rule, keyframeTransforms);
+          if (rule.cssText && !nativeShadow) {
             self._scopeSelector(rule, hostRx, hostSelector,
               element._scopeCssViaAttr, scopeSelector);
           }
         });
-      },
-
-      _elementKeyframeTransforms: function(element, scopeSelector) {
-        var keyframesRules = element._styles._keyframes;
-        var keyframeTransforms = {};
-        if (!nativeShadow) {
-          // For non-ShadowDOM, we transform all known keyframes rules in
-          // advance for the current scope. This allows us to catch keyframes
-          // rules that appear anywhere in the stylesheet:
-          for (var i = 0, keyframesRule = keyframesRules[i];
-               i < keyframesRules.length;
-               keyframesRule = keyframesRules[++i]) {
-            this._scopeKeyframes(keyframesRule, scopeSelector);
-            keyframeTransforms[keyframesRule.keyframesName] =
-                this._keyframesRuleTransformer(keyframesRule);
-          }
-        }
-        return keyframeTransforms;
-      },
-
-      // Generate a factory for transforming a chunk of CSS text to handle a
-      // particular scoped keyframes rule.
-      _keyframesRuleTransformer: function(keyframesRule) {
-        return function(cssText) {
-          return cssText.replace(
-              keyframesRule.keyframesNameRx,
-              keyframesRule.transformedKeyframesName);
-        };
-      },
-
-      // Transforms `@keyframes` names to be unique for the current host.
-      // Example: @keyframes foo-anim -> @keyframes foo-anim-x-foo-0
-      _scopeKeyframes: function(rule, scopeId) {
-        rule.keyframesNameRx = new RegExp(rule.keyframesName, 'g');
-        rule.transformedKeyframesName = rule.keyframesName + '-' + scopeId;
-        rule.transformedSelector = rule.transformedSelector || rule.selector;
-        rule.selector = rule.transformedSelector.replace(
-            rule.keyframesName, rule.transformedKeyframesName);
       },
 
       // Strategy: x scope shim a selector e.g. to scope `.x-foo-42` (via classes):
@@ -11859,7 +11750,6 @@ Polymer.StyleExtends = (function() {
         // var(--a, fallback-literal(with-one-nested-parentheses))
         VAR_MATCH: /(^|\W+)var\([\s]*([^,)]*)[\s]*,?[\s]*((?:[^,)]*)|(?:[^;]*\([^;)]*\)))[\s]*?\)/gi,
         VAR_CAPTURE: /\([\s]*(--[^,\s)]*)(?:,[\s]*(--[^,\s)]*))?(?:\)|,)/gi,
-        ANIMATION_MATCH: /(animation\s*:)|(animation-name\s*:)/,
         IS_VAR: /^--/,
         BRACKETED: /\{[^}]*\}/g,
         HOST_PREFIX: '(?:^|[^.#[:])',
@@ -11951,6 +11841,7 @@ Polymer.StyleExtends = (function() {
   Polymer.StyleDefaults = (function() {
 
     var styleProperties = Polymer.StyleProperties;
+    var styleUtil = Polymer.StyleUtil;
     var StyleCache = Polymer.StyleCache;
 
     var api = {
@@ -11998,8 +11889,8 @@ Polymer.StyleExtends = (function() {
        * been made that affect the values of custom properties.
        *
        * @method updateStyles
-       * @param {Object=} properties Properties object which is mixed into
-       * the document root `customStyle` property. This argument provides a
+       * @param {Object=} properties Properties object which is mixed into 
+       * the document root `customStyle` property. This argument provides a 
        * shortcut for setting `customStyle` and then calling `updateStyles`.
       */
       updateStyles: function(properties) {
@@ -12033,6 +11924,7 @@ Polymer.StyleExtends = (function() {
 
     var propertyUtils = Polymer.StyleProperties;
     var styleTransformer = Polymer.StyleTransformer;
+    var styleUtil = Polymer.StyleUtil;
     var styleDefaults = Polymer.StyleDefaults;
 
     var nativeShadow = Polymer.Settings.useNativeShadow;
@@ -12090,7 +11982,7 @@ Polymer.StyleExtends = (function() {
 
       _findStyleHost: function() {
         var e = this, root;
-        while ((root = Polymer.dom(e).getOwnerRoot())) {
+        while (root = Polymer.dom(e).getOwnerRoot()) {
           if (Polymer.isInstance(root.host)) {
             return root.host;
           }
@@ -12451,6 +12343,7 @@ Note, all features of `custom-style` are available when defining styles as part 
 <script>
 (function() {
 
+  var nativeShadow = Polymer.Settings.useNativeShadow;
   var propertyUtils = Polymer.StyleProperties;
   var styleUtil = Polymer.StyleUtil;
   var cssParse = Polymer.CssParse;
@@ -12518,7 +12411,7 @@ Note, all features of `custom-style` are available when defining styles as part 
           e.textContent;
       }
       if (e.textContent) {
-        styleUtil.forEachRule(styleUtil.rulesForStyle(e), function(rule) {
+        styleUtil.forEachStyleRule(styleUtil.rulesForStyle(e), function(rule) {
           styleTransformer.documentRule(rule);
         });
         // Allow all custom-styles defined in this turn to register
@@ -12750,7 +12643,7 @@ Note, all features of `custom-style` are available when defining styles as part 
       Polymer.dom.addDebouncer(this.debounce('_debounceTemplate', fn));
     },
 
-    _flushTemplates: function() {
+    _flushTemplates: function(debouncerExpired) {
       Polymer.dom.flush();
     },
 
@@ -12760,7 +12653,7 @@ Note, all features of `custom-style` are available when defining styles as part 
         archetype._addPropertyEffect(prop, 'function',
           this._createHostPropEffector(prop));
       }
-      for (prop in this._instanceProps) {
+      for (var prop in this._instanceProps) {
         archetype._addPropertyEffect(prop, 'function',
           this._createInstancePropEffector(prop));
       }
@@ -12878,14 +12771,12 @@ Note, all features of `custom-style` are available when defining styles as part 
     },
 
     // Extension points for Templatizer sub-classes
-    /* eslint-disable no-unused-vars */
     _showHideChildren: function(hidden) { },
     _forwardInstancePath: function(inst, path, value) { },
     _forwardInstanceProp: function(inst, prop, value) { },
     // Defined-check rather than thunk used to avoid unnecessary work for these:
     // _forwardParentPath: function(path, value) { },
     // _forwardParentProp: function(prop, value) { },
-    /* eslint-enable no-unused-vars */
 
     _notifyPathUpImpl: function(path, value) {
       var dataHost = this.dataHost;
@@ -12987,9 +12878,7 @@ Note, all features of `custom-style` are available when defining styles as part 
       if (this._parentProps) {
         var templatized = this._templatized;
         for (var prop in this._parentProps) {
-          if (model[prop] === undefined) {
-            model[prop] = templatized[this._parentPropPrefix + prop];
-          }
+          model[prop] = templatized[this._parentPropPrefix + prop];
         }
       }
       return new this.ctor(model, this);
@@ -13019,7 +12908,7 @@ Note, all features of `custom-style` are available when defining styles as part 
         // An element with a _templateInstance marks the top boundary
         // of a scope; walk up until we find one, and then ensure that
         // its dataHost matches `this`, meaning this dom-repeat stamped it
-        if ((model = el._templateInstance)) {
+        if (model = el._templateInstance) {
           // Found an element stamped by another template; keep walking up
           // from its dataHost
           if (model.dataHost != this) {
@@ -13106,7 +12995,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     },
 
     removeKey: function(key) {
-      if ((key = this._parseKey(key))) {
+      if (key = this._parseKey(key)) {
         this._removeFromMap(this.store[key]);
         delete this.store[key];
       }
@@ -13151,7 +13040,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     },
 
     setItem: function(key, item) {
-      if ((key = this._parseKey(key))) {
+      if (key = this._parseKey(key)) {
         var old = this.store[key];
         if (old) {
           this._removeFromMap(old);
@@ -13166,7 +13055,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     },
 
     getItem: function(key) {
-      if ((key = this._parseKey(key))) {
+      if (key = this._parseKey(key)) {
         return this.store[key];
       }
     },
@@ -13196,7 +13085,7 @@ Note, all features of `custom-style` are available when defining styles as part 
           key = this.getKey(s.removed[j]);
           keyMap[key] = keyMap[key] ? null : -1;
         }
-        for (j=0; j<s.addedCount; j++) {
+        for (var j=0; j<s.addedCount; j++) {
           var item = this.userArray[s.index + j];
           key = this.getKey(item);
           key = (key === undefined) ? this.add(item) : key;
@@ -13210,7 +13099,7 @@ Note, all features of `custom-style` are available when defining styles as part 
       // Convert added/removed key map to added/removed arrays
       var removed = [];
       var added = [];
-      for (key in keyMap) {
+      for (var key in keyMap) {
         if (keyMap[key] < 0) {
           this.removeKey(key);
           removed.push(key);
@@ -13334,9 +13223,9 @@ Note, all features of `custom-style` are available when defining styles as part 
 
       /**
        * Count of currently rendered items after `filter` (if any) has been applied.
-       * If "chunking mode" is enabled, `renderedItemCount` is updated each time a
+       * If "chunking mode" is enabled, `renderedItemCount` is updated each time a 
        * set of template instances is rendered.
-       *
+       * 
        */
       renderedItemCount: {
         type: Number,
@@ -13550,6 +13439,7 @@ Note, all features of `custom-style` are available when defining styles as part 
     },
 
     _render: function() {
+      var c = this.collection;
       // Choose rendering path: full vs. incremental using splices
       if (this._needFullRefresh) {
         // Full refresh when items, sort, or filter change, or when render() called
@@ -13596,7 +13486,7 @@ Note, all features of `custom-style` are available when defining styles as part 
       // `item` may not be sufficient if the pooled instance happens to be
       // the same item.
       this._pool.length = 0;
-      // Set rendered item count
+      // Set rendered item count 
       this._setRenderedItemCount(this._instances.length);
       // Notify users
       this.fire('dom-change');
@@ -13639,7 +13529,7 @@ Note, all features of `custom-style` are available when defining styles as part 
         });
       }
       // Generate instances and assign items and keys
-      for (i=0; i<keys.length; i++) {
+      for (var i=0; i<keys.length; i++) {
         var key = keys[i];
         var inst = this._instances[i];
         if (inst) {
@@ -13669,23 +13559,23 @@ Note, all features of `custom-style` are available when defining styles as part 
     // first, and added rows are insertion-sorted into place using user sort
     _applySplicesUserSort: function(splices) {
       var c = this.collection;
+      var instances = this._instances;
       var keyMap = {};
-      var key;
       // Dedupe added and removed keys to a final added/removed map
       for (var i=0, s; (i<splices.length) && (s=splices[i]); i++) {
         for (var j=0; j<s.removed.length; j++) {
-          key = s.removed[j];
+          var key = s.removed[j];
           keyMap[key] = keyMap[key] ? null : -1;
         }
-        for (j=0; j<s.added.length; j++) {
-          key = s.added[j];
+        for (var j=0; j<s.added.length; j++) {
+          var key = s.added[j];
           keyMap[key] = keyMap[key] ? null : 1;
         }
       }
       // Convert added/removed key map to added/removed arrays
       var removedIdxs = [];
       var addedKeys = [];
-      for (key in keyMap) {
+      for (var key in keyMap) {
         if (keyMap[key] === -1) {
           removedIdxs.push(this._keyToInstIdx[key]);
         }
@@ -13699,7 +13589,7 @@ Note, all features of `custom-style` are available when defining styles as part 
         // so we don't invalidate instance index
         // use numeric sort, default .sort is alphabetic
         removedIdxs.sort(this._numericSort);
-        for (i=removedIdxs.length-1; i>=0 ; i--) {
+        for (var i=removedIdxs.length-1; i>=0 ; i--) {
           var idx = removedIdxs[i];
           // Removed idx may be undefined if item was previously filtered out
           if (idx !== undefined) {
@@ -13723,7 +13613,7 @@ Note, all features of `custom-style` are available when defining styles as part 
         });
         // Insertion-sort new instances into place (from pool or newly created)
         var start = 0;
-        for (i=0; i<addedKeys.length; i++) {
+        for (var i=0; i<addedKeys.length; i++) {
           start = this._insertRowUserSort(start, addedKeys[i]);
         }
       }
@@ -13762,12 +13652,13 @@ Note, all features of `custom-style` are available when defining styles as part 
     // rows are as placeholders, and placeholders are updated to
     // actual rows at the end to take full advantage of removed rows
     _applySplicesArrayOrder: function(splices) {
+      var c = this.collection;
       for (var i=0, s; (i<splices.length) && (s=splices[i]); i++) {
         // Detach & pool removed instances
         for (var j=0; j<s.removed.length; j++) {
           this._detachAndRemoveInstance(s.index);
         }
-        for (j=0; j<s.addedKeys.length; j++) {
+        for (var j=0; j<s.addedKeys.length; j++) {
           this._insertPlaceholder(s.index+j, s.addedKeys[j]);
         }
       }
@@ -14626,7 +14517,7 @@ A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `
     };
 
     --layout-around-justified: {
-      -ms-flex-pack: distribute;
+      -ms-flex-pack: around;
       -webkit-justify-content: space-around;
       justify-content: space-around;
     };
@@ -14847,125 +14738,125 @@ Example:
 </script>
 <script>function MakePromise (asap) {
   function Promise(fn) {
-		if (typeof this !== 'object' || typeof fn !== 'function') throw new TypeError();
-		this._state = null;
-		this._value = null;
-		this._deferreds = []
+    if (typeof this !== 'object' || typeof fn !== 'function') throw new TypeError();
+    this._state = null;
+    this._value = null;
+    this._deferreds = []
 
-		doResolve(fn, resolve.bind(this), reject.bind(this));
-	}
+    doResolve(fn, resolve.bind(this), reject.bind(this));
+  }
 
-	function handle(deferred) {
-		var me = this;
-		if (this._state === null) {
-			this._deferreds.push(deferred);
-			return
-		}
-		asap(function() {
-			var cb = me._state ? deferred.onFulfilled : deferred.onRejected
-			if (typeof cb !== 'function') {
-				(me._state ? deferred.resolve : deferred.reject)(me._value);
-				return;
-			}
-			var ret;
-			try {
-				ret = cb(me._value);
-			}
-			catch (e) {
-				deferred.reject(e);
-				return;
-			}
-			deferred.resolve(ret);
-		})
-	}
+  function handle(deferred) {
+    var me = this;
+    if (this._state === null) {
+      this._deferreds.push(deferred);
+      return
+    }
+    asap(function() {
+      var cb = me._state ? deferred.onFulfilled : deferred.onRejected
+      if (typeof cb !== 'function') {
+        (me._state ? deferred.resolve : deferred.reject)(me._value);
+        return;
+      }
+      var ret;
+      try {
+        ret = cb(me._value);
+      }
+      catch (e) {
+        deferred.reject(e);
+        return;
+      }
+      deferred.resolve(ret);
+    })
+  }
 
-	function resolve(newValue) {
-		try { //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
-			if (newValue === this) throw new TypeError();
-			if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
-				var then = newValue.then;
-				if (typeof then === 'function') {
-					doResolve(then.bind(newValue), resolve.bind(this), reject.bind(this));
-					return;
-				}
-			}
-			this._state = true;
-			this._value = newValue;
-			finale.call(this);
-		} catch (e) { reject.call(this, e); }
-	}
+  function resolve(newValue) {
+    try { //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+      if (newValue === this) throw new TypeError();
+      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+        var then = newValue.then;
+        if (typeof then === 'function') {
+          doResolve(then.bind(newValue), resolve.bind(this), reject.bind(this));
+          return;
+        }
+      }
+      this._state = true;
+      this._value = newValue;
+      finale.call(this);
+    } catch (e) { reject.call(this, e); }
+  }
 
-	function reject(newValue) {
-		this._state = false;
-		this._value = newValue;
-		finale.call(this);
-	}
+  function reject(newValue) {
+    this._state = false;
+    this._value = newValue;
+    finale.call(this);
+  }
 
-	function finale() {
-		for (var i = 0, len = this._deferreds.length; i < len; i++) {
-			handle.call(this, this._deferreds[i]);
-		}
-		this._deferreds = null;
-	}
+  function finale() {
+    for (var i = 0, len = this._deferreds.length; i < len; i++) {
+      handle.call(this, this._deferreds[i]);
+    }
+    this._deferreds = null;
+  }
 
-	/**
-	 * Take a potentially misbehaving resolver function and make sure
-	 * onFulfilled and onRejected are only called once.
-	 *
-	 * Makes no guarantees about asynchrony.
-	 */
-	function doResolve(fn, onFulfilled, onRejected) {
-		var done = false;
-		try {
-			fn(function (value) {
-				if (done) return;
-				done = true;
-				onFulfilled(value);
-			}, function (reason) {
-				if (done) return;
-				done = true;
-				onRejected(reason);
-			})
-		} catch (ex) {
-			if (done) return;
-			done = true;
-			onRejected(ex);
-		}
-	}
+  /**
+   * Take a potentially misbehaving resolver function and make sure
+   * onFulfilled and onRejected are only called once.
+   *
+   * Makes no guarantees about asynchrony.
+   */
+  function doResolve(fn, onFulfilled, onRejected) {
+    var done = false;
+    try {
+      fn(function (value) {
+        if (done) return;
+        done = true;
+        onFulfilled(value);
+      }, function (reason) {
+        if (done) return;
+        done = true;
+        onRejected(reason);
+      })
+    } catch (ex) {
+      if (done) return;
+      done = true;
+      onRejected(ex);
+    }
+  }
 
-	Promise.prototype['catch'] = function (onRejected) {
-		return this.then(null, onRejected);
-	};
+  Promise.prototype['catch'] = function (onRejected) {
+    return this.then(null, onRejected);
+  };
 
-	Promise.prototype.then = function(onFulfilled, onRejected) {
-		var me = this;
-		return new Promise(function(resolve, reject) {
+  Promise.prototype.then = function(onFulfilled, onRejected) {
+    var me = this;
+    return new Promise(function(resolve, reject) {
       handle.call(me, {
         onFulfilled: onFulfilled,
         onRejected: onRejected,
         resolve: resolve,
         reject: reject
       });
-		})
-	};
+    })
+  };
 
-	Promise.resolve = function (value) {
-		if (value && typeof value === 'object' && value.constructor === Promise) {
-			return value;
-		}
+  Promise.resolve = function (value) {
+    if (value && typeof value === 'object' && value.constructor === Promise) {
+      return value;
+    }
 
-		return new Promise(function (resolve) {
-			resolve(value);
-		});
-	};
+    return new Promise(function (resolve) {
+      resolve(value);
+    });
+  };
 
-	Promise.reject = function (value) {
-		return new Promise(function (resolve, reject) {
-			reject(value);
-		});
-	};
+  Promise.reject = function (value) {
+    return new Promise(function (resolve, reject) {
+      reject(value);
+    });
+  };
 
-	
+  
   return Promise;
 }
 
@@ -16278,6 +16169,65 @@ Custom property | Description | Default
 @homepage polymer.github.io
 -->
 
+<!-- Taken from https://www.google.com/design/spec/style/color.html#color-ui-color-application -->
+
+<style is="custom-style">
+
+  :root {
+    /*
+     * You can use these generic variables in your elements for easy theming.
+     * For example, if all your elements use `--primary-text-color` as its main
+     * color, then switching from a light to a dark theme is just a matter of
+     * changing the value of `--primary-text-color` in your application.
+     */
+    --primary-text-color: var(--light-theme-text-color);
+    --primary-background-color: var(--light-theme-background-color);
+    --secondary-text-color: var(--light-theme-secondary-color);
+    --disabled-text-color: var(--light-theme-disabled-color);
+    --divider-color: var(--light-theme-divider-color);
+    --error-color: var(--paper-deep-orange-a700);
+    
+    /*
+     * Primary and accent colors. Also see color.html for more colors.
+     */
+    --primary-color: #3f51b5;  /* --paper-indigo-500 */
+    --light-primary-color: #c5cae9;  /* --paper-indigo-100 */
+    --dark-primary-color: #303f9f;  /* --paper-indigo-700 */
+
+    --accent-color: #ff4081;  /* --paper-pink-a200 */
+    --light-accent-color: #ff80ab;  /* --paper-pink-a100 */
+    --dark-accent-color: #f50057;  /* --paper-pink-a400 */
+        
+
+    /*
+     * Material Design Light background theme
+     */
+    --light-theme-background-color: #ffffff;
+    --light-theme-base-color: #000000;
+    --light-theme-text-color: #212121;
+    --light-theme-secondary-color: #737373;  /* for secondary text and icons */
+    --light-theme-disabled-color: #9b9b9b;  /* disabled/hint text */
+    --light-theme-divider-color: #dbdbdb;
+
+    /*
+     * Material Design Dark background theme
+     */
+    --dark-theme-background-color: #212121;
+    --dark-theme-base-color: #ffffff;
+    --dark-theme-text-color: #ffffff;
+    --dark-theme-secondary-color: #bcbcbc;  /* for secondary text and icons */
+    --dark-theme-disabled-color: #646464;  /* disabled/hint text */
+    --dark-theme-divider-color: #3c3c3c;
+
+    /*
+     * Deprecated values because of their confusing names.
+     */
+    --text-primary-color: var(--dark-theme-text-color);
+    --default-primary-color: var(--primary-color);
+
+  }
+
+</style>
 <script>
   (function() {
     'use strict';
@@ -17209,6 +17159,95 @@ Apply `circle` class to make the rippling effect within a circle.
 </script>
 <script>
 
+  /** @polymerBehavior Polymer.PaperButtonBehavior */
+  Polymer.PaperButtonBehaviorImpl = {
+
+    properties: {
+
+      /**
+       * The z-depth of this element, from 0-5. Setting to 0 will remove the
+       * shadow, and each increasing number greater than 0 will be "deeper"
+       * than the last.
+       *
+       * @attribute elevation
+       * @type number
+       * @default 1
+       */
+      elevation: {
+        type: Number,
+        reflectToAttribute: true,
+        readOnly: true
+      }
+
+    },
+
+    observers: [
+      '_calculateElevation(focused, disabled, active, pressed, receivedFocusFromKeyboard)',
+      '_computeKeyboardClass(receivedFocusFromKeyboard)'
+    ],
+
+    hostAttributes: {
+      role: 'button',
+      tabindex: '0',
+      animated: true
+    },
+
+    _calculateElevation: function() {
+      var e = 1;
+      if (this.disabled) {
+        e = 0;
+      } else if (this.active || this.pressed) {
+        e = 4;
+      } else if (this.receivedFocusFromKeyboard) {
+        e = 3;
+      }
+      this._setElevation(e);
+    },
+
+    _computeKeyboardClass: function(receivedFocusFromKeyboard) {
+      this.toggleClass('keyboard-focus', receivedFocusFromKeyboard);
+    },
+
+    /**
+     * In addition to `IronButtonState` behavior, when space key goes down,
+     * create a ripple down effect.
+     *
+     * @param {!KeyboardEvent} event .
+     */
+    _spaceKeyDownHandler: function(event) {
+      Polymer.IronButtonStateImpl._spaceKeyDownHandler.call(this, event);
+      // Ensure that there is at most one ripple when the space key is held down.
+      if (this.hasRipple() && this.getRipple().ripples.length < 1) {
+        this._ripple.uiDownAction();
+      }
+    },
+
+    /**
+     * In addition to `IronButtonState` behavior, when space key goes up,
+     * create a ripple up effect.
+     *
+     * @param {!KeyboardEvent} event .
+     */
+    _spaceKeyUpHandler: function(event) {
+      Polymer.IronButtonStateImpl._spaceKeyUpHandler.call(this, event);
+      if (this.hasRipple()) {
+        this._ripple.uiUpAction();
+      }
+    }
+
+  };
+
+  /** @polymerBehavior */
+  Polymer.PaperButtonBehavior = [
+    Polymer.IronButtonState,
+    Polymer.IronControlState,
+    Polymer.PaperRippleBehavior,
+    Polymer.PaperButtonBehaviorImpl
+  ];
+
+</script>
+<script>
+
   /**
    * `Polymer.PaperInkyFocusBehavior` implements a ripple when the element has keyboard focus.
    *
@@ -17248,65 +17287,6 @@ Apply `circle` class to make the rippling effect within a circle.
   ];
 
 </script>
-<!-- Taken from https://www.google.com/design/spec/style/color.html#color-ui-color-application -->
-
-<style is="custom-style">
-
-  :root {
-    /*
-     * You can use these generic variables in your elements for easy theming.
-     * For example, if all your elements use `--primary-text-color` as its main
-     * color, then switching from a light to a dark theme is just a matter of
-     * changing the value of `--primary-text-color` in your application.
-     */
-    --primary-text-color: var(--light-theme-text-color);
-    --primary-background-color: var(--light-theme-background-color);
-    --secondary-text-color: var(--light-theme-secondary-color);
-    --disabled-text-color: var(--light-theme-disabled-color);
-    --divider-color: var(--light-theme-divider-color);
-    --error-color: var(--paper-deep-orange-a700);
-    
-    /*
-     * Primary and accent colors. Also see color.html for more colors.
-     */
-    --primary-color: #3f51b5;  /* --paper-indigo-500 */
-    --light-primary-color: #c5cae9;  /* --paper-indigo-100 */
-    --dark-primary-color: #303f9f;  /* --paper-indigo-700 */
-
-    --accent-color: #ff4081;  /* --paper-pink-a200 */
-    --light-accent-color: #ff80ab;  /* --paper-pink-a100 */
-    --dark-accent-color: #f50057;  /* --paper-pink-a400 */
-        
-
-    /*
-     * Material Design Light background theme
-     */
-    --light-theme-background-color: #ffffff;
-    --light-theme-base-color: #000000;
-    --light-theme-text-color: #212121;
-    --light-theme-secondary-color: #737373;  /* for secondary text and icons */
-    --light-theme-disabled-color: #9b9b9b;  /* disabled/hint text */
-    --light-theme-divider-color: #dbdbdb;
-
-    /*
-     * Material Design Dark background theme
-     */
-    --dark-theme-background-color: #212121;
-    --dark-theme-base-color: #ffffff;
-    --dark-theme-text-color: #ffffff;
-    --dark-theme-secondary-color: #bcbcbc;  /* for secondary text and icons */
-    --dark-theme-disabled-color: #646464;  /* disabled/hint text */
-    --dark-theme-divider-color: #3c3c3c;
-
-    /*
-     * Deprecated values because of their confusing names.
-     */
-    --text-primary-color: var(--dark-theme-text-color);
-    --default-primary-color: var(--primary-color);
-
-  }
-
-</style>
 <!--
 Material design: [Icon toggles](https://www.google.com/design/spec/components/buttons.html#buttons-toggle-buttons)
 
@@ -17736,8 +17716,7 @@ Custom property | Description | Default
     },
 
     _valueForItem: function(item) {
-      var propValue = item[this.attrForSelected];
-      return propValue != undefined ? propValue : item.getAttribute(this.attrForSelected);
+      return item[this.attrForSelected] || item.getAttribute(this.attrForSelected);
     },
 
     _applySelection: function(item, isSelected) {
@@ -18133,13 +18112,6 @@ Custom property | Description | Default
     _onFocus: function(event) {
       if (Polymer.IronMenuBehaviorImpl._shiftTabPressed) {
         // do not focus the menu itself
-        return;
-      }
-
-      // Do not focus the selected tab if the deepest target is part of the
-      // menu element's local DOM and is focusable.
-      var rootTarget = Polymer.dom(event).rootTarget;
-      if (rootTarget !== this && typeof rootTarget.tabIndex !== "undefined" && !this.isLightDescendant(rootTarget)) {
         return;
       }
 
@@ -19040,26 +19012,24 @@ element in `paper-tab`.
 
 Example:
 
-<pre><code>
-&lt;style is="custom-style">
-  .link {
-    &#64;apply(--layout-horizontal);
-    &#64;apply(--layout-center-center);
-  }
-&lt;/style>
+    <style is="custom-style">
+      .link {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+    </style>
 
-&lt;paper-tabs selected="0">
-  &lt;paper-tab link>
-    &lt;a href="#link1" class="link">TAB ONE&lt;/a>
-  &lt;/paper-tab>
-  &lt;paper-tab link>
-    &lt;a href="#link2" class="link">TAB TWO&lt;/a>
-  &lt;/paper-tab>
-  &lt;paper-tab link>
-    &lt;a href="#link3" class="link">TAB THREE&lt;/a>
-  &lt;/paper-tab>
-&lt;/paper-tabs>
-</code></pre>
+    <paper-tabs selected="0">
+      <paper-tab link>
+        <a href="#link1" class="link">TAB ONE</a>
+      </paper-tab>
+      <paper-tab link>
+        <a href="#link2" class="link">TAB TWO</a>
+      </paper-tab>
+      <paper-tab link>
+        <a href="#link3" class="link">TAB THREE</a>
+      </paper-tab>
+    </paper-tabs>
 
 ### Styling
 
@@ -20343,95 +20313,6 @@ Mixin | Description | Default
 })();
 
 </script>
-<script>
-
-  /** @polymerBehavior Polymer.PaperButtonBehavior */
-  Polymer.PaperButtonBehaviorImpl = {
-
-    properties: {
-
-      /**
-       * The z-depth of this element, from 0-5. Setting to 0 will remove the
-       * shadow, and each increasing number greater than 0 will be "deeper"
-       * than the last.
-       *
-       * @attribute elevation
-       * @type number
-       * @default 1
-       */
-      elevation: {
-        type: Number,
-        reflectToAttribute: true,
-        readOnly: true
-      }
-
-    },
-
-    observers: [
-      '_calculateElevation(focused, disabled, active, pressed, receivedFocusFromKeyboard)',
-      '_computeKeyboardClass(receivedFocusFromKeyboard)'
-    ],
-
-    hostAttributes: {
-      role: 'button',
-      tabindex: '0',
-      animated: true
-    },
-
-    _calculateElevation: function() {
-      var e = 1;
-      if (this.disabled) {
-        e = 0;
-      } else if (this.active || this.pressed) {
-        e = 4;
-      } else if (this.receivedFocusFromKeyboard) {
-        e = 3;
-      }
-      this._setElevation(e);
-    },
-
-    _computeKeyboardClass: function(receivedFocusFromKeyboard) {
-      this.toggleClass('keyboard-focus', receivedFocusFromKeyboard);
-    },
-
-    /**
-     * In addition to `IronButtonState` behavior, when space key goes down,
-     * create a ripple down effect.
-     *
-     * @param {!KeyboardEvent} event .
-     */
-    _spaceKeyDownHandler: function(event) {
-      Polymer.IronButtonStateImpl._spaceKeyDownHandler.call(this, event);
-      // Ensure that there is at most one ripple when the space key is held down.
-      if (this.hasRipple() && this.getRipple().ripples.length < 1) {
-        this._ripple.uiDownAction();
-      }
-    },
-
-    /**
-     * In addition to `IronButtonState` behavior, when space key goes up,
-     * create a ripple up effect.
-     *
-     * @param {!KeyboardEvent} event .
-     */
-    _spaceKeyUpHandler: function(event) {
-      Polymer.IronButtonStateImpl._spaceKeyUpHandler.call(this, event);
-      if (this.hasRipple()) {
-        this._ripple.uiUpAction();
-      }
-    }
-
-  };
-
-  /** @polymerBehavior */
-  Polymer.PaperButtonBehavior = [
-    Polymer.IronButtonState,
-    Polymer.IronControlState,
-    Polymer.PaperRippleBehavior,
-    Polymer.PaperButtonBehaviorImpl
-  ];
-
-</script>
 <style is="custom-style">
 
   :root {
@@ -21356,7 +21237,6 @@ Custom property | Description | Default
 
         /* Because of polymer/2558, this style has lower specificity than * */
         box-sizing: border-box !important;
-
         @apply(--paper-icon-button);
       }
 
@@ -21369,7 +21249,6 @@ Custom property | Description | Default
         color: var(--paper-icon-button-disabled-text, --disabled-text-color);
         pointer-events: none;
         cursor: auto;
-
         @apply(--paper-icon-button-disabled);
       }
 
@@ -21382,7 +21261,6 @@ Custom property | Description | Default
         --iron-icon-height: 100%;
       }
     </style>
-
     <iron-icon id="icon" src="[[src]]" icon="[[icon]]" alt$="[[alt]]"></iron-icon>
   </template>
 
@@ -21555,10 +21433,7 @@ Custom property | Description | Default
           -ms-user-select: none;
           -webkit-user-select: none;
         user-select: none;
-
-        /* NOTE: Both values are needed, since some phones require the value to be `transparent`. */
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        -webkit-tap-highlight-color: transparent;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
 
         @apply(--paper-tabs);
       }
@@ -21724,6 +21599,14 @@ Custom property | Description | Default
         alignBottom: {
           type: Boolean,
           value: false
+        },
+
+        /**
+         * Gets or sets the selected element. The default is to use the index of the item.
+         */
+        selected: {
+          type: String,
+          notify: true
         },
 
         selectable: {
@@ -21927,13 +21810,7 @@ Custom property | Description | Default
         // bar animation: expand
         this.$.selectionBar.classList.add('expand');
 
-        var moveRight = oldIndex < index;
-        var isRTL = this._isRTL;
-        if (isRTL) {
-          moveRight = !moveRight;
-        }
-
-        if (moveRight) {
+        if (oldIndex < index) {
           this._positionBar(this._calcPercent(tabRect.left + tabRect.width - oldRect.left, w) - m,
               this._left);
         } else {
@@ -22338,7 +22215,7 @@ Custom property | Description | Default
 
     :host([opened]) > #contentContainer {
       -webkit-transform: translate3d(0, 0, 0);
-      transform: translate3d(0, 0, 0);
+      transform:  translate3d(0, 0, 0);
     }
 
     #scrim {
@@ -22440,27 +22317,26 @@ Custom property | Description | Default
       },
 
       listeners: {
-        track: '_track',
-        transitionend: '_transitionEnd'
+        track: '_trackHandler'
       },
 
       observers: [
         'resetLayout(position)',
-        '_updateDocScroll(persistent)'
+        '_updateDocScroll(opened, persistent)'
       ],
 
+      _lastTrackDirection: 0,
+
       _translateOffset: 0,
-
-      _trackEvents: null,
-
-      _isDrawerFlinging: false,
 
       attached: function() {
         // Set the scroll direction so you can vertically scroll inside the drawer.
         this.setScrollDirection('y');
 
-        // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
-        // may need to set the initial opened state which should not be transitioned).
+        /**
+         * Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
+         * may need to set the initial opened state which should not be transitioned).
+         */
         this.$.contentContainer.style.transition = 'none';
         this.async(function() {
           this.$.contentContainer.style.transition = '';
@@ -22504,212 +22380,76 @@ Custom property | Description | Default
       },
 
       _scrimTapHandler: function() {
-        if (this.persistent) {
-          return;
-        }
-
-        // This debouncer is needed because of Polymer/polymer#3405.
-        this.debounce('_scrimTapHandler', function() {
+        if (!this.persistent) {
           this.opened = false;
-        }, 1);
-      },
-
-      _track: function(event) {
-        if (this.persistent) {
-          return;
-        }
-
-        // Disable user selection on desktop.
-        event.preventDefault();
-
-        switch (event.detail.state) {
-          case 'start':
-            this._trackStart(event);
-            break;
-          case 'track':
-            this._trackMove(event);
-            break;
-          case 'end':
-            this._trackEnd(event);
-            break;
         }
       },
 
-      _trackStart: function(event) {
-        // Disable transitions since style attributes will reflect user track events.
-        this.$.contentContainer.style.transitionDuration = '0s';
-        this.$.scrim.style.transitionDuration = '0s';
-        this.$.scrim.style.visibility = 'visible';
+      _trackHandler: function(event) {
+        if (!this.persistent) {
+          switch (event.detail.state) {
+            case 'start':
+              // Disable transitions since styles will reflect user track events.
+              this.$.contentContainer.style.transitionDuration = '0s';
+              this.$.scrim.style.transitionDuration = '0s';
+              this.$.scrim.style.visibility = 'visible';
 
-        var rect = this.$.contentContainer.getBoundingClientRect();
-        if (this.position == 'left') {
-          this._translateOffset = rect.left;
-        } else {
-          this._translateOffset = rect.right - window.innerWidth;
-        }
+              if (this.opened) {
+                this._translateOffset = 0;
+              } else if (this.position == 'left') {
+                this._translateOffset = -this.getWidth();
+              } else if (this.position == 'right') {
+                this._translateOffset = this.getWidth();
+              }
+              break;
 
-        this._trackEvents = [];
-      },
+            case 'track':
+              var translateDelta = event.detail.dx + this._translateOffset;
+              switch (this.position) {
+                case 'left':
+                  translateDelta = Math.min(0, translateDelta);
+                  this._translateDrawer(translateDelta);
+                  this.$.scrim.style.opacity = 1 + translateDelta / this.getWidth();
+                  break;
+                case 'right':
+                  translateDelta = Math.max(0, translateDelta);
+                  this._translateDrawer(translateDelta);
+                  this.$.scrim.style.opacity = 1 - translateDelta / this.getWidth();
+                  break;
+              }
 
-      _trackMove: function(event) {
-        this._translateDrawer(event.detail.dx + this._translateOffset);
-        this._trackEvents.push(event);
-      },
+              // Keep track of the last user track event with non-zero ddx (which we
+              // need to determine whether to keep the drawer open/closed) since the
+              // very last track event may have zero ddx.
+              if (event.detail.ddx !== 0) {
+                this._lastTrackDirection = event.detail.ddx;
+              }
+              break;
 
-      _trackEnd: function(event) {
-        // Track handler takes precedence over scrim tap handler. See Polymer/polymer#3405.
-        this.cancelDebouncer('_scrimTapHandler');
+            case 'end':
+              this.$.contentContainer.style.transitionDuration = '';
+              this.$.scrim.style.transitionDuration = '';
+              this.$.scrim.style.visibility = '';
+              this.$.scrim.style.opacity = '';
+              this.transform('', this.$.contentContainer);
 
-        // Calculate the velocity.
-        this._velocity = this._calculateVelocity(event);
-
-        // No longer need the track events after calculating velocity - allow them to be GC'd.
-        this._trackEvents = null;
-
-        if (Math.abs(this._velocity) > this.MIN_FLING_VELOCITY) {
-          // If velocity is above the threshold, fling the drawer in the same direction.
-          this._flingDrawer(event);
-        } else {
-          // Otherwise, toggle the opened state based on the position of the drawer.
-          var halfWidth = this.getWidth() / 2;
-          if (event.detail.dx < -halfWidth) {
-            this.opened = this.position === 'right';
-          } else if (event.detail.dx > halfWidth) {
-            this.opened = this.position === 'left';
-          }
-          this._resetStyleAttributes();
-        }
-      },
-
-      _calculateVelocity: function(event) {
-        // Find the oldest track event that is within 100ms of track end using binary search.
-        var timeLowerBound = Date.now() - 100;
-        var trackEvent;
-        var min = 0;
-        var max = this._trackEvents.length - 1;        
-
-        while (min <= max) {
-          // Floor of average of min and max.
-          var mid = (min + max) >> 1;
-          var e = this._trackEvents[mid];
-          if (e.timeStamp >= timeLowerBound) {
-            trackEvent = e;
-            max = mid - 1;
-          } else {
-            min = mid + 1;
+              // Only toggle the drawer if the user intentionally swipes in one direction.
+              if (Math.abs(event.detail.dx) > 30) {
+                this.opened = (this.position === 'left' && this._lastTrackDirection > 0) ||
+                  (this.position === 'right' && this._lastTrackDirection < 0);
+              }
+              break;
           }
         }
-
-        if (trackEvent) {
-          var dx = event.detail.dx - trackEvent.detail.dx;
-          var dt = (event.timeStamp - trackEvent.timeStamp) || 1;
-          return dx / dt;
-        }
-        return 0;
-      },
-
-      _flingDrawer: function(event) {
-        var x = event.detail.dx + this._translateOffset;
-        var drawerWidth = this.getWidth();
-        var isPositionLeft = this.position === 'left';
-        var isVelocityPositive = this._velocity > 0;
-        var isClosingLeft = !isVelocityPositive && isPositionLeft;
-        var isClosingRight = isVelocityPositive && !isPositionLeft;
-
-        // Enforce a minimum transition velocity to make the drawer feel snappy.
-        if (isVelocityPositive) {
-          this._velocity = Math.max(this._velocity, this.MIN_TRANSITION_VELOCITY);
-        } else {
-          this._velocity = Math.min(this._velocity, -this.MIN_TRANSITION_VELOCITY);
-        }
-
-        // Calculate the amount of time needed to finish the transition based on the initial
-        // slope of the timing function.
-        var duration;
-        if (isClosingLeft) {
-          duration = (this.FLING_INITIAL_SLOPE * -(x + drawerWidth) / this._velocity) + 'ms';
-        } else if (isClosingRight) {
-          duration = (this.FLING_INITIAL_SLOPE * (drawerWidth - x) / this._velocity) + 'ms';
-        } else {
-          duration = (this.FLING_INITIAL_SLOPE * -x / this._velocity) + 'ms';
-        }
-
-        this.$.contentContainer.style.transitionDuration = duration;
-        this.$.contentContainer.style.transitionTimingFunction = this.FLING_TIMING_FUNCTION;
-        this.$.scrim.style.transitionDuration = duration;
-        this.$.scrim.style.transitionTimingFunction = this.FLING_TIMING_FUNCTION;
-
-        // Transform instead of toggling opened to avoid calling Polymer setters.
-        if (isClosingLeft) {
-          this._translateDrawer(-drawerWidth);
-        } else if (isClosingRight) {
-          this._translateDrawer(drawerWidth);
-        } else {
-          this._translateDrawer(0);
-        }
-
-        this._isDrawerFlinging = true;
-      },
-
-      _transitionEnd: function(event) {
-        if (Polymer.dom(event).localTarget !== this) {
-          return;
-        }
-
-        this._updateDocScroll();
-
-        // Only set the opened state and reset transition timing function if this
-        // transition end event was the end of a fling transition.
-        if (!this._isDrawerFlinging) {
-          return;
-        }
-
-        this._isDrawerFlinging = false;
-
-        if (this._velocity < 0) {
-          this.opened = this.position === 'right';
-        } else {
-          this.opened = this.position === 'left';
-        }
-
-        this.$.contentContainer.style.transitionTimingFunction = '';
-        this.$.scrim.style.transitionTimingFunction = '';
-        this._resetStyleAttributes();
-      },
-
-      _resetStyleAttributes: function() {
-        this.$.contentContainer.style.transitionDuration = '';
-        this.$.scrim.style.transitionDuration = '';
-        this.$.scrim.style.visibility = '';
-        this.$.scrim.style.opacity = '';
-        this.transform('', this.$.contentContainer);
       },
 
       _translateDrawer: function(x) {
-        var drawerWidth = this.getWidth();
-
-        if (this.position === 'left') {
-          x = Math.max(-drawerWidth, Math.min(x, 0));
-          this.$.scrim.style.opacity = 1 + x / drawerWidth;
-        } else {
-          x = Math.max(0, Math.min(x, drawerWidth));
-          this.$.scrim.style.opacity = 1 - x / drawerWidth;
-        }
-
-        this.translate3d(x + 'px', '0', '0', this.$.contentContainer);
+        this.transform('translate3d(' + x + 'px, 0, 0)', this.$.contentContainer);
       },
 
       _updateDocScroll: function() {
         document.body.style.overflow = (this.persistent || !this.opened) ? '' : 'hidden';
-      },
-
-      MIN_FLING_VELOCITY: 0.2,
-
-      MIN_TRANSITION_VELOCITY: 1.2,
-
-      FLING_TIMING_FUNCTION: 'cubic-bezier(0.667, 1, 0.667, 1)',
-
-      FLING_INITIAL_SLOPE: 1.5
+      }
 
       /**
        * Fired when the layout of app-drawer has changed.
@@ -24762,8 +24502,8 @@ Custom property | Description | Default
 
     </style>
 
-    <iron-ajax url="../data/items.json" auto="" last-response="{{items}}"></iron-ajax>
-    <iron-ajax url="../data/featured.json" auto="" last-response="{{featuredItems}}"></iron-ajax>
+    <iron-ajax url="data/items.json" auto="" last-response="{{items}}"></iron-ajax>
+    <iron-ajax url="data/featured.json" auto="" last-response="{{featuredItems}}"></iron-ajax>
     <iron-page-url hash="{{urlHash}}"></iron-page-url>
     <iron-media-query query="max-width: 400px" query-matches="{{smallScreen}}"></iron-media-query>
 
