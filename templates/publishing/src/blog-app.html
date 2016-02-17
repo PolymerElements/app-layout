@@ -105,13 +105,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         width: 100%;
       }
 
-      article-headline {
+      [is=article-headline] {
         @apply(--shadow-transition);
         @apply(--shadow-elevation-2dp);
         cursor: pointer;
       }
 
-      article-headline:hover {
+      [is=article-headline]:hover {
         @apply(--shadow-elevation-6dp);
       }
 
@@ -120,16 +120,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         margin: 64px auto;
         background-color: #fff;
         @apply(--shadow-elevation-2dp);
-      }
-
-      .no-contents {
-        height: calc(100vh - 129px);
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-        padding: 8px;
-        text-align: center;
-        font-size: 30px;
-        color: #bbb;
       }
 
       @media (max-width: 580px) {
@@ -182,12 +172,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           <!-- nav menu -->
           <iron-selector class="nav-menu" selected="{{category}}" attr-for-selected="name" on-iron-activate="_showList">
-            <a name="art" href="#/art/list">Art</a>
-            <a name="film" href="#/film/list">Film</a>
-            <a name="photography" href="#/photography/list">Photography</a>
-            <a name="design" href="#/design/list">Design</a>
-            <a name="topten" href="#/topten/list">Top Ten</a>
-            <a name="aday" href="#/aday/list">A Day in the Life</a>
+            <template is="dom-repeat" items="{{articles}}">
+              <a name="{{item.name}}" href="#/{{item.name}}/list">{{item.title}}</a>
+            </template>
           </iron-selector>
 
         </app-header-layout>
@@ -221,39 +208,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <!-- list page -->
           <iron-pages name="list" selected="{{category}}" attr-for-selected="name">
 
-            <!-- 'art' category page (lazy-loaded) -->
-            <template is="dom-if" if="{{_equal(category, 'art')}}">
-              <section name="art">
-
-                <!-- 2-columns grid -->
-                <two-columns-grid column-width="396" gutter="4">
-                  <template is="dom-repeat" items="{{articles.art}}">
-                    <a is="article-headline" href="#/art/detail/{{item.title}}" article="{{item}}"></a>
-                  </template>
-                </two-columns-grid>
-
-              </section>
+            <template is="dom-repeat" items="{{articles}}" as="category">
+              <!-- category page (lazy-loaded) -->
+              <template is="dom-if" if="{{_equal(category, {{category.name}})}}">
+                <section name="{{category.name}}">
+  
+                  <!-- 2-columns grid -->
+                  <two-columns-grid column-width="396" gutter="4">
+                    <template is="dom-repeat" items="{{category.items}}" as="article">
+                      <a is="article-headline" href="#/{{category.name}}/detail/{{article.title}}" article="{{article}}"></a>
+                    </template>
+                  </two-columns-grid>
+                  
+                </section>
+              </template>
             </template>
-
-            <!-- 'film' category page (lazy-loaded) -->
-            <template is="dom-if" if="{{_equal(category, 'film')}}">
-              <section name="film">
-
-                <!-- 2-columns grid -->
-                <two-columns-grid column-width="396" gutter="4">
-                  <template is="dom-repeat" items="{{articles.film}}">
-                    <a is="article-headline" href="#/film/detail/{{item.title}}" article="{{item}}"></a>
-                  </template>
-                </two-columns-grid>
-
-              </section>
-            </template>
-
-            <!-- other categories -->
-            <section name="photography" class="no-contents">Photography (No Contents)</section>
-            <section name="design" class="no-contents">Design (No Contents)</section>
-            <section name="topten" class="no-contents">Top Ten (No Contents)</section>
-            <section name="aday" class="no-contents">A Day in the Life (No Contents)</section>
 
           </iron-pages>
 
@@ -322,12 +291,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _updateArticle: function(articles, category, title) {
-        var as = articles[category];
-        if (as) {
-          for (var i=0, a; a=as[i]; i++) {
-            if (a.title === title) {
-              this.article = a;
-              return;
+        for (var i=0, cat; cat=articles[i]; i++) {
+          if (cat.name === category) {
+            for (var j=0, article; article=cat.items[j]; j++) {
+              if (article.title === title) {
+                this.article = article;
+                return;
+              }
             }
           }
         }
