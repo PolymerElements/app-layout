@@ -17,6 +17,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../paper-tabs/paper-tabs.html">
 <link rel="import" href="../../../../iron-icons/iron-icons.html">
 <link rel="import" href="../../../../iron-page-url/iron-page-url.html">
+<link rel="import" href="../../../../platinum-sw/platinum-sw-register.html">
+<link rel="import" href="../../../../platinum-sw/platinum-sw-cache.html">
 <link rel="import" href="../../../app-layout.html">
 <link rel="import" href="../../../app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="shrine-list.html">
@@ -209,6 +211,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <iron-ajax url="../data/featured.json" auto last-response="{{featuredItems}}"></iron-ajax>
     <iron-page-url hash="{{urlHash}}"></iron-page-url>
     <iron-media-query query="max-width: 400px" query-matches="{{smallScreen}}"></iron-media-query>
+
+    <!-- setup service worker -->
+    <platinum-sw-register skip-waiting clients-claim auto-register>
+      <platinum-sw-cache default-cache-strategy="fastest"></platinum-sw-cache>
+    </platinum-sw-register>
 
     <app-drawer-layout drawer-width="288px" force-narrow>
       <!-- navigation drawer for small screen sizes -->
