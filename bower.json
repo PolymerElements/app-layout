@@ -39,6 +39,7 @@
     "paper-tabs": "polymerelements/paper-tabs#^1.0.0",
     "paper-progress": "polymerelements/paper-progress#~1.0.2",
     "paper-styles": "polymerelements/paper-styles#^1.0.0",
+    "platinum-sw": "polymerelements/platinum-sw#^1.0.0",
     "test-fixture": "polymerelements/test-fixture#^1.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
     "web-component-tester": "Polymer/web-component-tester#^3.4.0"
