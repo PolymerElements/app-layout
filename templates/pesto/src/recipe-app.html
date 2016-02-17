@@ -104,7 +104,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header-layout>
       </app-drawer>
 
-      <app-scrollpos-control selected="{{__page}}" reset="{{__equal(__page, 'detail')}}"></app-scrollpos-control>
+      <app-scrollpos-control selected="{{__page}}" reset="{{__isDetailPage(__page)}}"></app-scrollpos-control>
 
       <!-- list/detail pages -->
       <iron-pages selected="{{__page}}" attr-for-selected="name">
@@ -160,8 +160,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       'recipe-close': '__closeRecipeDetail'
     },
 
-    __equal: function(a, b) {
-      return a === b;
+    __isDetailPage: function() {
+      return this.__page === 'detail';
     },
 
     __selectedRecipeChanged: function(newValue, oldValue) {
