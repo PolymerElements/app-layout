@@ -20,7 +20,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../paper-item/paper-icon-item.html">
 <link rel="import" href="../../../../paper-menu-button/paper-menu-button.html">
 
-<link rel="import" href="../../../app-box/app-box.html">
 <link rel="import" href="../../../app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../app-header/app-header.html">
 <link rel="import" href="../../../app-scroll-effects/app-scroll-effects.html">
@@ -32,12 +31,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <style>
 
-    #bgHeader {
-      position: absolute;
-      top: -64px;
-      left: 0;
-      right: 0;
-      height: 100vh;
+    :host {
+      display: block;
+      background-attachment: fixed;
+      background-size: 100% auto;
+      background-repeat: no-repeat;
     }
 
     #header {
@@ -58,6 +56,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       position: absolute;
       top: -28px;
       right: 40px;
+
+      --paper-fab-background: #EF5458;
     }
 
     paper-card {
@@ -140,12 +140,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       </app-header>
 
-      <app-box id="bgHeader" effects="parallax-background"
-        effects-config='{"parallax-background": {"scalar": 10}}'></app-box>
-
       <div class="card-container">
 
-        <paper-card heading="{{recipe.title}}">
+        <paper-card heading="{{recipe.name}}">
           <div class="card-content">
 
             <p>{{recipe.description}}</p>
@@ -155,13 +152,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <template is="dom-repeat" items="{{recipe.ingredients}}">
               <div class="ingredient-item">
                 <div class="ingredient-amount">{{item.amount}}</div>
-                <div class="ingredient-name">{{item.name}}</div>
+                <div class="ingredient-name">{{item.description}}</div>
               </div>
             </template>
 
-            <h4>Directions</h4>
+            <h4>Steps</h4>
 
-            <template is="dom-repeat" items="{{recipe.directions}}">
+            <template is="dom-repeat" items="{{recipe.steps}}">
               <div class="ingredient-item">
                 <div class="ingredient-amount">{{item.duration}}</div>
                 <div class="ingredient-name">{{item.description}}</div>
@@ -204,9 +201,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     __recipeChanged: function(newValue, oldValue) {
       if (newValue) {
-        this.$.bgHeader.updateStyles({
-          '--app-box-background-front-layer': 'background-image: url(' + newValue.imageUrl + '); padding-top: 40px;'
-        });
+        this.style.backgroundImage = 'url(' + newValue.imageUrl + ')';
       }
     },
 

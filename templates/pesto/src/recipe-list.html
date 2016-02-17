@@ -72,7 +72,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     .content {
       display: block;
       position: relative;
-      width: 1170px;
+      max-width: 1000px;
       margin: 5px auto;
     }
 
@@ -108,19 +108,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       --paper-fab-background: #EF5458;
     }
 
-    @media (max-width: 1458px) {
-      .content {
-        width: 100%;
-      }
-    }
-
     @media (max-width: 960px) {
+      .content {
+        max-width: 800px;
+      }
+
       .card-container {
         width: 50%;
       }
     }
 
     @media (max-width: 719px) {
+      .content {
+        max-width: 400px;
+      }
+
       .card-container {
         width: 100%;
       }
@@ -148,7 +150,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --><div class="card-container" recipe="{{item}}">
             <paper-card image="{{item.imageUrl}}">
               <div class="card-content">
-                <h2>{{item.title}}</h2>
+                <h2>{{item.name}}</h2>
                 <p>By <span>{{item.author}}</span></p>
               </div>
             </paper-card>

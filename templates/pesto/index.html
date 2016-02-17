@@ -13,20 +13,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#00AA8D">
 
-  <title>Polymer Pesto</title>
+  <title>Pesto by Polymer</title>
+
+  <link rel="manifest" href="manifest.json">
 
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../../font-roboto/roboto.html">
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,700">
   <link rel="import" href="../../../iron-ajax/iron-ajax.html">
   <link rel="import" href="src/recipe-app.html">
 
-  <style>
+  <style is="custom-style">
+
+    :root {
+      --paper-font-common-base: {
+        font-family: Raleway, sans-serif;
+      };
+    }
 
     body {
       margin: 0;
-      font-family: 'Roboto', 'Noto', sans-serif;
+      font-family: Raleway, sans-serif;
       background-color: #f5f5f5;
     }
 
