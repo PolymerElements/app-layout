@@ -208,7 +208,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div class="items">
       <div class="itemsGrid">
         <template is="dom-repeat" items="[[relatedItems]]">
-          <a href$="#item/[[item.id]]" title$="[[item.title]]" class="item">
+          <a href$="#[[section]]/[[item.id]]" title$="[[item.title]]" class="item">
             <shrine-simple-item item="[[item]]"></shrine-simple-item>
           </a>
         </template>
@@ -257,6 +257,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       item: {
         type: Object,
         observer: '_itemChanged'
+      },
+
+      section: {
+        type: String
       },
 
       relatedItems: {
