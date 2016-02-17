@@ -94,7 +94,7 @@ Custom property                  | Description                            | Defa
 
     :host([opened]) > #contentContainer {
       -webkit-transform: translate3d(0, 0, 0);
-      transform:  translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
     }
 
     #scrim {
@@ -124,7 +124,7 @@ Custom property                  | Description                            | Defa
      *    visibility: visible;
      *  }
      *
-     * Ref https://connect.microsoft.com/IE/feedbackdetail/view/2217046/element-styles-not-updated-when-using-dynamically-inserted-style-tags-that-match-with-not-attribute-rules
+     * Ref https://goo.gl/1UMIMk
      */
     :host([opened]) > #scrim {
       opacity: 1;
@@ -196,26 +196,27 @@ Custom property                  | Description                            | Defa
       },
 
       listeners: {
-        track: '_trackHandler'
+        track: '_track',
+        transitionend: '_transitionEnd'
       },
 
       observers: [
         'resetLayout(position)',
-        '_updateDocScroll(opened, persistent)'
+        '_updateDocScroll(persistent)'
       ],
 
-      _lastTrackDirection: 0,
-
       _translateOffset: 0,
+
+      _trackEvents: null,
+
+      _isDrawerFlinging: false,
 
       attached: function() {
         // Set the scroll direction so you can vertically scroll inside the drawer.
         this.setScrollDirection('y');
 
-        /**
-         * Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
-         * may need to set the initial opened state which should not be transitioned).
-         */
+        // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
+        // may need to set the initial opened state which should not be transitioned).
         this.$.contentContainer.style.transition = 'none';
         this.async(function() {
           this.$.contentContainer.style.transition = '';
@@ -259,76 +260,212 @@ Custom property                  | Description                            | Defa
       },
 
       _scrimTapHandler: function() {
-        if (!this.persistent) {
+        if (this.persistent) {
+          return;
+        }
+
+        // This debouncer is needed because of Polymer/polymer#3405.
+        this.debounce('_scrimTapHandler', function() {
           this.opened = false;
+        }, 1);
+      },
+
+      _track: function(event) {
+        if (this.persistent) {
+          return;
+        }
+
+        // Disable user selection on desktop.
+        event.preventDefault();
+
+        switch (event.detail.state) {
+          case 'start':
+            this._trackStart(event);
+            break;
+          case 'track':
+            this._trackMove(event);
+            break;
+          case 'end':
+            this._trackEnd(event);
+            break;
         }
       },
 
-      _trackHandler: function(event) {
-        if (!this.persistent) {
-          switch (event.detail.state) {
-            case 'start':
-              // Disable transitions since styles will reflect user track events.
-              this.$.contentContainer.style.transitionDuration = '0s';
-              this.$.scrim.style.transitionDuration = '0s';
-              this.$.scrim.style.visibility = 'visible';
+      _trackStart: function(event) {
+        // Disable transitions since style attributes will reflect user track events.
+        this.$.contentContainer.style.transitionDuration = '0s';
+        this.$.scrim.style.transitionDuration = '0s';
+        this.$.scrim.style.visibility = 'visible';
 
-              if (this.opened) {
-                this._translateOffset = 0;
-              } else if (this.position == 'left') {
-                this._translateOffset = -this.getWidth();
-              } else if (this.position == 'right') {
-                this._translateOffset = this.getWidth();
-              }
-              break;
+        var rect = this.$.contentContainer.getBoundingClientRect();
+        if (this.position == 'left') {
+          this._translateOffset = rect.left;
+        } else {
+          this._translateOffset = rect.right - window.innerWidth;
+        }
 
-            case 'track':
-              var translateDelta = event.detail.dx + this._translateOffset;
-              switch (this.position) {
-                case 'left':
-                  translateDelta = Math.min(0, translateDelta);
-                  this._translateDrawer(translateDelta);
-                  this.$.scrim.style.opacity = 1 + translateDelta / this.getWidth();
-                  break;
-                case 'right':
-                  translateDelta = Math.max(0, translateDelta);
-                  this._translateDrawer(translateDelta);
-                  this.$.scrim.style.opacity = 1 - translateDelta / this.getWidth();
-                  break;
-              }
+        this._trackEvents = [];
+      },
 
-              // Keep track of the last user track event with non-zero ddx (which we
-              // need to determine whether to keep the drawer open/closed) since the
-              // very last track event may have zero ddx.
-              if (event.detail.ddx !== 0) {
-                this._lastTrackDirection = event.detail.ddx;
-              }
-              break;
+      _trackMove: function(event) {
+        this._translateDrawer(event.detail.dx + this._translateOffset);
+        this._trackEvents.push(event);
+      },
 
-            case 'end':
-              this.$.contentContainer.style.transitionDuration = '';
-              this.$.scrim.style.transitionDuration = '';
-              this.$.scrim.style.visibility = '';
-              this.$.scrim.style.opacity = '';
-              this.transform('', this.$.contentContainer);
+      _trackEnd: function(event) {
+        // Track handler takes precedence over scrim tap handler. See Polymer/polymer#3405.
+        this.cancelDebouncer('_scrimTapHandler');
 
-              // Only toggle the drawer if the user intentionally swipes in one direction.
-              if (Math.abs(event.detail.dx) > 30) {
-                this.opened = (this.position === 'left' && this._lastTrackDirection > 0) ||
-                  (this.position === 'right' && this._lastTrackDirection < 0);
-              }
-              break;
+        // Calculate the velocity.
+        this._velocity = this._calculateVelocity(event);
+
+        // No longer need the track events after calculating velocity - allow them to be GC'd.
+        this._trackEvents = null;
+
+        if (Math.abs(this._velocity) > this.MIN_FLING_VELOCITY) {
+          // If velocity is above the threshold, fling the drawer in the same direction.
+          this._flingDrawer(event);
+        } else {
+          // Otherwise, toggle the opened state based on the position of the drawer.
+          var halfWidth = this.getWidth() / 2;
+          if (event.detail.dx < -halfWidth) {
+            this.opened = this.position === 'right';
+          } else if (event.detail.dx > halfWidth) {
+            this.opened = this.position === 'left';
+          }
+          this._resetStyleAttributes();
+        }
+      },
+
+      _calculateVelocity: function(event) {
+        // Find the oldest track event that is within 100ms of track end using binary search.
+        var timeLowerBound = Date.now() - 100;
+        var trackEvent;
+        var min = 0;
+        var max = this._trackEvents.length - 1;        
+
+        while (min <= max) {
+          // Floor of average of min and max.
+          var mid = (min + max) >> 1;
+          var e = this._trackEvents[mid];
+          if (e.timeStamp >= timeLowerBound) {
+            trackEvent = e;
+            max = mid - 1;
+          } else {
+            min = mid + 1;
           }
         }
+
+        if (trackEvent) {
+          var dx = event.detail.dx - trackEvent.detail.dx;
+          var dt = (event.timeStamp - trackEvent.timeStamp) || 1;
+          return dx / dt;
+        }
+        return 0;
+      },
+
+      _flingDrawer: function(event) {
+        var x = event.detail.dx + this._translateOffset;
+        var drawerWidth = this.getWidth();
+        var isPositionLeft = this.position === 'left';
+        var isVelocityPositive = this._velocity > 0;
+        var isClosingLeft = !isVelocityPositive && isPositionLeft;
+        var isClosingRight = isVelocityPositive && !isPositionLeft;
+
+        // Enforce a minimum transition velocity to make the drawer feel snappy.
+        if (isVelocityPositive) {
+          this._velocity = Math.max(this._velocity, this.MIN_TRANSITION_VELOCITY);
+        } else {
+          this._velocity = Math.min(this._velocity, -this.MIN_TRANSITION_VELOCITY);
+        }
+
+        // Calculate the amount of time needed to finish the transition based on the initial
+        // slope of the timing function.
+        var duration;
+        if (isClosingLeft) {
+          duration = (this.FLING_INITIAL_SLOPE * -(x + drawerWidth) / this._velocity) + 'ms';
+        } else if (isClosingRight) {
+          duration = (this.FLING_INITIAL_SLOPE * (drawerWidth - x) / this._velocity) + 'ms';
+        } else {
+          duration = (this.FLING_INITIAL_SLOPE * -x / this._velocity) + 'ms';
+        }
+
+        this.$.contentContainer.style.transitionDuration = duration;
+        this.$.contentContainer.style.transitionTimingFunction = this.FLING_TIMING_FUNCTION;
+        this.$.scrim.style.transitionDuration = duration;
+        this.$.scrim.style.transitionTimingFunction = this.FLING_TIMING_FUNCTION;
+
+        // Transform instead of toggling opened to avoid calling Polymer setters.
+        if (isClosingLeft) {
+          this._translateDrawer(-drawerWidth);
+        } else if (isClosingRight) {
+          this._translateDrawer(drawerWidth);
+        } else {
+          this._translateDrawer(0);
+        }
+
+        this._isDrawerFlinging = true;
+      },
+
+      _transitionEnd: function(event) {
+        if (Polymer.dom(event).localTarget !== this) {
+          return;
+        }
+
+        this._updateDocScroll();
+
+        // Only set the opened state and reset transition timing function if this
+        // transition end event was the end of a fling transition.
+        if (!this._isDrawerFlinging) {
+          return;
+        }
+
+        this._isDrawerFlinging = false;
+
+        if (this._velocity < 0) {
+          this.opened = this.position === 'right';
+        } else {
+          this.opened = this.position === 'left';
+        }
+
+        this.$.contentContainer.style.transitionTimingFunction = '';
+        this.$.scrim.style.transitionTimingFunction = '';
+        this._resetStyleAttributes();
+      },
+
+      _resetStyleAttributes: function() {
+        this.$.contentContainer.style.transitionDuration = '';
+        this.$.scrim.style.transitionDuration = '';
+        this.$.scrim.style.visibility = '';
+        this.$.scrim.style.opacity = '';
+        this.transform('', this.$.contentContainer);
       },
 
       _translateDrawer: function(x) {
-        this.transform('translate3d(' + x + 'px, 0, 0)', this.$.contentContainer);
+        var drawerWidth = this.getWidth();
+
+        if (this.position === 'left') {
+          x = Math.max(-drawerWidth, Math.min(x, 0));
+          this.$.scrim.style.opacity = 1 + x / drawerWidth;
+        } else {
+          x = Math.max(0, Math.min(x, drawerWidth));
+          this.$.scrim.style.opacity = 1 - x / drawerWidth;
+        }
+
+        this.translate3d(x + 'px', '0', '0', this.$.contentContainer);
       },
 
       _updateDocScroll: function() {
         document.body.style.overflow = (this.persistent || !this.opened) ? '' : 'hidden';
-      }
+      },
+
+      MIN_FLING_VELOCITY: 0.2,
+
+      MIN_TRANSITION_VELOCITY: 1.2,
+
+      FLING_TIMING_FUNCTION: 'cubic-bezier(0.667, 1, 0.667, 1)',
+
+      FLING_INITIAL_SLOPE: 1.5
 
       /**
        * Fired when the layout of app-drawer has changed.
