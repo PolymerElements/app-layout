@@ -23,6 +23,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,700">
   <link rel="import" href="../../../iron-ajax/iron-ajax.html">
+  <link rel="import" href="../../../platinum-sw/platinum-sw-cache.html">
+  <link rel="import" href="../../../platinum-sw/platinum-sw-register.html">
   <link rel="import" href="src/recipe-app.html">
 
   <style is="custom-style">
@@ -48,6 +50,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <recipe-app recipes="{{data.recipes}}"></recipe-app>
     <iron-ajax url="data/recipes.json" auto last-response="{{data}}"></iron-ajax>
+
+    <platinum-sw-register auto-register>
+      <platinum-sw-cache default-cache-strategy="fastest"></platinum-sw-cache>
+    </platinum-sw-register>
 
   </template>
 
