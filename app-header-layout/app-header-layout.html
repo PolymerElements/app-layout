@@ -149,7 +149,7 @@ Using an own scrolling region:
         this.debounce('_resetLayout', function() {
           this._updateContentPosition();
           this._updateScroller();
-        }, 3);
+        });
       },
 
       _getFixedNodes: function() {
@@ -163,7 +163,9 @@ Using an own scrolling region:
         if (!this.isAttached || !header) {
           return;
         }
+
         this._headerHeight = header.offsetHeight;
+
         if (header.fixed && !header.willCondense() && this.hasScrollingRegion) {
           containerStyle.marginTop = this._headerHeight + 'px';
           containerStyle.paddingTop = '';

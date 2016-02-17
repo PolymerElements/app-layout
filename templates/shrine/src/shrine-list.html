@@ -67,7 +67,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <div class="grid">
       <template is="dom-repeat" items="[[items]]" sort="_sortItems" initial-count="1">
-        <a href$="#item/[[item.id]]" class="item">
+        <a href$="#[[section]]/[[item.id]]" class="item">
           <shrine-item item="[[item]]"></shrine-item>
         </a>
       </template>
@@ -89,6 +89,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       featuredItem: {
         type: Object
+      },
+
+      section: {
+        type: String
       }
     },
 
