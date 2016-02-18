@@ -158,13 +158,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         assert.equal(contentContainer.style.transitionDuration, '0s');
         assert.equal(scrim.style.transitionDuration, '0s');
-        assert.equal(scrim.style.visibility, 'visible');
+        assert.equal(drawer.style.visibility, 'visible');
 
         drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
 
+        assert.equal(drawer.style.visibility, '');
         assert.equal(contentContainer.style.transitionDuration, '');
         assert.equal(scrim.style.transitionDuration, '');
-        assert.equal(scrim.style.visibility, '');
         assert.equal(scrim.style.opacity, '');
         assert.equal(transformSpy.lastCall.args[0], '');
       });
@@ -251,17 +251,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         assert.equal(contentContainer.style.transitionDuration, '0s');
         assert.equal(scrim.style.transitionDuration, '0s');
-        assert.equal(scrim.style.visibility, 'visible');
+        assert.equal(drawer.style.visibility, 'visible');
 
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
         drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
         drawer.fire('transitionend');
 
+        assert.equal(drawer.style.visibility, '');
         assert.equal(contentContainer.style.transitionTimingFunction, '');
         assert.equal(contentContainer.style.transitionDuration, '');
         assert.equal(scrim.style.transitionTimingFunction, '');
         assert.equal(scrim.style.transitionDuration, '');
-        assert.equal(scrim.style.visibility, '');
         assert.equal(scrim.style.opacity, '');
         assert.equal(transformSpy.lastCall.args[0], '');
       });
@@ -362,7 +362,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('doc scroll', function() {
-
         drawer.opened = true;
         drawer.fire('transitionend');
 
@@ -383,24 +382,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('scrim', function() {
-        var scrimComputedStyle;
         scrim.style.transitionDuration = '0s';
 
-        scrimComputedStyle = window.getComputedStyle(scrim);
-        assert.equal(scrimComputedStyle['opacity'], 0);
-        assert.equal(scrimComputedStyle['visibility'], 'hidden');
+        assert.equal(window.getComputedStyle(scrim)['opacity'], 0);
 
         drawer.opened = true;
 
-        scrimComputedStyle = window.getComputedStyle(scrim);
-        assert.equal(scrimComputedStyle['opacity'], 1);
-        assert.equal(scrimComputedStyle['visibility'], 'visible');
+        assert.equal(window.getComputedStyle(scrim)['opacity'], 1);
 
         drawer.persistent = true;
 
-        scrimComputedStyle = window.getComputedStyle(scrim);
-        assert.equal(scrimComputedStyle['opacity'], 0);
-        assert.equal(scrimComputedStyle['visibility'], 'hidden');
+        assert.equal(window.getComputedStyle(scrim)['visibility'], 'hidden');
       });
 
       test('tap on scrim closes drawer', function(done) {
