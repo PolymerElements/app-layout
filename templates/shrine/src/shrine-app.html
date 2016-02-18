@@ -334,10 +334,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     _hashDidChange: function(urlHash, items, featuredItems) {
       var filteredItems;
       var itemLookup = this._getItemFromHash(urlHash);
-        console.log(itemLookup);
 
       if (itemLookup !== null) {
-
         this.detailItem = items.filter(function(item) {
           return item.id === itemLookup.id;
         }).pop();
