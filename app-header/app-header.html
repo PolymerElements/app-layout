@@ -374,8 +374,8 @@ Mixin | Description | Default
           }
           // restore no transition
           this.disabled = savedDisabled;
-          this.fire('app-header-reset-layout');
-        }, 1);
+        });
+        this.fire('app-header-reset-layout');
       },
 
       /**
