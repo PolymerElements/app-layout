@@ -14090,16 +14090,19 @@ Mixin | Description | Default
      */
     setItemSelected: function(item, isSelected) {
       if (item != null) {
-        if (isSelected) {
-          this.selection.push(item);
-        } else {
-          var i = this.selection.indexOf(item);
-          if (i >= 0) {
-            this.selection.splice(i, 1);
+        if (isSelected !== this.isSelected(item)) {
+          // proceed to update selection only if requested state differs from current
+          if (isSelected) {
+            this.selection.push(item);
+          } else {
+            var i = this.selection.indexOf(item);
+            if (i >= 0) {
+              this.selection.splice(i, 1);
+            }
           }
-        }
-        if (this.selectCallback) {
-          this.selectCallback(item, isSelected);
+          if (this.selectCallback) {
+            this.selectCallback(item, isSelected);
+          }
         }
       }
     },
@@ -14560,11 +14563,16 @@ Mixin | Description | Default
     },
 
     _selectMulti: function(values) {
-      this._selection.clear();
       if (values) {
-        for (var i = 0; i < values.length; i++) {
-          this._selection.setItemSelected(this._valueToItem(values[i]), true);
+        var selectedItems = this._valuesToItems(values);
+        // clear all but the current selected items
+        this._selection.clear(selectedItems);
+        // select only those not selected yet
+        for (var i = 0; i < selectedItems.length; i++) {
+          this._selection.setItemSelected(selectedItems[i], true);
         }
+      } else {
+        this._selection.clear();
       }
     },
 
@@ -14587,6 +14595,12 @@ Mixin | Description | Default
         this.splice('selectedValues',i,1);
       }
       this._selection.setItemSelected(this._valueToItem(value), unselected);
+    },
+
+    _valuesToItems: function(values) {
+      return (values == null) ? null : values.map(function(value) {
+        return this._valueToItem(value);
+      }, this);
     }
   };
 
@@ -16803,14 +16817,14 @@ Displays a page on different device layouts.
       opacity: 1;
     }
 
-    :host > ::content [condensed-title] {
+    #contentContainer > ::content [condensed-title] {
       opacity: 0;
       white-space: nowrap;
       -webkit-transform-origin: left top;
       transform-origin: left top;
     }
 
-    :host > ::content [title] {
+    #contentContainer > ::content [title] {
       white-space: nowrap;
       -webkit-transform-origin: left top;
       transform-origin: left top;
@@ -16848,7 +16862,7 @@ Displays a page on different device layouts.
     :host([disabled])::after,
     :host([disabled]) #backgroundFrontLayer,
     :host([disabled]) #backgroundRearLayer,
-    :host([disabled]) > ::content > app-toolbar:first-of-type {
+    :host([disabled]) ::content > app-toolbar:first-of-type {
       transition: none !important;
     }
 
@@ -17054,8 +17068,8 @@ Displays a page on different device layouts.
           }
           // restore no transition
           this.disabled = savedDisabled;
-          this.fire('app-header-reset-layout');
-        }, 1);
+        });
+        this.fire('app-header-reset-layout');
       },
 
       /**
@@ -17275,7 +17289,7 @@ Displays a page on different device layouts.
         this.debounce('_resetLayout', function() {
           this._updateContentPosition();
           this._updateScroller();
-        }, 3);
+        });
       },
 
       _getFixedNodes: function() {
@@ -17289,7 +17303,9 @@ Displays a page on different device layouts.
         if (!this.isAttached || !header) {
           return;
         }
+
         this._headerHeight = header.offsetHeight;
+
         if (header.fixed && !header.willCondense() && this.hasScrollingRegion) {
           containerStyle.marginTop = this._headerHeight + 'px';
           containerStyle.paddingTop = '';

@@ -11509,16 +11509,19 @@ A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `
      */
     setItemSelected: function(item, isSelected) {
       if (item != null) {
-        if (isSelected) {
-          this.selection.push(item);
-        } else {
-          var i = this.selection.indexOf(item);
-          if (i >= 0) {
-            this.selection.splice(i, 1);
+        if (isSelected !== this.isSelected(item)) {
+          // proceed to update selection only if requested state differs from current
+          if (isSelected) {
+            this.selection.push(item);
+          } else {
+            var i = this.selection.indexOf(item);
+            if (i >= 0) {
+              this.selection.splice(i, 1);
+            }
           }
-        }
-        if (this.selectCallback) {
-          this.selectCallback(item, isSelected);
+          if (this.selectCallback) {
+            this.selectCallback(item, isSelected);
+          }
         }
       }
     },
@@ -12003,11 +12006,16 @@ Example:
     },
 
     _selectMulti: function(values) {
-      this._selection.clear();
       if (values) {
-        for (var i = 0; i < values.length; i++) {
-          this._selection.setItemSelected(this._valueToItem(values[i]), true);
+        var selectedItems = this._valuesToItems(values);
+        // clear all but the current selected items
+        this._selection.clear(selectedItems);
+        // select only those not selected yet
+        for (var i = 0; i < selectedItems.length; i++) {
+          this._selection.setItemSelected(selectedItems[i], true);
         }
+      } else {
+        this._selection.clear();
       }
     },
 
@@ -12030,6 +12038,12 @@ Example:
         this.splice('selectedValues',i,1);
       }
       this._selection.setItemSelected(this._valueToItem(value), unselected);
+    },
+
+    _valuesToItems: function(values) {
+      return (values == null) ? null : values.map(function(value) {
+        return this._valueToItem(value);
+      }, this);
     }
   };
 
@@ -16232,10 +16246,11 @@ context. You should place this element as a child of `<body>` whenever possible.
     },
 
     /**
-     * Cancels the overlay.
+     * Cancels the overlay. 
+     * @param {?Event} event The original event
      */
-    cancel: function() {
-      var cancelEvent = this.fire('iron-overlay-canceled', undefined, {cancelable: true});
+    cancel: function(event) {
+      var cancelEvent = this.fire('iron-overlay-canceled', event, {cancelable: true});
       if (cancelEvent.defaultPrevented) {
         return;
       }
@@ -16346,6 +16361,7 @@ context. You should place this element as a child of `<body>` whenever possible.
 
     // tasks which must occur before opening; e.g. making the element visible
     _prepareRenderOpened: function() {
+
       this._manager.addOverlay(this);
 
       this._preparePositioning();
@@ -16354,6 +16370,12 @@ context. You should place this element as a child of `<body>` whenever possible.
 
       if (this.withBackdrop) {
         this.backdropElement.prepare();
+      }
+
+      // Safari will apply the focus to the autofocus element when displayed for the first time,
+      // so we blur it. Later, _applyFocus will set the focus if necessary.
+      if (this.noAutoFocus && document.activeElement === this._focusNode) {
+        this._focusNode.blur();
       }
     },
 
@@ -16425,7 +16447,7 @@ context. You should place this element as a child of `<body>` whenever possible.
         if (this.noCancelOnOutsideClick) {
           this._applyFocus();
         } else {
-          this.cancel();
+          this.cancel(event);
         }
       }
     },
@@ -16435,7 +16457,7 @@ context. You should place this element as a child of `<body>` whenever possible.
       if (this._manager.currentOverlay() === this &&
           !this.noCancelOnEscKey &&
           event.keyCode === ESC) {
-        this.cancel();
+        this.cancel(event);
       }
     },
 
@@ -16467,6 +16489,7 @@ context. You should place this element as a child of `<body>` whenever possible.
  * Fired when the `iron-overlay` is canceled, but before it is closed.
  * Cancel the event to prevent the `iron-overlay` from closing.
  * @event iron-overlay-canceled
+ * @param {?Event} event The event in case the user pressed ESC or clicked outside the overlay
  */
 
 /**
@@ -19458,7 +19481,7 @@ Custom property | Description | Default
         this.debounce('_resetLayout', function() {
           this._updateContentPosition();
           this._updateScroller();
-        }, 3);
+        });
       },
 
       _getFixedNodes: function() {
@@ -19472,7 +19495,9 @@ Custom property | Description | Default
         if (!this.isAttached || !header) {
           return;
         }
+
         this._headerHeight = header.offsetHeight;
+
         if (header.fixed && !header.willCondense() && this.hasScrollingRegion) {
           containerStyle.marginTop = this._headerHeight + 'px';
           containerStyle.paddingTop = '';
@@ -19545,14 +19570,14 @@ Custom property | Description | Default
       opacity: 1;
     }
 
-    :host > ::content [condensed-title] {
+    #contentContainer > ::content [condensed-title] {
       opacity: 0;
       white-space: nowrap;
       -webkit-transform-origin: left top;
       transform-origin: left top;
     }
 
-    :host > ::content [title] {
+    #contentContainer > ::content [title] {
       white-space: nowrap;
       -webkit-transform-origin: left top;
       transform-origin: left top;
@@ -19590,7 +19615,7 @@ Custom property | Description | Default
     :host([disabled])::after,
     :host([disabled]) #backgroundFrontLayer,
     :host([disabled]) #backgroundRearLayer,
-    :host([disabled]) > ::content > app-toolbar:first-of-type {
+    :host([disabled]) ::content > app-toolbar:first-of-type {
       transition: none !important;
     }
 
@@ -19796,8 +19821,8 @@ Custom property | Description | Default
           }
           // restore no transition
           this.disabled = savedDisabled;
-          this.fire('app-header-reset-layout');
-        }, 1);
+        });
+        this.fire('app-header-reset-layout');
       },
 
       /**
@@ -21862,7 +21887,7 @@ Custom property | Description | Default
       bottom: 0;
       left: 0;
       right: 0;
-      background-image: url("http://app-layout-assets.appspot.com/assets/pesto/logo_s.png");
+      background-image: url("//app-layout-assets.appspot.com/assets/pesto/logo_s.png");
       background-repeat: no-repeat;
       background-position: center center;
       background-size: 76px;
@@ -21877,7 +21902,7 @@ Custom property | Description | Default
       bottom: 0;
       left: 0;
       right: 0;
-      background-image: url("http://app-layout-assets.appspot.com/assets/pesto/logo_l.png");
+      background-image: url("//app-layout-assets.appspot.com/assets/pesto/logo_l.png");
       background-repeat: no-repeat;
       background-position: center center;
       background-size: 240px;
@@ -22028,7 +22053,7 @@ Custom property | Description | Default
     }
 
     .avatar-container .image {
-      background-image: url("http://app-layout-assets.appspot.com/assets/pesto/avatar.jpg");
+      background-image: url("//app-layout-assets.appspot.com/assets/pesto/avatar.jpg");
       background-size: contain;
       border-radius: 50%;
       height: 100%;
