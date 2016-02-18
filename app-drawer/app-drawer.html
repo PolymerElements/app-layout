@@ -51,6 +51,15 @@ Custom property                  | Description                            | Defa
 
   <style>
 
+    :host {
+      visibility: hidden;
+      transition: visibility 0.2s ease;
+    }
+
+    :host([opened]) {
+      visibility: visible;
+    }
+
     #contentContainer {
       position: fixed;
       top: -120px;
@@ -85,6 +94,7 @@ Custom property                  | Description                            | Defa
       left: 100%;
       width: 15px;
       content: '';
+      visibility: visible;
     }
 
     :host([swipe-open][position=right]) > #contentContainer::after {
@@ -105,34 +115,17 @@ Custom property                  | Description                            | Defa
       bottom: -120px;
       background: var(--app-drawer-scrim-background, rgba(0, 0, 0, 0.5));
       opacity: 0;
-      visibility: hidden;
-
-      transition: 0.2s ease;
-      transition-property: opacity, visibility;
+      transition: opacity 0.2s ease;
 
       -webkit-transform: translateZ(0);
       transform:  translateZ(0);
     }
 
-    /**
-     * NOTE(keanulee): IE/Edge does not properly update element styles when using
-     * dynamically inserted style tags that match with :not([attribute]) rules,
-     * so we can't do this instead:
-     *
-     *  :host([opened]:not([persistent])) > #scrim {
-     *    opacity: 1;
-     *    visibility: visible;
-     *  }
-     *
-     * Ref https://goo.gl/1UMIMk
-     */
     :host([opened]) > #scrim {
       opacity: 1;
-      visibility: visible;
     }
 
     :host([opened][persistent]) > #scrim {
-      opacity: 0;
       visibility: hidden;
     }
 
@@ -295,7 +288,7 @@ Custom property                  | Description                            | Defa
         // Disable transitions since style attributes will reflect user track events.
         this.$.contentContainer.style.transitionDuration = '0s';
         this.$.scrim.style.transitionDuration = '0s';
-        this.$.scrim.style.visibility = 'visible';
+        this.style.visibility = 'visible';
 
         var rect = this.$.contentContainer.getBoundingClientRect();
         if (this.position == 'left') {
@@ -434,9 +427,9 @@ Custom property                  | Description                            | Defa
       },
 
       _resetStyleAttributes: function() {
+        this.style.visibility = '';
         this.$.contentContainer.style.transitionDuration = '';
         this.$.scrim.style.transitionDuration = '';
-        this.$.scrim.style.visibility = '';
         this.$.scrim.style.opacity = '';
         this.transform('', this.$.contentContainer);
       },
