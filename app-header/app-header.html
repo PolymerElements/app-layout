@@ -123,14 +123,14 @@ Mixin | Description | Default
       opacity: 1;
     }
 
-    :host > ::content [condensed-title] {
+    #contentContainer > ::content [condensed-title] {
       opacity: 0;
       white-space: nowrap;
       -webkit-transform-origin: left top;
       transform-origin: left top;
     }
 
-    :host > ::content [title] {
+    #contentContainer > ::content [title] {
       white-space: nowrap;
       -webkit-transform-origin: left top;
       transform-origin: left top;
@@ -168,7 +168,7 @@ Mixin | Description | Default
     :host([disabled])::after,
     :host([disabled]) #backgroundFrontLayer,
     :host([disabled]) #backgroundRearLayer,
-    :host([disabled]) > ::content > app-toolbar:first-of-type {
+    :host([disabled]) ::content > app-toolbar:first-of-type {
       transition: none !important;
     }
 
