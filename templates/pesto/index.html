@@ -51,11 +51,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <recipe-app recipes="{{data.recipes}}"></recipe-app>
     <iron-ajax url="data/recipes.json" auto last-response="{{data}}"></iron-ajax>
 
-    <platinum-sw-register auto-register>
-      <platinum-sw-cache default-cache-strategy="fastest"></platinum-sw-cache>
-    </platinum-sw-register>
-
   </template>
+
+  <platinum-sw-register
+    auto-register
+    base-uri="https://polygit2.appspot.com/sw-toolbox+googlechrome+*/components/platinum-sw/">
+    <platinum-sw-cache default-cache-strategy="fastest"></platinum-sw-cache>
+  </platinum-sw-register>
 
 </body>
 </html>
