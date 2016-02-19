@@ -35,13 +35,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-color: #eee;
     }
 
-    #leftDrawer {
+    #startDrawer {
       --app-drawer-content-container: {
         box-shadow: 1px 0 2px 1px rgba(0,0,0,0.18);
       }
     }
 
-    #rightDrawer {
+    #endDrawer {
       --app-drawer-content-container: {
         box-shadow: -1px 0 2px 1px rgba(0,0,0,0.18);
       }
@@ -83,9 +83,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </app-toolbar>
     </app-header>
 
-    <app-drawer id="leftDrawer" position="left"></app-drawer>
+    <app-drawer id="startDrawer" align="start"></app-drawer>
 
-    <app-drawer id="rightDrawer" position="right"></app-drawer>
+    <app-drawer id="endDrawer" align="end"></app-drawer>
 
     <sample-content size="100"></sample-content>
 
@@ -95,11 +95,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   (function(scope) {
     scope.toggleLeft = function() {
-      this.$.leftDrawer.toggle();
+      this.$.startDrawer.toggle();
     };
 
     scope.toggleRight = function() {
-      this.$.rightDrawer.toggle();
+      this.$.endDrawer.toggle();
     };
   })(document.querySelector('#app'));
 

@@ -6,7 +6,7 @@ In narrow layout, the drawer will be stacked on top of the main content. The dra
 in/out to hide/reveal the main content.
 
 
-By default the drawer is on the left side of the screen:
+By default the drawer is aligned to the start, which is left in LTR layouts:
 
 ```html
 <app-drawer-layout>
@@ -19,11 +19,11 @@ By default the drawer is on the left side of the screen:
 </app-drawer-layout>
 ```
 
-A drawer on the right side of the screen:
+Align the drawer at the end:
 
 ```html
 <app-drawer-layout>
-  <app-drawer position="right">
+  <app-drawer align="end">
     <!-- drawer content -->
   </app-drawer>
   <div>
