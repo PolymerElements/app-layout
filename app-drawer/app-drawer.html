@@ -184,7 +184,7 @@ Custom property                  | Description                            | Defa
         position: {
           type: String,
           readOnly: true,
-          computed: '_computePosition(align)'
+          value: 'left'
         },
 
         /**
@@ -205,7 +205,8 @@ Custom property                  | Description                            | Defa
 
       observers: [
         'resetLayout(position)',
-        '_updateDocScroll(persistent)'
+        '_updateDocScroll(persistent)',
+        '_resetPosition(align)'
       ],
 
       _translateOffset: 0,
@@ -214,13 +215,21 @@ Custom property                  | Description                            | Defa
 
       _isDrawerFlinging: false,
 
-      attached: function() {
+      ready: function() {
         // Set the scroll direction so you can vertically scroll inside the drawer.
         this.setScrollDirection('y');
 
         // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
         this.$.contentContainer.style.transition = 'none';
+      },
+
+      attached: function() {
+        // Reset position when drawer is attached and can get its computed direction.
+        this._resetPosition();
+
+        // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
+        // may need to set the initial opened state which should not be transitioned).
         this.async(function() {
           this.$.contentContainer.style.transition = '';
         });
@@ -266,14 +275,16 @@ Custom property                  | Description                            | Defa
         return window.getComputedStyle(this).direction === 'rtl';
       },
 
-      _computePosition: function() {
+      _resetPosition: function() {
         switch (this.align) {
           case 'start':
-            return this._isRTL() ? 'right' : 'left';
+            this._setPosition(this._isRTL() ? 'right' : 'left');
+            return;
           case 'end':
-            return this._isRTL() ? 'left' : 'right';
+            this._setPosition(this._isRTL() ? 'left' : 'right');
+            return;
         }
-        return this.align;
+        this._setPosition(this.align);
       },
 
       _scrimTapHandler: function() {

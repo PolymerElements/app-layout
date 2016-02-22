@@ -40,6 +40,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
+  <test-fixture id="rtlDrawer">
+    <template>
+      <app-drawer dir="rtl"></app-drawer>
+    </template>
+  </test-fixture>
+
   <script>
 
     suite('basic features', function() {
@@ -69,9 +75,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('computed position', function() {
-        document.dir = 'ltr';
-        drawer.align = 'start';
-
         assert.equal(drawer.position, 'left');
 
         drawer.align = 'end';
@@ -82,18 +85,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         assert.equal(drawer.position, 'left');
 
-        document.dir = 'rtl';
-        drawer.align = 'start';
-
-        assert.equal(drawer.position, 'right');
-
-        drawer.align = 'end';
-
-        assert.equal(drawer.position, 'left');
-
         drawer.align = 'right';
 
         assert.equal(drawer.position, 'right');
+      });
+
+      test('computed position for RTL', function() {
+        var rtlDrawer = fixture('rtlDrawer');
+
+        assert.equal(rtlDrawer.position, 'right');
+
+        rtlDrawer.align = 'end';
+
+        assert.equal(rtlDrawer.position, 'left');
+
+        rtlDrawer.align = 'right';
+
+        assert.equal(rtlDrawer.position, 'right');
+
+        rtlDrawer.align = 'left';
+
+        assert.equal(rtlDrawer.position, 'left');
       });
 
       test('left drawer opens and closes', function() {
