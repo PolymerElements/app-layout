@@ -29,5 +29,6 @@ content, and apply height and overflow styles to it.
 
 Custom property                  | Description                            | Default
 ---------------------------------|----------------------------------------|--------------------
+`--app-drawer-width`             | Width of the drawer                    | 256px
 `--app-drawer-content-container` | Mixin for the drawer content container | {}
 `--app-drawer-scrim-background`  | Background for the scrim               | rgba(0, 0, 0, 0.5)

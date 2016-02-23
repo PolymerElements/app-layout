@@ -404,6 +404,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           done();
         }, 1);
       });
+
+      test('persistent drawer should not cover content', function() {
+        drawer.opened = true;
+        drawer.persistent = true;
+
+        assert.notEqual(document.elementFromPoint(400, 10).tagName, 'APP-DRAWER');
+      });
     });
 
   </script>
