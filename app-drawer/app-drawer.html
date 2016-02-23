@@ -133,33 +133,21 @@ Custom property                  | Description                            | Defa
       right: 0;
       background: var(--app-drawer-scrim-background, rgba(0, 0, 0, 0.5));
       opacity: 0;
-      visibility: hidden;
-
-      transition: 0.2s ease;
-      transition-property: opacity, visibility;
+      transition: opacity 0.2s ease;
 
       -webkit-transform: translateZ(0);
       transform:  translateZ(0);
     }
 
-    /**
-     * NOTE(keanulee): IE/Edge does not properly update element styles when using
-     * dynamically inserted style tags that match with :not([attribute]) rules,
-     * so we can't do this instead:
-     *
-     *  :host([opened]:not([persistent])) > #scrim {
-     *    opacity: 1;
-     *    visibility: visible;
-     *  }
-     *
-     * Ref https://goo.gl/1UMIMk
-     */
     :host([opened]) > #scrim {
       opacity: 1;
-      visibility: visible;
     }
 
     :host([opened][persistent]) > #scrim {
+      /**
+       * NOTE(keanulee): Keep both opacity: 0 and visibility: hidden to prevent the
+       * scrim from showing when toggling between closed and opened/persistent.
+       */
       opacity: 0;
       visibility: hidden;
     }
