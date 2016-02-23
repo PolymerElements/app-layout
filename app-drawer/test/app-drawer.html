@@ -183,18 +183,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(ev.defaultPrevented);
       });
 
-      test('track events block scrim tap', function(done) {
-        drawer.opened = true;
-        drawer.fire('track', { state: 'start' });
-        drawer.fire('tap', null /* detail */, { node: scrim });
-        drawer.fire('track', { state: 'end', dx: 0, ddx: 0 });
-
-        window.setTimeout(function() {
-          assert.isTrue(drawer.opened);
-          done();
-        }, 1);
-      });
-
       test('styles reset after swiping', function() {
         drawer.fire('track', { state: 'start' });
 

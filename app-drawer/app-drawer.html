@@ -311,14 +311,9 @@ Custom property                  | Description                            | Defa
       },
 
       _scrimTapHandler: function() {
-        if (this.persistent) {
-          return;
-        }
-
-        // This debouncer is needed because of Polymer/polymer#3405.
-        this.debounce('_scrimTapHandler', function() {
+        if (!this.persistent) {
           this.opened = false;
-        }, 1);
+        }
       },
 
       _track: function(event) {
@@ -364,9 +359,6 @@ Custom property                  | Description                            | Defa
       },
 
       _trackEnd: function(event) {
-        // Track handler takes precedence over scrim tap handler. See Polymer/polymer#3405.
-        this.cancelDebouncer('_scrimTapHandler');
-
         // Calculate the velocity.
         this._velocity = this._calculateVelocity(event);
 
