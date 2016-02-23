@@ -52,11 +52,6 @@ Custom property                  | Description                            | Defa
   <style>
 
     :host {
-      position: fixed;
-      top: -120px;
-      left: 0;
-      right: 0;
-      bottom: -120px;
       visibility: hidden;
       transition: visibility 0.2s ease;
     }
@@ -66,9 +61,9 @@ Custom property                  | Description                            | Defa
     }
 
     #contentContainer {
-      position: absolute;
-      top: 0;
-      bottom: 0;
+      position: fixed;
+      top: -120px;
+      bottom: -120px;
       left: 0;
       width: 256px;
       background-color: #FFF;
@@ -113,11 +108,11 @@ Custom property                  | Description                            | Defa
     }
 
     #scrim {
-      position: absolute;
-      top: 0;
-      bottom: 0;
+      position: fixed;
+      top: -120px;
       left: 0;
       right: 0;
+      bottom: -120px;
       background: var(--app-drawer-scrim-background, rgba(0, 0, 0, 0.5));
       opacity: 0;
       transition: opacity 0.2s ease;
@@ -340,7 +335,7 @@ Custom property                  | Description                            | Defa
         var timeLowerBound = Date.now() - 100;
         var trackEvent;
         var min = 0;
-        var max = this._trackEvents.length - 1;
+        var max = this._trackEvents.length - 1;        
 
         while (min <= max) {
           // Floor of average of min and max.
