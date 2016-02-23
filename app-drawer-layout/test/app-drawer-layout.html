@@ -129,7 +129,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '256px');
             assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
 
-            drawer.position = 'right';
+            drawer.align = 'end';
 
             window.setTimeout(function() {
               assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');

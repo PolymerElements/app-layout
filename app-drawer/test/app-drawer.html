@@ -40,6 +40,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
+  <test-fixture id="rtlDrawer">
+    <template>
+      <app-drawer dir="rtl"></app-drawer>
+    </template>
+  </test-fixture>
+
   <script>
 
     suite('basic features', function() {
@@ -60,7 +66,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('default values', function() {
         assert.isFalse(drawer.opened);
         assert.isFalse(drawer.persistent);
-        assert.equal(drawer.position, 'left');
+        assert.equal(drawer.align, 'start');
         assert.isFalse(drawer.swipeOpen);
       });
 
@@ -68,7 +74,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(drawer['__polymerGesturesTouchAction'], 'pan-y');
       });
 
+      test('computed position', function() {
+        assert.equal(drawer.position, 'left');
+
+        drawer.align = 'end';
+
+        assert.equal(drawer.position, 'right');
+
+        drawer.align = 'left';
+
+        assert.equal(drawer.position, 'left');
+
+        drawer.align = 'right';
+
+        assert.equal(drawer.position, 'right');
+      });
+
+      test('computed position for RTL', function() {
+        var rtlDrawer = fixture('rtlDrawer');
+
+        assert.equal(rtlDrawer.position, 'right');
+
+        rtlDrawer.align = 'end';
+
+        assert.equal(rtlDrawer.position, 'left');
+
+        rtlDrawer.align = 'right';
+
+        assert.equal(rtlDrawer.position, 'right');
+
+        rtlDrawer.align = 'left';
+
+        assert.equal(rtlDrawer.position, 'left');
+      });
+
       test('left drawer opens and closes', function() {
+        drawer.align = 'left';
+
         var contentContainerClientRect = contentContainer.getBoundingClientRect();
         assert.isTrue(contentContainerClientRect.right <= 0);
 
@@ -84,7 +126,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('right drawer opens and closes', function() {
-        drawer.position = 'right';
+        drawer.align = 'right';
 
         var contentContainerClientRect = contentContainer.getBoundingClientRect();
         assert.isTrue(contentContainerClientRect.left >= window.innerWidth);
@@ -127,7 +169,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('app-drawer-reset-layout', function(done) {
         var listenerSpy = sinon.spy();
         drawer.addEventListener('app-drawer-reset-layout', listenerSpy);
-        drawer.position = 'right';
+        drawer.align = 'right';
 
         window.setTimeout(function() {
           assert.isTrue(listenerSpy.called);
@@ -172,6 +214,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('left drawer swiping', function() {
         var drawerWidth = drawer.getWidth();
         var halfWidth = drawerWidth / 2;
+        drawer.align = 'left';
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: -halfWidth, ddx: -halfWidth });
 
@@ -210,7 +253,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('right drawer swiping', function() {
         var drawerWidth = drawer.getWidth();
         var halfWidth = drawerWidth / 2;
-        drawer.position = 'right';
+        drawer.align = 'right';
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: halfWidth, ddx: halfWidth });
 
@@ -268,6 +311,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('left drawer flicking', function() {
         var drawerWidth = drawer.getWidth();
+        drawer.align = 'left';
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
         drawer.fire('track', { state: 'end', dx: 0.1, ddx: 0.1 });
@@ -315,7 +359,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('right drawer flicking', function() {
         var drawerWidth = drawer.getWidth();
-        drawer.position = 'right';
+        drawer.align = 'right';
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
         drawer.fire('track', { state: 'end', dx: -0.1, ddx: -0.1 });

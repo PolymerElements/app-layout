@@ -16,16 +16,16 @@ app-drawer is a navigation drawer that can slide in from the left or right.
 
 Example:
 
-Add a drawer on the left side of the screen (default):
+Align the drawer at the start, which is left in LTR layouts (default):
 
 ```html
 <app-drawer opened></app-drawer>
 ```
 
-Add a drawer on the right side of the screen:
+Align the drawer at the end:
 
 ```html
-<app-drawer position="right" opened></app-drawer>
+<app-drawer align="end" opened></app-drawer>
 ```
 
 To make the contents of the drawer scrollable, create a wrapper for the scroll
@@ -79,7 +79,7 @@ Custom property                  | Description                            | Defa
       @apply(--app-drawer-content-container);
     }
 
-    :host([position=right]) > #contentContainer {
+    #contentContainer[position=right] {
       left: auto;
       right: 0;
 
@@ -97,7 +97,7 @@ Custom property                  | Description                            | Defa
       visibility: visible;
     }
 
-    :host([swipe-open][position=right]) > #contentContainer::after {
+    :host([swipe-open]) > #contentContainer[position=right]::after {
       left: auto;
       right: 100%;
     }
@@ -135,7 +135,7 @@ Custom property                  | Description                            | Defa
 
     <div id="scrim" on-tap="_scrimTapHandler"></div>
 
-    <div id="contentContainer">
+    <div id="contentContainer" position$="{{position}}">
       <content></content>
     </div>
 
@@ -169,12 +169,22 @@ Custom property                  | Description                            | Defa
         },
 
         /**
-         * The position of the drawer on the screen ('left' or 'right').
+         * The alignment of the drawer on the screen ('start', 'end', 'left', or 'right').
+         * 'start' computes to left and 'end' to right in LTR layout and vice versa in RTL
+         * layout.
+         */
+        align: {
+          type: String,
+          value: 'start',
+        },
+
+        /**
+         * The computed, read-only position of the drawer on the screen ('left' or 'right').
          */
         position: {
           type: String,
-          value: 'left',
-          reflectToAttribute: true
+          readOnly: true,
+          value: 'left'
         },
 
         /**
@@ -195,7 +205,8 @@ Custom property                  | Description                            | Defa
 
       observers: [
         'resetLayout(position)',
-        '_updateDocScroll(persistent)'
+        '_updateDocScroll(persistent)',
+        '_resetPosition(align)'
       ],
 
       _translateOffset: 0,
@@ -204,13 +215,21 @@ Custom property                  | Description                            | Defa
 
       _isDrawerFlinging: false,
 
-      attached: function() {
+      ready: function() {
         // Set the scroll direction so you can vertically scroll inside the drawer.
         this.setScrollDirection('y');
 
         // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
         this.$.contentContainer.style.transition = 'none';
+      },
+
+      attached: function() {
+        // Reset position when drawer is attached and can get its computed direction.
+        this._resetPosition();
+
+        // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
+        // may need to set the initial opened state which should not be transitioned).
         this.async(function() {
           this.$.contentContainer.style.transition = '';
         });
@@ -252,6 +271,22 @@ Custom property                  | Description                            | Defa
         }, 1);
       },
 
+      _isRTL: function() {
+        return window.getComputedStyle(this).direction === 'rtl';
+      },
+
+      _resetPosition: function() {
+        switch (this.align) {
+          case 'start':
+            this._setPosition(this._isRTL() ? 'right' : 'left');
+            return;
+          case 'end':
+            this._setPosition(this._isRTL() ? 'left' : 'right');
+            return;
+        }
+        this._setPosition(this.align);
+      },
+
       _scrimTapHandler: function() {
         if (this.persistent) {
           return;
@@ -291,7 +326,7 @@ Custom property                  | Description                            | Defa
         this.style.visibility = 'visible';
 
         var rect = this.$.contentContainer.getBoundingClientRect();
-        if (this.position == 'left') {
+        if (this.position === 'left') {
           this._translateOffset = rect.left;
         } else {
           this._translateOffset = rect.right - window.innerWidth;
