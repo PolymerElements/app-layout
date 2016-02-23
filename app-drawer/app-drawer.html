@@ -41,6 +41,7 @@ content, and apply height and overflow styles to it.
 
 Custom property                  | Description                            | Default
 ---------------------------------|----------------------------------------|--------------------
+`--app-drawer-width`             | Width of the drawer                    | 256px
 `--app-drawer-content-container` | Mixin for the drawer content container | {}
 `--app-drawer-scrim-background`  | Background for the scrim               | rgba(0, 0, 0, 0.5)
 
@@ -52,6 +53,11 @@ Custom property                  | Description                            | Defa
   <style>
 
     :host {
+      position: fixed;
+      top: -120px;
+      bottom: -120px;
+      left: 0;
+      right: 0;
       visibility: hidden;
       transition: visibility 0.2s ease;
     }
@@ -60,12 +66,24 @@ Custom property                  | Description                            | Defa
       visibility: visible;
     }
 
+    :host([persistent]) {
+      width: var(--app-drawer-width, 256px);
+    }
+
+    :host([persistent][position=left]) {
+      right: auto;
+    }
+
+    :host([persistent][position=right]) {
+      left: auto;
+    }
+
     #contentContainer {
-      position: fixed;
-      top: -120px;
-      bottom: -120px;
+      position: absolute;
+      top: 0;
+      bottom: 0;
       left: 0;
-      width: 256px;
+      width: var(--app-drawer-width, 256px);
       background-color: #FFF;
       padding: 120px 0;
 
@@ -108,11 +126,11 @@ Custom property                  | Description                            | Defa
     }
 
     #scrim {
-      position: fixed;
-      top: -120px;
+      position: absolute;
+      top: 0;
+      bottom: 0;
       left: 0;
       right: 0;
-      bottom: -120px;
       background: var(--app-drawer-scrim-background, rgba(0, 0, 0, 0.5));
       opacity: 0;
       transition: opacity 0.2s ease;
@@ -126,6 +144,11 @@ Custom property                  | Description                            | Defa
     }
 
     :host([opened][persistent]) > #scrim {
+      /**
+       * NOTE(keanulee): Keep both opacity: 0 and visibility: hidden to prevent the
+       * scrim from showing when toggling between closed and opened/persistent.
+       */
+      opacity: 0;
       visibility: hidden;
     }
 
