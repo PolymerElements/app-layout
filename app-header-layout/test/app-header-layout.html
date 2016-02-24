@@ -76,17 +76,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(header.scroller, window);
       });
 
-      test('scrolling region', function(done) {
+      test('scrolling region', function() {
         headerLayout.hasScrollingRegion = true;
-
-        window.setTimeout(function() {
-          /**
-           * Use window.toString() to avoid potential comparisons between window with itself
-           * which causes a misleading "JSON.stringify cannot serialize cyclic structures" error.
-           */
-          assert.notEqual(header.scroller.toString(), window.toString());
-          done();
-        }, 100);
+        assert.isTrue(header.scroller !== window, 'scroller should not point to the document element');        
       });
 
     });
