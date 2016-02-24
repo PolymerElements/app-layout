@@ -146,9 +146,10 @@ Using an own scrolling region:
        * @method resetLayout
        */
       resetLayout: function() {
+        this._updateScroller();
         this.debounce('_resetLayout', function() {
           this._updateContentPosition();
-          this._updateScroller();
+          this._updateFixedNodesPosition();
         });
       },
 
@@ -190,7 +191,6 @@ Using an own scrolling region:
         var header = this.header;
         if (header) {
           header.scroller = this.hasScrollingRegion ? this.$.contentContainer : window;
-          this._updateFixedNodesPosition();
         }
       },
 
