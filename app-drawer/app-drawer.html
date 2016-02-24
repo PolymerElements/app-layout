@@ -244,7 +244,7 @@ Custom property                  | Description                            | Defa
 
         // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
-        this.$.contentContainer.style.transition = 'none';
+        this.$.contentContainer.style.transitionDuration = '0s';
       },
 
       attached: function() {
@@ -254,7 +254,7 @@ Custom property                  | Description                            | Defa
         // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
         this.async(function() {
-          this.$.contentContainer.style.transition = '';
+          this.$.contentContainer.style.transitionDuration = '';
         });
       },
 
@@ -365,19 +365,19 @@ Custom property                  | Description                            | Defa
         // No longer need the track events after calculating velocity - allow them to be GC'd.
         this._trackEvents = null;
 
-        if (Math.abs(this._velocity) > this.MIN_FLING_VELOCITY) {
-          // If velocity is above the threshold, fling the drawer in the same direction.
-          this._flingDrawer(event);
-        } else {
-          // Otherwise, toggle the opened state based on the position of the drawer.
-          var halfWidth = this.getWidth() / 2;
-          if (event.detail.dx < -halfWidth) {
-            this.opened = this.position === 'right';
-          } else if (event.detail.dx > halfWidth) {
-            this.opened = this.position === 'left';
-          }
-          this._resetStyleAttributes();
+        if (this._flingDrawer(event)) {
+          return;
         }
+
+        // If the drawer is not flinging, toggle the opened state based on the position of
+        // the drawer.
+        var halfWidth = this.getWidth() / 2;
+        if (event.detail.dx < -halfWidth) {
+          this.opened = this.position === 'right';
+        } else if (event.detail.dx > halfWidth) {
+          this.opened = this.position === 'left';
+        }
+        this._resetStyleAttributes();
       },
 
       _calculateVelocity: function(event) {
@@ -385,7 +385,7 @@ Custom property                  | Description                            | Defa
         var timeLowerBound = Date.now() - 100;
         var trackEvent;
         var min = 0;
-        var max = this._trackEvents.length - 1;        
+        var max = this._trackEvents.length - 1;
 
         while (min <= max) {
           // Floor of average of min and max.
@@ -407,13 +407,34 @@ Custom property                  | Description                            | Defa
         return 0;
       },
 
+      /**
+       * @return {boolean} True if the drawer will be flinging, false otherwise.
+       */
       _flingDrawer: function(event) {
+        // Do not fling if velocity is not above a threshold.
+        if (Math.abs(this._velocity) < this.MIN_FLING_VELOCITY) {
+          return false;
+        }
+
         var x = event.detail.dx + this._translateOffset;
         var drawerWidth = this.getWidth();
         var isPositionLeft = this.position === 'left';
         var isVelocityPositive = this._velocity > 0;
         var isClosingLeft = !isVelocityPositive && isPositionLeft;
         var isClosingRight = isVelocityPositive && !isPositionLeft;
+        var dx;
+        if (isClosingLeft) {
+          dx = -(x + drawerWidth);
+        } else if (isClosingRight) {
+          dx = (drawerWidth - x);
+        } else {
+          dx = -x;
+        }
+
+        // Do not fling if there is no difference between the current and end state.
+        if ((isVelocityPositive && dx <= 0) || (!isVelocityPositive && dx >= 0)) {
+          return false;
+        }
 
         // Enforce a minimum transition velocity to make the drawer feel snappy.
         if (isVelocityPositive) {
@@ -424,15 +445,7 @@ Custom property                  | Description                            | Defa
 
         // Calculate the amount of time needed to finish the transition based on the initial
         // slope of the timing function.
-        var duration;
-        if (isClosingLeft) {
-          duration = (this.FLING_INITIAL_SLOPE * -(x + drawerWidth) / this._velocity) + 'ms';
-        } else if (isClosingRight) {
-          duration = (this.FLING_INITIAL_SLOPE * (drawerWidth - x) / this._velocity) + 'ms';
-        } else {
-          duration = (this.FLING_INITIAL_SLOPE * -x / this._velocity) + 'ms';
-        }
-
+        var duration = (this.FLING_INITIAL_SLOPE * dx / this._velocity) + 'ms';
         this.$.contentContainer.style.transitionDuration = duration;
         this.$.contentContainer.style.transitionTimingFunction = this.FLING_TIMING_FUNCTION;
         this.$.scrim.style.transitionDuration = duration;
@@ -448,6 +461,7 @@ Custom property                  | Description                            | Defa
         }
 
         this._isDrawerFlinging = true;
+        return true;
       },
 
       _transitionEnd: function(event) {

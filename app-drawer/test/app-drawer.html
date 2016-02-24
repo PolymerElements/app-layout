@@ -23,13 +23,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     body {
       margin: 0;
     }
-
-    /* Remove transition-duration so we can synchronously check the state of the drawer. */
-    app-drawer {
-      --app-drawer-content-container: {
-        transition-duration: 0s;
-      };
-    }
   </style>
 </head>
 <body>
@@ -72,6 +65,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('set scroll direction', function() {
         assert.equal(drawer['__polymerGesturesTouchAction'], 'pan-y');
+      });
+
+      test('transitions are enabled after attached', function(done) {
+        assert.equal(contentContainer.style.transitionDuration, '0s');
+
+        flush(function() {
+          assert.equal(contentContainer.style.transitionDuration, '');
+          done();
+        });
       });
 
       test('computed position', function() {
@@ -277,7 +279,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isFalse(drawer.opened, 'drawer closes when track distance is large');
       });
 
-      test('styles reset after flicking', function() {
+      test('styles reset after flinging', function() {
         drawer.fire('track', { state: 'start' });
 
         assert.equal(contentContainer.style.transitionDuration, '0s');
@@ -297,7 +299,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(transformSpy.lastCall.args[0], '');
       });
 
-      test('left drawer flicking', function() {
+      test('styles reset after flinging beyond the end state', function() {
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(contentContainer.style.transitionDuration, '0s');
+        assert.equal(scrim.style.transitionDuration, '0s');
+        assert.equal(drawer.style.visibility, 'visible');
+
+        drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+        drawer.fire('track', { state: 'end', dx: 1000, ddx: 1000 });
+
+        assert.equal(drawer.style.visibility, '');
+        assert.equal(contentContainer.style.transitionTimingFunction, '');
+        assert.equal(contentContainer.style.transitionDuration, '');
+        assert.equal(scrim.style.transitionTimingFunction, '');
+        assert.equal(scrim.style.transitionDuration, '');
+        assert.equal(scrim.style.opacity, '');
+        assert.equal(transformSpy.lastCall.args[0], '');
+      });
+
+      test('left drawer flinging', function() {
         var drawerWidth = drawer.getWidth();
         drawer.align = 'left';
         drawer.fire('track', { state: 'start' });
@@ -345,7 +366,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isFalse(drawer.opened);
       });
 
-      test('right drawer flicking', function() {
+      test('right drawer flinging', function() {
         var drawerWidth = drawer.getWidth();
         drawer.align = 'right';
         drawer.fire('track', { state: 'start' });
