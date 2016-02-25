@@ -50,6 +50,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <iron-ajax url="data/recipes.json" auto last-response="{{data}}"></iron-ajax>
 
   </template>
+  <script>
+    document.querySelector('template').addEventListener('dom-change', function() {
+      window.top.postMessage('pesto-load', '*');
+    });
+  </script>
 
 </body>
 </html>

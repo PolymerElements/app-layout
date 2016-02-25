@@ -44,6 +44,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <iron-ajax url="data/articles.json" auto last-response="{{articles}}"></iron-ajax>
 
   </template>
+  <script>
+    document.querySelector('template').addEventListener('dom-change', function() {
+      window.top.postMessage('publishing-load', '*');
+    });
+  </script>
 
 </body>
 </html>

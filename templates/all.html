@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Templates</title>
+</head>
+<body>
+  <style>
+    html, body {
+      margin: 0;
+    }
+    div {
+      display: flex;
+      height: 100vh;
+      align-items: stretch;
+    }
+    iframe {
+      flex: 1;
+      border: 0;
+    }
+  </style>
+  <div>
+    <iframe id="pesto"></iframe>
+    <iframe id="publishing"></iframe>
+    <iframe id="shrine"></iframe>
+  </div>
+  <script>
+  // load
+  window.start = performance.now();
+  var loaded = [];
+  window.addEventListener('message', function(event) {
+    loaded.push(event.data);
+    if (loaded.length === 3) {
+      window.end = performance.now() - window.start;
+      console.log(window.end);
+    }
+  });
+  pesto.src = 'pesto/index.html';
+  publishing.src = 'publishing/index.html';
+  shrine.src = 'shrine/index.html';
+  </script>
+</body>
+</html>
