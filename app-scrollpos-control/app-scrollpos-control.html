@@ -76,6 +76,10 @@ Example:
 
       },
 
+      observers: [
+        '_updateScrollPos(selected, reset)'
+      ],
+
       created: function() {
         this._scrollposMap = {};
       },
@@ -84,12 +88,17 @@ Example:
         if (old != null) {
           this._scrollposMap[old] = {x: window.pageXOffset, y: window.pageYOffset};
         }
-        var pos = this._scrollposMap[selected];
-        if (pos != null && !this.reset) {
-          this._scrollTo(pos.x, pos.y);
-        } else {
-          this._scrollTo(0, 0);
-        }
+      },
+
+      _updateScrollPos: function(selected, reset) {
+        this.debounce('_updateScrollPos', function() {
+          var pos = this._scrollposMap[this.selected];
+          if (pos != null && !this.reset) {
+            this._scrollTo(pos.x, pos.y);
+          } else {
+            this._scrollTo(0, 0);
+          }
+        });
       },
 
       _scrollTo: function(x, y) {
