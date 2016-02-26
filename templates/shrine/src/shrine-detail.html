@@ -71,7 +71,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .image {
-        width: 40%;
+        width: 40vmin;
+        position: relative;
       }
 
       .image img {
@@ -96,6 +97,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       .info {
         color: rgba(255, 223, 223, 1);
+        position: absolute;
+        top: 0;
+        right: 0;
       }
 
       .quantitySelector {
@@ -125,7 +129,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background-color: white;
         border-radius: 0;
         position: relative;
-        min-width: 140px;
+        min-width: 180px;
+        font-size: 20px;
       }
 
       .quantitySelector select:focus {
@@ -202,6 +207,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           flex: 1 calc(50% - 20px);
           max-width: calc(50% - 20px);
         }
+
+        h1 {
+          text-align: center;
+        }
+
+        .detailGrid {
+          width: 100%;
+          padding: 32px 0 64px;
+        }
       }
 
     </style>
@@ -220,10 +234,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div class="detailGrid">
         <div class="image">
           <img id="img">
+          <div class="info">
+            <paper-icon-button icon="info-outline"></paper-icon-button>
+          </div>
         </div>
-        <div class="info">
-          <paper-icon-button icon="info-outline"></paper-icon-button>
-        </div>
+    
         <div class="content">
           <h1>[[item.title]]</h1>
           <p>[[item.description]]</p>

@@ -240,7 +240,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <paper-icon-button icon="more-vert"></paper-icon-button>
             </div>
           </app-toolbar>
-          <paper-tabs selected="{{selectedTab}}" scrollable primary$="[[!_isItemHash(urlHash)]]">
+          <paper-tabs selected="{{selectedTab}}" scrollable primary$="[[_shouldShowTabs(urlHash, smallScreen)]]">
             <template is="dom-repeat" items="[[sections]]" as="section">
               <paper-tab>
                 <a href="#[[section]]">[[section]]</a>
@@ -362,8 +362,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.listItems = items.slice();
         }
       }
-
+      // TODO(blasten) Polymer.AppScrollEffects(0);
       this.$.header._scrollTop = 0;
+      this.$.header.resetLayout();
       this.$.drawer.close();
     },
 
@@ -387,6 +388,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     _getSectionClass: function(index, selectedTab) {
       return index === selectedTab ? 'active' : '';
+    },
+
+    _shouldShowTabs: function(urlHash, smallScreen) {
+      return !this._isItemHash(urlHash) && !smallScreen;
     }
 
   });

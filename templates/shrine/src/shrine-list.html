@@ -49,6 +49,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         .grid {
           padding-left: 10px;
           padding-right: 10px;
+          font-size: 0.7em;
         }
 
         .grid > .item {
@@ -56,6 +57,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           flex: 1 calc(50% - 20px);
           max-width: calc(50% - 20px);
           margin: 10px;
+          text-decoration: none;
+          background-color: white;
+        }
+      }
+
+      /**
+       * Phone
+       */
+      @media (max-width: 400px) {
+        .grid {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+
+        .grid > .item {
+          -webkit-flex: 1 calc(100% - 10px);
+          flex: 1 calc(1000% - 10px);
+          max-width: calc(100% - 10px);
+          margin: 5px;
           text-decoration: none;
           background-color: white;
         }
