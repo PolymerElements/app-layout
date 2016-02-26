@@ -400,6 +400,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       });
 
+      test('isOnScreen', function(done) {
+        flush(function() {
+          scrollTestHelper(header.scroller, [
+            {
+              y: 0,
+              callback: function() {
+                assert.isTrue(header.isOnScreen());
+              }
+            }, {
+              y: toolbar.offsetHeight,
+              callback: function() {
+                assert.isTrue(header.isOnScreen());
+              }
+            }, {
+              y: toolbar.offsetHeight * 2,
+              callback: function() {
+                assert.isFalse(header.isOnScreen());
+                header.fixed = true;
+              }
+            }, {
+              y: toolbar.offsetHeight * 3,
+              callback: function() {
+                assert.isTrue(header.isOnScreen());
+                done();
+              }
+            }
+          ]);
+        });
+      });
+
     });
 
   </script>

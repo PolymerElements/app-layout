@@ -19,9 +19,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
 
       :host {
-        @apply(--layout-horizontal);
+        @apply(--layout-vertical);
         @apply(--layout-center-center);
-        @apply(--layout-wrap);
         position: relative;
         text-align: center;
         width: 100%;
@@ -32,21 +31,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .pic {
         width: 50%;
         height: 50%;
-        position: absolute;
-        top: 25%;
-        left: 25%;
         background-size: contain;
         background-repeat: no-repeat;
         background-position: 50% 50%;
         transition: opacity 0.5s;
+        margin-top: 40px;
       }
 
       .link {
-        opacity: 0;
-        position: relative;
         transition: opacity 0.5s;
         font-family: 'Abril Fatface', cursive;
-        font-size: 32px;
+        font-size: 2em;
         color: #0a3142;
       }
 
@@ -54,17 +49,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         position: absolute;
         top: 20px;
         right: 20px;
+        font-size: 1em;
         color: #111;
         font-weight: bold;
       }
 
       .author {
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
         font-size: 11px;
         color: #999;
-        line-height: 30px;
+        line-height: 5em;
       }
 
       .author img {
@@ -80,7 +73,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         position: absolute;
         top: 12px;
         left: 12px;
-        opacity: 0;
         transition: opacity 0.5s;
       }
 
@@ -93,7 +85,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       :host::after {
         content: "";
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         position: absolute;
         top: 0;
         left: 0;
@@ -102,38 +94,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         opacity: 0;
         transition: opacity 0.5s;
         pointer-events: none;
+        /* create a layer to only invalidate this layer for :hover */
+        transform: translateZ(0);
       }
 
       :host:hover::after {
         opacity: 1;
       }
 
-      :host:hover .pic {
-        opacity: 0.2;
-      }
-
-      :host:hover .link {
-        opacity: 1;
-      }
-
-      :host:hover .icons {
-        opacity: 1;
-      }
-
     </style>
 
     <div class="pic" style$="background-image: url([[item.imageUrl]]);"></div>
-    <span class="link">[[item.title]]</span>
+    <div class="link">[[item.title]]</div>
     <span class="price">[[item.price]]</span>
 
     <div class="author">
       <img src="[[item.storeAvatarUrl]]">
       [[item.storeName]]
-    </div>
-
-    <div class="icons">
-      <iron-icon icon="shopping-cart"></iron-icon>
-      <iron-icon icon="favorite"></iron-icon>
     </div>
 
   </template>

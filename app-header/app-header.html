@@ -444,7 +444,7 @@ Mixin | Description | Default
        * @return {boolean}
        */
       isOnScreen: function() {
-        return this._height !== 0 && (this._top === 0 || this._top < this._height);
+        return this._height !== 0 && this._top < this._height;
       },
 
       /**
