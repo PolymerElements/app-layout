@@ -10,6 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../../polymer/polymer.html">
 
+<link rel="import" href="../../../../lab-elements/lab-router.html">
+
 <link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../../iron-pages/iron-pages.html">
 <link rel="import" href="../../../../iron-selector/iron-selector.html">
@@ -77,6 +79,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     </style>
 
+    <lab-router route="{{__route}}" base="{{__page}}" subroute="{{__selectedRecipeName}}"></lab-router>
+
     <app-drawer-layout drawer-width="288px" responsive-width="1280px">
 
       <!-- nav panel -->
@@ -109,7 +113,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <!-- list/detail pages -->
       <iron-pages selected="{{__page}}" attr-for-selected="name">
 
-        <recipe-list name="home" recipes="{{recipes}}" selected-recipe="{{__selectedRecipe}}">
+        <recipe-list name="home" recipes="{{recipes}}">
           <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
         </recipe-list>
 
@@ -143,38 +147,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       recipes: Object,
 
-      __selectedRecipe: {
-        type: Object,
-        observer: '__selectedRecipeChanged'
+      __route: {
+        type: String,
+        observer: '__routeChanged'
       },
 
       __page: {
         type: String,
-        value: 'home',
         observer: '__pageChanged'
+      },
+
+      __selectedRecipeName: String,
+
+      __selectedRecipe: {
+        type: Object,
+        computed: '__computeSelectedRecipe(recipes, __selectedRecipeName)'
       }
 
-    },
-
-    listeners: {
-      'recipe-close': '__closeRecipeDetail'
     },
 
     __isDetailPage: function() {
       return this.__page === 'detail';
     },
 
-    __selectedRecipeChanged: function(newValue, oldValue) {
-      if (newValue) this.__page = 'detail';
+    __computeSelectedRecipe: function() {
+      if (this.recipes && this.__selectedRecipeName) {
+        for (var i = 0; i < this.recipes.length; ++i) {
+          var r = this.recipes[i];
+          if (r.name === this.__selectedRecipeName) {
+            return r;
+          }
+        }
+      }
+      return null;
     },
 
-    __pageChanged: function(newValue, oldValue) {
-      if (newValue !== 'detail') this.__selectedRecipe = null;
+    __routeChanged: function(route) {
+      if (!route) {
+        // default route
+        this.__route = 'home'
+      }
+    },
+
+    __pageChanged: function(page) {
       if (!this.$.drawer.persistent) this.$.drawer.close();
-    },
-
-    __closeRecipeDetail: function() {
-      this.__page = 'home';
     }
 
   });
