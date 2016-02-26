@@ -10,8 +10,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../../polymer/polymer.html">
 
-<link rel="import" href="../../../../iron-selector/iron-selector.html">
-
 <link rel="import" href="../../../../paper-card/paper-card.html">
 <link rel="import" href="../../../../paper-fab/paper-fab.html">
 
@@ -79,6 +77,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     .card-container {
       display: inline-block;
       width: 33.33%;
+      color: black;
+      text-decoration: none;
     }
 
     paper-card {
@@ -161,18 +161,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <paper-fab app-header-overlay icon="app:create"></paper-fab>
 
-      <iron-selector class="content" selected="{{selectedRecipe}}" attr-for-selected="recipe">
+      <div class="content">
         <template is="dom-repeat" items="{{recipes}}"><!-- No empty text node
-        --><div class="card-container" recipe="{{item}}">
+        --><a href="#/detail/{{item.name}}" class="card-container">
             <paper-card image="{{item.imageUrl}}">
               <div class="card-content">
                 <h2>{{item.name}}</h2>
                 <p>By <span>{{item.author}}</span></p>
               </div>
             </paper-card>
-          </div><!-- No empty text node
+          </a><!-- No empty text node
         --></template>
-      </iron-selector>
+      </div>
 
     </app-header-layout>
   </template>
@@ -184,12 +184,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     is: 'recipe-list',
 
     properties: {
-      recipes: Object,
-
-      selectedRecipe: {
-        type: Object,
-        notify: true
-      }
+      recipes: Object
     }
 
   });
