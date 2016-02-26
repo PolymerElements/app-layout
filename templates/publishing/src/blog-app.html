@@ -40,6 +40,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       :host {
         --app-primary-color: #404040;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       }
 
       app-drawer {
@@ -104,15 +105,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app-drawer-layout:not([narrow]) .main-title-toolbar {
         width: 100%;
       }
+      
+      .category-page {
+        min-height: 100vh;
+      }
 
       [is=article-headline] {
         @apply(--shadow-transition);
         @apply(--shadow-elevation-2dp);
         cursor: pointer;
-      }
-
-      [is=article-headline]:hover {
-        @apply(--shadow-elevation-6dp);
       }
 
       article-detail {
@@ -211,7 +212,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <template is="dom-repeat" items="{{articles}}" as="category">
               <!-- category page (lazy-loaded) -->
               <template is="dom-if" if="{{_equal(category, {{category.name}})}}">
-                <section name="{{category.name}}">
+                <section class="category-page" name="{{category.name}}">
   
                   <!-- 2-columns grid -->
                   <two-columns-grid column-width="396" gutter="4">
