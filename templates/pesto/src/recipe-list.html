@@ -44,10 +44,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       bottom: 0;
       left: 0;
       right: 0;
-      background-image: url('//app-layout-assets.appspot.com/assets/pesto/logo_s.png');
+      background-image: url('//app-layout-assets.appspot.com/assets/pesto/logo_m.png');
       background-repeat: no-repeat;
       background-position: center center;
-      background-size: 76px;
+      background-size: 90px;
 
       /* The difference in font size is used to calculate the scale of the title in the transition. */
       font-size: 16px;
@@ -119,6 +119,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     @media (max-width: 719px) {
+      app-toolbar {
+        height: 60px;
+      }
+
+      [condensed-title] {
+        background-image: url('//app-layout-assets.appspot.com/assets/pesto/logo_s.png');
+        background-size: 60px;
+      }
+
+      [title] {
+        top: -60px;
+        background-image: url('//app-layout-assets.appspot.com/assets/pesto/logo_m.png');
+        background-size: 90px;
+      }
+
       .content {
         max-width: 400px;
       }
