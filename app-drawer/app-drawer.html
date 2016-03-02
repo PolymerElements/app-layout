@@ -382,7 +382,7 @@ Custom property                  | Description                            | Defa
 
       _calculateVelocity: function(event) {
         // Find the oldest track event that is within 100ms of track end using binary search.
-        var timeLowerBound = Date.now() - 100;
+        var timeLowerBound = event.timeStamp - 100;
         var trackEvent;
         var min = 0;
         var max = this._trackEvents.length - 1;
