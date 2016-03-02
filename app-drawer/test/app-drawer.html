@@ -464,6 +464,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         assert.notEqual(document.elementFromPoint(400, 10).tagName, 'APP-DRAWER');
       });
+
+      test('right persistent drawer should be in the correct position', function() {
+        drawer.align = 'right';
+        drawer.opened = true;
+        drawer.persistent = true;
+
+        assert.equal(drawer.getBoundingClientRect().right, window.innerWidth);
+      });
     });
 
   </script>

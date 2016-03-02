@@ -97,7 +97,7 @@ Custom property                  | Description                            | Defa
       @apply(--app-drawer-content-container);
     }
 
-    #contentContainer[position=right] {
+    :host([position=right]) > #contentContainer {
       left: auto;
       right: 0;
 
@@ -115,7 +115,7 @@ Custom property                  | Description                            | Defa
       visibility: visible;
     }
 
-    :host([swipe-open]) > #contentContainer[position=right]::after {
+    :host([swipe-open][position=right]) > #contentContainer::after {
       left: auto;
       right: 100%;
     }
@@ -158,7 +158,7 @@ Custom property                  | Description                            | Defa
 
     <div id="scrim" on-tap="_scrimTapHandler"></div>
 
-    <div id="contentContainer" position$="{{position}}">
+    <div id="contentContainer">
       <content></content>
     </div>
 
@@ -207,7 +207,8 @@ Custom property                  | Description                            | Defa
         position: {
           type: String,
           readOnly: true,
-          value: 'left'
+          value: 'left',
+          reflectToAttribute: true
         },
 
         /**
