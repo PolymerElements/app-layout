@@ -168,7 +168,15 @@ Mixin | Description | Default
     :host([disabled])::after,
     :host([disabled]) #backgroundFrontLayer,
     :host([disabled]) #backgroundRearLayer,
-    :host([disabled]) ::content > app-toolbar:first-of-type {
+    :host([disabled]) ::content > app-toolbar:first-of-type,
+    :host([disabled]) ::content > [primary],
+    /* Silent scrolling should not run CSS transitions */
+    :host-context(.app-layout-silent-scroll),
+    :host-context(.app-layout-silent-scroll)::after,
+    :host-context(.app-layout-silent-scroll) #backgroundFrontLayer,
+    :host-context(.app-layout-silent-scroll) #backgroundRearLayer,
+    :host-context(.app-layout-silent-scroll) ::content > app-toolbar:first-of-type,
+    :host-context(.app-layout-silent-scroll) ::content > [primary] {
       transition: none !important;
     }
 

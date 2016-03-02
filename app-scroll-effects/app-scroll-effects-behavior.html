@@ -10,11 +10,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../app-scroll-behaviors/app-custom-scroller-behavior.html">
+<link rel="import" href="../helpers/helpers.html">
 
 <script>
   /**
    * `Polymer.AppScrollEffectsBehavior` provides an interface that allows to consume scrolls events.
-   * Effects are installed in the `Polymer.AppScrollEffects` namescape.
+   * Effects are installed in the `Polymer.AppLayout.scrollEffects` namescape.
    *
    * A few effects are defined in `app-scroll-effects.html`, but, by default, no effect is imported.
    * Thus, users need to explicitly import the dependency.
@@ -149,7 +150,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * effects programmatically.
      *
      * @method createEffect
-     * @param {string} effectName The name of an effect defined in `Polymer.AppScrollEffects`
+     * @param {string} effectName The name of an effect defined in `Polymer.AppLayout.scrollEffects`
      * @param {Object=} effectConfig The effect config object if the effect accepts config
      *   values. (Optional)
      * @return {Object} The effect object. This object has the following interface:
@@ -167,13 +168,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * ```
      */
     createEffect: function(effectName, effectConfig) {
-      if (!Polymer.AppScrollEffects) {
-        throw new ReferenceError('undefined Polymer.AppScrollEffects');
-        return;
-      }
-      var effectDef = Polymer.AppScrollEffects[effectName];
+      var effectDef = Polymer.AppLayout.scrollEffects[effectName];
       if (!effectDef) {
-        throw new ReferenceError('undefined effect `' + effectName + '`');
+        throw new ReferenceError('Scroll effect `' + effectName + '` is undefined');
         return;
       }
       var prop = this._boundEffect(effectDef, effectConfig || {});
@@ -193,7 +190,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       effects.split(' ').forEach(function(effectName) {
         var effectDef;
         if (effectName !== '') {
-          if ((effectDef = Polymer.AppScrollEffects[effectName])) {
+          if ((effectDef = Polymer.AppLayout.scrollEffects[effectName])) {
             this._effects.push(this._boundEffect(effectDef, effectsConfig[effectName]));
           } else {
             this._warn(this._logf('_effectsChanged', 'undefined effect `', effectName, '`'));
@@ -284,8 +281,4 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   }];
 
-  /**
-   * Defines the namespace for the effects
-   */
-  Polymer.AppScrollEffects = Polymer.AppScrollEffects || {};
 </script>
