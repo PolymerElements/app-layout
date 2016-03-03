@@ -156,7 +156,7 @@ Custom property                  | Description                            | Defa
 
   <template>
 
-    <div id="scrim" on-tap="_scrimTapHandler"></div>
+    <div id="scrim" on-tap="_scrimTapHandler" on-transitionend="_scrimTransitionend"></div>
 
     <div id="contentContainer">
       <content></content>
@@ -242,8 +242,7 @@ Custom property                  | Description                            | Defa
       },
 
       listeners: {
-        track: '_track',
-        transitionend: '_transitionEnd'
+        track: '_track'
       },
 
       observers: [
@@ -258,6 +257,8 @@ Custom property                  | Description                            | Defa
 
       _isDrawerFlinging: false,
 
+      _boundFocusHandler: null,
+
       ready: function() {
         // Set the scroll direction so you can vertically scroll inside the drawer.
         this.setScrollDirection('y');
@@ -266,7 +267,7 @@ Custom property                  | Description                            | Defa
         // may need to set the initial opened state which should not be transitioned).
         this.$.contentContainer.style.transitionDuration = '0s';
 
-        document.addEventListener('focus', this._focusHandler.bind(this), true /* useCapture */);
+        this._boundFocusHandler = this._focusHandler.bind(this);
       },
 
       attached: function() {
@@ -337,7 +338,7 @@ Custom property                  | Description                            | Defa
       },
 
       _focusHandler: function(event) {
-        if (this._isAboveContent() && !this.contains(Polymer.dom(event).rootTarget)) {
+        if (!this.contains(Polymer.dom(event).rootTarget)) {
           this._focusInsideDrawer();
         }
       },
@@ -510,12 +511,11 @@ Custom property                  | Description                            | Defa
         this._isDrawerFlinging = true;
       },
 
-      _transitionEnd: function(event) {
+      _scrimTransitionend: function(event) {
         // Focused content should only be reset once - rely scrim opacity because
         // contentContainer triggers transitionend between translateX(256px) and
         // translateX(100%), which we don't want since those are the same state.
-        var target = Polymer.dom(event).rootTarget;
-        if (target === this.$.scrim && event.propertyName === 'opacity') {
+        if (event.propertyName === 'opacity') {
 
           // If the drawer was flinging, we need to reset the style attributes.
           if (this._isDrawerFlinging) {
@@ -561,10 +561,14 @@ Custom property                  | Description                            | Defa
       _resetFocusedContent: function() {
         if (this._isAboveContent()) {
           document.body.style.overflow = 'hidden';
+          document.addEventListener('focus', this._boundFocusHandler, true /* useCapture */);
           this._focusInsideDrawer();
         } else {
+          document.removeEventListener('focus', this._boundFocusHandler, true /* useCapture */);
           document.body.style.overflow = '';
         }
+
+        this.fire('app-drawer-focus-changed');
       },
 
       MIN_FLING_VELOCITY: 0.2,
