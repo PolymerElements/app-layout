@@ -254,7 +254,7 @@ Custom property                  | Description                            | Defa
 
       _translateOffset: 0,
 
-      _trackEvents: null,
+      _trackDetails: null,
 
       _isDrawerFlinging: false,
 
@@ -388,12 +388,18 @@ Custom property                  | Description                            | Defa
           this._translateOffset = rect.right - window.innerWidth;
         }
 
-        this._trackEvents = [];
+        this._trackDetails = [];
       },
 
       _trackMove: function(event) {
         this._translateDrawer(event.detail.dx + this._translateOffset);
-        this._trackEvents.push(event);
+
+        // Use Date.now() since event.timeStamp is inconsistent across browsers (e.g. most
+        // browsers use milliseconds but FF 44 uses microseconds).
+        this._trackDetails.push({
+          dx: event.detail.dx,
+          timeStamp: Date.now()
+        });
       },
 
       _trackEnd: function(event) {
@@ -405,11 +411,11 @@ Custom property                  | Description                            | Defa
           (!isPositionLeft && (x <= 0 || x >= drawerWidth));
 
         // No longer need the track events after this method returns - allow them to be GC'd.
-        var trackEvents = this._trackEvents;
-        this._trackEvents = null;
+        var trackDetails = this._trackDetails;
+        this._trackDetails = null;
 
         if (!isInEndState) {
-          this._flingDrawer(event, trackEvents);
+          this._flingDrawer(event, trackDetails);
           if (this._isDrawerFlinging) {
             return;
           }
@@ -434,35 +440,36 @@ Custom property                  | Description                            | Defa
         this.style.visibility = '';
       },
 
-      _calculateVelocity: function(event, trackEvents) {
-        // Find the oldest track event that is within 100ms of track end using binary search.
-        var timeLowerBound = event.timeStamp - 100;
-        var trackEvent;
+      _calculateVelocity: function(event, trackDetails) {
+        // Find the oldest track event that is within 100ms using binary search.
+        var now = Date.now();
+        var timeLowerBound = now - 100;
+        var trackDetail;
         var min = 0;
-        var max = trackEvents.length - 1;
+        var max = trackDetails.length - 1;
 
         while (min <= max) {
           // Floor of average of min and max.
           var mid = (min + max) >> 1;
-          var e = trackEvents[mid];
-          if (e.timeStamp >= timeLowerBound) {
-            trackEvent = e;
+          var d = trackDetails[mid];
+          if (d.timeStamp >= timeLowerBound) {
+            trackDetail = d;
             max = mid - 1;
           } else {
             min = mid + 1;
           }
         }
 
-        if (trackEvent) {
-          var dx = event.detail.dx - trackEvent.detail.dx;
-          var dt = (event.timeStamp - trackEvent.timeStamp) || 1;
+        if (trackDetail) {
+          var dx = event.detail.dx - trackDetail.dx;
+          var dt = (now - trackDetail.timeStamp) || 1;
           return dx / dt;
         }
         return 0;
       },
 
-      _flingDrawer: function(event, trackEvents) {
-        var velocity = this._calculateVelocity(event, trackEvents);
+      _flingDrawer: function(event, trackDetails) {
+        var velocity = this._calculateVelocity(event, trackDetails);
 
         // Do not fling if velocity is not above a threshold.
         if (Math.abs(velocity) < this.MIN_FLING_VELOCITY) {
