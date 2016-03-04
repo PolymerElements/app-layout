@@ -170,7 +170,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     createEffect: function(effectName, effectConfig) {
       var effectDef = Polymer.AppLayout.scrollEffects[effectName];
       if (!effectDef) {
-        throw new ReferenceError('Scroll effect `' + effectName + '` is undefined');
+        throw new ReferenceError(this._getUndefinedMsg(effectName));
         return;
       }
       var prop = this._boundEffect(effectDef, effectConfig || {});
@@ -193,7 +193,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if ((effectDef = Polymer.AppLayout.scrollEffects[effectName])) {
             this._effects.push(this._boundEffect(effectDef, effectsConfig[effectName]));
           } else {
-            this._warn(this._logf('_effectsChanged', 'undefined effect `', effectName, '`'));
+            this._warn(this._logf('_effectsChanged', this._getUndefinedMsg(effectName)));
           }
         }
       }, this);
@@ -278,7 +278,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       if (!this.disabled) {
         this._updateScrollState(this._clampedScrollTop);
       }
+    },
+
+    _getUndefinedMsg: function(effectName) {
+      return 'Scroll effect `' + effectName +
+          '` is undefined. Did you forget to import the effects?';
     }
+
   }];
 
 </script>

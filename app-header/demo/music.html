@@ -199,8 +199,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var tallHeader =  document.querySelector('.bg-header');
       var fadeBackgroundEffect = topHeader.createEffect('fade-background');
 
-      tallHeader.addEventListener('app-header-transform', function(e) {
-        var isCondensed = e.detail.progress > 0.25;
+      window.addEventListener('scroll', function() {
+        var progress = tallHeader.getScrollState().progress;
+        var isCondensed = progress > 0.25;
         fadeBackgroundEffect.run(isCondensed ? 1 : 0);
         topHeader.shadow = isCondensed;
       });

@@ -45,7 +45,7 @@ if the user scrolls back up to the top.
 The following effects can be installed via the `effects` property:
 
 * **blend-background**
-While scrolling down, fade in the rear background layer and fade out the front 
+While scrolling down, fade in the rear background layer and fade out the front
 background layer (opacity interpolated based on scroll position).
 
 * **fade-background**
@@ -55,8 +55,8 @@ the front background layer (opacity CSS transitioned over time).
 * **parallax-background**
 Vertically translate the background based on a factor of the scroll position.
 
-* **resize-title** 
-Transform the font size of a designated title element between two values based 
+* **resize-title**
+Transform the font size of a designated title element between two values based
 on the scroll position.
 
 * **resize-snapped-title**
@@ -68,7 +68,7 @@ Toggles the shadow property in app-header when content is scrolled to create
 a sense of depth between the element and the content underneath.
 
 * **material**
-Shorthand for the waterfall, resize-title, blend-background, and parallax-background 
+Shorthand for the waterfall, resize-title, blend-background, and parallax-background
 effects.
 
 ## Styling
@@ -95,6 +95,9 @@ Mixin | Description | Default
       position: relative;
       display: block;
       -webkit-transform: translateZ(0);
+      -webkit-transition-property: -webkit-transform;
+      transition-property: transform;
+      transition-timing-function: linear;
     }
 
     :host > ::content > app-toolbar:first-of-type {
@@ -207,8 +210,10 @@ Mixin | Description | Default
 
         /**
          * If true, the header will automatically collapse when scrolling down.
-         * That is, the first toolbar (as in the DOM) will remain visible when the header is fully condensed
-         * whereas the other toolbars will collapse below the first toolbar. e.g.
+         * That is, the `primary` element remains visible when the header is fully condensed
+         * whereas the rest of the elements will collapse below `primary` element.
+         *
+         * By default, the `primary` element is the first toolbar in the light DOM:
          *
          *```html
          * <app-header condenses>
@@ -217,8 +222,10 @@ Mixin | Description | Default
          *   <app-toolbar></app-toolbar>
          * </app-header>
          * ```
-         * Additionally, you can specify which toolbar or element remains visible in condensed mode. For example, 
-         * if we want the last toolbar to remain visible, we can add the `primary` attribute to it.
+         *
+         * Additionally, you can specify which toolbar or element remains visible in condensed mode
+         * by adding the `primary` attribute to that element. For example: if we want the last
+         * toolbar to remain visible, we can add the `primary` attribute to it.
          *
          *```html
          * <app-header condenses>
@@ -227,6 +234,8 @@ Mixin | Description | Default
          *   <app-toolbar primary>This toolbar remains on top</app-toolbar>
          * </app-header>
          * ```
+         *
+         * Note the `primary` element must be a child of `app-header`.
          */
         condenses: {
           type: Boolean,
@@ -280,8 +289,8 @@ Mixin | Description | Default
        *
        * @type {number}
        */
-      _deltaHeight: 0,
-      
+      _dHeight: 0,
+
       /**
        * The offsetTop of `_primaryEl`
        *
@@ -297,7 +306,7 @@ Mixin | Description | Default
       _primaryEl: null,
 
       /**
-       * The current clampped header top relative to the viewport.
+       * The header's top value used for the `transformY`
        *
        * @type {number}
        */
@@ -310,11 +319,10 @@ Mixin | Description | Default
        */
       _progress: 0,
 
-      /**
-       * The previous `scrollTop` to determinate the scroll direction.
-       *
-       * @type {number}
-       */
+      _wasScrollingDown: false,
+      _initScrollTop: 0,
+      _initTimestamp: 0,
+      _lastTimestamp: 0,
       _lastScrollTop: 0,
 
       /**
@@ -322,8 +330,8 @@ Mixin | Description | Default
        *
        * @type {number}
        */
-      get _headerDy() {
-        return this.fixed ? this._deltaHeight : this._height + 5;
+      get _maxHeaderTop() {
+        return this.fixed ? this._dHeight : this._height + 5;
       },
 
       /**
@@ -353,37 +361,46 @@ Mixin | Description | Default
        * @method resetLayout
        */
       resetLayout: function() {
+
+        this.fire('app-header-reset-layout');
+
         this.debounce('_resetLayout', function() {
           // noop if the header isn't visible
           if (this.offsetWidth === 0 && this.offsetHeight === 0) {
             return;
           }
-          var firstSetup = this._height === 0;
+
+          var firstSetup = this._height === 0 || scrollTop === 0;
           var scrollTop = this._clampedScrollTop;
-          var savedDisabled = this.disabled;
+          var currentDisabled = this.disabled;
+
           this._height = this.offsetHeight;
           this._primaryEl = this._getPrimaryEl();
-
-          // prepare for measurement
           this.disabled = true;
 
-          if (firstSetup || scrollTop === 0) {
-            this._deltaHeight = this._primaryEl ? this._height - this._primaryEl.offsetHeight : 0;
-            this._primaryElTop = this._primaryEl ? this._primaryEl.offsetTop : 0;
-            this._setUpEffect();
+          // prepare for measurement
+          if  (!firstSetup) {
+            this._updateScrollState(0, true);
+          }
+
+          if (this._mayMove()) {
+            this._dHeight = this._primaryEl ? this._height - this._primaryEl.offsetHeight : 0;
+          } else {
+            this._dHeight = 0;
+          }
+
+          this._primaryElTop = this._primaryEl ? this._primaryEl.offsetTop : 0;
+          this._setUpEffect();
+
+          if (firstSetup) {
             this._updateScrollState(scrollTop, true);
           } else {
-            this._updateScrollState(0, true);
-            this._deltaHeight = this._primaryEl ? this._height - this._primaryEl.offsetHeight : 0;
-            this._primaryElTop = this._primaryEl ? this._primaryEl.offsetTop : 0;
-            this._setUpEffect();
             this._updateScrollState(this._lastScrollTop, true);
             this._layoutIfDirty();
           }
           // restore no transition
-          this.disabled = savedDisabled;
+          this.disabled = currentDisabled;
         });
-        this.fire('app-header-reset-layout');
       },
 
       /**
@@ -396,42 +413,77 @@ Mixin | Description | Default
         if (this._height === 0) {
           return;
         }
-        var progress;
-        var mayHeaderMove = !this.fixed || this.condenses;
-        var top = Math.min(this._headerDy, Math.max(0,
-            this.reveals ? this._top + scrollTop - this._lastScrollTop : scrollTop
-        ));
 
-        if (this._shouldCondense(scrollTop)) {
-          top = Math.max(this._deltaHeight, top);
+        var progress = 0;
+        var top = 0;
+        var lastTop = this._top;
+        var lastScrollTop = this._lastScrollTop;
+        var maxHeaderTop = this._maxHeaderTop;
+        var dScrollTop = scrollTop - this._lastScrollTop;
+        var absDScrollTop = Math.abs(dScrollTop);
+        var isScrollingDown = scrollTop > this._lastScrollTop;
+        var now = Date.now();
+
+        if (this._mayMove()) {
+          top = this._clamp(this.reveals ? lastTop + dScrollTop : scrollTop, 0, maxHeaderTop);
         }
-        if (this._deltaHeight === 0) {
+
+        if (scrollTop >= this._dHeight) {
+          top = this.condenses ? Math.max(this._dHeight, top) : top;
+          this.style.transitionDuration = '0ms';
+        }
+
+        if (this.reveals && !this.disabled && absDScrollTop < 100) {
+          // set the initial scroll position
+          if (now - this._initTimestamp > 300 || this._wasScrollingDown !== isScrollingDown) {
+            this._initScrollTop = scrollTop;
+            this._initTimestamp = now;
+          }
+
+          if (scrollTop >= maxHeaderTop) {
+            // check if the header is allowed to snap
+            if (Math.abs(this._initScrollTop - scrollTop) > 30 || absDScrollTop > 10) {
+              if (isScrollingDown && scrollTop >= maxHeaderTop) {
+                top = maxHeaderTop;
+              } else if (!isScrollingDown && scrollTop >= this._dHeight) {
+                top = this.condenses ? this._dHeight : 0;
+              }
+
+              var scrollVelocity = dScrollTop / (now - this._lastTimestamp);
+              this.style.transitionDuration = this._clamp((top - lastTop) / scrollVelocity , 0, 300) + 'ms';
+            } else {
+              top = this._top;
+            }
+          }
+        }
+
+        if (this._dHeight === 0) {
           progress = scrollTop > 0 ? 1 : 0;
         } else {
-          progress = top / this._deltaHeight;
+          progress = top / this._dHeight;
         }
-        if (forceUpdate || progress !== this._progress || top !== this._top || scrollTop === 0) {
-          this._runEffects(progress, mayHeaderMove ? top : 0);
-          this._transformHeader(mayHeaderMove ? top : 0);
-          this.fire('app-header-transform', { top: top, progress: progress }, { bubbles: false });
-        }
+
         if (!forceUpdate) {
-          this._top = top;
           this._lastScrollTop = scrollTop;
+          this._top = top;
+          this._wasScrollingDown = isScrollingDown;
+          this._lastTimestamp = now;
+        }
+
+        if (forceUpdate || progress !== this._progress || lastTop !== top || scrollTop === 0) {
           this._progress = progress;
+          this._runEffects(progress, top);
+          this._transformHeader(top);
         }
       },
 
       /**
-       * Returns true if the current header should condense based
-       * on the current scroll position.
+       * Returns true if the current header is allowed to move as the user scrolls.
        *
-       * @param {number} scrollTop
        * @return {boolean}
        */
-      _shouldCondense: function(scrollTop) {
-        return this._lastScrollTop >= scrollTop && scrollTop > this._deltaHeight
-            && (!this.reveals || this.condenses);
+      _mayMove: function() {
+        return this.condenses || !this.fixed;
       },
 
       /**
@@ -441,7 +493,7 @@ Mixin | Description | Default
        * @return {boolean}
        */
       willCondense: function() {
-        return this._deltaHeight > 0 && this.condenses;
+        return this._dHeight > 0 && this.condenses;
       },
 
       /**
@@ -465,7 +517,8 @@ Mixin | Description | Default
         if (this._top === 0) {
           return this._clampedScrollTop > 0;
         }
-        return this._clampedScrollTop - this._headerDy >= 0;
+
+        return this._clampedScrollTop - this._maxHeaderTop >= 0;
       },
 
       /**
@@ -475,24 +528,31 @@ Mixin | Description | Default
        */
       _transformHeader: function(y) {
         this.translate3d(0, (-y) + 'px', 0);
+
         if (this._primaryEl && this.condenses && y >= this._primaryElTop) {
-          this.translate3d(0, (Math.min(y, this._deltaHeight) - this._primaryElTop) + 'px', 0,
+          this.translate3d(0, (Math.min(y, this._dHeight) - this._primaryElTop) + 'px', 0,
               this._primaryEl);
         }
       },
 
       _resizeHandler: function() {
         this.resetLayout();
-      }
+      },
+
+      _clamp: function(v, min, max) {
+        return Math.min(max, Math.max(min, v));
+      },
 
       /**
-       * Fires when the `app-header` is transformed. That is, when scroll effects are taking place.
-       * This event doesn't bubble.
-       * * `event.detail.top` The top position relative to the viewport.
-       * * `event.detail.progress` The progress value.
+       * Returns an object containing the progress value of the scroll effects
+       * and the top position of the header.
        *
-       * @event app-header-transform
+       * @method getScrollState
+       * @return {Object}
        */
+      getScrollState: function() {
+        return { progress: this._progress, top: this._top };
+      }
 
       /**
        * Fires when the layout of `app-header` changed.
