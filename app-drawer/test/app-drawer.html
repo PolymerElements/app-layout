@@ -100,12 +100,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('transitions are enabled after attached', function(done) {
-        assert.equal(contentContainer.style.transitionDuration, '0s');
+        assertTransitionDuration('0s');
 
-        flush(function() {
-          assert.equal(contentContainer.style.transitionDuration, '');
+        window.setTimeout(function() {
+          assertTransitionDuration('');
           done();
-        });
+        }, 10);
       });
 
       test('computed position', function() {
@@ -329,6 +329,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
         drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
+        // Force style recalc.
+        window.getComputedStyle(scrim).transitionDuration;
 
         window.setTimeout(function() {
           assert.equal(drawer.style.visibility, '');

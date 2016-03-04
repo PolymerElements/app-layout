@@ -156,7 +156,7 @@ Custom property                  | Description                            | Defa
 
   <template>
 
-    <div id="scrim" on-tap="_scrimTapHandler" on-transitionend="_scrimTransitionend"></div>
+    <div id="scrim" on-tap="close" on-transitionend="_scrimTransitionend"></div>
 
     <div id="contentContainer">
       <content></content>
@@ -248,7 +248,7 @@ Custom property                  | Description                            | Defa
       observers: [
         'resetLayout(position)',
         '_resetFocusedContent(persistent)',
-        '_resetPosition(align)'
+        '_resetPosition(align, isAttached)'
       ],
 
       _translateOffset: 0,
@@ -265,20 +265,15 @@ Custom property                  | Description                            | Defa
 
         // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
-        this.$.contentContainer.style.transitionDuration = '0s';
+        this._setTransitionDuration('0s');
 
         this._boundFocusHandler = this._focusHandler.bind(this);
       },
 
       attached: function() {
-        // Reset position when drawer is attached and can get its computed direction.
-        this._resetPosition();
-
         // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
-        this.async(function() {
-          this.$.contentContainer.style.transitionDuration = '';
-        });
+        requestAnimationFrame(this._setTransitionDuration.bind(this, ''));
       },
 
       /**
@@ -317,10 +312,6 @@ Custom property                  | Description                            | Defa
         }, 1);
       },
 
-      _isAboveContent: function() {
-        return this.opened && !this.persistent;
-      },
-
       _isRTL: function() {
         return window.getComputedStyle(this).direction === 'rtl';
       },
@@ -338,7 +329,7 @@ Custom property                  | Description                            | Defa
       },
 
       _focusHandler: function(event) {
-        if (!this.contains(Polymer.dom(event).rootTarget)) {
+        if (!this.isLightDescendant(Polymer.dom(event).rootTarget)) {
           this._focusInsideDrawer();
         }
       },
@@ -347,12 +338,6 @@ Custom property                  | Description                            | Defa
         var child = Polymer.dom(this).querySelector(this.focusSelector);
         if (child) {
           child.focus();
-        }
-      },
-
-      _scrimTapHandler: function() {
-        if (this._isAboveContent()) {
-          this.close();
         }
       },
 
@@ -407,9 +392,8 @@ Custom property                  | Description                            | Defa
         var x = event.detail.dx + this._translateOffset;
         var drawerWidth = this.getWidth();
         var isPositionLeft = this.position === 'left';
-        var isInEndState =
-          (isPositionLeft && (x >= 0 || x <= -drawerWidth)) ||
-          (!isPositionLeft && (x <= 0 || x >= drawerWidth));
+        var isInEndState = isPositionLeft ? (x >= 0 || x <= -drawerWidth) :
+          (x <= 0 || x >= drawerWidth);
 
         // No longer need the track events after this method returns - allow them to be GC'd.
         var trackDetails = this._trackDetails;
@@ -512,21 +496,19 @@ Custom property                  | Description                            | Defa
       },
 
       _scrimTransitionend: function(event) {
-        // Focused content should only be reset once - rely scrim opacity because
-        // contentContainer triggers transitionend between translateX(256px) and
-        // translateX(100%), which we don't want since those are the same state.
-        if (event.propertyName === 'opacity') {
+        // Focused content should only be reset once - we choose to rely on the scrim
+        // because contentContainer would fire transitionend between translateX(256px)
+        // and translateX(100%), which we don't want since those are the same state.
 
-          // If the drawer was flinging, we need to reset the style attributes.
-          if (this._isDrawerFlinging) {
-            this._isDrawerFlinging = false;
-            this._setTransitionDuration('');
-            this._setTransitionTimingFunction('');
-            this.style.visibility = '';
-          }
-
-          this._resetFocusedContent();
+        // If the drawer was flinging, we need to reset the style attributes.
+        if (this._isDrawerFlinging) {
+          this._isDrawerFlinging = false;
+          this._setTransitionDuration('');
+          this._setTransitionTimingFunction('');
+          this.style.visibility = '';
         }
+
+        this._resetFocusedContent();
       },
 
       _setTransitionDuration: function(duration) {
@@ -559,7 +541,7 @@ Custom property                  | Description                            | Defa
       },
 
       _resetFocusedContent: function() {
-        if (this._isAboveContent()) {
+        if (this.opened && !this.persistent) {
           document.body.style.overflow = 'hidden';
           document.addEventListener('focus', this._boundFocusHandler, true /* useCapture */);
           this._focusInsideDrawer();
@@ -567,8 +549,6 @@ Custom property                  | Description                            | Defa
           document.removeEventListener('focus', this._boundFocusHandler, true /* useCapture */);
           document.body.style.overflow = '';
         }
-
-        this.fire('app-drawer-focus-changed');
       },
 
       MIN_FLING_VELOCITY: 0.2,
