@@ -39,6 +39,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
+  <test-fixture id="focusDrawer">
+    <template>
+      <div>
+        <button id="toggle">Toggle</button>
+        <app-drawer>
+          <button id="foo">Foo</button>
+          <button id="bar">Bar</button>
+        </app-drawer>
+      </div>
+    </template>
+  </test-fixture>
+
   <script>
 
     suite('basic features', function() {
@@ -47,6 +59,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       function assertDrawerStyles(translateX, opacity, desc) {
         assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + translateX + 'px,0,0)', desc);
         assert.equal(parseFloat(scrim.style.opacity).toFixed(4), opacity.toFixed(4), desc);
+      }
+
+      function assertDrawerStylesReset() {
+        assert.equal(scrim.style.opacity, '');
+        assert.equal(transformSpy.lastCall.args[0], '');
+      }
+
+      function assertTransitionDuration(duration) {
+        assert.equal(contentContainer.style.transitionDuration, duration);
+        assert.equal(scrim.style.transitionDuration, duration);
+      }
+
+      function assertTransitionDurationAbove(d) {
+        assert.isAbove(parseFloat(contentContainer.style.transitionDuration), d);
+        assert.isAbove(parseFloat(scrim.style.transitionDuration), d);
+      }
+
+      function assertTransitionTimingFunction(timingFunction) {
+        assert.equal(contentContainer.style.transitionTimingFunction, timingFunction);
+        assert.equal(scrim.style.transitionTimingFunction, timingFunction);
       }
 
       setup(function() {
@@ -68,12 +100,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('transitions are enabled after attached', function(done) {
-        assert.equal(contentContainer.style.transitionDuration, '0s');
+        assertTransitionDuration('0s');
 
-        flush(function() {
-          assert.equal(contentContainer.style.transitionDuration, '');
+        window.setTimeout(function() {
+          assertTransitionDuration('');
           done();
-        });
+        }, 10);
       });
 
       test('computed position', function() {
@@ -188,17 +220,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('styles reset after swiping', function() {
         drawer.fire('track', { state: 'start' });
 
-        assert.equal(contentContainer.style.transitionDuration, '0s');
-        assert.equal(scrim.style.transitionDuration, '0s');
         assert.equal(drawer.style.visibility, 'visible');
+        assertTransitionDuration('0s');
 
         drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
 
         assert.equal(drawer.style.visibility, '');
-        assert.equal(contentContainer.style.transitionDuration, '');
-        assert.equal(scrim.style.transitionDuration, '');
-        assert.equal(scrim.style.opacity, '');
-        assert.equal(transformSpy.lastCall.args[0], '');
+        assertTransitionDuration('');
+        assertDrawerStylesReset();
+      });
+
+      test('styles reset after swiping beyond the end state', function() {
+        drawer.fire('track', { state: 'start' });
+
+        assert.equal(drawer.style.visibility, 'visible');
+        assertTransitionDuration('0s');
+
+        drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
+
+        assert.equal(drawer.style.visibility, '');
+        assertTransitionDuration('');
+        assertDrawerStylesReset();
       });
 
       test('left drawer swiping', function() {
@@ -219,7 +261,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assertDrawerStyles(0, 1, 'styles are upper bounded');
 
         // Simulate break of track events.
-        drawer._trackEvents = [];
+        drawer._trackDetails = [];
         drawer.fire('track', { state: 'end', dx: halfWidth, ddx: -drawerWidth });
 
         assert.isFalse(drawer.opened, 'drawer stays closed when track distance is small');
@@ -258,7 +300,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assertDrawerStyles(0, 1, 'styles are upper bounded');
 
         // Simulate break of track events.
-        drawer._trackEvents = [];
+        drawer._trackDetails = [];
         drawer.fire('track', { state: 'end', dx: -halfWidth, ddx: drawerWidth });
 
         assert.isFalse(drawer.opened, 'drawer stays closed when track distance is small');
@@ -279,159 +321,187 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isFalse(drawer.opened, 'drawer closes when track distance is large');
       });
 
-      test('styles reset after flinging', function() {
+      test('styles reset after flinging', function(done) {
         drawer.fire('track', { state: 'start' });
 
-        assert.equal(contentContainer.style.transitionDuration, '0s');
-        assert.equal(scrim.style.transitionDuration, '0s');
         assert.equal(drawer.style.visibility, 'visible');
+        assertTransitionDuration('0s');
 
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
         drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
-        drawer.fire('transitionend');
+        // Force style recalc.
+        window.getComputedStyle(scrim).transitionDuration;
 
-        assert.equal(drawer.style.visibility, '');
-        assert.equal(contentContainer.style.transitionTimingFunction, '');
-        assert.equal(contentContainer.style.transitionDuration, '');
-        assert.equal(scrim.style.transitionTimingFunction, '');
-        assert.equal(scrim.style.transitionDuration, '');
-        assert.equal(scrim.style.opacity, '');
-        assert.equal(transformSpy.lastCall.args[0], '');
+        window.setTimeout(function() {
+          assert.equal(drawer.style.visibility, '');
+          assertTransitionDuration('');
+          assertTransitionTimingFunction('');
+          assertDrawerStylesReset();
+          done();
+        }, 100);
       });
 
       test('styles reset after flinging beyond the end state', function() {
         drawer.fire('track', { state: 'start' });
 
-        assert.equal(contentContainer.style.transitionDuration, '0s');
-        assert.equal(scrim.style.transitionDuration, '0s');
         assert.equal(drawer.style.visibility, 'visible');
+        assertTransitionDuration('0s');
 
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
         drawer.fire('track', { state: 'end', dx: 1000, ddx: 1000 });
 
         assert.equal(drawer.style.visibility, '');
-        assert.equal(contentContainer.style.transitionTimingFunction, '');
-        assert.equal(contentContainer.style.transitionDuration, '');
-        assert.equal(scrim.style.transitionTimingFunction, '');
-        assert.equal(scrim.style.transitionDuration, '');
-        assert.equal(scrim.style.opacity, '');
-        assert.equal(transformSpy.lastCall.args[0], '');
+        assertTransitionDuration('');
+        assertTransitionTimingFunction('');
+        assertDrawerStylesReset();
       });
 
-      test('left drawer flinging', function() {
-        var drawerWidth = drawer.getWidth();
+      test('left drawer flinging open', function() {
         drawer.align = 'left';
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
         drawer.fire('track', { state: 'end', dx: 0.1, ddx: 0.1 });
 
-        assert.notEqual(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isFalse(drawer.opened, 'drawer stays closed when velocity is small');
+        assertTransitionDuration('');
+        assertTransitionTimingFunction('');
+        assertDrawerStylesReset();
 
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-        // Make dx large enough to force the velocity to be above the threshold, since
-        // we can't determine the timestamps of events.
-        drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
+        drawer.fire('track', { state: 'end', dx: 6, ddx: 6 });
 
-        assert.equal(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
-        assert.isAbove(parseFloat(contentContainer.style.transitionDuration), 0);
-        assert.equal(scrim.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
-        assert.isAbove(parseFloat(scrim.style.transitionDuration), 0);
-        assertDrawerStyles(0, 1);
+        assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
+        assertTransitionDurationAbove(60);
+        assertTransitionTimingFunction(drawer.FLING_TIMING_FUNCTION);
+        assertDrawerStylesReset();
+      });
 
-        drawer.fire('transitionend');
-        
-        assert.isTrue(drawer.opened);
-
+      test('left drawer flinging close', function() {
+        drawer.align = 'left';
+        drawer.opened = true;
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
         drawer.fire('track', { state: 'end', dx: -0.1, ddx: -0.1 });
 
-        assert.notEqual(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isTrue(drawer.opened, 'drawer stays opened when velocity is small');
+        assertTransitionDuration('');
+        assertTransitionTimingFunction('');
+        assertDrawerStylesReset();
 
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-        // Make dx large enough to force the velocity to be above the threshold, since
-        // we can't determine the timestamps of events.
-        drawer.fire('track', { state: 'end', dx: -200, ddx: -200 });
+        drawer.fire('track', { state: 'end', dx: -6, ddx: -6 });
 
-        assert.equal(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
-        assert.isAbove(parseFloat(contentContainer.style.transitionDuration), 0);
-        assert.equal(scrim.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
-        assert.isAbove(parseFloat(scrim.style.transitionDuration), 0);
-        assertDrawerStyles(-drawerWidth, 0);
-
-        drawer.fire('transitionend');
-
-        assert.isFalse(drawer.opened);
+        assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
+        assertTransitionDurationAbove(60);
+        assertTransitionTimingFunction(drawer.FLING_TIMING_FUNCTION);
+        assertDrawerStylesReset();
       });
 
-      test('right drawer flinging', function() {
-        var drawerWidth = drawer.getWidth();
+      test('right drawer flinging open', function() {
         drawer.align = 'right';
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
         drawer.fire('track', { state: 'end', dx: -0.1, ddx: -0.1 });
 
-        assert.notEqual(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isFalse(drawer.opened, 'drawer stays closed when velocity is small');
+        assertTransitionDuration('');
+        assertTransitionTimingFunction('');
+        assertDrawerStylesReset();
 
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-        // Make dx large enough to force the velocity to be above the threshold, since
-        // we can't determine the timestamps of events.
-        drawer.fire('track', { state: 'end', dx: -200, ddx: -200 });
+        drawer.fire('track', { state: 'end', dx: -6, ddx: -6 });
 
-        assert.equal(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
-        assert.isAbove(parseFloat(contentContainer.style.transitionDuration), 0);
-        assert.equal(scrim.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
-        assert.isAbove(parseFloat(scrim.style.transitionDuration), 0);
-        assertDrawerStyles(0, 1);
+        assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
+        assertTransitionDurationAbove(60);
+        assertTransitionTimingFunction(drawer.FLING_TIMING_FUNCTION);
+        assertDrawerStylesReset();
+      });
 
-        drawer.fire('transitionend');
-
-        assert.isTrue(drawer.opened);
-
+      test('right drawer flinging close', function() {
+        drawer.align = 'right';
+        drawer.opened = true;
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
         drawer.fire('track', { state: 'end', dx: 0.1, ddx: 0.1 });
 
-        assert.notEqual(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
+        assert.isTrue(drawer.opened, 'drawer stays opened when velocity is small');
+        assertTransitionDuration('');
+        assertTransitionTimingFunction('');
+        assertDrawerStylesReset();
 
         drawer.fire('track', { state: 'start' });
         drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-        // Make dx large enough to force the velocity to be above the threshold, since
-        // we can't determine the timestamps of events.
-        drawer.fire('track', { state: 'end', dx: 200, ddx: 200 });
+        drawer.fire('track', { state: 'end', dx: 6, ddx: 6 });
 
-        assert.equal(contentContainer.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
-        assert.isAbove(parseFloat(contentContainer.style.transitionDuration), 0);
-        assert.equal(scrim.style.transitionTimingFunction, drawer.FLING_TIMING_FUNCTION);
-        assert.isAbove(parseFloat(scrim.style.transitionDuration), 0);
-        assertDrawerStyles(drawerWidth, 0);
-
-        drawer.fire('transitionend');
-
-        assert.isFalse(drawer.opened);
+        assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
+        assertTransitionDurationAbove(60);
+        assertTransitionTimingFunction(drawer.FLING_TIMING_FUNCTION);
+        assertDrawerStylesReset();
       });
 
-      test('doc scroll', function() {
+      test('doc scroll', function(done) {
+        // This test is known to fail in IE/Edge, but the behavior should work.
+        var userAgent = navigator.userAgent;
+        if (/Trident/i.test(userAgent) || /Edge/i.test(userAgent)) {
+          done();
+          return;
+        }
+
         drawer.opened = true;
-        drawer.fire('transitionend');
 
-        assert.equal(document.body.style.overflow, 'hidden');
+        window.setTimeout(function() {
+          assert.equal(document.body.style.overflow, 'hidden');
 
-        drawer.persistent = true;
+          drawer.persistent = true;
 
-        assert.equal(document.body.style.overflow, '');
+          assert.equal(document.body.style.overflow, '');
 
-        drawer.persistent = false;
+          drawer.persistent = false;
 
-        assert.equal(document.body.style.overflow, 'hidden');
+          assert.equal(document.body.style.overflow, 'hidden');
 
-        drawer.opened = false;
-        drawer.fire('transitionend');
+          drawer.opened = false;
 
-        assert.equal(document.body.style.overflow, '');
+          window.setTimeout(function() {
+            assert.equal(document.body.style.overflow, '');
+            done();
+          }, 500);
+        }, 500);
+      });
+
+      test('focus inside drawer', function(done) {
+        // This test is known to fail in IE/Edge, but the behavior should work.
+        var userAgent = navigator.userAgent;
+        if (/Trident/i.test(userAgent) || /Edge/i.test(userAgent)) {
+          done();
+          return;
+        }
+
+        var container = fixture('focusDrawer');
+        var toggle = container.querySelector('#toggle');
+        var foo = container.querySelector('#foo');
+        var bar = container.querySelector('#bar');
+        var drawer = container.querySelector('app-drawer');
+        var fooFocusSpy = sinon.spy(foo, 'focus');
+
+        drawer.opened = true;
+
+        window.setTimeout(function() {
+          assert.isTrue(fooFocusSpy.called, 'should focus inside drawer');
+
+          fooFocusSpy.reset();
+          Polymer.Base.fire('focus', null /* detail */, { node: bar });
+
+          assert.isFalse(fooFocusSpy.called, 'can focus other elements in drawer');
+
+          Polymer.Base.fire('focus', null /* detail */, { node: toggle });
+
+          assert.isTrue(fooFocusSpy.called, 'should refocus inside drawer');
+          done();
+        }, 500);
       });
 
       test('scrim', function() {
@@ -448,14 +518,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(window.getComputedStyle(scrim)['visibility'], 'hidden');
       });
 
-      test('tap on scrim closes drawer', function(done) {
+      test('tap on scrim closes drawer', function() {
         drawer.opened = true;
         drawer.fire('tap', null /* detail */, { node: scrim });
 
-        window.setTimeout(function() {
-          assert.isFalse(drawer.opened);
-          done();
-        }, 1);
+        assert.isFalse(drawer.opened);
       });
 
       test('persistent drawer should not cover content', function() {

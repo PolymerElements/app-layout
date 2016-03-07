@@ -156,7 +156,7 @@ Custom property                  | Description                            | Defa
 
   <template>
 
-    <div id="scrim" on-tap="_scrimTapHandler"></div>
+    <div id="scrim" on-tap="close" on-transitionend="_scrimTransitionend"></div>
 
     <div id="contentContainer">
       <content></content>
@@ -218,26 +218,46 @@ Custom property                  | Description                            | Defa
           type: Boolean,
           value: false,
           reflectToAttribute: true
+        },
+
+        /**
+         * The CSS selector for the element that should receive focus when the drawer is open.
+         * By default, when the drawer opens, it focuses the first tabbable element. That is,
+         * the first element that can receive focus.
+         */
+        focusSelector: {
+          type: String,
+          value:
+            'a[href]:not([tabindex="-1"]),' +
+            'area[href]:not([tabindex="-1"]),' +
+            'input:not([disabled]):not([tabindex="-1"]),' +
+            'select:not([disabled]):not([tabindex="-1"]),' +
+            'textarea:not([disabled]):not([tabindex="-1"]),' +
+            'button:not([disabled]):not([tabindex="-1"]),' +
+            'iframe:not([tabindex="-1"]),' +
+            '[tabindex]:not([tabindex="-1"]),' +
+            '[contentEditable=true]:not([tabindex="-1"])'
         }
 
       },
 
       listeners: {
-        track: '_track',
-        transitionend: '_transitionEnd'
+        track: '_track'
       },
 
       observers: [
         'resetLayout(position)',
-        '_updateDocScroll(persistent)',
-        '_resetPosition(align)'
+        '_resetFocusedContent(persistent)',
+        '_resetPosition(align, isAttached)'
       ],
 
       _translateOffset: 0,
 
-      _trackEvents: null,
+      _trackDetails: null,
 
       _isDrawerFlinging: false,
+
+      _boundFocusHandler: null,
 
       ready: function() {
         // Set the scroll direction so you can vertically scroll inside the drawer.
@@ -245,18 +265,15 @@ Custom property                  | Description                            | Defa
 
         // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
-        this.$.contentContainer.style.transitionDuration = '0s';
+        this._setTransitionDuration('0s');
+
+        this._boundFocusHandler = this._focusHandler.bind(this);
       },
 
       attached: function() {
-        // Reset position when drawer is attached and can get its computed direction.
-        this._resetPosition();
-
         // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
-        this.async(function() {
-          this.$.contentContainer.style.transitionDuration = '';
-        });
+        requestAnimationFrame(this._setTransitionDuration.bind(this, ''));
       },
 
       /**
@@ -311,9 +328,16 @@ Custom property                  | Description                            | Defa
         this._setPosition(this.align);
       },
 
-      _scrimTapHandler: function() {
-        if (!this.persistent) {
-          this.opened = false;
+      _focusHandler: function(event) {
+        if (!this.isLightDescendant(Polymer.dom(event).rootTarget)) {
+          this._focusInsideDrawer();
+        }
+      },
+
+      _focusInsideDrawer: function() {
+        var child = Polymer.dom(this).querySelector(this.focusSelector);
+        if (child) {
+          child.focus();
         }
       },
 
@@ -340,8 +364,7 @@ Custom property                  | Description                            | Defa
 
       _trackStart: function(event) {
         // Disable transitions since style attributes will reflect user track events.
-        this.$.contentContainer.style.transitionDuration = '0s';
-        this.$.scrim.style.transitionDuration = '0s';
+        this._setTransitionDuration('0s');
         this.style.visibility = 'visible';
 
         var rect = this.$.contentContainer.getBoundingClientRect();
@@ -351,76 +374,97 @@ Custom property                  | Description                            | Defa
           this._translateOffset = rect.right - window.innerWidth;
         }
 
-        this._trackEvents = [];
+        this._trackDetails = [];
       },
 
       _trackMove: function(event) {
         this._translateDrawer(event.detail.dx + this._translateOffset);
-        this._trackEvents.push(event);
+
+        // Use Date.now() since event.timeStamp is inconsistent across browsers (e.g. most
+        // browsers use milliseconds but FF 44 uses microseconds).
+        this._trackDetails.push({
+          dx: event.detail.dx,
+          timeStamp: Date.now()
+        });
       },
 
       _trackEnd: function(event) {
-        // Calculate the velocity.
-        this._velocity = this._calculateVelocity(event);
+        var x = event.detail.dx + this._translateOffset;
+        var drawerWidth = this.getWidth();
+        var isPositionLeft = this.position === 'left';
+        var isInEndState = isPositionLeft ? (x >= 0 || x <= -drawerWidth) :
+          (x <= 0 || x >= drawerWidth);
 
-        // No longer need the track events after calculating velocity - allow them to be GC'd.
-        this._trackEvents = null;
+        // No longer need the track events after this method returns - allow them to be GC'd.
+        var trackDetails = this._trackDetails;
+        this._trackDetails = null;
 
-        if (this._flingDrawer(event)) {
-          return;
+        if (!isInEndState) {
+          this._flingDrawer(event, trackDetails);
+          if (this._isDrawerFlinging) {
+            return;
+          }
         }
 
         // If the drawer is not flinging, toggle the opened state based on the position of
         // the drawer.
-        var halfWidth = this.getWidth() / 2;
+        var halfWidth = drawerWidth / 2;
         if (event.detail.dx < -halfWidth) {
           this.opened = this.position === 'right';
         } else if (event.detail.dx > halfWidth) {
           this.opened = this.position === 'left';
         }
-        this._resetStyleAttributes();
+
+        // Reset focused content now since there will be no transitionend event.
+        if (isInEndState) {
+          this._resetFocusedContent();
+        }
+
+        this._setTransitionDuration('');
+        this._resetDrawerTranslate();
+        this.style.visibility = '';
       },
 
-      _calculateVelocity: function(event) {
-        // Find the oldest track event that is within 100ms of track end using binary search.
-        var timeLowerBound = event.timeStamp - 100;
-        var trackEvent;
+      _calculateVelocity: function(event, trackDetails) {
+        // Find the oldest track event that is within 100ms using binary search.
+        var now = Date.now();
+        var timeLowerBound = now - 100;
+        var trackDetail;
         var min = 0;
-        var max = this._trackEvents.length - 1;
+        var max = trackDetails.length - 1;
 
         while (min <= max) {
           // Floor of average of min and max.
           var mid = (min + max) >> 1;
-          var e = this._trackEvents[mid];
-          if (e.timeStamp >= timeLowerBound) {
-            trackEvent = e;
+          var d = trackDetails[mid];
+          if (d.timeStamp >= timeLowerBound) {
+            trackDetail = d;
             max = mid - 1;
           } else {
             min = mid + 1;
           }
         }
 
-        if (trackEvent) {
-          var dx = event.detail.dx - trackEvent.detail.dx;
-          var dt = (event.timeStamp - trackEvent.timeStamp) || 1;
+        if (trackDetail) {
+          var dx = event.detail.dx - trackDetail.dx;
+          var dt = (now - trackDetail.timeStamp) || 1;
           return dx / dt;
         }
         return 0;
       },
 
-      /**
-       * @return {boolean} True if the drawer will be flinging, false otherwise.
-       */
-      _flingDrawer: function(event) {
+      _flingDrawer: function(event, trackDetails) {
+        var velocity = this._calculateVelocity(event, trackDetails);
+
         // Do not fling if velocity is not above a threshold.
-        if (Math.abs(this._velocity) < this.MIN_FLING_VELOCITY) {
-          return false;
+        if (Math.abs(velocity) < this.MIN_FLING_VELOCITY) {
+          return;
         }
 
         var x = event.detail.dx + this._translateOffset;
         var drawerWidth = this.getWidth();
         var isPositionLeft = this.position === 'left';
-        var isVelocityPositive = this._velocity > 0;
+        var isVelocityPositive = velocity > 0;
         var isClosingLeft = !isVelocityPositive && isPositionLeft;
         var isClosingRight = isVelocityPositive && !isPositionLeft;
         var dx;
@@ -432,71 +476,49 @@ Custom property                  | Description                            | Defa
           dx = -x;
         }
 
-        // Do not fling if there is no difference between the current and end state.
-        if ((isVelocityPositive && dx <= 0) || (!isVelocityPositive && dx >= 0)) {
-          return false;
-        }
-
         // Enforce a minimum transition velocity to make the drawer feel snappy.
         if (isVelocityPositive) {
-          this._velocity = Math.max(this._velocity, this.MIN_TRANSITION_VELOCITY);
+          velocity = Math.max(velocity, this.MIN_TRANSITION_VELOCITY);
+          this.opened = this.position === 'left';
         } else {
-          this._velocity = Math.min(this._velocity, -this.MIN_TRANSITION_VELOCITY);
+          velocity = Math.min(velocity, -this.MIN_TRANSITION_VELOCITY);
+          this.opened = this.position === 'right';
         }
 
-        // Calculate the amount of time needed to finish the transition based on the initial
-        // slope of the timing function.
-        var duration = (this.FLING_INITIAL_SLOPE * dx / this._velocity) + 'ms';
-        this.$.contentContainer.style.transitionDuration = duration;
-        this.$.contentContainer.style.transitionTimingFunction = this.FLING_TIMING_FUNCTION;
-        this.$.scrim.style.transitionDuration = duration;
-        this.$.scrim.style.transitionTimingFunction = this.FLING_TIMING_FUNCTION;
+        // Calculate the amount of time needed to finish the transition based on the
+        // initial slope of the timing function.
+        this._setTransitionDuration((this.FLING_INITIAL_SLOPE * dx / velocity) + 'ms');
+        this._setTransitionTimingFunction(this.FLING_TIMING_FUNCTION);
 
-        // Transform instead of toggling opened to avoid calling Polymer setters.
-        if (isClosingLeft) {
-          this._translateDrawer(-drawerWidth);
-        } else if (isClosingRight) {
-          this._translateDrawer(drawerWidth);
-        } else {
-          this._translateDrawer(0);
-        }
+        this._resetDrawerTranslate();
 
         this._isDrawerFlinging = true;
-        return true;
       },
 
-      _transitionEnd: function(event) {
-        if (Polymer.dom(event).localTarget !== this) {
-          return;
+      _scrimTransitionend: function(event) {
+        // Focused content should only be reset once - we choose to rely on the scrim
+        // because contentContainer would fire transitionend between translateX(256px)
+        // and translateX(100%), which we don't want since those are the same state.
+
+        // If the drawer was flinging, we need to reset the style attributes.
+        if (this._isDrawerFlinging) {
+          this._isDrawerFlinging = false;
+          this._setTransitionDuration('');
+          this._setTransitionTimingFunction('');
+          this.style.visibility = '';
         }
 
-        this._updateDocScroll();
-
-        // Only set the opened state and reset transition timing function if this
-        // transition end event was the end of a fling transition.
-        if (!this._isDrawerFlinging) {
-          return;
-        }
-
-        this._isDrawerFlinging = false;
-
-        if (this._velocity < 0) {
-          this.opened = this.position === 'right';
-        } else {
-          this.opened = this.position === 'left';
-        }
-
-        this.$.contentContainer.style.transitionTimingFunction = '';
-        this.$.scrim.style.transitionTimingFunction = '';
-        this._resetStyleAttributes();
+        this._resetFocusedContent();
       },
 
-      _resetStyleAttributes: function() {
-        this.style.visibility = '';
-        this.$.contentContainer.style.transitionDuration = '';
-        this.$.scrim.style.transitionDuration = '';
-        this.$.scrim.style.opacity = '';
-        this.transform('', this.$.contentContainer);
+      _setTransitionDuration: function(duration) {
+        this.$.contentContainer.style.transitionDuration = duration;
+        this.$.scrim.style.transitionDuration = duration;
+      },
+
+      _setTransitionTimingFunction: function(timingFunction) {
+        this.$.contentContainer.style.transitionTimingFunction = timingFunction;
+        this.$.scrim.style.transitionTimingFunction = timingFunction;
       },
 
       _translateDrawer: function(x) {
@@ -513,8 +535,20 @@ Custom property                  | Description                            | Defa
         this.translate3d(x + 'px', '0', '0', this.$.contentContainer);
       },
 
-      _updateDocScroll: function() {
-        document.body.style.overflow = (this.persistent || !this.opened) ? '' : 'hidden';
+      _resetDrawerTranslate: function() {
+        this.$.scrim.style.opacity = '';
+        this.transform('', this.$.contentContainer);
+      },
+
+      _resetFocusedContent: function() {
+        if (this.opened && !this.persistent) {
+          document.body.style.overflow = 'hidden';
+          document.addEventListener('focus', this._boundFocusHandler, true /* useCapture */);
+          this._focusInsideDrawer();
+        } else {
+          document.removeEventListener('focus', this._boundFocusHandler, true /* useCapture */);
+          document.body.style.overflow = '';
+        }
       },
 
       MIN_FLING_VELOCITY: 0.2,
