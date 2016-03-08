@@ -111,8 +111,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
 
     var fab = document.querySelector('paper-fab');
-    document.querySelector('app-header').addEventListener('app-header-transform', function(e) {
-      fab.toggleClass('shrink-to-hidden', e.detail.progress > 0.5);
+    var header = document.querySelector('app-header');
+
+    window.addEventListener('scroll', function() {
+      var progress = header.getScrollState().progress;
+      fab.toggleClass('shrink-to-hidden', progress > 0.5);
     });
 
   </script>
