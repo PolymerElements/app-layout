@@ -96,12 +96,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       // This seems to only apply when using document scrolling.
       // Therefore, when should we remove the class from the document element?
 
-      clearInterval(this._scrollTimer);
+      clearInterval(Polymer.AppLayout._scrollTimer);
 
       this._scrollTimer = setTimeout(function() {
         docEl.classList.remove(scrollClassName);
         this._scrollTimer = null;
-      }, 100);
+      }.bind(this), 100);
 
       scrollTo(scrollLeft, scrollTop);
 
