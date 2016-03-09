@@ -221,22 +221,11 @@ Custom property                  | Description                            | Defa
         },
 
         /**
-         * The CSS selector for the element that should receive focus when the drawer is open.
-         * By default, when the drawer opens, it focuses the first tabbable element. That is,
-         * the first element that can receive focus.
+         * If specified, the drawer will focus on this CSS selector when opened.
          */
         focusSelector: {
           type: String,
-          value:
-            'a[href]:not([tabindex="-1"]),' +
-            'area[href]:not([tabindex="-1"]),' +
-            'input:not([disabled]):not([tabindex="-1"]),' +
-            'select:not([disabled]):not([tabindex="-1"]),' +
-            'textarea:not([disabled]):not([tabindex="-1"]),' +
-            'button:not([disabled]):not([tabindex="-1"]),' +
-            'iframe:not([tabindex="-1"]),' +
-            '[tabindex]:not([tabindex="-1"]),' +
-            '[contentEditable=true]:not([tabindex="-1"])'
+          value: ''
         }
 
       },
@@ -335,6 +324,10 @@ Custom property                  | Description                            | Defa
       },
 
       _focusInsideDrawer: function() {
+        if (!this.focusSelector) {
+          return;
+        }
+
         var child = Polymer.dom(this).querySelector(this.focusSelector);
         if (child) {
           child.focus();
