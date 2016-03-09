@@ -94,14 +94,9 @@ Mixin | Description | Default
     :host {
       position: relative;
       display: block;
-      -webkit-transform: translateZ(0);
-      -webkit-transition-property: -webkit-transform;
+      transition-property: -webkit-transform;
       transition-property: transform;
       transition-timing-function: linear;
-    }
-
-    :host > ::content > app-toolbar:first-of-type {
-      -webkit-transform: translateZ(0);
     }
 
     :host::after {
@@ -116,9 +111,7 @@ Mixin | Description | Default
       opacity: 0;
       box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
       will-change: opacity;
-      -webkit-transition: opacity 0.4s;
       transition: opacity 0.4s;
-      -webkit-transform: translateZ(0);
       @apply(--app-header-shadow);
     }
 
