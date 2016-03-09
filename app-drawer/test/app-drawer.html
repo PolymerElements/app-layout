@@ -42,10 +42,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <test-fixture id="focusDrawer">
     <template>
       <div>
-        <button id="toggle">Toggle</button>
-        <app-drawer focus-selector="#foo">
-          <button id="foo">Foo</button>
-          <button id="bar">Bar</button>
+        <button id="outBtn">Outside</button>
+        <app-drawer>
+          <button id="inBtn">Inside</button>
         </app-drawer>
       </div>
     </template>
@@ -105,7 +104,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         window.setTimeout(function() {
           assertTransitionDuration('');
           done();
-        }, 10);
+        }, 250);
       });
 
       test('computed position', function() {
@@ -338,7 +337,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assertTransitionTimingFunction('');
           assertDrawerStylesReset();
           done();
-        }, 100);
+        }, 250);
       });
 
       test('styles reset after flinging beyond the end state', function() {
@@ -443,65 +442,75 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('doc scroll', function(done) {
-        // This test is known to fail in IE/Edge, but the behavior should work.
-        var userAgent = navigator.userAgent;
-        if (/Trident/i.test(userAgent) || /Edge/i.test(userAgent)) {
-          done();
-          return;
-        }
-
-        drawer.opened = true;
-
         window.setTimeout(function() {
-          assert.equal(document.body.style.overflow, 'hidden');
-
-          drawer.persistent = true;
-
-          assert.equal(document.body.style.overflow, '');
-
-          drawer.persistent = false;
-
-          assert.equal(document.body.style.overflow, 'hidden');
-
-          drawer.opened = false;
+          drawer.opened = true;
 
           window.setTimeout(function() {
-            assert.equal(document.body.style.overflow, '');
-            done();
-          }, 500);
-        }, 500);
+            assert.equal(document.body.style.overflow, 'hidden',
+              'should block scrolling when opened');
+
+            drawer.persistent = true;
+
+            assert.equal(document.body.style.overflow, '',
+              'should not block scrolling when persistent');
+
+            drawer.persistent = false;
+
+            assert.equal(document.body.style.overflow, 'hidden',
+              'should block scrolling when not persistent');
+
+            drawer.opened = false;
+
+            window.setTimeout(function() {
+              assert.equal(document.body.style.overflow, '',
+                'should not block scrolling when closed');
+              done();
+            }, 400);
+          }, 250);
+        }, 100);
       });
 
       test('focus inside drawer', function(done) {
-        // This test is known to fail in IE/Edge, but the behavior should work.
-        var userAgent = navigator.userAgent;
-        if (/Trident/i.test(userAgent) || /Edge/i.test(userAgent)) {
-          done();
-          return;
-        }
-
         var container = fixture('focusDrawer');
-        var toggle = container.querySelector('#toggle');
-        var foo = container.querySelector('#foo');
-        var bar = container.querySelector('#bar');
+        var outBtn = container.querySelector('#outBtn');
         var drawer = container.querySelector('app-drawer');
-        var fooFocusSpy = sinon.spy(foo, 'focus');
-
-        drawer.opened = true;
-
+        var inBtn = drawer.querySelector('#inBtn');
+        var drawerFocusSpy = sinon.spy(drawer, 'focus');
         window.setTimeout(function() {
-          assert.isTrue(fooFocusSpy.called, 'should focus inside drawer');
+          drawer.opened = true;
 
-          fooFocusSpy.reset();
-          Polymer.Base.fire('focus', null /* detail */, { node: bar });
+          window.setTimeout(function() {
+            assert.isTrue(drawerFocusSpy.called, 'should focus on drawer');
 
-          assert.isFalse(fooFocusSpy.called, 'can focus other elements in drawer');
+            drawerFocusSpy.reset();
+            Polymer.Base.fire('focus', null /* detail */, { node: inBtn });
 
-          Polymer.Base.fire('focus', null /* detail */, { node: toggle });
+            assert.isFalse(drawerFocusSpy.called, 'can focus other elements in drawer');
 
-          assert.isTrue(fooFocusSpy.called, 'should refocus inside drawer');
-          done();
-        }, 500);
+            Polymer.Base.fire('focus', null /* detail */, { node: outBtn });
+
+            assert.isTrue(drawerFocusSpy.called, 'should refocus inside drawer');
+            done();
+          }, 250);
+        }, 100);
+      });
+
+      test('esc key handler', function(done) {
+        window.setTimeout(function() {
+          drawer.opened = true;
+
+          window.setTimeout(function() {
+            var e = new CustomEvent('keydown', {
+              bubbles: true,
+              cancelable: true
+            });
+            e.keyCode = 27;
+            document.dispatchEvent(e);
+
+            assert.isFalse(drawer.opened);
+            done();
+          }, 250);
+        }, 100);
       });
 
       test('scrim', function() {
