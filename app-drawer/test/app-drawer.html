@@ -45,7 +45,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
 
     <script>
-    Polymer({ is: 'x-button' });
+    HTMLImports.whenReady(function() {
+      Polymer({ is: 'x-button' });
+    });
     </script>
   </dom-module>
 
