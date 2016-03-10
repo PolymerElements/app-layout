@@ -39,12 +39,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
+  <dom-module id="x-button">
+    <template>
+      <button id="btn">Shadow</button>
+    </template>
+
+    <script>
+    Polymer({ is: 'x-button' });
+    </script>
+  </dom-module>
+
   <test-fixture id="focusDrawer">
     <template>
       <div>
         <button id="outBtn">Outside</button>
         <app-drawer>
           <button id="inBtn">Inside</button>
+          <x-button></x-button>
         </app-drawer>
       </div>
     </template>
@@ -475,21 +486,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var outBtn = container.querySelector('#outBtn');
         var drawer = container.querySelector('app-drawer');
         var inBtn = drawer.querySelector('#inBtn');
-        var drawerFocusSpy = sinon.spy(drawer, 'focus');
+        var xBtn = drawer.querySelector('x-button').$.btn;
+        var contentContainerFocusSpy = sinon.spy(drawer.$.contentContainer, 'focus');
         window.setTimeout(function() {
           drawer.opened = true;
 
           window.setTimeout(function() {
-            assert.isTrue(drawerFocusSpy.called, 'should focus on drawer');
+            assert.isTrue(contentContainerFocusSpy.called, 'should focus drawer');
 
-            drawerFocusSpy.reset();
+            contentContainerFocusSpy.reset();
             Polymer.Base.fire('focus', null /* detail */, { node: inBtn });
 
-            assert.isFalse(drawerFocusSpy.called, 'can focus other elements in drawer');
+            assert.isFalse(contentContainerFocusSpy.called, 'can focus other elements in drawer');
+
+            Polymer.Base.fire('focus', null /* detail */, { node: xBtn });
+
+            assert.isFalse(contentContainerFocusSpy.called, 'can focus elements in shadow root');
 
             Polymer.Base.fire('focus', null /* detail */, { node: outBtn });
 
-            assert.isTrue(drawerFocusSpy.called, 'should refocus inside drawer');
+            assert.isTrue(contentContainerFocusSpy.called, 'should refocus drawer');
             done();
           }, 250);
         }, 100);
