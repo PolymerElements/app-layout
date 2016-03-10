@@ -97,6 +97,10 @@ Custom property                  | Description                            | Defa
       @apply(--app-drawer-content-container);
     }
 
+    #contentContainer:focus {
+      outline: none;
+    }
+
     :host([position=right]) > #contentContainer {
       left: auto;
       right: 0;
@@ -158,7 +162,7 @@ Custom property                  | Description                            | Defa
 
     <div id="scrim" on-tap="close" on-transitionend="_scrimTransitionend"></div>
 
-    <div id="contentContainer">
+    <div id="contentContainer" tabindex="0">
       <content></content>
     </div>
 
@@ -218,14 +222,6 @@ Custom property                  | Description                            | Defa
           type: Boolean,
           value: false,
           reflectToAttribute: true
-        },
-
-        /**
-         * If specified, the drawer will focus on this CSS selector when opened.
-         */
-        focusSelector: {
-          type: String,
-          value: ''
         }
 
       },
@@ -248,6 +244,8 @@ Custom property                  | Description                            | Defa
 
       _boundFocusHandler: null,
 
+      _boundKeydownHandler: null,
+
       ready: function() {
         // Set the scroll direction so you can vertically scroll inside the drawer.
         this.setScrollDirection('y');
@@ -257,12 +255,18 @@ Custom property                  | Description                            | Defa
         this._setTransitionDuration('0s');
 
         this._boundFocusHandler = this._focusHandler.bind(this);
+        this._boundKeydownHandler = this._keydownHandler.bind(this);
       },
 
       attached: function() {
         // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
         requestAnimationFrame(this._setTransitionDuration.bind(this, ''));
+      },
+
+      detached: function() {
+        document.removeEventListener('focus', this._boundFocusHandler, true /* useCapture */);
+        document.removeEventListener('keydown', this._boundKeydownHandler);
       },
 
       /**
@@ -318,19 +322,19 @@ Custom property                  | Description                            | Defa
       },
 
       _focusHandler: function(event) {
-        if (!this.isLightDescendant(Polymer.dom(event).rootTarget)) {
-          this._focusInsideDrawer();
+        if (Polymer.dom(event).path.indexOf(this.$.contentContainer) === -1) {
+          this.$.contentContainer.focus();
         }
       },
 
-      _focusInsideDrawer: function() {
-        if (!this.focusSelector) {
-          return;
-        }
+      _keydownHandler: function(event) {
+        var ESC_KEYCODE = 27;
+        if (event.keyCode === ESC_KEYCODE) {
+          // Prevent any side effects if app-drawer closes.
+          event.preventDefault();
+          event.stopImmediatePropagation();
 
-        var child = Polymer.dom(this).querySelector(this.focusSelector);
-        if (child) {
-          child.focus();
+          this.close();
         }
       },
 
@@ -535,11 +539,13 @@ Custom property                  | Description                            | Defa
 
       _resetFocusedContent: function() {
         if (this.opened && !this.persistent) {
-          document.body.style.overflow = 'hidden';
+          this.$.contentContainer.focus();
           document.addEventListener('focus', this._boundFocusHandler, true /* useCapture */);
-          this._focusInsideDrawer();
+          document.addEventListener('keydown', this._boundKeydownHandler);
+          document.body.style.overflow = 'hidden';
         } else {
           document.removeEventListener('focus', this._boundFocusHandler, true /* useCapture */);
+          document.removeEventListener('keydown', this._boundKeydownHandler);
           document.body.style.overflow = '';
         }
       },
