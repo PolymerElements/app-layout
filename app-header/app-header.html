@@ -370,8 +370,8 @@ Mixin | Description | Default
             return;
           }
 
-          var firstSetup = this._height === 0 || scrollTop === 0;
           var scrollTop = this._clampedScrollTop;
+          var firstSetup = this._height === 0 || scrollTop === 0;
           var currentDisabled = this.disabled;
 
           this._height = this.offsetHeight;
