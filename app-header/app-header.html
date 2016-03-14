@@ -41,7 +41,28 @@ must have a larger height than the first toolbar in the light DOM. For example,
 Notice that when the header is condensed its height is `64px`, whereas the height is 96px
 if the user scrolls back up to the top.
 
+### Scroll target
+
+The app-header's `scrollTarget` property allows to customize the scrollable element to which
+the header responds when the user scrolls. By default, app-header uses the document element as
+the scroll target, but you can customize this property by setting the id of the element, e.g.
+
+```html
+<div id="scrollingRegion" style="overflow-y: auto;">
+  <app-header scroll-target="scrollingRegion">
+  </app-header>
+</div>
+```
+
+In this case, the `scrollTarget` property points to the outer div element. Alternatively, 
+you can set this property programatically:
+
+``js
+appHeader.scrollTarget = document.querySelector("#scrollingRegion");
+```
+
 ## Scroll effects
+
 The following effects can be installed via the `effects` property:
 
 * **blend-background**
@@ -85,7 +106,6 @@ Mixin | Description | Default
 @demo app-header/demo/notes.html
 @demo app-header/demo/pesto.html
 @demo app-header/demo/give.html
-
 -->
 
 <dom-module id="app-header">
@@ -443,7 +463,7 @@ Mixin | Description | Default
               }
 
               var scrollVelocity = dScrollTop / (now - this._lastTimestamp);
-              this.style.transitionDuration = this._clamp((top - lastTop) / scrollVelocity , 0, 300) + 'ms';
+              this.style.transitionDuration = this._clamp((top - lastTop) / scrollVelocity, 0, 300) + 'ms';
             } else {
               top = this._top;
             }

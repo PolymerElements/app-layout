@@ -24,14 +24,35 @@ must have a larger height than the first toolbar in the light DOM. For example,
 </app-header>
 ```
 
-Notice that when the header is condensed its height is `64px`, whereas the height is 96px 
+Notice that when the header is condensed its height is `64px`, whereas the height is 96px
 if the user scrolls back up to the top.
 
+### Scroll target
+
+The app-header's `scrollTarget` property allows to customize the scrollable element to which
+the header responds when the user scrolls. By default, app-header uses the document element as
+the scroll target, but you can customize this property by setting the id of the element, e.g.
+
+```html
+<div id="scrollingRegion" style="overflow-y: auto;">
+  <app-header scroll-target="scrollingRegion">
+  </app-header>
+</div>
+```
+
+In this case, the `scrollTarget` property points to the outer div element. Alternatively, 
+you can set this property programatically:
+
+``js
+appHeader.scrollTarget = document.querySelector("#scrollingRegion");
+```
+
 ## Scroll effects
+
 The following effects can be installed via the `effects` property:
 
 * **blend-background**
-While scrolling down, fade in the rear background layer and fade out the front 
+While scrolling down, fade in the rear background layer and fade out the front
 background layer (opacity interpolated based on scroll position).
 
 * **fade-background**
@@ -41,8 +62,8 @@ the front background layer (opacity CSS transitioned over time).
 * **parallax-background**
 Vertically translate the background based on a factor of the scroll position.
 
-* **resize-title** 
-Transform the font size of a designated title element between two values based 
+* **resize-title**
+Transform the font size of a designated title element between two values based
 on the scroll position.
 
 * **resize-snapped-title**
@@ -54,7 +75,7 @@ Toggles the shadow property in app-header when content is scrolled to create
 a sense of depth between the element and the content underneath.
 
 * **material**
-Shorthand for the waterfall, resize-title, blend-background, and parallax-background 
+Shorthand for the waterfall, resize-title, blend-background, and parallax-background
 effects.
 
 ## Styling
