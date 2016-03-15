@@ -55,7 +55,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(window.pageYOffset, y, 'document scrollTop');
           done();
         }, 100);
-
       });
 
       test('scrolling region', function(done) {
@@ -70,13 +69,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(region.scrollTop, y, 'region scrollTop');
           done();
         }, 100);
-
       });
 
       test('behavior: silent', function() {
         Polymer.AppLayout.scroll({left: 100, top: 200, behavior: 'silent'});
-
-        assert.isTrue(document.documentElement.classList.contains('app-layout-silent-scroll'));
+        assert.isTrue(document.documentElement.classList.contains('app-layout-silent-scroll') ||
+            document.body.classList.contains('app-layout-silent-scroll'));
       });
 
       test('behavior: smooth', function(done) {
