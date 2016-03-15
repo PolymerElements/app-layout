@@ -119,6 +119,13 @@ Mixin | Description | Default
         'iron-resize': '_resizeHandler'
       },
 
+      /**
+       * The current scroll progress.
+       *
+       * @type {number}
+       */
+      _progress: 0,
+
       attached: function() {
         this.resetLayout();
       },
@@ -151,7 +158,7 @@ Mixin | Description | Default
       _getElementTop: function() {
         var currentNode = this;
         var top = 0;
-        
+
         while (currentNode && currentNode !== this.scrollTarget) {
           top += currentNode.offsetTop;
           currentNode = currentNode.offsetParent;
@@ -162,10 +169,8 @@ Mixin | Description | Default
       _updateScrollState: function(scrollTop) {
         if (this.isOnScreen()) {
           var viewportTop = this._elementTop - scrollTop;
-          var progress = 1 - (viewportTop + this._elementHeight) / this._cachedScrollTargetHeight;
-
-          this._runEffects(progress, scrollTop);
-          this.fire('app-box-transform', { top: viewportTop, progress: progress }, { bubbles: false });
+          this._progress = 1 - (viewportTop + this._elementHeight) / this._cachedScrollTargetHeight;
+          this._runEffects(this._progress, scrollTop);
         }
       },
 
@@ -187,13 +192,15 @@ Mixin | Description | Default
       },
 
       /**
-       * Fires when the app-box is transformed. That is, when scroll effects are taking place.
-       * This event doesn't bubble.
-       * * `event.detail.top` The top position relative to the viewport.
-       * * `event.detail.progress` The progress value.
+       * Returns an object containing the progress value of the scroll effects.
        *
-       * @event app-box-transform
+       * @method getScrollState
+       * @return {Object}
        */
+      getScrollState: function() {
+        return { progress: this._progress };
+      }
+
     });
   </script>
 
