@@ -193,7 +193,8 @@ Using an own scrolling region:
         }
         var header = this.header;
         if (header) {
-          header.scroller = this.hasScrollingRegion ? this.$.contentContainer : window;
+          header.scrollTarget = this.hasScrollingRegion ? 
+              this.$.contentContainer : this.ownerDocument.documentElement;
         }
       },
 

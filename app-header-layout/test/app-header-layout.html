@@ -69,12 +69,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('default values', function() {
         assert.isFalse(headerLayout.hasScrollingRegion);
-        assert.equal(header.scroller, window);
+        assert.equal(header.scrollTarget, document.documentElement);
       });
 
       test('scrolling region', function() {
         headerLayout.hasScrollingRegion = true;
-        assert.isTrue(header.scroller !== window, 'scroller should not point to the document element');
+        assert.isTrue(header.scrollTarget !== document.documentElement, 'scroller should not point to the document element');
       });
 
       test('header box size', function(done) {

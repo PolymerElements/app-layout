@@ -72,19 +72,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       function triggerScrollEvent() {
-        var scrollTop = scroller === window ? scroller.pageYOffset : scroller.scrollTop;
+        var scrollTop = scroller === document.documentElement ? window.pageYOffset : scroller.scrollTop;
         if (tests[0].y === scrollTop) {
           // Scrolling to the same position won't trigger a scroll event,
           // so just call the scroll event handler.
           scrollEventHandler();
         } else {
-          if (scroller === window) scroller.scrollTo(0, tests[0].y);
+          if (scroller === document.documentElement) window.scrollTo(0, tests[0].y);
           else scroller.scrollTop = tests[0].y;
         }
       }
 
       if (tests.length > 0) {
-        scroller.addEventListener('scroll', scrollEventHandler);
+        var scrollTarget = scroller === document.documentElement ? window : scroller;
+        scrollTarget.addEventListener('scroll', scrollEventHandler);
         triggerScrollEvent();
       }
     }
@@ -134,7 +135,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         header.condenses = true;
 
         flush(function() {
-          scrollTestHelper(header.scroller, [
+          scrollTestHelper(header.scrollTarget, [
             {
               y: 0,
               callback: function() {
@@ -170,7 +171,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         header.fixed = true;
 
         flush(function() {
-          scrollTestHelper(header.scroller, [
+          scrollTestHelper(header.scrollTarget, [
             {
               y: 0,
               callback: function() {
@@ -191,7 +192,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         header.reveals = true;
 
         flush(function() {
-          scrollTestHelper(header.scroller, [
+          scrollTestHelper(header.scrollTarget, [
             {
               y: 0,
               callback: function() {
@@ -218,7 +219,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         header.reveals = true;
 
         flush(function() {
-          scrollTestHelper(header.scroller, [
+          scrollTestHelper(header.scrollTarget, [
             {
               y: 0,
               callback: function() {
@@ -255,7 +256,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         header.fixed = true;
 
         flush(function() {
-          scrollTestHelper(header.scroller, [
+          scrollTestHelper(header.scrollTarget, [
             {
               y: 0,
               callback: function() {
@@ -281,7 +282,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         header.effects = 'test-effect';
 
         flush(function() {
-          scrollTestHelper(header.scroller, [
+          scrollTestHelper(header.scrollTarget, [
             {
               y: 0,
               callback: function() {
@@ -330,7 +331,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         };
 
         flush(function() {
-          scrollTestHelper(header.scroller, [
+          scrollTestHelper(header.scrollTarget, [
             {
               y: 0,
               callback: function() {
@@ -372,7 +373,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         header.effects = 'test-effect';
 
         flush(function() {
-          scrollTestHelper(header.scroller, [
+          scrollTestHelper(header.scrollTarget, [
             {
               y: 0,
               callback: function() {
@@ -402,7 +403,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('isOnScreen', function(done) {
         flush(function() {
-          scrollTestHelper(header.scroller, [
+          scrollTestHelper(header.scrollTarget, [
             {
               y: 0,
               callback: function() {

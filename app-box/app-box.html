@@ -119,6 +119,13 @@ Mixin | Description | Default
         'iron-resize': '_resizeHandler'
       },
 
+      /**
+       * The current scroll progress.
+       *
+       * @type {number}
+       */
+      _progress: 0,
+
       attached: function() {
         this.resetLayout();
       },
@@ -134,14 +141,14 @@ Mixin | Description | Default
           if (this.offsetWidth === 0 && this.offsetHeight === 0) {
             return;
           }
+
           var scrollTop = this._clampedScrollTop;
           var savedDisabled = this.disabled;
 
           this.disabled = true;
           this._elementTop = this._getElementTop();
           this._elementHeight = this.offsetHeight;
-          this._scrollingRegionHeight = (this.scroller === window) ? window.innerHeight : this.scroller.offsetHeight;
-          this.cancelDebouncer('_resize');
+          this._cachedScrollTargetHeight = this._scrollTargetHeight;
           this._setUpEffect();
           this._updateScrollState(scrollTop);
           this.disabled = savedDisabled;
@@ -151,8 +158,8 @@ Mixin | Description | Default
       _getElementTop: function() {
         var currentNode = this;
         var top = 0;
-        
-        while (currentNode && currentNode !== this.scroller) {
+
+        while (currentNode && currentNode !== this.scrollTarget) {
           top += currentNode.offsetTop;
           currentNode = currentNode.offsetParent;
         }
@@ -162,10 +169,8 @@ Mixin | Description | Default
       _updateScrollState: function(scrollTop) {
         if (this.isOnScreen()) {
           var viewportTop = this._elementTop - scrollTop;
-          var progress = 1 - (viewportTop + this._elementHeight) / this._scrollingRegionHeight;
-
-          this._runEffects(progress, scrollTop);
-          this.fire('app-box-transform', { top: viewportTop, progress: progress }, { bubbles: false });
+          this._progress = 1 - (viewportTop + this._elementHeight) / this._cachedScrollTargetHeight;
+          this._runEffects(this._progress, scrollTop);
         }
       },
 
@@ -178,7 +183,7 @@ Mixin | Description | Default
        */
 
       isOnScreen: function() {
-        return this._elementTop < this._scrollTop + this._scrollingRegionHeight
+        return this._elementTop < this._scrollTop + this._cachedScrollTargetHeight
             && this._elementTop + this._elementHeight > this._scrollTop;
       },
 
@@ -187,13 +192,15 @@ Mixin | Description | Default
       },
 
       /**
-       * Fires when the app-box is transformed. That is, when scroll effects are taking place.
-       * This event doesn't bubble.
-       * * `event.detail.top` The top position relative to the viewport.
-       * * `event.detail.progress` The progress value.
+       * Returns an object containing the progress value of the scroll effects.
        *
-       * @event app-box-transform
+       * @method getScrollState
+       * @return {Object}
        */
+      getScrollState: function() {
+        return { progress: this._progress };
+      }
+
     });
   </script>
 

@@ -9,7 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <!doctype html>
-<html>
+<html id="html">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
@@ -136,10 +136,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <h1 title>Contacts</h1>
           </app-toolbar>
         </app-header>
-        <iron-list items="[[data]]" as="item" scroller="window">
+        <iron-list items="[[data]]" as="item" scroll-target="html">
           <template>
             <div>
-              <div class="item">
+              <div class="item" tabindex$="[[tabIndex]]">
                 <img class="avatar" src="[[item.image]]">
                 <div class="pad">
                   <div class="primary">[[item.name]]</div>
