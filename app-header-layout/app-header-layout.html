@@ -179,9 +179,11 @@ Using an own scrolling region:
 
       _updateFixedNodesPosition: function() {
         var rect = this.getBoundingClientRect();
+        var rightOffset = document.documentElement.clientWidth - rect.right;
+
         this._getFixedNodes().forEach(function(node) {
           node.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
-          node.style.width = this.hasScrollingRegion ? '' : rect.width + 'px';
+          node.style.right = this.hasScrollingRegion ? '' : rightOffset + 'px';
         }.bind(this));
       },
 
