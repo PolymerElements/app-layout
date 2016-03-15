@@ -44,16 +44,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   Polymer.AppLayout.scroll = function scroll(options) {
     options = options || {};
 
-    var docEl = document.documentElement;
-    var target = options.target || docEl;
+    var docElement = document.documentElement;
+    var scrollingElement = document.scrollingElement || docElement;
+    var target = options.target || scrollingElement;
     var hasNativeScrollBehavior = 'scrollBehavior' in target.style && target.scroll;
     var scrollClassName = 'app-layout-silent-scroll';
     var scrollTop = options.top || 0;
     var scrollLeft = options.left || 0;
-    var scrollTo = target === docEl ? window.scrollTo :
-      function scrollTo(scrollLeft, scrollTop) {
-        target.scrollLeft = scrollLeft;
-        target.scrollTop = scrollTop;
+    var scrollTo = target === docElement ? window.scrollTo :
+      function scrollTo(left, top) {
+        target.scrollLeft = left;
+        target.scrollTop = top;
       };
 
     if (options.behavior === 'smooth') {
@@ -66,8 +67,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         var timingFn = Polymer.AppLayout.scrollTimingFunction;
         var startTime = Date.now();
-        var currentScrollTop = target === docEl ? window.pageYOffset : target.scrollTop;
-        var currentScrollLeft = target === docEl ? window.pageXOffset : target.scrollLeft;
+        var currentScrollTop = target === docElement ? window.pageYOffset : target.scrollTop;
+        var currentScrollLeft = target === docElement ? window.pageXOffset : target.scrollLeft;
         var deltaScrollTop = scrollTop - currentScrollTop;
         var deltaScrollLeft = scrollLeft - currentScrollLeft;
         var duration = 300;
@@ -88,7 +89,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     } else if (options.behavior === 'silent') {
 
-      docEl.classList.add(scrollClassName);
+      scrollingElement.classList.add(scrollClassName);
 
       // Browsers keep the scroll momentum even if the bottom of the scrolling content
       // was reached. This means that calling scroll({top: 0, behavior: 'silent'}) when
@@ -99,7 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       clearInterval(Polymer.AppLayout._scrollTimer);
 
       Polymer.AppLayout._scrollTimer = setTimeout(function() {
-        docEl.classList.remove(scrollClassName);
+        scrollingElement.classList.remove(scrollClassName);
         Polymer.AppLayout._scrollTimer = null;
       }, 100);
 
