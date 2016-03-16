@@ -51,18 +51,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </script>
   </dom-module>
 
-  <test-fixture id="focusDrawer">
-    <template>
-      <div>
-        <button id="outBtn">Outside</button>
-        <app-drawer>
-          <button id="inBtn">Inside</button>
-          <x-button></x-button>
-        </app-drawer>
-      </div>
-    </template>
-  </test-fixture>
-
   <script>
 
     suite('basic features', function() {
@@ -221,6 +209,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.isTrue(listenerSpy.called);
           done();
         }, 1);
+      });
+
+      test('app-drawer-overlay-changed', function(done) {
+        var listenerSpy = sinon.spy();
+        drawer.addEventListener('app-drawer-overlay-changed', listenerSpy);
+        drawer.fire('track', { state: 'start' });
+        drawer.fire('track', { state: 'end', dx: 1000, ddx: 1000 });
+
+        assert.equal(listenerSpy.callCount, 1);
+        assert.isTrue(listenerSpy.lastCall.args[0].detail.overlay);
+
+        window.setTimeout(function() {
+          drawer.opened = false;
+
+          window.setTimeout(function() {
+            assert.equal(listenerSpy.callCount, 2);
+            assert.isFalse(listenerSpy.lastCall.args[0].detail.overlay);
+            done();
+          }, 250);
+        }, 100);
+
       });
 
       test('track events block user selection', function() {
@@ -479,36 +488,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 'should not block scrolling when closed');
               done();
             }, 400);
-          }, 250);
-        }, 100);
-      });
-
-      test('focus inside drawer', function(done) {
-        var container = fixture('focusDrawer');
-        var outBtn = container.querySelector('#outBtn');
-        var drawer = container.querySelector('app-drawer');
-        var inBtn = drawer.querySelector('#inBtn');
-        var xBtn = drawer.querySelector('x-button').$.btn;
-        var contentContainerFocusSpy = sinon.spy(drawer.$.contentContainer, 'focus');
-        window.setTimeout(function() {
-          drawer.opened = true;
-
-          window.setTimeout(function() {
-            assert.isTrue(contentContainerFocusSpy.called, 'should focus drawer');
-
-            contentContainerFocusSpy.reset();
-            Polymer.Base.fire('focus', null /* detail */, { node: inBtn });
-
-            assert.isFalse(contentContainerFocusSpy.called, 'can focus other elements in drawer');
-
-            Polymer.Base.fire('focus', null /* detail */, { node: xBtn });
-
-            assert.isFalse(contentContainerFocusSpy.called, 'can focus elements in shadow root');
-
-            Polymer.Base.fire('focus', null /* detail */, { node: outBtn });
-
-            assert.isTrue(contentContainerFocusSpy.called, 'should refocus drawer');
-            done();
           }, 250);
         }, 100);
       });

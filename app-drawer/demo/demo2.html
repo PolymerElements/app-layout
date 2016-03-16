@@ -46,6 +46,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     }
 
+    .drawer-contents {
+      height: 100%;
+      overflow-y: auto;
+    }
+
   </style>
 
 </head>
@@ -54,41 +59,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template is="dom-bind">
 
     <app-toolbar>
-      <div title spacer></div>
-      <paper-icon-button icon="menu" on-tap="_toggleDrawer"></paper-icon-button>
+      <div title></div>
+      <paper-icon-button icon="menu" on-tap="toggleDrawer"></paper-icon-button>
     </app-toolbar>
 
     <sample-content size="100"></sample-content>
 
-    <app-drawer id="drawer" align="end" swipe-open>
-      <div style="height: 100%; overflow: auto;">
+    <app-drawer id="drawer" align="end" swipe-open on-app-drawer-overlay-changed="toggleOverlay">
+      <div class="drawer-contents">
         <template is="dom-repeat" id="menu" items="[[items]]">
-          <paper-icon-item class="iconItem">
-            <iron-icon class="grayIcon" icon="[[_randomIcon()]]" item-icon></iron-icon> <span>[[item]]</span>
+          <paper-icon-item>
+            <iron-icon class="grayIcon" icon="[[item]]" item-icon></iron-icon>
+            <span>[[item]]</span>
           </paper-icon-item>
         </template>
       </div>
     </app-drawer>
+
   </template>
 
   <script>
     (function(scope) {
-      var items = [];
-      var icons = ['inbox', 'favorite', 'polymer', 'question-answer', 'send', 'archive', 'backup', 'dashboard'];
 
-      while (items.length < 100) {
-        items.push('Option Name');
-      }
-
-      scope._randomIcon = function() {
-        return icons[parseInt(icons.length * Math.random())];
-      };
-
-      scope._toggleDrawer = function() {
+      scope.toggleDrawer = function() {
         scope.$.drawer.toggle();
       };
 
-      scope.items = items;
+      scope.toggleOverlay = function(event) {
+        if (event.detail.overlay) {
+          document.querySelector('paper-icon-item').focus();
+          document.addEventListener('focus', scope.focusHandler, true /* useCapture */);
+        } else {
+          document.removeEventListener('focus', scope.focusHandler, true /* useCapture */);
+        }
+      };
+
+      scope.focusHandler = function(event) {
+        if (Polymer.dom(event).path.indexOf(scope.$.drawer) === -1) {
+          document.querySelector('paper-icon-item').focus();
+        }
+      };
+
+      var icons = ['inbox', 'favorite', 'polymer', 'question-answer', 'send', 'archive', 'backup', 'dashboard'];
+      scope.items = icons.concat(icons).concat(icons);
 
     })(document.querySelector('template[is=dom-bind]'));
   </script>
