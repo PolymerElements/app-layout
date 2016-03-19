@@ -1,5 +1,8 @@
 ##&lt;app-drawer&gt;
 
+![app-drawer]
+(http://app-layout-assets.appspot.com/assets/docs/app-drawer/drawer.gif)
+
 app-drawer is a navigation drawer that can slide in from the left or right.
 
 Example:
