@@ -16,7 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!--
 
 app-header is container element for app-toolbars at the top of the screen that can have scroll
-effects. By default, an app-header moves away from the viewport when scrolling down and 
+effects. By default, an app-header moves away from the viewport when scrolling down and
 if using `reveals`, the header slides back when scrolling back up. For example,
 
 ```html
@@ -39,24 +39,24 @@ must have a larger height than the `primary` element in the light DOM. For examp
 ```
 
 In this case the header is initially `96px` tall, and it shrinks to `64px` when scrolling down.
-That is what is meant by "condensing". 
+That is what is meant by "condensing".
 
 ### Primary element
 
 This is the element in the light DOM that remains at the top of the header when this is condensed.
-By default, if no element in the light DOM has the `primary` attribute, the `primary` element 
+By default, if no element in the light DOM has the `primary` attribute, the `primary` element
 becomes the first instance of app-toolbar. For example:
 
 ```html
 <app-header condenses>
-  <app-toolbar> Primary element </app-toolbar> 
+  <app-toolbar> Primary element </app-toolbar>
 </app-header>
 ```
 
 ```html
 <app-header condenses>
-  <app-toolbar></app-toolbar> 
-  <app-toolbar primary> Primary element </app-toolbar> 
+  <app-toolbar></app-toolbar>
+  <app-toolbar primary> Primary element </app-toolbar>
 </app-header>
 ```
 
@@ -83,12 +83,12 @@ appHeader.scrollTarget = document.querySelector("#scrollingRegion");
 ```
 
 ## Backgrounds
-app-header has two background layers that can be used for styling when the header is condensed 
+app-header has two background layers that can be used for styling when the header is condensed
 or when the scrollable element is scrolled to the top.
 
 ## Scroll effects
 
-Scroll effects are visual effects applied in app-header based on scroll position. For example,
+Scroll effects are _optional_ visual effects applied in app-header based on scroll position. For example,
 The [Material Design scrollig techniques](https://www.google.com/design/spec/patterns/scrolling-techniques.html)
 recommends effects that can be installed via the `effects` property. e.g.
 
@@ -98,7 +98,15 @@ recommends effects that can be installed via the `effects` property. e.g.
 </app-header>
 ```
 
-Here's the full list of the effects supported in app-header:
+#### Importing the effects
+
+To use the scroll effects, you must explicitly import them in addition to `app-header`:
+
+```html
+<link rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+```
+
+#### List of effects
 
 * **blend-background**
 Fades in/out two background elements by applying CSS opacity based on scroll position.

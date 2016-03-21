@@ -76,7 +76,7 @@ or when the scrollable element is scrolled to the top.
 
 ## Scroll effects
 
-Scroll effects are visual effects applied in app-header based on scroll position. For example,
+Scroll effects are _optional_ visual effects applied in app-header based on scroll position. For example,
 The [Material Design scrollig techniques](https://www.google.com/design/spec/patterns/scrolling-techniques.html)
 recommends effects that can be installed via the `effects` property. e.g.
 
@@ -86,7 +86,15 @@ recommends effects that can be installed via the `effects` property. e.g.
 </app-header>
 ```
 
-Here's the full list of the effects supported in app-header:
+#### Importing the effects
+
+To use the scroll effects, you must explicitly import them in addition to `app-header`:
+
+```html
+<link rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+```
+
+#### List of effects
 
 * **blend-background**
 Fades in/out two background elements by applying CSS opacity based on scroll position.
