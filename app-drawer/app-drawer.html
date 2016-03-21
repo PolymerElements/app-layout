@@ -179,7 +179,8 @@ Custom property                  | Description                            | Defa
           type: Boolean,
           value: false,
           notify: true,
-          reflectToAttribute: true
+          reflectToAttribute: true,
+          observer: '_openedChanged',
         },
 
         /**
@@ -255,10 +256,12 @@ Custom property                  | Description                            | Defa
         // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
         requestAnimationFrame(this._setTransitionDuration.bind(this, ''));
+        this._setupTransitionEnd(false);
       },
 
       detached: function() {
         document.removeEventListener('keydown', this._boundKeydownHandler);
+        this._setupTransitionEnd(true);
       },
 
       /**
@@ -535,6 +538,39 @@ Custom property                  | Description                            | Defa
         this.fire('app-drawer-overlay-changed', { overlay: this.opened && !this.persistent });
       },
 
+      _openedChanged: function(opened) {
+        var evtName = this.opened ? 'opened' : 'closed';
+
+        this.fire('app-drawer-' + evtName);
+      },
+
+      _onTransitionEnd: function(evt) {
+        var opened = this.opened;
+        var evtName = this.opened ? 'opened' : 'closed';
+
+        this.fire('app-drawer-transitioned-' + evtName);
+      },
+
+      _setupTransitionEnd: function(remove) {
+        var ele = this.$.contentContainer;
+        var transitions = {
+          'transition':'transitionend',
+          'OTransition':'oTransitionEnd',
+          'MozTransition':'transitionend',
+          'WebkitTransition':'webkitTransitionEnd'
+        };
+
+        var evtName;
+        for(var t in transitions){
+          if( ele.style[t] !== undefined ){
+            evtName = transitions[t];
+            break;
+          }
+        }
+        var listenerType = remove ? 'remove' : 'add';
+        ele[listenerType + 'EventListener'](evtName, this._onTransitionEnd.bind(this));
+      },
+
       MIN_FLING_VELOCITY: 0.2,
 
       MIN_TRANSITION_VELOCITY: 1.2,
@@ -555,6 +591,37 @@ Custom property                  | Description                            | Defa
        * @event app-drawer-overlay-changed
        * @param {{overlay: boolean}} detail True if the drawer has overlay state, false otherwise.
        */
+
+       /**
+        * Fired when the drawer's open state is toggled.
+        *
+        * @event app-drawer-toggled
+        * @param {{opened: boolean}} detail True if the drawer toggled open, false otherwise.
+        */
+
+       /**
+        * Fired when the drawer opens.
+        *
+        * @event app-drawer-opened
+        */
+
+       /**
+        * Fired when the drawer's open state is toggled.
+        *
+        * @event app-drawer-closed
+        */
+
+        /**
+         * Fired when the drawer open animation ends.
+         *
+         * @event app-drawer-transitioned-opened
+         */
+
+        /**
+         * Fired when the drawer's close animation ends.
+         *
+         * @event app-drawer-transitioned-closed
+         */
 
     });
 
