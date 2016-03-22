@@ -61,6 +61,7 @@ Custom property                  | Description                            | Defa
       right: 0;
       visibility: hidden;
       transition: visibility 0.2s ease;
+      will-change: visibility;
     }
 
     :host([opened]) {
@@ -94,6 +95,7 @@ Custom property                  | Description                            | Defa
 
       -webkit-transform: translate3d(-100%, 0, 0);
       transform: translate3d(-100%, 0, 0);
+      will-change: transform;
 
       @apply(--app-drawer-content-container);
     }
@@ -137,7 +139,8 @@ Custom property                  | Description                            | Defa
       transition: opacity 0.2s ease;
 
       -webkit-transform: translateZ(0);
-      transform:  translateZ(0);
+      transform: translateZ(0);
+      will-change: opacity;
     }
 
     :host([opened]) > #scrim {
