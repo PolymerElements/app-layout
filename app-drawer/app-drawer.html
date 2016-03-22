@@ -157,7 +157,7 @@ Custom property                  | Description                            | Defa
 
   <template>
 
-    <div id="scrim" on-tap="close" on-transitionend="_scrimTransitionend"></div>
+    <div id="scrim" on-tap="close"></div>
 
     <div id="contentContainer">
       <content></content>
@@ -224,12 +224,12 @@ Custom property                  | Description                            | Defa
       },
 
       listeners: {
-        track: '_track'
+        track: '_track',
+        transitionend: '_transitionend'
       },
 
       observers: [
         'resetLayout(position)',
-        '_drawerOverlayChanged(persistent)',
         '_resetPosition(align, isAttached)'
       ],
 
@@ -237,7 +237,7 @@ Custom property                  | Description                            | Defa
 
       _trackDetails: null,
 
-      _isDrawerFlinging: false,
+      _drawerState: 0,
 
       _boundKeydownHandler: null,
 
@@ -255,7 +255,10 @@ Custom property                  | Description                            | Defa
       attached: function() {
         // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
-        requestAnimationFrame(this._setTransitionDuration.bind(this, ''));
+        requestAnimationFrame(function() {
+          this._setTransitionDuration('');
+          this._resetDrawerState();
+        }.bind(this));
       },
 
       detached: function() {
@@ -319,8 +322,6 @@ Custom property                  | Description                            | Defa
         if (event.keyCode === ESC_KEYCODE) {
           // Prevent any side effects if app-drawer closes.
           event.preventDefault();
-          event.stopImmediatePropagation();
-
           this.close();
         }
       },
@@ -347,6 +348,8 @@ Custom property                  | Description                            | Defa
       },
 
       _trackStart: function(event) {
+        this._drawerState = this._DRAWER_STATE.TRACKING;
+
         // Disable transitions since style attributes will reflect user track events.
         this._setTransitionDuration('0s');
         this.style.visibility = 'visible';
@@ -385,7 +388,7 @@ Custom property                  | Description                            | Defa
           this._trackDetails = null;
 
           this._flingDrawer(event, trackDetails);
-          if (this._isDrawerFlinging) {
+          if (this._drawerState === this._DRAWER_STATE.FLINGING) {
             return;
           }
         }
@@ -399,9 +402,9 @@ Custom property                  | Description                            | Defa
           this.opened = this.position === 'left';
         }
 
-        // Trigger drawer overlay changed now since there will be no transitionend event.
+        // Trigger app-drawer-transitioned now since there will be no transitionend event.
         if (isInEndState) {
-          this._drawerOverlayChanged();
+          this._resetDrawerState();
         }
 
         this._setTransitionDuration('');
@@ -441,9 +444,11 @@ Custom property                  | Description                            | Defa
         var velocity = this._calculateVelocity(event, trackDetails);
 
         // Do not fling if velocity is not above a threshold.
-        if (Math.abs(velocity) < this.MIN_FLING_VELOCITY) {
+        if (Math.abs(velocity) < this._MIN_FLING_THRESHOLD) {
           return;
         }
+
+        this._drawerState = this._DRAWER_STATE.FLINGING;
 
         var x = event.detail.dx + this._translateOffset;
         var drawerWidth = this.getWidth();
@@ -462,37 +467,37 @@ Custom property                  | Description                            | Defa
 
         // Enforce a minimum transition velocity to make the drawer feel snappy.
         if (isVelocityPositive) {
-          velocity = Math.max(velocity, this.MIN_TRANSITION_VELOCITY);
+          velocity = Math.max(velocity, this._MIN_TRANSITION_VELOCITY);
           this.opened = this.position === 'left';
         } else {
-          velocity = Math.min(velocity, -this.MIN_TRANSITION_VELOCITY);
+          velocity = Math.min(velocity, -this._MIN_TRANSITION_VELOCITY);
           this.opened = this.position === 'right';
         }
 
         // Calculate the amount of time needed to finish the transition based on the
         // initial slope of the timing function.
-        this._setTransitionDuration((this.FLING_INITIAL_SLOPE * dx / velocity) + 'ms');
-        this._setTransitionTimingFunction(this.FLING_TIMING_FUNCTION);
+        this._setTransitionDuration((this._FLING_INITIAL_SLOPE * dx / velocity) + 'ms');
+        this._setTransitionTimingFunction(this._FLING_TIMING_FUNCTION);
 
         this._resetDrawerTranslate();
-
-        this._isDrawerFlinging = true;
       },
 
-      _scrimTransitionend: function(event) {
-        // Drawer overlay changed should only be fired once - we choose to rely on the scrim
-        // because contentContainer would fire transitionend between translateX(256px)
-        // and translateX(100%), which we don't want since those are the same state.
+      _transitionend: function(event) {
+        // contentContainer will transition on opened state changed, and scrim will
+        // transition on persistent state changed when opened - these are the
+        // transitions we are interested in.
+        var target = Polymer.dom(event).rootTarget;
+        if (target === this.$.contentContainer || target === this.$.scrim) {
 
-        // If the drawer was flinging, we need to reset the style attributes.
-        if (this._isDrawerFlinging) {
-          this._isDrawerFlinging = false;
-          this._setTransitionDuration('');
-          this._setTransitionTimingFunction('');
-          this.style.visibility = '';
+          // If the drawer was flinging, we need to reset the style attributes.
+          if (this._drawerState === this._DRAWER_STATE.FLINGING) {
+            this._setTransitionDuration('');
+            this._setTransitionTimingFunction('');
+            this.style.visibility = '';
+          }
+
+          this._resetDrawerState();
         }
-
-        this._drawerOverlayChanged();
       },
 
       _setTransitionDuration: function(duration) {
@@ -524,25 +529,47 @@ Custom property                  | Description                            | Defa
         this.transform('', this.$.contentContainer);
       },
 
-      _drawerOverlayChanged: function() {
-        if (this.opened && !this.persistent) {
-          document.addEventListener('keydown', this._boundKeydownHandler);
-          document.body.style.overflow = 'hidden';
+      _resetDrawerState: function() {
+        var oldState = this._drawerState;
+        if (this.opened) {
+          this._drawerState = this.persistent ?
+            this._DRAWER_STATE.OPENED_PERSISTENT : this._DRAWER_STATE.OPENED;
         } else {
-          document.removeEventListener('keydown', this._boundKeydownHandler);
-          document.body.style.overflow = '';
+          this._drawerState = this._DRAWER_STATE.CLOSED;
         }
 
-        this.fire('app-drawer-overlay-changed', { overlay: this.opened && !this.persistent });
+        if (oldState !== this._drawerState) {
+          if (this.opened && !this.persistent) {
+            document.addEventListener('keydown', this._boundKeydownHandler);
+            document.body.style.overflow = 'hidden';
+          } else {
+            document.removeEventListener('keydown', this._boundKeydownHandler);
+            document.body.style.overflow = '';
+          }
+
+          // Don't fire the event on initial load.
+          if (oldState !== this._DRAWER_STATE.INIT) {
+            this.fire('app-drawer-transitioned');
+          }
+        }
       },
 
-      MIN_FLING_VELOCITY: 0.2,
+      _MIN_FLING_THRESHOLD: 0.2,
 
-      MIN_TRANSITION_VELOCITY: 1.2,
+      _MIN_TRANSITION_VELOCITY: 1.2,
 
-      FLING_TIMING_FUNCTION: 'cubic-bezier(0.667, 1, 0.667, 1)',
+      _FLING_TIMING_FUNCTION: 'cubic-bezier(0.667, 1, 0.667, 1)',
 
-      FLING_INITIAL_SLOPE: 1.5
+      _FLING_INITIAL_SLOPE: 1.5,
+
+      _DRAWER_STATE: {
+        INIT: 0,
+        OPENED: 1,
+        OPENED_PERSISTENT: 2,
+        CLOSED: 3,
+        TRACKING: 4,
+        FLINGING: 5
+      }
 
       /**
        * Fired when the layout of app-drawer has changed.
@@ -551,10 +578,9 @@ Custom property                  | Description                            | Defa
        */
 
       /**
-       * Fired when app-drawer overlay state has changed (i.e. displayed above other content)
+       * Fired when app-drawer has finished transitioning.
        *
-       * @event app-drawer-overlay-changed
-       * @param {{overlay: boolean}} detail True if the drawer has overlay state, false otherwise.
+       * @event app-drawer-transitioned
        */
 
     });
