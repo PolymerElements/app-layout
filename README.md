@@ -3,7 +3,7 @@
 
 <img src="https://app-layout-assets.appspot.com/assets/docs/app-layout.png" width="300" height="210">
 
-http://polymerlabs.github.io/app-layout/
+https://polymerlabs.github.io/app-layout/
 
 A set of layout elements for your app. It includes:
 
