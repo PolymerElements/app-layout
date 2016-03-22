@@ -10,7 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../../polymer/polymer.html">
 
-<link rel="import" href="../../../../lab-elements/lab-router.html">
+<link rel="import" href="../../../../carbon-route/carbon-location.html">
+<link rel="import" href="../../../../carbon-route/carbon-route.html">
 
 <link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../../iron-pages/iron-pages.html">
@@ -146,12 +147,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <!-- setup routes -->
-    <lab-router route="{{route}}"></lab-router>
-    <lab-route route="{{route}}" matches=":category" category="{{category}}" subroute="{{subroute}}"></lab-route>
-    <lab-route route="{{subroute}}" matches=":page" page="{{page}}" subroute="{{title}}"></lab-route>
+    <carbon-location route="{{route}}" use-hash-as-path></carbon-location>
+    <carbon-route
+        route="{{route}}"
+        pattern="/:category"
+        data="{{categoryData}}"
+        tail="{{subRoute}}"></carbon-route>
+    <carbon-route
+        route="{{subRoute}}"
+        pattern="/:page"
+        data="{{pageData}}"
+        tail="{{subsubRoute}}"></carbon-route>
+    <carbon-route
+        route="{{subsubRoute}}"
+        pattern="/:title"
+        data="{{titleData}}"></carbon-route>
 
     <!-- manages page's scroll position -->
-    <app-scrollpos-control selected="{{category}}/{{page}}" reset="{{_equal(page, 'detail')}}"></app-scrollpos-control>
+    <app-scrollpos-control
+        selected="[[categoryData.category]]/[[pageData.page]]"
+        reset="[[_equal(pageData.page, 'detail')]]"></app-scrollpos-control>
 
     <app-drawer-layout drawer-width="288px" responsive-width="1280px">
 
@@ -172,9 +187,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </app-header>
 
           <!-- nav menu -->
-          <iron-selector class="nav-menu" selected="{{category}}" attr-for-selected="name" on-iron-activate="_showList">
-            <template is="dom-repeat" items="{{articles}}">
-              <a name="{{item.name}}" href="#/{{item.name}}/list">{{item.title}}</a>
+          <iron-selector
+              class="nav-menu"
+              selected="[[categoryData.category]]"
+              attr-for-selected="name"
+              on-iron-activate="_drawerSelected">
+            <template is="dom-repeat" items="[[articles]]">
+              <a name="[[item.name]]" href="#/[[item.name]]/list">{{item.title}}</a>
             </template>
           </iron-selector>
 
@@ -189,9 +208,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <!-- top toolbar -->
           <app-toolbar>
             <!-- menu button -->
-            <paper-icon-button icon="app:menu" drawer-toggle hidden$="{{_equal(page, 'detail')}}"></paper-icon-button>
+            <paper-icon-button
+                drawer-toggle
+                icon="app:menu"
+                hidden$="[[_equal(pageData.page, 'detail')]]"></paper-icon-button>
+
             <!-- back button -->
-            <a href="#/{{category}}/list" hidden$="{{_equal(page, 'list')}}">
+            <a
+                href="#/[[categoryData.category]]/list"
+                hidden$="[[_equal(pageData.page, 'list')]]">
               <paper-icon-button icon="app:arrow-back"></paper-icon-button>
             </a>
           </app-toolbar>
@@ -204,20 +229,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header>
 
         <!-- list/detail pages -->
-        <iron-pages selected="{{page}}" attr-for-selected="name">
+        <iron-pages selected="[[pageData.page]]" attr-for-selected="name">
 
           <!-- list page -->
-          <iron-pages name="list" selected="{{category}}" attr-for-selected="name">
+          <iron-pages name="list" selected="[[categoryData.category]]" attr-for-selected="name">
 
-            <template is="dom-repeat" items="{{articles}}" as="category">
+            <template is="dom-repeat" items="[[articles]]" as="category">
               <!-- category page (lazy-loaded) -->
-              <template is="dom-if" if="{{_equal(category, {{category.name}})}}">
-                <section class="category-page" name="{{category.name}}">
+              <template is="dom-if" if="[[_equal(category, [[categoryData.category.name]])]]">
+                <section class="category-page" name="[[category.name]]">
   
                   <!-- 2-columns grid -->
                   <two-columns-grid column-width="396" gutter="4">
-                    <template is="dom-repeat" items="{{category.items}}" as="article">
-                      <a is="article-headline" href="#/{{category.name}}/detail/{{article.title}}" article="{{article}}"></a>
+                    <template is="dom-repeat" items="[[category.items]]" as="article">
+                      <a
+                          is="article-headline"
+                          href="#/[[category.name]]/detail/[[article.title]]"
+                          article="[[article]]"></a>
                     </template>
                   </two-columns-grid>
                   
@@ -228,8 +256,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </iron-pages>
 
           <!-- detail page (lazy-loaded) -->
-          <template is="dom-if" if="{{_equal(page, 'detail')}}">
-            <article-detail name="detail" article="{{article}}"></article-detail>
+          <template is="dom-if" if="[[_equal(pageData.page, 'detail')]]">
+            <article-detail name="detail" article="[[article]]"></article-detail>
           </template>
 
         </iron-pages>
@@ -249,46 +277,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       properties: {
 
         /**
-         * The selected category.
-         */
-        category: String,
-
-        /**
-         * The selected page (either `list` or `detail`).
-         */
-        page: String,
-
-        /**
-         * The selected article title.
-         */
-        title: String,
-
-        /**
          * Articles data.
          */
-        articles: Object
+        articles: Object,
+
+        route: Object,
+
+        subRoute: Object,
+
+        subsubRoute: Object,
+
+        categoryData: Object,
+
+        pageData: Object,
+
+        titleData: Object
 
       },
 
       observers: [
-        '_updateArticle(articles, category, title)',
-        '_routeChange(route)'
+        '_updateArticle(articles, categoryData.category, titleData.title)'
       ],
+
+      ready: function() {
+        this.async(function() {
+          if (!this.route.path) {
+            this.set('route.path', '/art/list');
+          }
+        });
+      },
 
       _equal: function(value1, value2) {
         return value1 === value2;
-      },
-
-      _showList: function() {
-        this.page = 'list';
-        if (!this.$.drawer.persistent) this.$.drawer.close();
-      },
-
-      _routeChange: function(route) {
-        if (!route) {
-          // default route
-          this.route = 'art/list'
-        }
       },
 
       _updateArticle: function(articles, category, title) {
@@ -302,6 +322,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }
         }
+      },
+
+      _drawerSelected: function() {
+        if (!this.$.drawer.persistent) this.$.drawer.close();
       }
 
     });

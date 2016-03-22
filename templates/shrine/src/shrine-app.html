@@ -9,6 +9,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../../../polymer/polymer.html">
+<link rel="import" href="../../../../carbon-route/carbon-location.html">
+<link rel="import" href="../../../../carbon-route/carbon-route.html">
 <link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../../iron-media-query/iron-media-query.html">
 <link rel="import" href="../../../../paper-icon-button/paper-icon-button.html">
@@ -16,7 +18,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../paper-tabs/paper-tabs.html">
 <link rel="import" href="../../../../iron-icons/iron-icons.html">
 <link rel="import" href="../../../../iron-pages/iron-pages.html">
-<link rel="import" href="../../../../iron-page-url/iron-page-url.html">
 <link rel="import" href="../../../app-layout.html">
 <link rel="import" href="../../../app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="shrine-list.html">
@@ -206,7 +207,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </style>
 
-    <iron-page-url hash="{{urlHash}}"></iron-page-url>
+    <carbon-location route="{{route}}" use-hash-as-path></carbon-location>
+    <carbon-route
+        route="{{route}}"
+        pattern=":section"
+        data="{{sectionData}}"
+        tail="{{subRoute}}"></carbon-route>
+    <carbon-route
+        route="{{subRoute}}"
+        pattern="/:id"
+        data="{{idData}}"
+        active="{{onDetailPage}}"></carbon-route>
+
     <iron-media-query query="max-width: 400px" query-matches="{{smallScreen}}"></iron-media-query>
 
     <app-drawer-layout drawer-width="288px" force-narrow>
@@ -232,7 +244,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <app-toolbar id="mainToolbar">
             <div class="navItem leftItem">
               <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-              <a href="#[[section]]"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
+              <a href="#[[sectionData.section]]"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
             </div>
             <div class="spacer">
               <div class="logo"></div>
@@ -242,8 +254,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <paper-icon-button icon="more-vert"></paper-icon-button>
             </div>
           </app-toolbar>
-          <template is="dom-if" if="[[_shouldShowTabs(urlHash, smallScreen)]]">
-            <paper-tabs selected="{{selectedTab}}" scrollable primary$="[[_shouldShowTabs(urlHash, smallScreen)]]">
+          <template is="dom-if" if="[[_shouldShowTabs(onDetailPage, smallScreen)]]">
+            <paper-tabs selected="[[selectedTab]]" scrollable primary$="[[_shouldShowTabs(onDetailPage, smallScreen)]]">
               <template is="dom-repeat" items="[[sections]]" as="section">
                 <paper-tab>
                   <a href="#[[section]]">[[section]]</a>
@@ -256,11 +268,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <iron-pages selected="[[page]]" attr-for-selected="name">
           <!-- detail of item -->
           <template is="dom-if" if="[[_equal(page, 'detail')]]">
-            <shrine-detail name="detail" section="[[section]]" related-items="[[items]]" item="[[detailItem]]"></shrine-detail>
+            <shrine-detail
+                name="detail"
+                section="[[sectionData.section]]"
+                related-items="[[items]]"
+                item="[[_getDetailItem(items, idData.id)]]">
+            </shrine-detail>
           </template>
           <!-- list of items -->
           <template is="dom-if" if="[[_equal(page, 'list')]]">
-            <shrine-list name="list" section="[[section]]" items="[[listItems]]" featured-item="[[listFeaturedItem]]"></shrine-list>
+            <shrine-list
+                name="list"
+                section="[[sectionData.section]]"
+                items="[[_getItemsCopy(items, sectionData.section)]]"
+                featured-item="[[_getFeaturedItem(featuredItems, sectionData.section)]]">
+            </shrine-list>
           </template>
         </iron-pages>
 
@@ -292,17 +314,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
 
-      section: {
-        type: String
-      },
-
       selectedTab: {
         type: Number,
-        value: 0
-      },
-
-      urlHash: {
-        type: String
+        computed: '_computeSelectedTab(sections, sectionData.section)'
       },
 
       items: {
@@ -313,59 +327,58 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         type: Array
       },
 
-      listItems: {
-        type: Array
-      },
-
-      listFeaturedItem: {
-        type: Object
-      },
-
-      detailItem: {
-        type: Object
-      },
-
       page: {
         type: String,
+        computed: '_computePage(onDetailPage)',
         reflectToAttribute: true
-      }
+      },
+
+      route: Object,
+
+      subRoute: Object,
+
+      sectionData: Object,
+
+      idData: Object,
+
+      onDetailPage: Boolean
     },
 
     observers: [
-      '_hashDidChange(urlHash, items, featuredItems)'
+      '_hashDidChange(route.path, items, featuredItems)'
     ],
 
-    _hashDidChange: function(urlHash, items, featuredItems) {
-      var filteredItems;
-      var itemLookup = this._getItemFromHash(urlHash);
-
-      if (itemLookup !== null) {
-        this.detailItem = items.filter(function(item) {
-          return item.id === itemLookup.id;
-        }).pop();
-
-        this.page = 'detail';
-        this.section = itemLookup.section;
-
-      } else {
-        var section = urlHash.toLowerCase() || this.sections[0];
-        var secIdx = this.sections.indexOf(section);
-
-        this.listFeaturedItem = featuredItems.filter(function(item) {
-          return item.category.toLowerCase() === section;
-        }).pop();
-
-        this.page = 'list';
-        this.section = section;
-
-        if (secIdx === -1) {
-          this.selectedTab = -1;
-          this.listItems = [];
-        } else {
-          this.selectedTab = secIdx;
-          this.listItems = items.slice();
+    ready: function() {
+      this.async(function() {
+        if (!this.route.path) {
+          this.set('route.path', 'feature');
         }
-      }
+      });
+    },
+
+    _computeSelectedTab: function(sections, section) {
+      return sections.indexOf(section);
+    },
+
+    _getItemsCopy: function(items) {
+      return items.slice();
+    },
+
+    _getFeaturedItem: function(featuredItems, section) {
+      return featuredItems.filter(function(item) {
+        return item.category.toLowerCase() === section;
+      }).pop();
+    },
+
+    _getDetailItem: function(items, id) {
+      return items[id];
+    },
+
+    _computePage: function(onDetailPage) {
+      return onDetailPage ? 'detail' : 'list';
+    },
+
+    _hashDidChange: function() {
       // TODO(blasten) Polymer.AppScrollEffects(0);
       this.$.header._scrollTop = 0;
       this.$.header.resetLayout();
@@ -376,26 +389,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       return a === b;
     },
 
-    _getItemFromHash: function(urlHash) {
-      var parts = /^([a-z]+)\/([0-9]+)/i.exec(urlHash);
-      return parts && parts[2] && this.sections.indexOf(parts[1]) != -1 ?
-        {
-          section: parts[1],
-          id: +parts[2]
-        }
-        : null;
-    },
-
-    _isItemHash: function(urlHash) {
-      return this._getItemFromHash(urlHash) !== null;
-    },
-
     _getSectionClass: function(index, selectedTab) {
       return index === selectedTab ? 'active' : '';
     },
 
-    _shouldShowTabs: function(urlHash, smallScreen) {
-      return !this._isItemHash(urlHash) && !smallScreen;
+    _shouldShowTabs: function(onDetailPage, smallScreen) {
+      return !onDetailPage && !smallScreen;
     }
 
   });

@@ -21,7 +21,7 @@
     "iron-scroll-target-behavior": "polymerelements/iron-scroll-target-behavior#^1.0.0"
   },
   "devDependencies": {
-    "lab-elements": "polymerlabs/lab-elements",
+    "carbon-route": "polymerelements/carbon-route#master",
     "font-roboto": "polymerelements/font-roboto#^1.0.0",
     "iron-component-page": "polymerelements/iron-component-page#^1.0.0",
     "iron-icon": "polymerelements/iron-icon#^1.0.0",

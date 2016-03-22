@@ -10,7 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../../polymer/polymer.html">
 
-<link rel="import" href="../../../../lab-elements/lab-router.html">
+<link rel="import" href="../../../../carbon-route/carbon-location.html">
+<link rel="import" href="../../../../carbon-route/carbon-route.html">
 
 <link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../../iron-pages/iron-pages.html">
@@ -79,9 +80,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     </style>
 
-    <lab-router route="{{__route}}" base="{{__page}}" subroute="{{__selectedRecipeName}}"></lab-router>
+    <carbon-location route="{{_route}}" use-hash-as-path></carbon-location>
+    <carbon-route
+        route="{{_route}}"
+        pattern="/:page"
+        data="{{_pageData}}"
+        tail="{{_subRoute}}"></carbon-route>
+    <carbon-route
+        route="{{_subRoute}}"
+        pattern="/:recipe"
+        data="{{_recipeData}}"></carbon-route>
 
-    <app-drawer-layout drawer-width="288px" responsive-width="1280px">
+    <app-drawer-layout responsive-width="1280px">
 
       <!-- nav panel -->
       <app-drawer id="drawer" swipe-open>
@@ -98,7 +108,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </app-header>
 
           <!-- nav menu -->
-          <paper-listbox selected="{{__page}}" attr-for-selected="name">
+          <paper-listbox
+              selected="{{_pageData.page}}"
+              attr-for-selected="name"
+              on-iron-activate="_drawerSelected">
             <paper-item name="home">Home</paper-item>
             <paper-item name="favorites">Favorites</paper-item>
             <paper-item name="saved">Saved</paper-item>
@@ -108,12 +121,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header-layout>
       </app-drawer>
 
-      <app-scrollpos-control selected="{{__page}}" reset="{{__isDetailPage(__page)}}"></app-scrollpos-control>
+      <app-scrollpos-control
+          selected="[[_pageData.page]]"
+          reset="[[_isDetailPage(_pageData.page)]]"></app-scrollpos-control>
 
       <!-- list/detail pages -->
-      <iron-pages selected="{{__page}}" attr-for-selected="name">
+      <iron-pages selected="[[_pageData.page]]" attr-for-selected="name">
 
-        <recipe-list name="home" recipes="{{recipes}}">
+        <recipe-list name="home" recipes="[[recipes]]">
           <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
         </recipe-list>
 
@@ -129,7 +144,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
         </recipe-list>
 
-        <recipe-detail id="detailView" name="detail" recipe="{{__selectedRecipe}}"></recipe-detail>
+        <recipe-detail
+            id="detailView"
+            name="detail"
+            recipe="[[_getRecipe(recipes, _recipeData.recipe)]]"></recipe-detail>
 
       </iron-pages>
 
@@ -147,34 +165,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       recipes: Object,
 
-      __route: {
-        type: String,
-        observer: '__routeChanged'
-      },
+      _route: Object,
 
-      __page: {
-        type: String,
-        observer: '__pageChanged'
-      },
+      _subRoute: Object,
 
-      __selectedRecipeName: String,
+      _pageData: Object,
 
-      __selectedRecipe: {
-        type: Object,
-        computed: '__computeSelectedRecipe(recipes, __selectedRecipeName)'
-      }
+      _recipeData: Object
 
     },
 
-    __isDetailPage: function() {
-      return this.__page === 'detail';
+    ready: function() {
+      this.async(function() {
+        if (!this._route.path) {
+          this.set('_route.path', '/home');
+        }
+      });
     },
 
-    __computeSelectedRecipe: function() {
-      if (this.recipes && this.__selectedRecipeName) {
+    _isDetailPage: function(page) {
+      return page === 'detail';
+    },
+
+    _getRecipe: function() {
+      if (this.recipes && this._recipeData.recipe) {
         for (var i = 0; i < this.recipes.length; ++i) {
           var r = this.recipes[i];
-          if (r.name === this.__selectedRecipeName) {
+          if (r.name === this._recipeData.recipe) {
             return r;
           }
         }
@@ -182,14 +199,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       return null;
     },
 
-    __routeChanged: function(route) {
-      if (!route) {
-        // default route
-        this.__route = 'home'
-      }
-    },
-
-    __pageChanged: function(page) {
+    _drawerSelected: function() {
       if (!this.$.drawer.persistent) this.$.drawer.close();
     }
 
