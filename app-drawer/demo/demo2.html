@@ -65,7 +65,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <sample-content size="100"></sample-content>
 
-    <app-drawer id="drawer" align="end" swipe-open on-app-drawer-overlay-changed="toggleOverlay">
+    <app-drawer id="drawer" align="end" swipe-open on-app-drawer-transitioned="drawerTransitioned">
       <div class="drawer-contents">
         <template is="dom-repeat" id="menu" items="[[items]]">
           <paper-icon-item>
@@ -85,8 +85,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         scope.$.drawer.toggle();
       };
 
-      scope.toggleOverlay = function(event) {
-        if (event.detail.overlay) {
+      scope.drawerTransitioned = function() {
+        if (scope.$.drawer.opened) {
           document.querySelector('paper-icon-item').focus();
           document.addEventListener('focus', scope.focusHandler, true /* useCapture */);
         } else {
