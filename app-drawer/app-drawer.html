@@ -539,7 +539,7 @@ Custom property                  | Description                            | Defa
         }
 
         if (oldState !== this._drawerState) {
-          if (this.opened && !this.persistent) {
+          if (this._drawerState === this._DRAWER_STATE.OPENED) {
             document.addEventListener('keydown', this._boundKeydownHandler);
             document.body.style.overflow = 'hidden';
           } else {
