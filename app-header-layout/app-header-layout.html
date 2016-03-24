@@ -148,10 +148,7 @@ Using an own scrolling region:
        */
       resetLayout: function() {
         this._updateScroller();
-        this.debounce('_resetLayout', function() {
-          this._updateContentPosition();
-          this._updateFixedNodesPosition();
-        });
+        this.debounce('_resetLayout', this._updateContentPosition);
       },
 
       _getFixedNodes: function() {
@@ -162,10 +159,13 @@ Using an own scrolling region:
       _updateContentPosition: function() {
         var header = this.header;
         var containerStyle = this.$.contentContainer.style;
+
         if (!this.isAttached || !header) {
           return;
         }
 
+        var rect = this.getBoundingClientRect();
+        var rightOffset = document.documentElement.clientWidth - rect.right;
         this._headerHeight = header.offsetHeight;
 
         if (header.fixed && !header.willCondense() && this.hasScrollingRegion) {
@@ -175,12 +175,8 @@ Using an own scrolling region:
           containerStyle.paddingTop = this._headerHeight + 'px';
           containerStyle.marginTop = '';
         }
-      },
 
-      _updateFixedNodesPosition: function() {
-        var rect = this.getBoundingClientRect();
-        var rightOffset = document.documentElement.clientWidth - rect.right;
-
+        // update fixed nodes
         this._getFixedNodes().forEach(function(node) {
           node.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
           node.style.right = this.hasScrollingRegion ? '' : rightOffset + 'px';
@@ -193,7 +189,7 @@ Using an own scrolling region:
         }
         var header = this.header;
         if (header) {
-          header.scrollTarget = this.hasScrollingRegion ? 
+          header.scrollTarget = this.hasScrollingRegion ?
               this.$.contentContainer : this.ownerDocument.documentElement;
         }
       },
