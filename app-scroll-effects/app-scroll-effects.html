@@ -53,7 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this.$.backgroundRearLayer.style.transitionProperty = 'opacity';
       this.$.backgroundRearLayer.style.transitionDuration = duration;
     },
-    run: function run(p, y) {
+    run: function run(p) {
       if (p >= 1) {
         this.$.backgroundFrontLayer.style.opacity = 0;
         this.$.backgroundRearLayer.style.opacity = 1;
@@ -86,7 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     tearDown: function() {
       delete this._deltaBg;
     },
-    run: function run(p, y) {
+    run: function run(p) {
       this.transform('translate3d(0px, ' + (this._deltaBg * Math.min(1, p)) + 'px, 0px)', this.$.backgroundFrontLayer);
       if (this.$.backgroundRearLayer) {
         this.transform('translate3d(0px, ' + (this._deltaBg * Math.min(1, p)) + 'px, 0px)', this.$.backgroundRearLayer);
@@ -194,7 +194,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       fx.condensedTitle.style.transition = '';
       delete this._fxResizeSnappedTitle;
     },
-    run: function run(p, y) {
+    run: function run(p) {
       var fx = this._fxResizeSnappedTitle;
       if (p > 0) {
         fx.title.style.opacity = 0;
@@ -211,7 +211,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * between the element and the content underneath.
    */
   scrollEffects.waterfall = {
-    run: function run(p, y) {
+    run: function run() {
       this.shadow = this.isOnScreen() && this.isContentBelow();
     }
   };
