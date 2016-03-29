@@ -14,7 +14,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
 
 <!--
-
 app-header is container element for app-toolbars at the top of the screen that can have scroll
 effects. By default, an app-header moves away from the viewport when scrolling down and
 if using `reveals`, the header slides back when scrolling back up. For example:
@@ -216,96 +215,108 @@ Mixin | Description | Default
 -->
 
 <dom-module id="app-header">
-  <style>
-
-    :host {
-      position: relative;
-      display: block;
-      transition-property: -webkit-transform;
-      transition-property: transform;
-      transition-timing-function: linear;
-    }
-
-    :host::after {
-      content: "";
-      position: absolute;
-      left: 0px;
-      right: 0px;
-      bottom: -5px;
-      width: 100%;
-      height: 5px;
-      pointer-events: none;
-      opacity: 0;
-      box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
-      will-change: opacity;
-      transition: opacity 0.4s;
-      @apply(--app-header-shadow);
-    }
-
-    :host([shadow])::after {
-      opacity: 1;
-    }
-
-    #contentContainer > ::content [condensed-title] {
-      opacity: 0;
-      white-space: nowrap;
-      -webkit-transform-origin: left top;
-      transform-origin: left top;
-    }
-
-    #contentContainer > ::content [title] {
-      white-space: nowrap;
-      -webkit-transform-origin: left top;
-      transform-origin: left top;
-    }
-
-    #background {
-      @apply(--layout-fit);
-      overflow: hidden;
-    }
-
-    #backgroundFrontLayer,
-    #backgroundRearLayer {
-      @apply(--layout-fit);
-      pointer-events: none;
-      background-size: cover;
-      height: 100%;
-    }
-
-    #backgroundFrontLayer {
-      @apply(--app-header-background-front-layer);
-    }
-
-    #backgroundRearLayer {
-      @apply(--app-header-background-rear-layer);
-      opacity: 0;
-    }
-
-    #contentContainer {
-      position: relative;
-      height: 100%;
-      width: 100%;
-    }
-
-    :host([disabled]),
-    :host([disabled])::after,
-    :host([disabled]) #backgroundFrontLayer,
-    :host([disabled]) #backgroundRearLayer,
-    :host([disabled]) ::content > app-toolbar:first-of-type,
-    :host([disabled]) ::content > [primary],
-    /* Silent scrolling should not run CSS transitions */
-    :host-context(.app-layout-silent-scroll),
-    :host-context(.app-layout-silent-scroll)::after,
-    :host-context(.app-layout-silent-scroll) #backgroundFrontLayer,
-    :host-context(.app-layout-silent-scroll) #backgroundRearLayer,
-    :host-context(.app-layout-silent-scroll) ::content > app-toolbar:first-of-type,
-    :host-context(.app-layout-silent-scroll) ::content > [primary] {
-      transition: none !important;
-    }
-
-  </style>
-
   <template>
+    <style>
+      :host {
+        position: relative;
+
+        display: block;
+
+        transition-timing-function: linear;
+        transition-property: -webkit-transform;
+        transition-property: transform;
+      }
+
+      :host::after {
+        position: absolute;
+        right: 0px;
+        bottom: -5px;
+        left: 0px;
+
+        width: 100%;
+        height: 5px;
+
+        content: "";
+        transition: opacity 0.4s;
+        pointer-events: none;
+
+        opacity: 0;
+        box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+
+        will-change: opacity;
+
+        @apply(--app-header-shadow);
+      }
+
+      :host([shadow])::after {
+        opacity: 1;
+      }
+
+      #contentContainer > ::content [condensed-title] {
+        -webkit-transform-origin: left top;
+        transform-origin: left top;
+        white-space: nowrap;
+
+        opacity: 0;
+      }
+
+      #contentContainer > ::content [title] {
+        -webkit-transform-origin: left top;
+        transform-origin: left top;
+        white-space: nowrap;
+      }
+
+      #background {
+        @apply(--layout-fit);
+
+        overflow: hidden;
+      }
+
+      #backgroundFrontLayer,
+      #backgroundRearLayer {
+        @apply(--layout-fit);
+
+        height: 100%;
+
+        pointer-events: none;
+
+        background-size: cover;
+      }
+
+      #backgroundFrontLayer {
+        @apply(--app-header-background-front-layer);
+      }
+
+      #backgroundRearLayer {
+        opacity: 0;
+
+        @apply(--app-header-background-rear-layer);
+      }
+
+      #contentContainer {
+        position: relative;
+
+        width: 100%;
+        height: 100%;
+      }
+
+      :host([disabled]),
+      :host([disabled])::after,
+      :host([disabled]) #backgroundFrontLayer,
+      :host([disabled]) #backgroundRearLayer,
+      :host([disabled]) ::content > app-toolbar:first-of-type,
+      :host([disabled]) ::content > [primary],
+      /* Silent scrolling should not run CSS transitions */
+      :host-context(.app-layout-silent-scroll),
+      :host-context(.app-layout-silent-scroll)::after,
+      :host-context(.app-layout-silent-scroll) #backgroundFrontLayer,
+      :host-context(.app-layout-silent-scroll) #backgroundRearLayer,
+      :host-context(.app-layout-silent-scroll) ::content > app-toolbar:first-of-type,
+      :host-context(.app-layout-silent-scroll) ::content > [primary] {
+        transition: none !important;
+      }
+    </style>
+
     <div id="background">
       <div id="backgroundRearLayer"></div>
       <div id="backgroundFrontLayer"></div>
@@ -316,9 +327,7 @@ Mixin | Description | Default
   </template>
 
   <script>
-
     Polymer({
-
       is: 'app-header',
 
       behaviors: [
@@ -327,7 +336,6 @@ Mixin | Description | Default
       ],
 
       properties: {
-
         /**
          * If true, the header will automatically collapse when scrolling down.
          * That is, the `primary` element remains visible when the header is fully condensed
@@ -386,7 +394,6 @@ Mixin | Description | Default
           reflectToAttribute: true,
           value: false
         }
-
       },
 
       observers: [
@@ -481,7 +488,6 @@ Mixin | Description | Default
        * @method resetLayout
        */
       resetLayout: function() {
-
         this.fire('app-header-reset-layout');
 
         this.debounce('_resetLayout', function() {
@@ -680,7 +686,5 @@ Mixin | Description | Default
        * @event app-header-reset-layout
        */
     });
-
   </script>
-
 </dom-module>
