@@ -12,7 +12,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 
 <!--
-
 app-drawer is a navigation drawer that can slide in from the left or right.
 
 Example:
@@ -50,129 +49,130 @@ Custom property                  | Description                            | Defa
 -->
 
 <dom-module id="app-drawer">
-
-  <style>
-
-    :host {
-      position: fixed;
-      top: -120px;
-      bottom: -120px;
-      left: 0;
-      right: 0;
-      visibility: hidden;
-      transition: visibility 0.2s ease;
-    }
-
-    :host([opened]) {
-      visibility: visible;
-    }
-
-    :host([persistent]) {
-      width: var(--app-drawer-width, 256px);
-    }
-
-    :host([persistent][position=left]) {
-      right: auto;
-    }
-
-    :host([persistent][position=right]) {
-      left: auto;
-    }
-
-    #contentContainer {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      width: var(--app-drawer-width, 256px);
-      background-color: #FFF;
-      padding: 120px 0;
-
-      transition: 0.2s ease;
-      transition-property: -webkit-transform;
-      transition-property: transform;
-
-      -webkit-transform: translate3d(-100%, 0, 0);
-      transform: translate3d(-100%, 0, 0);
-
-      @apply(--app-drawer-content-container);
-    }
-
-    :host([position=right]) > #contentContainer {
-      left: auto;
-      right: 0;
-
-      -webkit-transform: translate3d(100%, 0, 0);
-      transform: translate3d(100%, 0, 0);
-    }
-
-    :host([swipe-open]) > #contentContainer::after {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 100%;
-      width: 15px;
-      content: '';
-      visibility: visible;
-    }
-
-    :host([swipe-open][position=right]) > #contentContainer::after {
-      left: auto;
-      right: 100%;
-    }
-
-    :host([opened]) > #contentContainer {
-      -webkit-transform: translate3d(0, 0, 0);
-      transform: translate3d(0, 0, 0);
-    }
-
-    #scrim {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--app-drawer-scrim-background, rgba(0, 0, 0, 0.5));
-      opacity: 0;
-      transition: opacity 0.2s ease;
-
-      -webkit-transform: translateZ(0);
-      transform:  translateZ(0);
-    }
-
-    :host([opened]) > #scrim {
-      opacity: 1;
-    }
-
-    :host([opened][persistent]) > #scrim {
-      /**
-       * NOTE(keanulee): Keep both opacity: 0 and visibility: hidden to prevent the
-       * scrim from showing when toggling between closed and opened/persistent.
-       */
-      opacity: 0;
-      visibility: hidden;
-    }
-
-  </style>
-
   <template>
+    <style>
+      :host {
+        position: fixed;
+        top: -120px;
+        right: 0;
+        bottom: -120px;
+        left: 0;
+
+        visibility: hidden;
+
+        transition: visibility 0.2s ease;
+      }
+
+      :host([opened]) {
+        visibility: visible;
+      }
+
+      :host([persistent]) {
+        width: var(--app-drawer-width, 256px);
+      }
+
+      :host([persistent][position=left]) {
+        right: auto;
+      }
+
+      :host([persistent][position=right]) {
+        left: auto;
+      }
+
+      #contentContainer {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+
+        width: var(--app-drawer-width, 256px);
+        padding: 120px 0;
+
+        transition: 0.2s ease;
+        transition-property: -webkit-transform;
+        transition-property: transform;
+        -webkit-transform: translate3d(-100%, 0, 0);
+        transform: translate3d(-100%, 0, 0);
+
+        background-color: #FFF;
+
+        @apply(--app-drawer-content-container);
+      }
+
+      :host([position=right]) > #contentContainer {
+        right: 0;
+        left: auto;
+
+        -webkit-transform: translate3d(100%, 0, 0);
+        transform: translate3d(100%, 0, 0);
+      }
+
+      :host([swipe-open]) > #contentContainer::after {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 100%;
+
+        visibility: visible;
+
+        width: 15px;
+
+        content: '';
+      }
+
+      :host([swipe-open][position=right]) > #contentContainer::after {
+        right: 100%;
+        left: auto;
+      }
+
+      :host([opened]) > #contentContainer {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+      }
+
+      #scrim {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        transition: opacity 0.2s ease;
+        -webkit-transform: translateZ(0);
+        transform:  translateZ(0);
+
+        opacity: 0;
+        background: var(--app-drawer-scrim-background, rgba(0, 0, 0, 0.5));
+      }
+
+      :host([opened]) > #scrim {
+        opacity: 1;
+      }
+
+      :host([opened][persistent]) > #scrim {
+        visibility: hidden;
+        /**
+         * NOTE(keanulee): Keep both opacity: 0 and visibility: hidden to prevent the
+         * scrim from showing when toggling between closed and opened/persistent.
+         */
+
+        opacity: 0;
+      }
+    </style>
 
     <div id="scrim" on-tap="close"></div>
 
     <div id="contentContainer">
       <content></content>
     </div>
-
   </template>
 
   <script>
 
     Polymer({
-
       is: 'app-drawer',
 
       properties: {
-
         /**
          * The opened state of the drawer.
          */
@@ -220,7 +220,6 @@ Custom property                  | Description                            | Defa
           value: false,
           reflectToAttribute: true
         }
-
       },
 
       listeners: {
@@ -582,9 +581,6 @@ Custom property                  | Description                            | Defa
        *
        * @event app-drawer-transitioned
        */
-
     });
-
   </script>
-
 </dom-module>

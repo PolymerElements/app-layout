@@ -48,18 +48,19 @@ Custom property              | Description                  | Default
 -->
 
 <dom-module id="app-toolbar">
-
   <template>
-
     <style>
-
       :host {
+        position: relative;
+
         @apply(--layout-horizontal);
         @apply(--layout-center);
+
         height: 64px;
         padding: 0 16px;
-        position: relative;
+
         pointer-events: none;
+
         font-size: var(--app-toolbar-font-size, 20px);
       }
 
@@ -74,42 +75,35 @@ Custom property              | Description                  | Default
 
       :host > ::content > [title],
       :host > ::content > [condensed-title] {
-        @apply(--layout-flex);
         pointer-events: none;
+        @apply(--layout-flex);
       }
 
       :host > ::content > [bottom-item] {
         position: absolute;
+        right: 0;
         bottom: 0;
         left: 0;
-        right: 0;
       }
 
       :host > ::content > [top-item] {
         position: absolute;
         top: 0;
-        left: 0;
         right: 0;
+        left: 0;
       }
 
       :host > ::content > [spacer] {
         margin-left: 64px;
       }
-
     </style>
 
     <content></content>
-
   </template>
 
   <script>
-
     Polymer({
-
       is: 'app-toolbar'
-
     });
-
   </script>
-
 </dom-module>

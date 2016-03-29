@@ -74,30 +74,28 @@ Custom property                          | Description                          
 -->
 
 <dom-module id="app-drawer-layout">
-
-  <style>
-
-    :host {
-      display: block;
-    }
-
-    :host([fullbleed]) {
-      @apply(--layout-fit);
-    }
-
-    #contentContainer {
-      position: relative;
-      height: 100%;
-      transition: var(--app-drawer-layout-content-transition, none);
-    }
-
-    #contentContainer:not(.narrow) > ::content [drawer-toggle] {
-      display: none;
-    }
-
-  </style>
-
   <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      :host([fullbleed]) {
+        @apply(--layout-fit);
+      }
+
+      #contentContainer {
+        position: relative;
+
+        height: 100%;
+
+        transition: var(--app-drawer-layout-content-transition, none);
+      }
+
+      #contentContainer:not(.narrow) > ::content [drawer-toggle] {
+        display: none;
+      }
+    </style>
 
     <div id="contentContainer" class$="[[_computeClass(narrow)]]">
       <content select=":not(app-drawer)"></content>
@@ -107,17 +105,13 @@ Custom property                          | Description                          
 
     <iron-media-query query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]"
         on-query-matches-changed="_onQueryMatchesChanged"></iron-media-query>
-
   </template>
 
   <script>
-
     Polymer({
-
       is: 'app-drawer-layout',
 
       properties: {
-
         /**
          * Returns true if the panel is in narrow layout. This is useful if you
          * need to show/hide elements based on the layout.
@@ -147,7 +141,6 @@ Custom property                          | Description                          
           type: String,
           value: '640px'
         }
-
       },
 
       listeners: {
@@ -217,9 +210,6 @@ Custom property                          | Description                          
       _computeClass: function(narrow) {
         return narrow ? 'narrow' : '';
       }
-
     });
-
   </script>
-
 </dom-module>

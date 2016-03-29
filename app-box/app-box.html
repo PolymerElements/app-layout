@@ -61,40 +61,45 @@ Mixin | Description | Default
 -->
 
 <dom-module id="app-box">
-  <style>
-
-    :host {
-      display: block;
-      position: relative;
-    }
-
-    #background {
-      @apply(--layout-fit);
-      overflow: hidden;
-      height: 100%;
-    }
-
-    #backgroundFrontLayer {
-      pointer-events: none;
-      background-size: cover;
-      min-height: 100%;
-      @apply(--app-box-background-front-layer);
-    }
-
-    #contentContainer {
-      position: relative;
-      height: 100%;
-      width: 100%;
-    }
-
-    :host([disabled]),
-    :host([disabled]) #backgroundFrontLayer {
-      transition: none !important;
-    }
-
-  </style>
-
   <template>
+    <style>
+      :host {
+        position: relative;
+
+        display: block;
+      }
+
+      #background {
+        @apply(--layout-fit);
+
+        overflow: hidden;
+
+        height: 100%;
+      }
+
+      #backgroundFrontLayer {
+        min-height: 100%;
+
+        pointer-events: none;
+
+        background-size: cover;
+
+        @apply(--app-box-background-front-layer);
+      }
+
+      #contentContainer {
+        position: relative;
+
+        width: 100%;
+        height: 100%;
+      }
+
+      :host([disabled]),
+      :host([disabled]) #backgroundFrontLayer {
+        transition: none !important;
+      }
+    </style>
+
     <div id="background">
       <div id="backgroundFrontLayer">
         <content select="[background]"></content>
@@ -107,7 +112,6 @@ Mixin | Description | Default
 
   <script>
     Polymer({
-
       is: 'app-box',
 
       behaviors: [
@@ -178,10 +182,9 @@ Mixin | Description | Default
        * Returns true if this app-box is on the screen.
        * That is, visible in the current viewport.
        *
-       * @method setup
+       * @method isOnScreen
        * @return {boolean}
        */
-
       isOnScreen: function() {
         return this._elementTop < this._scrollTop + this._cachedScrollTargetHeight
             && this._elementTop + this._elementHeight > this._scrollTop;
@@ -200,8 +203,6 @@ Mixin | Description | Default
       getScrollState: function() {
         return { progress: this._progress };
       }
-
     });
   </script>
-
 </dom-module>

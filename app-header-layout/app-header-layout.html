@@ -51,46 +51,46 @@ Using an own scrolling region:
 -->
 
 <dom-module id="app-header-layout">
-
-  <style>
-
-    :host {
-      display: block;
-    }
-
-    :host([has-scrolling-region]) {
-      position: relative;
-      height: 100%;
-    }
-
-    :host > ::content > app-header,
-    :host > ::content > [underlay-content] {
-      position: fixed;
-      top: 0;
-      right: 0;
-      left: 0;
-    }
-
-    :host([has-scrolling-region]) > ::content > app-header,
-    :host([has-scrolling-region]) > ::content > [underlay-content] {
-      position: absolute;
-    }
-
-    :host([has-scrolling-region]) > #contentContainer {
-      @apply(--layout-fit);
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    #contentContainer {
-      position: relative;
-      overflow-y: hidden;
-      @apply(--app-header-layout-content);
-    }
-
-  </style>
-
   <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      :host([has-scrolling-region]) {
+        position: relative;
+
+        height: 100%;
+      }
+
+      :host > ::content > app-header,
+      :host > ::content > [underlay-content] {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+      }
+
+      :host([has-scrolling-region]) > ::content > app-header,
+      :host([has-scrolling-region]) > ::content > [underlay-content] {
+        position: absolute;
+      }
+
+      :host([has-scrolling-region]) > #contentContainer {
+        @apply(--layout-fit);
+
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      #contentContainer {
+        position: relative;
+
+        overflow-y: hidden;
+
+        @apply(--app-header-layout-content);
+      }
+    </style>
 
     <content id="underlayContent" select="[underlay-content]"></content>
 
@@ -101,13 +101,10 @@ Using an own scrolling region:
     <content id="header" select="app-header"></content>
 
     <content select="[app-header-overlay]"></content>
-
   </template>
 
   <script>
-
     Polymer({
-
       is: 'app-header-layout',
 
       behaviors: [
@@ -115,7 +112,6 @@ Using an own scrolling region:
       ],
 
       properties: {
-
         /**
          * If true, the current element will have its own scrolling region.
          * Otherwise, it will use the document scroll to control the header.
@@ -125,7 +121,6 @@ Using an own scrolling region:
           value: false,
           reflectToAttribute: true
         }
-
       },
 
       listeners: {
@@ -197,9 +192,6 @@ Using an own scrolling region:
       _resizeHandler: function() {
         this.resetLayout();
       }
-
     });
-
   </script>
-
 </dom-module>
