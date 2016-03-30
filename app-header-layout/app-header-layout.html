@@ -55,6 +55,13 @@ Using an own scrolling region:
     <style>
       :host {
         display: block;
+
+        /**
+         * Force app-header-layout to have its own stacking context so that its parent can
+         * control the stacking of it relative to other elements (e.g. app-drawer-layout).
+         */
+        position: relative;
+        z-index: 0;
       }
 
       :host([has-scrolling-region]) {
@@ -63,17 +70,20 @@ Using an own scrolling region:
         height: 100%;
       }
 
-      :host > ::content > app-header,
-      :host > ::content > [underlay-content] {
-        position: fixed;
-        top: 0;
-        right: 0;
-        left: 0;
+      :host > ::content > app-header {
+        @apply(--layout-fixed-top);
+
+        z-index: 1;
       }
 
-      :host([has-scrolling-region]) > ::content > app-header,
-      :host([has-scrolling-region]) > ::content > [underlay-content] {
+      :host([has-scrolling-region]) > ::content > app-header {
         position: absolute;
+      }
+
+      #contentContainer {
+        /* Create a stacking context here so that all children appear below the header. */
+        position: relative;
+        z-index: 0;
       }
 
       :host([has-scrolling-region]) > #contentContainer {
@@ -82,25 +92,14 @@ Using an own scrolling region:
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
-
-      #contentContainer {
-        position: relative;
-
-        overflow-y: hidden;
-
-        @apply(--app-header-layout-content);
-      }
     </style>
-
-    <content id="underlayContent" select="[underlay-content]"></content>
-
-    <div id="contentContainer">
-      <content select=":not(app-header):not([app-header-overlay])"></content>
-    </div>
 
     <content id="header" select="app-header"></content>
 
-    <content select="[app-header-overlay]"></content>
+    <div id="contentContainer">
+      <content></content>
+    </div>
+
   </template>
 
   <script>
@@ -137,7 +136,8 @@ Using an own scrolling region:
       },
 
       /**
-       * Resets the layout. This method is automatically called when the element is attached to the DOM.
+       * Resets the layout. This method is automatically called when the element is attached
+       * to the DOM.
        *
        * @method resetLayout
        */
@@ -146,36 +146,36 @@ Using an own scrolling region:
         this.debounce('_resetLayout', this._updateContentPosition);
       },
 
-      _getFixedNodes: function() {
-        return Polymer.dom(this.$.header).getDistributedNodes().
-            concat(Polymer.dom(this.$.underlayContent).getDistributedNodes());
-      },
-
       _updateContentPosition: function() {
         var header = this.header;
-        var containerStyle = this.$.contentContainer.style;
-
         if (!this.isAttached || !header) {
           return;
         }
 
-        var rect = this.getBoundingClientRect();
-        var rightOffset = document.documentElement.clientWidth - rect.right;
-        this._headerHeight = header.offsetHeight;
-
+        // Update the content container position.
+        var headerHeight = header.offsetHeight;
+        var containerStyle = this.$.contentContainer.style;
         if (header.fixed && !header.willCondense() && this.hasScrollingRegion) {
-          containerStyle.marginTop = this._headerHeight + 'px';
+          // If the header size does not change and we're using a scrolling region, exclude
+          // the header area from the scrolling region so that the header doesn't overlap
+          // the scrollbar.
+          containerStyle.marginTop = headerHeight + 'px';
           containerStyle.paddingTop = '';
         } else {
-          containerStyle.paddingTop = this._headerHeight + 'px';
+          containerStyle.paddingTop = headerHeight + 'px';
           containerStyle.marginTop = '';
         }
 
-        // update fixed nodes
-        this._getFixedNodes().forEach(function(node) {
-          node.style.left = this.hasScrollingRegion ? '' : rect.left + 'px';
-          node.style.right = this.hasScrollingRegion ? '' : rightOffset + 'px';
-        }.bind(this));
+        // Update the header position.
+        if (!this.hasScrollingRegion) {
+          var rect = this.getBoundingClientRect();
+          var rightOffset = document.documentElement.clientWidth - rect.right;
+          header.style.left = rect.left + 'px';
+          header.style.right = rightOffset + 'px';
+        } else {
+          header.style.left = '';
+          header.style.right = '';
+        }
       },
 
       _updateScroller: function() {
