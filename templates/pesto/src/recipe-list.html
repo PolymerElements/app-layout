@@ -156,8 +156,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-toolbar>
       </app-header>
 
-      <paper-fab app-header-overlay icon="app:create"></paper-fab>
-
       <div class="content">
         <template is="dom-repeat" items="{{recipes}}"><!-- No empty text node
         --><a href="#/detail/{{item.name}}" class="card-container">
@@ -172,6 +170,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
 
     </app-header-layout>
+
+    <paper-fab icon="app:create"></paper-fab>
   </template>
 
   <script>
