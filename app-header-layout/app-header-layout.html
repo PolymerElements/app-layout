@@ -65,8 +65,6 @@ Using an own scrolling region:
       }
 
       :host([has-scrolling-region]) {
-        position: relative;
-
         height: 100%;
       }
 
@@ -152,19 +150,9 @@ Using an own scrolling region:
           return;
         }
 
-        // Update the content container position.
+        // Get header height here so that style reads are batched together before style writes
+        // (i.e. getBoundingClientRect() below).
         var headerHeight = header.offsetHeight;
-        var containerStyle = this.$.contentContainer.style;
-        if (header.fixed && !header.willCondense() && this.hasScrollingRegion) {
-          // If the header size does not change and we're using a scrolling region, exclude
-          // the header area from the scrolling region so that the header doesn't overlap
-          // the scrollbar.
-          containerStyle.marginTop = headerHeight + 'px';
-          containerStyle.paddingTop = '';
-        } else {
-          containerStyle.paddingTop = headerHeight + 'px';
-          containerStyle.marginTop = '';
-        }
 
         // Update the header position.
         if (!this.hasScrollingRegion) {
@@ -175,6 +163,19 @@ Using an own scrolling region:
         } else {
           header.style.left = '';
           header.style.right = '';
+        }
+
+        // Update the content container position.
+        var containerStyle = this.$.contentContainer.style;
+        if (header.fixed && !header.willCondense() && this.hasScrollingRegion) {
+          // If the header size does not change and we're using a scrolling region, exclude
+          // the header area from the scrolling region so that the header doesn't overlap
+          // the scrollbar.
+          containerStyle.marginTop = headerHeight + 'px';
+          containerStyle.paddingTop = '';
+        } else {
+          containerStyle.paddingTop = headerHeight + 'px';
+          containerStyle.marginTop = '';
         }
       },
 
