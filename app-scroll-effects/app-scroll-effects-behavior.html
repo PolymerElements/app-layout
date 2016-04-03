@@ -148,7 +148,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * Updates the scroll state. This method should be overridden
      * by the consumer of this behavior.
      *
-     * @abstract
      * @method _updateScrollState
      */
     _updateScrollState: function() {},
@@ -233,7 +232,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var effectDef = Polymer.AppLayout.scrollEffects[effectName];
       if (!effectDef) {
         throw new ReferenceError(this._getUndefinedMsg(effectName));
-        return;
       }
       var prop = this._boundEffect(effectDef, effectConfig || {});
       prop.setUp();
@@ -273,8 +271,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /**
      * Returns an effect object bound to the current context.
      *
-     * @param {Object}
-     * @param {Object=} The effect config object if the effect accepts config values. (Optional)
+     * @param {Object} effectDef
+     * @param {Object=} effectsConfig The effect config object if the effect accepts config values. (Optional)
      */
     _boundEffect: function(effectDef, effectsConfig) {
       effectsConfig = effectsConfig || {};
@@ -324,8 +322,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /**
      * Runs the effects.
      *
-     * @param {number} The progress
-     * @param {number} The top position of the current element relative to the viewport.
+     * @param {number} p The progress
+     * @param {number} y The top position of the current element relative to the viewport.
      */
     _runEffects: function(p, y) {
       this._effectsRunFn.forEach(function(run) {
