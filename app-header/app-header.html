@@ -532,8 +532,8 @@ Mixin | Description | Default
       /**
        * Updates the scroll state.
        *
-       * @param {number}
-       * @param {boolean}
+       * @param {number} scrollTop
+       * @param {boolean} forceUpdate
        */
       _updateScrollState: function(scrollTop, forceUpdate) {
         if (this._height === 0) {
@@ -650,7 +650,7 @@ Mixin | Description | Default
       /**
        * Transforms the header.
        *
-       * @param {number}
+       * @param {number} y
        */
       _transformHeader: function(y) {
         this.translate3d(0, (-y) + 'px', 0);
