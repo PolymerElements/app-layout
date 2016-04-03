@@ -232,7 +232,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var effectDef = Polymer.AppLayout.scrollEffects[effectName];
       if (!effectDef) {
         throw new ReferenceError(this._getUndefinedMsg(effectName));
-        return;
       }
       var prop = this._boundEffect(effectDef, effectConfig || {});
       prop.setUp();
