@@ -17,37 +17,6 @@ function interpolate(progress, points, fn, ctx) {
   }));
 }
 
-/**
- * @constructor
- * @extends Object
- */
-var LocalDomWithBackground = function(){};
-/**
- * @type HTMLElement
- */
-LocalDomWithBackground.prototype.backgroundFrontLayer;
-/**
- * @type HTMLElement
- */
-LocalDomWithBackground.prototype.backgroundRearLayer;
-/**
- * @type HTMLElement
- */
-LocalDomWithBackground.prototype.background;
-
-/**
- * @constructor
- * @extends PolymerElement
- */
-var ElementWithBackground = function(){};
-ElementWithBackground.prototype = {
-  $: new LocalDomWithBackground(),
-  isContentBelow: function(){},
-  _updateScrollState: function(){},
-  isOnScreen: function(){},
-  _deltaHeight: 0,
-}
-
 Polymer.AppLayout.scrollEffects = {
 
   /**
