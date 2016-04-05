@@ -176,10 +176,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     },
 
+    /**
+     * Upon scrolling past a threshold, CSS transition the font size of a designated title element
+     * between two values.
+     */
     'resize-snapped-title': {
       /**
-       * Upon scrolling past a threshold, CSS transition the font size of a designated title element
-       * between two values.
        * @this Polymer.AppLayout.ElementWithBackground
        */
       setUp: function setUp(config) {
@@ -225,11 +227,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
     },
-
+    /**
+     * Toggles the shadow property in app-header when content is scrolled to create a sense of depth
+     * between the element and the content underneath.
+     */
     waterfall: {
       /**
-       * Toggles the shadow property in app-header when content is scrolled to create a sense of depth
-       * between the element and the content underneath.
        *  @this Polymer.AppLayout.ElementWithBackground
        */
       run: function run(p, y) {
@@ -237,9 +240,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     },
 
+    /**
+     * Shorthand for the waterfall, resize-title, blend-background, and parallax-background effects.
+     */
     material: {
       /**
-       * Shorthand for the waterfall, resize-title, blend-background, and parallax-background effects.
        * @this Polymer.AppLayout.ElementWithBackground
        */
       setUp: function() {
