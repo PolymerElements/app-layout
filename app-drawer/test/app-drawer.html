@@ -105,7 +105,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         window.setTimeout(function() {
           assertTransitionDuration('');
           done();
-        }, 300);
+        }, 350);
       });
 
       test('computed position', function() {
@@ -265,12 +265,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                       assert.equal(listenerSpy.callCount, 6,
                         'should fire after swiping beyond end state');
                       done();
-                    }, 300);
-                  }, 300);
-                }, 300);
-              }, 300);
-            }, 300);
-          }, 300);
+                    }, 350);
+                  }, 350);
+                }, 350);
+              }, 350);
+            }, 350);
+          }, 350);
         }, 100);
       });
 
@@ -408,7 +408,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assertTransitionTimingFunction('');
             assertDrawerStylesReset();
             done();
-          }, 300);
+          }, 350);
         }, 100);
       });
 
@@ -539,10 +539,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   assert.equal(document.body.style.overflow, '',
                     'should not block scrolling when closed');
                   done();
-                }, 300);
-              }, 300);
-            }, 300);
-          }, 300);
+                }, 350);
+              }, 350);
+            }, 350);
+          }, 350);
         }, 100);
       });
 
@@ -560,7 +560,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.isFalse(drawer.opened, 'should close drawer on esc');
             assert.isTrue(e.defaultPrevented, 'should prevent default');
             done();
-          }, 300);
+          }, 350);
         }, 100);
       });
 

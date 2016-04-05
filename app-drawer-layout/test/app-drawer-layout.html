@@ -17,6 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../../web-component-tester/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
+  <link rel="import" href="../../../iron-resizable-behavior/iron-resizable-behavior.html">
   <link rel="import" href="../../../test-fixture/test-fixture.html">
   <link rel="import" href="../app-drawer-layout.html">
 
@@ -59,9 +60,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-drawer>Drawer</app-drawer>
         <div drawer-toggle>Toggle</div>
         <p>Content</p>
+        <x-resizeable></x-resizeable>
       </app-drawer-layout>
     </template>
   </test-fixture>
+
+    <script>
+    HTMLImports.whenReady(function() {
+      Polymer({
+        is: 'x-resizeable',
+        behaviors: [
+          Polymer.IronResizableBehavior
+        ]
+      });
+    });
+    </script>
+  </dom-module>
 
   <script>
 
@@ -117,23 +131,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('content layout', function(done) {
+        var listenerSpy = sinon.spy();
+        var xResizeable = drawerLayout.querySelector('x-resizeable');
+        xResizeable.addEventListener('iron-resize', listenerSpy);
         drawerLayout.responsiveWidth = '10000px';
 
         window.setTimeout(function() {
           assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
           assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+          assert.isTrue(listenerSpy.called);
+          listenerSpy.reset();
 
           drawerLayout.responsiveWidth = '0px';
 
           window.setTimeout(function() {
             assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '256px');
             assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+            assert.isTrue(listenerSpy.called);
+            listenerSpy.reset();
 
             drawer.align = 'end';
 
             window.setTimeout(function() {
               assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
               assert.equal(drawerLayout.$.contentContainer.style.marginRight, '256px');
+              assert.isTrue(listenerSpy.called);
 
               done();
             }, 50);
