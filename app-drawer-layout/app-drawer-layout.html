@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-media-query/iron-media-query.html">
+<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../app-drawer/app-drawer.html">
 
 <!--
@@ -111,6 +112,10 @@ Custom property                          | Description                          
     Polymer({
       is: 'app-drawer-layout',
 
+      behaviors: [
+        Polymer.IronResizableBehavior
+      ],
+
       properties: {
         /**
          * Returns true if the panel is in narrow layout. This is useful if you
@@ -190,6 +195,7 @@ Custom property                          | Description                          
             this.$.contentContainer.style.marginLeft = this.drawer.getWidth() + 'px';
             this.$.contentContainer.style.marginRight = '';
           }
+          this.notifyResize();
         });
       },
 
