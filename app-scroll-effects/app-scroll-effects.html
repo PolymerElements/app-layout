@@ -11,8 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="app-scroll-effects-behavior.html">
 
 <script>
-
-(function(scrollEffects) {
+(function(scrollEffects){
   function interpolate(progress, points, fn, ctx) {
     fn.apply(ctx, points.map(function(point) {
       return point[0] + (point[1] - point[0]) * progress;
@@ -24,6 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * layer (opacity interpolated based on scroll position).
    */
   scrollEffects['blend-background'] = {
+    /** @this Polymer.AppLayout.ElementWithBackground */
     setUp: function setUp() {
       this.$.backgroundFrontLayer.style.willChange = 'opacity';
       this.$.backgroundFrontLayer.style.webkitTransform = 'translateZ(0)';
@@ -31,6 +31,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this.$.backgroundRearLayer.style.webkitTransform = 'translateZ(0)';
       this.$.backgroundRearLayer.style.opacity = 0;
     },
+    /** @this Polymer.AppLayout.ElementWithBackground */
     run: function run(p, y) {
       this.$.backgroundFrontLayer.style.opacity = 1 - p;
       this.$.backgroundRearLayer.style.opacity = p;
@@ -42,6 +43,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * background layer (opacity CSS transitioned over time).
    */
   scrollEffects['fade-background'] = {
+    /** @this Polymer.AppLayout.ElementWithBackground */
     setUp: function setUp(config) {
       var duration = config.duration || '0.5s';
       this.$.backgroundFrontLayer.style.willChange = 'opacity';
@@ -53,7 +55,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this.$.backgroundRearLayer.style.transitionProperty = 'opacity';
       this.$.backgroundRearLayer.style.transitionDuration = duration;
     },
-    run: function run(p) {
+    /** @this Polymer.AppLayout.ElementWithBackground */
+    run: function run(p, y) {
       if (p >= 1) {
         this.$.backgroundFrontLayer.style.opacity = 0;
         this.$.backgroundRearLayer.style.opacity = 1;
@@ -68,8 +71,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * Vertically translate the background based on a factor of the scroll position.
    */
   scrollEffects['parallax-background'] = {
+    /**
+     * @param {{scalar: string}} config
+     * @this Polymer.AppLayout.ElementWithBackground
+     */
     setUp: function setUp(config) {
       var scalar = parseFloat(config.scalar);
+
       this._deltaBg = this.$.backgroundFrontLayer.offsetHeight - this.$.background.offsetHeight;
       if (this._deltaBg === 0) {
         if (isNaN(scalar)) {
@@ -83,10 +91,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._deltaBg = this._deltaBg * scalar;
       }
     },
+    /** @this Polymer.AppLayout.ElementWithBackground */
     tearDown: function() {
       delete this._deltaBg;
     },
-    run: function run(p) {
+    /** @this Polymer.AppLayout.ElementWithBackground */
+    run: function run(p, y) {
       this.transform('translate3d(0px, ' + (this._deltaBg * Math.min(1, p)) + 'px, 0px)', this.$.backgroundFrontLayer);
       if (this.$.backgroundRearLayer) {
         this.transform('translate3d(0px, ' + (this._deltaBg * Math.min(1, p)) + 'px, 0px)', this.$.backgroundRearLayer);
@@ -99,6 +109,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * position.
    */
   scrollEffects['resize-title'] = {
+    /** @this Polymer.AppLayout.ElementWithBackground */
     setUp: function setUp() {
       var title = Polymer.dom(this).querySelector('[title]');
       var condensedTitle = Polymer.dom(this).querySelector('[condensed-title]');
@@ -131,9 +142,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       this._fxResizeTitle = fx;
     },
+    /** @this Polymer.AppLayout.ElementWithBackground */
     tearDown: function tearDown() {
       delete this._fxResizeTitle;
     },
+    /** @this PolymerElement */
     run: function run(p, y) {
       var fx = this._fxResizeTitle;
       if (!this.condenses) {
@@ -146,16 +159,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         fx.title.style.opacity = 1;
         fx.condensedTitle.style.opacity = 0;
       }
-      interpolate(Math.min(1, p), [
-        [1,  fx.scale],
-        [0, -fx.titleDX],
-        [y, y-fx.titleDY]
-      ],
-      function(scale, translateX, translateY) {
-        this.transform('translate(' + translateX + 'px, ' + translateY + 'px) ' +
-            'scale3d(' + scale + ', ' + scale + ', 1)',
-            fx.title);
-      }, this);
+      interpolate(Math.min(1, p),
+        [
+          [1,  fx.scale],
+          [0, -fx.titleDX],
+          [y, y-fx.titleDY]
+        ],
+        function(scale, translateX, translateY) {
+            this.transform('translate(' + translateX + 'px, ' + translateY + 'px) ' +
+                'scale3d(' + scale + ', ' + scale + ', 1)',
+                fx.title);
+        },
+        this);
     }
   };
 
@@ -164,6 +179,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * between two values.
    */
   scrollEffects['resize-snapped-title'] = {
+    /**
+     * @this Polymer.AppLayout.ElementWithBackground
+     */
     setUp: function setUp(config) {
       var title = Polymer.dom(this).querySelector('[title]');
       var condensedTitle = Polymer.dom(this).querySelector('[condensed-title]');
@@ -188,13 +206,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       fx.title = title;
       this._fxResizeSnappedTitle = fx;
     },
+    /** @this Polymer.AppLayout.ElementWithBackground */
     tearDown: function tearDown() {
       var fx = this._fxResizeSnappedTitle;
       fx.title.style.transition = '';
       fx.condensedTitle.style.transition = '';
       delete this._fxResizeSnappedTitle;
     },
-    run: function run(p) {
+    /** @this Polymer.AppLayout.ElementWithBackground */
+    run: function run(p, y) {
       var fx = this._fxResizeSnappedTitle;
       if (p > 0) {
         fx.title.style.opacity = 0;
@@ -205,13 +225,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     }
   };
-
   /**
    * Toggles the shadow property in app-header when content is scrolled to create a sense of depth
    * between the element and the content underneath.
    */
   scrollEffects.waterfall = {
-    run: function run() {
+    /**
+     *  @this Polymer.AppLayout.ElementWithBackground
+     */
+    run: function run(p, y) {
       this.shadow = this.isOnScreen() && this.isContentBelow();
     }
   };
@@ -220,12 +242,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * Shorthand for the waterfall, resize-title, blend-background, and parallax-background effects.
    */
   scrollEffects.material = {
+    /**
+     * @this Polymer.AppLayout.ElementWithBackground
+     */
     setUp: function() {
       this.effects = 'waterfall resize-title blend-background parallax-background';
       return false;
     }
   };
-
-})(Polymer.AppLayout.scrollEffects);
-
+}(Polymer.AppLayout.scrollEffects));
 </script>

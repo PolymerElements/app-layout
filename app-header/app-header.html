@@ -428,7 +428,7 @@ Mixin | Description | Default
       /**
        * The element that remains visible when the header condenses.
        *
-       * @type {Element}
+       * @type {HTMLElement}
        */
       _primaryEl: null,
 
@@ -467,15 +467,18 @@ Mixin | Description | Default
        * @return {HTMLElement}?
        */
       _getPrimaryEl: function() {
+        /** @type {HTMLElement} */
         var primaryEl;
         var nodes = Polymer.dom(this.$.content).getDistributedNodes();
 
         for (var i = 0; i < nodes.length; i++) {
           if (nodes[i].nodeType === Node.ELEMENT_NODE) {
-            if (nodes[i].hasAttribute('primary')) {
-              return nodes[i];
+            var node = /** @type {HTMLElement} */ (nodes[i]);
+            if (node.hasAttribute('primary')) {
+              primaryEl = node;
+              break;
             } else if (!primaryEl) {
-              primaryEl = nodes[i];
+              primaryEl = node;
             }
           }
         }
@@ -532,8 +535,8 @@ Mixin | Description | Default
       /**
        * Updates the scroll state.
        *
-       * @param {number}
-       * @param {boolean}
+       * @param {number} scrollTop
+       * @param {boolean=} forceUpdate (default: false)
        */
       _updateScrollState: function(scrollTop, forceUpdate) {
         if (this._height === 0) {
@@ -650,7 +653,7 @@ Mixin | Description | Default
       /**
        * Transforms the header.
        *
-       * @param {number}
+       * @param {number} y
        */
       _transformHeader: function(y) {
         this.translate3d(0, (-y) + 'px', 0);
