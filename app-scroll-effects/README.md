@@ -1,4 +1,4 @@
-## Scroll effects
+# Scroll effects
 
 `Polymer.AppScrollEffectsBehavior` provides an interface that allows an element to use scrolls effects.
 
