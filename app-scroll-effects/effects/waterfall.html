@@ -8,9 +8,19 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="effects/waterfall.html">
-<link rel="import" href="effects/resize-title.html">
-<link rel="import" href="effects/blend-background.html">
-<link rel="import" href="effects/parallax-background.html">
-<link rel="import" href="effects/fade-background.html">
-<link rel="import" href="effects/material.html">
+<link rel="import" href="../app-scroll-effects-behavior.html">
+
+<script>
+  /**
+   * Toggles the shadow property in app-header when content is scrolled to create a sense of depth
+   * between the element and the content underneath.
+   */
+  Polymer.AppLayout.scrollEffects.waterfall = {
+    /**
+     *  @this Polymer.AppLayout.ElementWithBackground
+     */
+    run: function run(p, y) {
+      this.shadow = this.isOnScreen() && this.isContentBelow();
+    }
+  };
+</script>
