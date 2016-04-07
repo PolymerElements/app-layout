@@ -1,6 +1,6 @@
 <!--
 @license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
@@ -18,11 +18,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    *
    * ### Importing the app-layout effects
    *
-   * app-layout provides a set of scroll effects that can be used by explicitly importing 
+   * app-layout provides a set of scroll effects that can be used by explicitly importing
    * `app-scroll-effects.html`:
    *
    * ```html
    * <link rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+   * ```
+   *
+   * The scroll effects can also be used by individually importing
+   * `app-layout/app-scroll-effects/effects/[effectName].html`. For example:
+   *
+   * ```html
+   *  <link rel="import" href="/bower_components/app-layout/app-scroll-effects/effects/waterfall.html">
    * ```
    *
    * ### Consuming effects
@@ -341,8 +348,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _getUndefinedMsg: function(effectName) {
-      return 'Scroll effect `' + effectName +
-          '` is undefined. Did you forget to import the effects?';
+      return 'Scroll effect `' + effectName + '` is undefined. ' +
+          'Did you forget to import app-layout/app-scroll-effects/effects/' + effectName + '.html ?';
     }
 
   }];
