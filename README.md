@@ -1,7 +1,7 @@
 # App Layout [![Build Status](https://travis-ci.org/PolymerLabs/app-layout.svg?branch=master)](https://travis-ci.org/PolymerLabs/app-layout)
 
 
-<img src="https://app-layout-assets.appspot.com/assets/docs/app-layout.png" width="300" height="210">
+[<img src="https://app-layout-assets.appspot.com/assets/docs/app-layout.png" width="300" height="210">](https://polymerlabs.github.io/app-layout/)
 
 https://polymerlabs.github.io/app-layout/
 
