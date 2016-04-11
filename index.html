@@ -314,7 +314,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <h1>Templates</h1>
 
-      <p>The templates are a means to define, illustrate and share best practices in app's layout. Select a template and customize to suit your needs.</p>
+      <p>The templates are a means to define, illustrate and share best practices in App Layout. Select a template and customize to suit your needs.</p>
 
       <div class="grid">
 
@@ -324,6 +324,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="image" style$="background-image: url({{item.thumbnail}});"></div>
             <div class="caption">
               <h3>{{item.name}}</h3>
+              <div>
+                <a href="{{item.demoUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised>View</paper-button>
+                </a>
+                <a href="{{item.sourceUrl}}" target="_blank" tabindex="-1">
+                  <paper-button raised>Source</paper-button>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </template>
+
+      </div>
+
+    </section>
+
+    <section>
+
+      <h1>Demos</h1>
+
+      <p>The demos show how to combine App Layout elements to quickly create an app scaffold. This is a great place to learn how to use elements and start building your app.</p>
+
+      <div class="grid">
+
+        <template is="dom-repeat" items="{{resources.demos}}">
+
+          <div class="grid-item">
+            <div class="caption">
+              <h3>{{item.name}}</h3>
+              <p>{{item.desc}}</p>
               <div>
                 <a href="{{item.demoUrl}}" target="_blank" tabindex="-1">
                   <paper-button raised>View</paper-button>
@@ -374,7 +405,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <section>
 
-      <h1>Apps</h1>
+      <h1>Users</h1>
 
       <p>Here are some applications built with App Layout. Get started on your own and we might put it here to showcase and share your work.</p>
 
@@ -389,9 +420,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <div>
                 <a href="{{item.demoUrl}}" target="_blank" tabindex="-1">
                   <paper-button raised>View</paper-button>
-                </a>
-                <a href="{{item.sourceUrl}}" target="_blank" tabindex="-1">
-                  <paper-button raised>Source</paper-button>
                 </a>
               </div>
             </div>
@@ -418,7 +446,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div class="logo"></div><div class="title">Polymer</div>
         </a>
         <div class="flex"></div>
-        <a target="_blank" href="http://polymer.github.io/LICENSE.txt" data-outbound="license-txt">&copy; 2015 Polymer Authors</a>
+        <a target="_blank" href="https://polymer.github.io/LICENSE.txt" data-outbound="license-txt">&copy; 2015 Polymer Authors</a>
         <div class="dot-separator wide-only"></div>
         <a target="_blank" href="https://www.polymer-project.org" data-outbound="about-polymer">About Polymer</a>
       </div>
