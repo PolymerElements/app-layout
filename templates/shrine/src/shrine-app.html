@@ -263,7 +263,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <iron-pages selected="[[page]]" attr-for-selected="name">
           <!-- detail of item -->
-          <template is="dom-if" if="[[_equal(page, 'detail')]]">
+          <template is="dom-if" if="[[onDetailPage]]">
             <shrine-detail
                 name="detail"
                 section="[[sectionData.section]]"
@@ -272,7 +272,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </shrine-detail>
           </template>
           <!-- list of items -->
-          <template is="dom-if" if="[[_equal(page, 'list')]]">
+          <template is="dom-if" if="[[!onDetailPage]]">
             <shrine-list
                 name="list"
                 section="[[sectionData.section]]"
@@ -344,7 +344,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       '_hashDidChange(route.path, items, featuredItems)'
     ],
 
-    ready: function() {
+    attached: function() {
       this.async(function() {
         if (!this.route.path) {
           this.set('route.path', 'feature');
@@ -353,7 +353,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _computeSelectedTab: function(sections, section) {
-      return sections.indexOf(section);
+      return sections.indexOf(decodeURIComponent(section));
     },
 
     _getItemsCopy: function(items) {
@@ -361,8 +361,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _getFeaturedItem: function(featuredItems, section) {
+      var decodedSection = decodeURIComponent(section);
       return featuredItems.filter(function(item) {
-        return item.category.toLowerCase() === section;
+        return item.category.toLowerCase() === decodedSection;
       }).pop();
     },
 
@@ -379,10 +380,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this.$.header._scrollTop = 0;
       this.$.header.resetLayout();
       this.$.drawer.close();
-    },
-
-    _equal: function(a, b) {
-      return a === b;
     },
 
     _getSectionClass: function(index, selectedTab) {
