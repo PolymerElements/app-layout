@@ -175,7 +175,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     },
 
-    ready: function() {
+    attached: function() {
       this.async(function() {
         if (!this._route.path) {
           this.set('_route.path', '/home');
@@ -189,9 +189,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     _getRecipe: function() {
       if (this.recipes && this._recipeData.recipe) {
+        var decodedRecipeName = decodeURIComponent(this._recipeData.recipe);
         for (var i = 0; i < this.recipes.length; ++i) {
           var r = this.recipes[i];
-          if (r.name === this._recipeData.recipe) {
+          if (r.name === decodedRecipeName) {
             return r;
           }
         }

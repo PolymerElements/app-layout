@@ -166,7 +166,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- manages page's scroll position -->
     <app-scrollpos-control
         selected="[[categoryData.category]]/[[pageData.page]]"
-        reset="[[_equal(pageData.page, 'detail')]]"></app-scrollpos-control>
+        reset="[[_routeEqual(pageData.page, 'detail')]]"></app-scrollpos-control>
 
     <app-drawer-layout drawer-width="288px" responsive-width="1280px">
 
@@ -189,7 +189,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <!-- nav menu -->
           <iron-selector
               class="nav-menu"
-              selected="[[categoryData.category]]"
+              selected="[[_decodeRoute(categoryData.category)]]"
               attr-for-selected="name"
               on-iron-activate="_drawerSelected">
             <template is="dom-repeat" items="[[articles]]">
@@ -211,12 +211,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-icon-button
                 drawer-toggle
                 icon="app:menu"
-                hidden$="[[_equal(pageData.page, 'detail')]]"></paper-icon-button>
+                hidden$="[[_routeEqual(pageData.page, 'detail')]]"></paper-icon-button>
 
             <!-- back button -->
             <a
                 href="#/[[categoryData.category]]/list"
-                hidden$="[[_equal(pageData.page, 'list')]]">
+                hidden$="[[_routeEqual(pageData.page, 'list')]]">
               <paper-icon-button icon="app:arrow-back"></paper-icon-button>
             </a>
           </app-toolbar>
@@ -229,14 +229,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header>
 
         <!-- list/detail pages -->
-        <iron-pages selected="[[pageData.page]]" attr-for-selected="name">
+        <iron-pages selected="[[_decodeRoute(pageData.page)]]" attr-for-selected="name">
 
           <!-- list page -->
-          <iron-pages name="list" selected="[[categoryData.category]]" attr-for-selected="name">
+          <iron-pages
+              name="list"
+              selected="[[_decodeRoute(categoryData.category)]]"
+              attr-for-selected="name">
 
             <template is="dom-repeat" items="[[articles]]" as="category">
               <!-- category page (lazy-loaded) -->
-              <template is="dom-if" if="[[_equal(category, [[categoryData.category.name]])]]">
+              <template is="dom-if" if="[[_routeEqual(categoryData.category, category.name)]]">
                 <section class="category-page" name="[[category.name]]">
   
                   <!-- 2-columns grid -->
@@ -256,7 +259,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </iron-pages>
 
           <!-- detail page (lazy-loaded) -->
-          <template is="dom-if" if="[[_equal(pageData.page, 'detail')]]">
+          <template is="dom-if" if="[[_routeEqual(pageData.page, 'detail')]]">
             <article-detail name="detail" article="[[article]]"></article-detail>
           </template>
 
@@ -299,7 +302,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         '_updateArticle(articles, categoryData.category, titleData.title)'
       ],
 
-      ready: function() {
+      attached: function() {
         this.async(function() {
           if (!this.route.path) {
             this.set('route.path', '/art/list');
@@ -307,15 +310,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       },
 
-      _equal: function(value1, value2) {
-        return value1 === value2;
+      _decodeRoute: function(v) {
+        return decodeURIComponent(v);
+      },
+
+      _routeEqual: function(route, value) {
+        return decodeURIComponent(route) === value;
       },
 
       _updateArticle: function(articles, category, title) {
+        var decodedCategory = decodeURIComponent(category);
+        var decodedTitle = decodeURIComponent(title);
         for (var i=0, cat; cat=articles[i]; i++) {
-          if (cat.name === category) {
+          if (cat.name === decodedCategory) {
             for (var j=0, article; article=cat.items[j]; j++) {
-              if (article.title === title) {
+              if (article.title === decodedTitle) {
                 this.article = article;
                 return;
               }
