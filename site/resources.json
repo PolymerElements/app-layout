@@ -1,7 +1,7 @@
 {
   "templates": [
     {
-      "name": "ZUPERKULBLOG",
+      "name": "ZUPERKÜLBLOG",
       "thumbnail": "site/images/publishing.png",
       "demoUrl": "templates/publishing/",
       "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/templates/publishing"
@@ -13,7 +13,7 @@
       "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/templates/pesto"
     },
     {
-      "name": "Shrine",
+      "name": "SHRINE",
       "thumbnail": "site/images/shrine.png",
       "demoUrl": "templates/shrine/",
       "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/templates/shrine"

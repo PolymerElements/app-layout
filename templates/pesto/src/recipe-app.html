@@ -88,8 +88,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         tail="{{_subRoute}}"></carbon-route>
     <carbon-route
         route="{{_subRoute}}"
-        pattern="/:recipe"
-        data="{{_recipeData}}"></carbon-route>
+        pattern="/:id"
+        data="{{_idData}}"></carbon-route>
 
     <app-drawer-layout responsive-width="1280px">
 
@@ -147,7 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <recipe-detail
             id="detailView"
             name="detail"
-            recipe="[[_getRecipe(recipes, _recipeData.recipe)]]"></recipe-detail>
+            recipe="[[_getRecipe(recipes, _idData.id)]]"></recipe-detail>
 
       </iron-pages>
 
@@ -171,11 +171,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _pageData: Object,
 
-      _recipeData: Object
+      _idData: Object
 
     },
 
-    ready: function() {
+    attached: function() {
       this.async(function() {
         if (!this._route.path) {
           this.set('_route.path', '/home');
@@ -188,10 +188,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _getRecipe: function() {
-      if (this.recipes && this._recipeData.recipe) {
+      if (this.recipes && this._idData.id) {
         for (var i = 0; i < this.recipes.length; ++i) {
           var r = this.recipes[i];
-          if (r.name === this._recipeData.recipe) {
+          if (r.id === this._idData.id) {
             return r;
           }
         }
