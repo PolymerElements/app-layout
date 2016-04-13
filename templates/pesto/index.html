@@ -46,8 +46,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template is="dom-bind">
 
-    <recipe-app recipes="{{data.recipes}}"></recipe-app>
-    <iron-ajax url="data/recipes.json" auto last-response="{{data}}"></iron-ajax>
+    <iron-ajax url="data/recipes.json" auto last-response="{{recipes}}"></iron-ajax>
+    <recipe-app recipes="[[recipes]]"></recipe-app>
 
   </template>
 

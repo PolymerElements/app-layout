@@ -160,8 +160,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         tail="{{subsubRoute}}"></carbon-route>
     <carbon-route
         route="{{subsubRoute}}"
-        pattern="/:title"
-        data="{{titleData}}"></carbon-route>
+        pattern="/:id"
+        data="{{idData}}"></carbon-route>
 
     <!-- manages page's scroll position -->
     <app-scrollpos-control
@@ -244,7 +244,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <template is="dom-repeat" items="[[category.items]]" as="article">
                       <a
                           is="article-headline"
-                          href="#/[[category.name]]/detail/[[article.title]]"
+                          href="#/[[category.name]]/detail/[[article.id]]"
                           article="[[article]]"></a>
                     </template>
                   </two-columns-grid>
@@ -291,15 +291,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         pageData: Object,
 
-        titleData: Object
+        idData: Object
 
       },
 
       observers: [
-        '_updateArticle(articles, categoryData.category, titleData.title)'
+        '_updateArticle(articles, categoryData.category, idData.id)'
       ],
 
-      ready: function() {
+      attached: function() {
         this.async(function() {
           if (!this.route.path) {
             this.set('route.path', '/art/list');
@@ -311,11 +311,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return value1 === value2;
       },
 
-      _updateArticle: function(articles, category, title) {
+      _updateArticle: function(articles, category, id) {
         for (var i=0, cat; cat=articles[i]; i++) {
           if (cat.name === category) {
             for (var j=0, article; article=cat.items[j]; j++) {
-              if (article.title === title) {
+              if (article.id === id) {
                 this.article = article;
                 return;
               }
