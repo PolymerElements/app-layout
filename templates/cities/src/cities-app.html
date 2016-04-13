@@ -1,0 +1,237 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../../polymer/polymer.html">
+
+<link rel="import" href="../../../../iron-iconset-svg/iron-iconset-svg.html">
+
+<link rel="import" href="../../../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../paper-checkbox/paper-checkbox.html">
+
+<link rel="import" href="../../../app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../../app-drawer/app-drawer.html">
+<link rel="import" href="../../../app-header-layout/app-header-layout.html">
+<link rel="import" href="../../../app-header/app-header.html">
+<link rel="import" href="../../../app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../../app-toolbar/app-toolbar.html">
+
+<link rel="import" href="../../../demo/sample-content.html">
+
+<iron-iconset-svg name="app" size="24">
+<svg><defs>
+<g id="menu"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></g>
+</defs></svg>
+</iron-iconset-svg>
+
+<dom-module id="cities-app">
+
+  <template>
+
+    <style>
+
+    app-drawer section {
+      height: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    app-drawer h2 {
+      margin: 8px 0 0;
+      padding: 18px;
+      font-size: 18px;
+    }
+
+    app-drawer paper-checkbox {
+      display: block;
+      padding: 18px;
+    }
+
+    app-header {
+      color: #fff;
+      background-color: #3f51b5;
+      --app-header-background-front-layer: {
+        background-image: url(//app-layout-assets.appspot.com/assets/PharrellWilliams.jpg);
+      };
+    }
+
+    div[title] {
+      font-size: 2em;
+    }
+
+    </style>
+
+    <app-drawer-layout>
+
+      <app-drawer swipe-open>
+        <section>
+          <h2>app-header Properties</h2>
+          <paper-checkbox checked="{{condenses}}">
+            condenses
+          </paper-checkbox>
+          <paper-checkbox checked="{{fixed}}">
+            fixed
+          </paper-checkbox>
+          <paper-checkbox checked="{{reveals}}">
+            reveals
+          </paper-checkbox>
+          <paper-checkbox checked="{{shadow}}">
+            shadow
+          </paper-checkbox>
+
+          <h2>app-header Effects</h2>
+          <paper-checkbox checked="{{blendBackground}}">
+            blend-background
+          </paper-checkbox>
+          <paper-checkbox checked="{{fadeBackground}}">
+            fade-background
+          </paper-checkbox>
+          <paper-checkbox checked="{{parallaxBackground}}">
+            parallax-background
+          </paper-checkbox>
+          <paper-checkbox checked="{{resizeSnappedTitle}}">
+            resize-snapped-title
+          </paper-checkbox>
+          <paper-checkbox checked="{{resizeTitle}}">
+            resize-title
+          </paper-checkbox>
+          <paper-checkbox checked="{{waterfall}}">
+            waterfall
+          </paper-checkbox>
+        </section>
+      </app-drawer>
+
+      <app-header-layout>
+
+        <app-header
+            condenses="[[condenses]]"
+            fixed="[[fixed]]"
+            reveals="[[reveals]]"
+            shadow="[[shadow]]"
+            effects="[[_computeEffects(blendBackground, fadeBackground, parallaxBackground, resizeSnappedTitle, resizeTitle, waterfall)]]">
+
+          <app-toolbar>
+            <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
+            <div condensed-title>San Francisco, California</div>
+          </app-toolbar>
+
+          <app-toolbar></app-toolbar>
+
+          <app-toolbar>
+            <div title spacer>San Francisco</div>
+          </app-toolbar>
+
+        </app-header>
+
+        <sample-content size="100"></sample-content>
+
+      </app-header-layout>
+
+    </app-drawer-layout>
+
+  </template>
+
+  <script>
+
+  Polymer({
+
+    is: 'cities-app',
+
+    properties: {
+
+      condenses: {
+        type: Boolean,
+        value: true
+      },
+
+      fixed: {
+        type: Boolean,
+        value: true
+      },
+
+      reveals: {
+        type: Boolean,
+        value: false
+      },
+
+      shadow: {
+        type: Boolean,
+        value: false
+      },
+
+      blendBackground: {
+        type: Boolean,
+        value: true
+      },
+
+      fadeBackground: {
+        type: Boolean,
+        value: false
+      },
+
+      parallaxBackground: {
+        type: Boolean,
+        value: true
+      },
+
+      resizeSnappedTitle: {
+        type: Boolean,
+        value: false
+      },
+
+      resizeTitle: {
+        type: Boolean,
+        value: true
+      },
+
+      waterfall: {
+        type: Boolean,
+        value: true
+      }
+
+    },
+
+    observers: [
+      '_removeIf("fixed", reveals)',
+      '_removeIf("reveals", fixed)',
+      '_removeIf("shadow", waterfall)',
+      '_removeIf("blendBackground", fadeBackground)',
+      '_removeIf("fadeBackground", blendBackground)',
+      '_removeIf("resizeSnappedTitle", resizeTitle)',
+      '_removeIf("resizeTitle", resizeSnappedTitle)',
+      '_removeIf("waterfall", shadow)'
+    ],
+
+    _computeEffects: function() {
+      return [
+        this.blendBackground ? 'blend-background ' : '',
+        this.fadeBackground ? 'fade-background ' : '',
+        this.parallaxBackground ? 'parallax-background ' : '',
+        this.resizeSnappedTitle ? 'resize-snapped-title ' : '',
+        this.resizeTitle ? 'resize-title ' : '',
+        this.waterfall ? 'waterfall ' : ''
+      ].join('');
+    },
+
+    _removeIf: function(propName) {
+      if (this[propName]) {
+        var mutexPropValues = Array.prototype.slice.call(arguments, 1);
+        var isAnyMutexPropTrue = mutexPropValues.some(function(v) { return v; });
+
+        if (isAnyMutexPropTrue) {
+          this[propName] = false;
+        }
+      }
+    }
+
+  });
+
+  </script>
+
+</dom-module>
