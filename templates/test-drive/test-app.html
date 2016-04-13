@@ -8,21 +8,21 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../../../../polymer/polymer.html">
+<link rel="import" href="../../../polymer/polymer.html">
 
-<link rel="import" href="../../../../iron-iconset-svg/iron-iconset-svg.html">
+<link rel="import" href="../../../iron-iconset-svg/iron-iconset-svg.html">
 
-<link rel="import" href="../../../../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../../../paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../paper-checkbox/paper-checkbox.html">
 
-<link rel="import" href="../../../app-drawer-layout/app-drawer-layout.html">
-<link rel="import" href="../../../app-drawer/app-drawer.html">
-<link rel="import" href="../../../app-header-layout/app-header-layout.html">
-<link rel="import" href="../../../app-header/app-header.html">
-<link rel="import" href="../../../app-scroll-effects/app-scroll-effects.html">
-<link rel="import" href="../../../app-toolbar/app-toolbar.html">
+<link rel="import" href="../../app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../app-drawer/app-drawer.html">
+<link rel="import" href="../../app-header-layout/app-header-layout.html">
+<link rel="import" href="../../app-header/app-header.html">
+<link rel="import" href="../../app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../app-toolbar/app-toolbar.html">
 
-<link rel="import" href="../../../demo/sample-content.html">
+<link rel="import" href="../../demo/sample-content.html">
 
 <iron-iconset-svg name="app" size="24">
 <svg><defs>
@@ -30,7 +30,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </defs></svg>
 </iron-iconset-svg>
 
-<dom-module id="cities-app">
+<dom-module id="test-app">
 
   <template>
 
@@ -55,9 +55,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     app-header {
       color: #fff;
-      background-color: #3f51b5;
+      background-color: #C62828;
       --app-header-background-front-layer: {
-        background-image: url(//app-layout-assets.appspot.com/assets/PharrellWilliams.jpg);
+        background-image: url(//app-layout-assets.appspot.com/assets/test-drive.jpg);
+        background-position: 50% 70%;
       };
     }
 
@@ -118,13 +119,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           <app-toolbar>
             <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
-            <div condensed-title>San Francisco, California</div>
+            <div condensed-title>Test Drive app-header</div>
           </app-toolbar>
 
           <app-toolbar></app-toolbar>
 
           <app-toolbar>
-            <div title spacer>San Francisco</div>
+            <div title spacer>Test Drive</div>
           </app-toolbar>
 
         </app-header>
@@ -141,7 +142,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   Polymer({
 
-    is: 'cities-app',
+    is: 'test-app',
 
     properties: {
 
@@ -219,14 +220,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ].join('');
     },
 
-    _removeIf: function(propName) {
-      if (this[propName]) {
-        var mutexPropValues = Array.prototype.slice.call(arguments, 1);
-        var isAnyMutexPropTrue = mutexPropValues.some(function(v) { return v; });
-
-        if (isAnyMutexPropTrue) {
-          this[propName] = false;
-        }
+    _removeIf: function(propName, value) {
+      if (this[propName] && value) {
+        this[propName] = false;
       }
     }
 
