@@ -17,6 +17,12 @@
       "thumbnail": "site/images/shrine.png",
       "demoUrl": "templates/shrine/",
       "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/templates/shrine"
+    },
+    {
+      "name": "TEST DRIVE",
+      "thumbnail": "site/images/test-drive.png",
+      "demoUrl": "templates/test-drive/",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/templates/test-drive"
     }
   ],
   "demos": [
