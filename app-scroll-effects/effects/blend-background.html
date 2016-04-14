@@ -15,7 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * While scrolling down, fade in the rear background layer and fade out the front background
    * layer (opacity interpolated based on scroll position).
    */
-  Polymer.AppLayout.scrollEffects['blend-background'] = {
+  Polymer.AppLayout.registerEffect('blend-background', {
     /** @this Polymer.AppLayout.ElementWithBackground */
     setUp: function setUp() {
       this.$.backgroundFrontLayer.style.willChange = 'opacity';
@@ -29,5 +29,5 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this.$.backgroundFrontLayer.style.opacity = 1 - p;
       this.$.backgroundRearLayer.style.opacity = p;
     }
-  };
+  });
 </script>

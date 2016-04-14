@@ -22,7 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * Transform the font size of a designated title element between two values based on the scroll
      * position.
      */
-    Polymer.AppLayout.scrollEffects['resize-title'] = {
+    Polymer.AppLayout.registerEffect('resize-title', {
       /** @this Polymer.AppLayout.ElementWithBackground */
       setUp: function setUp() {
         var title = Polymer.dom(this).querySelector('[title]');
@@ -85,6 +85,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 'scale3d(' + scale + ', ' + scale + ', 1)', fx.title);
           }, this);
       }
-    };
+    });
   })();
 </script>

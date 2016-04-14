@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   /**
    * Vertically translate the background based on a factor of the scroll position.
    */
-  Polymer.AppLayout.scrollEffects['parallax-background'] = {
+  Polymer.AppLayout.registerEffect('parallax-background', {
     /**
      * @param {{scalar: string}} config
      * @this Polymer.AppLayout.ElementWithBackground
@@ -46,5 +46,5 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.transform('translate3d(0px, ' + (this._deltaBg * Math.min(1, p)) + 'px, 0px)', this.$.backgroundRearLayer);
       }
     }
-  };
+  });
 </script>

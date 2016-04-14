@@ -46,11 +46,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * based on the scroll position.
    *
    * A scroll effect definition is an object with `setUp()`, `tearDown()` and `run()` functions.
-   * The effect name is used as the key to register the definition in the `Polymer.AppLayout.scrollEffects`
-   * namespace. For example, let's define an effect that resizes the header's logo:
+   * 
+   * To register the effect, you can use `Polymer.AppLayout.registerEffect(effectName, effectDef)`
+   * For example, let's define an effect that resizes the header's logo:
    *
    * ```js
-   * Polymer.AppLayout.scrollEffects.logo = {
+   * Polymer.AppLayout.registerEffect('resizable-logo', {
    *   setUp: function(config) {
    *     // the effect's config is passed to the setUp.
    *     this._fxResizeLogo = { logo: Polymer.dom(this).querySelector('[logo]') };
@@ -65,12 +66,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    *      // clean up and reset of states
    *      delete this._fxResizeLogo;
    *   }
-   * };
+   * });
    * ```
    * Now, you can consume the effect:
    *
    * ```html
-   * <app-header id="appHeader" effects="logo">
+   * <app-header id="appHeader" effects="resizable-logo">
    *   <img logo src="logo.svg">
    * </app-header>
    * ```
@@ -78,7 +79,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * ### Imperative API
    *
    * ```js
-   * var logoEffect = appHeader.createEffect('logo', effectConfig);
+   * var logoEffect = appHeader.createEffect('resizable-logo', effectConfig);
    * // run the effect: logoEffect.run(progress);
    * // tear down the effect: logoEffect.tearDown();
    * ```
@@ -214,29 +215,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     /**
-     * Creates an effect object from an effect name and configuration that can be used to run
+     * Creates an effect object from an effect's name that can be used to run
      * effects programmatically.
      *
      * @method createEffect
-     * @param {string} effectName The name of an effect defined in `Polymer.AppLayout.scrollEffects`
-     * @param {Object=} effectConfig The effect config object if the effect accepts config
-     *   values. (Optional)
-     * @return {Object} The effect object. This object has the following interface:
+     * @param {string} effectName The effect's name registered via `Polymer.AppLayout.registerEffect`.
+     * @param {Object=} effectConfig The effect config object. (Optional)
+     * @return {Object} An effect object with the following functions:
      *
-     *  * `obj.setUp()`, Sets up the requirements for the effect.
+     *  * `effect.setUp()`, Sets up the requirements for the effect.
      *       This function is called automatically before the `effect` function returns.
-     *  * `obj.run(progress, y)`, Runs the effect given a `progress`.
-     *  * `obj.tearDown()`, Cleans up any DOM nodes or element references used by the effect.
+     *  * `effect.run(progress, y)`, Runs the effect given a `progress`.
+     *  * `effect.tearDown()`, Cleans up any DOM nodes or element references used by the effect.
      *
      * Example:
      * ```js
-     * var parallax = obj.createEffect('parallax-background');
+     * var parallax = element.createEffect('parallax-background');
      * // runs the effect
      * parallax.run(0.5, 0);
      * ```
      */
     createEffect: function(effectName, effectConfig) {
-      var effectDef = Polymer.AppLayout.scrollEffects[effectName];
+      var effectDef = Polymer.AppLayout._scrollEffects[effectName];
       if (!effectDef) {
         throw new ReferenceError(this._getUndefinedMsg(effectName));
       }
@@ -257,7 +257,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       effects.split(' ').forEach(function(effectName) {
         var effectDef;
         if (effectName !== '') {
-          if ((effectDef = Polymer.AppLayout.scrollEffects[effectName])) {
+          if ((effectDef = Polymer.AppLayout._scrollEffects[effectName])) {
             this._effects.push(this._boundEffect(effectDef, effectsConfig[effectName]));
           } else {
             this._warn(this._logf('_effectsChanged', this._getUndefinedMsg(effectName)));
