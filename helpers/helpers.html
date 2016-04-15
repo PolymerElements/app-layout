@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <script>
   Polymer.AppLayout = Polymer.AppLayout || {};
 
-  Polymer.AppLayout.scrollEffects = Polymer.AppLayout.scrollEffects || {};
+  Polymer.AppLayout._scrollEffects = Polymer.AppLayout._scrollEffects || {};
 
   Polymer.AppLayout.scrollTimingFunction = function easeOutQuad(t, b, c, d) {
     t /= d;
@@ -21,7 +21,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   /**
-   * Helper function that scrolls to a particular set of coordinates in a scroll target.
+   * Registers a scroll effect to be used in elements that implement the 
+   * `Polymer.AppScrollEffectsBehavior` behavior.
+   *
+   * @param {string} effectName The effect name.
+   * @param {Object} effectDef The effect definition.
+   */
+  Polymer.AppLayout.registerEffect = function registerEffect(effectName, effectDef) {
+    if (this._scrollEffects[effectName] != null) {
+      throw new Error('effect `'+ effectName + '` is already registered.');
+    }
+    this._scrollEffects[effectName] = effectDef;
+  };
+
+  /**
+   * Scrolls to a particular set of coordinates in a scroll target.
    * If the scroll target is not defined, then it would use the main document as the target.
    *
    * To scroll in a smooth fashion, you can set the option `behavior: 'smooth'`. e.g.

@@ -15,7 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * Upon scrolling past a threshold, fade in the rear background layer and fade out the front
    * background layer (opacity CSS transitioned over time).
    */
-  Polymer.AppLayout.scrollEffects['fade-background'] = {
+  Polymer.AppLayout.registerEffect('fade-background', {
     /** @this Polymer.AppLayout.ElementWithBackground */
     setUp: function setUp(config) {
       var duration = config.duration || '0.5s';
@@ -38,5 +38,5 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.$.backgroundRearLayer.style.opacity = 0;
       }
     }
-  };
+  });
 </script>
