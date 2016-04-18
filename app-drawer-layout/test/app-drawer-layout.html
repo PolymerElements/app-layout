@@ -100,20 +100,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         drawerLayout.responsiveWidth = '0px';
         drawerLayout.forceNarrow = true;
 
-        assert.isTrue(drawerLayout.narrow);
+        assert.isTrue(drawerLayout._narrow);
       });
 
-      test('responsiveWidth', function() {
+      test('responsiveWidth', function(done) {
         var drawerToggle = drawerLayout.querySelector('[drawer-toggle]');
         drawerLayout.responsiveWidth = '0px';
 
-        assert.isFalse(drawerLayout.narrow);
-        assert.equal(window.getComputedStyle(drawerToggle)['display'], 'none');
+        window.setTimeout(function() {
+          assert.isFalse(drawerLayout._narrow);
+          assert.equal(window.getComputedStyle(drawerToggle)['display'], 'none');
 
-        drawerLayout.responsiveWidth = '10000px';
+          drawerLayout.responsiveWidth = '10000px';
 
-        assert.isTrue(drawerLayout.narrow);
-        assert.notEqual(window.getComputedStyle(drawerToggle)['display'], 'none');
+          window.setTimeout(function() {
+            assert.isTrue(drawerLayout._narrow);
+            assert.notEqual(window.getComputedStyle(drawerToggle)['display'], 'none');
+
+            done();
+          }, 50);
+        }, 50);
       });
 
       test('drawer-toggle', function() {

@@ -193,13 +193,13 @@ Custom property                  | Description                            | Defa
         },
 
         /**
-         * The alignment of the drawer on the screen ('start', 'end', 'left', or 'right').
+         * The alignment of the drawer on the screen ('left', 'right', 'start' or 'end').
          * 'start' computes to left and 'end' to right in LTR layout and vice versa in RTL
          * layout.
          */
         align: {
           type: String,
-          value: 'start',
+          value: 'left'
         },
 
         /**
@@ -222,11 +222,6 @@ Custom property                  | Description                            | Defa
         }
       },
 
-      listeners: {
-        track: '_track',
-        transitionend: '_transitionend'
-      },
-
       observers: [
         'resetLayout(position)',
         '_resetPosition(align, isAttached)'
@@ -244,20 +239,22 @@ Custom property                  | Description                            | Defa
         // Set the scroll direction so you can vertically scroll inside the drawer.
         this.setScrollDirection('y');
 
-        // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
+        // Only transition the drawer after its first render (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
         this._setTransitionDuration('0s');
-
-        this._boundKeydownHandler = this._keydownHandler.bind(this);
       },
 
       attached: function() {
-        // Only transition the drawer shortly after it is attached (e.g. app-drawer-layout
+        // Only transition the drawer after its first render (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
-        requestAnimationFrame(function() {
+        Polymer.RenderStatus.afterNextRender(this, function() {
           this._setTransitionDuration('');
+          this._boundKeydownHandler = this._keydownHandler.bind(this);
           this._resetDrawerState();
-        }.bind(this));
+          
+          this.listen(this, 'track', '_track');
+          this.addEventListener('transitionend', this._transitionend.bind(this));
+        });
       },
 
       detached: function() {
