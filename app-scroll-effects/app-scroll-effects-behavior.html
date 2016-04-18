@@ -111,8 +111,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        * e.g. `waterfall parallax-background` installs the `waterfall` and `parallax-background`.
        */
       effects: {
-        type: String,
-        value: ''
+        type: String
       },
 
       /**
@@ -203,11 +202,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      */
     get _clampedScrollTop() {
       return Math.max(0, this._scrollTop);
-    },
-
-    created: function() {
-      this._effectsRunFn = [];
-      this._effects = [];
     },
 
     detached: function() {
@@ -319,9 +313,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * Tears down the effects.
      */
     _tearDownEffects: function() {
-      this._effects.forEach(function(effectDef) {
-        effectDef.tearDown();
-      });
+      if (this._effects) {
+        this._effects.forEach(function(effectDef) {
+          effectDef.tearDown();
+        });
+      }
       this._effectsRunFn = [];
       this._effects = [];
     },
