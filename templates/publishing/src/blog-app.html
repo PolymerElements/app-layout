@@ -85,26 +85,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       .title-toolbar {
         @apply(--layout-center-center);
-        width: 100vw;
         box-sizing: border-box;
+      }
+      
+      .nav-title-toolbar {
+        color: #fff;
+        width: 100vw;
+      }
+
+      .main-title-toolbar {
+        width: 100%;
       }
 
       .title {
         padding-bottom: 40px;
         font-size: 60px;
         font-weight: 800;
-      }
-
-      .nav-title-toolbar {
-        color: #fff;
-      }
-
-      app-drawer-layout:not([narrow]) .nav-title-toolbar {
-        visibility: hidden;
-      }
-
-      app-drawer-layout:not([narrow]) .main-title-toolbar {
-        width: 100%;
       }
       
       .category-page {

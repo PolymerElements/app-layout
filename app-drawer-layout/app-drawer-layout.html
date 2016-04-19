@@ -98,14 +98,15 @@ Custom property                          | Description                          
       }
     </style>
 
-    <div id="contentContainer" class$="[[_computeClass(narrow)]]">
+    <div id="contentContainer">
       <content select=":not(app-drawer)"></content>
     </div>
 
     <content id="drawerContent" select="app-drawer"></content>
 
-    <iron-media-query query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]"
-        on-query-matches-changed="_onQueryMatchesChanged"></iron-media-query>
+    <iron-media-query
+        query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]"
+        query-matches="{{_narrow}}"></iron-media-query>
   </template>
 
   <script>
@@ -118,24 +119,11 @@ Custom property                          | Description                          
 
       properties: {
         /**
-         * Returns true if the panel is in narrow layout. This is useful if you
-         * need to show/hide elements based on the layout.
-         */
-        narrow: {
-          type: Boolean,
-          readOnly: true,
-          notify: true,
-          reflectToAttribute: true,
-          value: false
-        },
-
-        /**
          * If true, ignore `responsiveWidth` setting and force the narrow layout.
          */
         forceNarrow: {
           type: Boolean,
-          value: false,
-          observer: '_responsiveChange'
+          value: false
         },
 
         /**
@@ -145,7 +133,9 @@ Custom property                          | Description                          
         responsiveWidth: {
           type: String,
           value: '640px'
-        }
+        },
+        
+        _narrow: Boolean
       },
 
       listeners: {
@@ -153,9 +143,9 @@ Custom property                          | Description                          
         'app-drawer-reset-layout': 'resetLayout'
       },
 
-      attached: function() {
-        this.resetLayout();
-      },
+      observers: [
+        'resetLayout(_narrow, isAttached)'
+      ],
 
       /**
        * Gets the drawer element.
@@ -173,48 +163,41 @@ Custom property                          | Description                          
         }
       },
 
-      _responsiveChange: function(narrow) {
-        this._setNarrow(narrow);
-        this.resetLayout();
-      },
-
       resetLayout: function() {
         this.debounce('_resetLayout', function() {
           if (!this.isAttached) {
             return;
           }
-          this.drawer.opened = !this.narrow;
-          this.drawer.persistent = !this.narrow;
-          if (this.narrow) {
-            this.$.contentContainer.style.marginLeft = '';
-            this.$.contentContainer.style.marginRight = '';
-          } else if (this.drawer.position == 'right') {
-            this.$.contentContainer.style.marginLeft = '';
-            this.$.contentContainer.style.marginRight = this.drawer.getWidth() + 'px';
+
+          var drawer = this.drawer; 
+          var drawerWidth = this.drawer.getWidth();
+          var contentContainer = this.$.contentContainer;
+
+          if (this._narrow) {
+            drawer.opened = drawer.persistent = false;
+            contentContainer.classList.add('narrow');
+
+            contentContainer.style.marginLeft = '';
+            contentContainer.style.marginRight = '';
           } else {
-            this.$.contentContainer.style.marginLeft = this.drawer.getWidth() + 'px';
-            this.$.contentContainer.style.marginRight = '';
+            drawer.opened = drawer.persistent = true;
+            contentContainer.classList.remove('narrow');
+
+            if (drawer.position == 'right') {
+              contentContainer.style.marginLeft = '';
+              contentContainer.style.marginRight = drawerWidth + 'px';
+            } else {
+              contentContainer.style.marginLeft = drawerWidth + 'px';
+              contentContainer.style.marginRight = '';
+            }
           }
+
           this.notifyResize();
         });
       },
 
-      _onQueryMatchesChanged: function(event) {
-        this._responsiveChange(event.detail.value);
-      },
-
       _computeMediaQuery: function(forceNarrow, responsiveWidth) {
-        return forceNarrow ? '' : '(max-width: ' + responsiveWidth + ')';
-      },
-
-      /**
-       * NOTE(keanulee): IE/Edge does not properly update element styles when using
-       * dynamically inserted style tags that match with :not([attribute]) rules,
-       * so we use a :not(.class) rule instead. Ref
-       * https://connect.microsoft.com/IE/feedbackdetail/view/2217046/element-styles-not-updated-when-using-dynamically-inserted-style-tags-that-match-with-not-attribute-rules
-       */
-      _computeClass: function(narrow) {
-        return narrow ? 'narrow' : '';
+        return forceNarrow ? '(min-width: 0px)' : '(max-width: ' + responsiveWidth + ')';
       }
     });
   </script>
