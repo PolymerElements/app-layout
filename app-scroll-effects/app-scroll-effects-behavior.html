@@ -18,7 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    *
    * ### Importing the app-layout effects
    *
-   * app-layout provides a set of scroll effects that can be used by explicitly importing 
+   * app-layout provides a set of scroll effects that can be used by explicitly importing
    * `app-scroll-effects.html`:
    *
    * ```html
@@ -293,7 +293,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * Sets up the effects.
      */
     _setUpEffect: function() {
-      if (this.isAttached) {
+      if (this.isAttached && this._effects) {
         this._effectsRunFn = [];
         this._effects.forEach(function(effectDef) {
           // install the effect only if no error was reported
@@ -324,9 +324,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * @param {number} The top position of the current element relative to the viewport.
      */
     _runEffects: function(p, y) {
-      this._effectsRunFn.forEach(function(run) {
-        run(p, y);
-      });
+      if (this._effectsRunFn) {
+        this._effectsRunFn.forEach(function(run) {
+          run(p, y);
+        });
+      }
     },
 
     /**
