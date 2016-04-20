@@ -108,14 +108,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
     suite('basic features', function() {
-      var container, header, toolbar;
-      var testEffect = {
-        setUp: sinon.spy(),
-        tearDown: sinon.spy(),
-        run: sinon.spy()
-      };
+      var container, header, toolbar, testEffect;
 
-      Polymer.AppLayout.registerEffect('test-effect', testEffect);
+      suiteSetup(function() {
+        testEffect = {
+          setUp: sinon.spy(),
+          tearDown: sinon.spy(),
+          run: sinon.spy()
+        };
+        Polymer.AppLayout.registerEffect('test-effect', testEffect);
+      });
 
       setup(function() {
         container = fixture('testHeader');
