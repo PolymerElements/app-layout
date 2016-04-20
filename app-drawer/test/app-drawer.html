@@ -39,22 +39,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-  <dom-module id="x-button">
+  <test-fixture id="focusDrawer">
     <template>
-      <button id="btn">Shadow</button>
+      <div>
+        <button>Button</button>
+        <app-drawer>
+          <input type="text">
+          <div tabindex="0">Div</div>
+          <span>Not focusable</span>
+        </app-drawer>
+      </div>
     </template>
-
-    <script>
-    HTMLImports.whenReady(function() {
-      Polymer({ is: 'x-button' });
-    });
-    </script>
-  </dom-module>
+  </test-fixture>
 
   <script>
 
     suite('basic features', function() {
       var drawer, scrim, contentContainer, transformSpy;
+
+      function fireKeydownEvent(target, keyCode, shiftKey) {
+        var e = new CustomEvent('keydown', {
+          bubbles: true,
+          cancelable: true          
+        });
+        e.keyCode = keyCode;
+        e.shiftKey = !!shiftKey;
+        target.dispatchEvent(e);
+        return e;
+      }
 
       function assertDrawerStyles(translateX, opacity, desc) {
         assert.equal(transformSpy.lastCall.args[0], 'translate3d(' + translateX + 'px,0,0)', desc);
@@ -93,6 +105,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isFalse(drawer.persistent);
         assert.equal(drawer.align, 'left');
         assert.isFalse(drawer.swipeOpen);
+        assert.isFalse(drawer.noFocusTrap);
       });
 
       test('set scroll direction', function() {
@@ -579,22 +592,71 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }, 100);
       });
 
-      test('esc key handler', function(done) {
+      test('focus trap', function(done) {
+        var container = fixture('focusDrawer');
+        var button = container.querySelector('button');
+        var drawer = container.querySelector('app-drawer');
+        var input = Polymer.dom(drawer).querySelector('input');
+        var div = Polymer.dom(drawer).querySelector('div[tabindex]');
+        var buttonFocusSpy = sinon.spy(button, 'focus');
+        var inputFocusSpy = sinon.spy(input, 'focus');
+        var divFocusSpy = sinon.spy(div, 'focus');
+        button.focus();
+        drawer.opened = true;
+  
         window.setTimeout(function() {
-          drawer.opened = true;
+          assert.isTrue(inputFocusSpy.called);
 
-          window.setTimeout(function() {
-            var e = new CustomEvent('keydown', {
-              cancelable: true
-            });
-            e.keyCode = 27;
-            document.dispatchEvent(e);
+          var e = fireKeydownEvent(input, 9);
 
-            assert.isFalse(drawer.opened, 'should close drawer on esc');
-            assert.isTrue(e.defaultPrevented, 'should prevent default');
-            done();
-          }, 350);
-        }, 100);
+          assert.isFalse(e.defaultPrevented, 'should not prevent default');
+
+          input.focus();
+          inputFocusSpy.reset();
+          e = fireKeydownEvent(input, 9, true /* shiftKey */);
+
+          assert.isTrue(divFocusSpy.called);
+          assert.isTrue(e.defaultPrevented, 'should prevent default');
+
+          e = fireKeydownEvent(div, 9, true /* shiftKey */);
+
+          assert.isFalse(e.defaultPrevented, 'should not prevent default');
+
+          div.focus();
+          e = fireKeydownEvent(div, 9);
+
+          assert.isTrue(inputFocusSpy.called);
+          assert.isTrue(e.defaultPrevented, 'should prevent default');
+          done();
+        }, 350);
+      });
+
+      test('no focus trap', function(done) {
+        var container = fixture('focusDrawer');
+        var button = container.querySelector('button');
+        var drawer = container.querySelector('app-drawer');
+        var input = Polymer.dom(drawer).querySelector('input');
+        var inputFocusSpy = sinon.spy(input, 'focus');
+        drawer.noFocusTrap = true;
+        button.focus();
+        drawer.opened = true;
+  
+        window.setTimeout(function() {
+          assert.isFalse(inputFocusSpy.called);
+          done();
+        }, 350);
+      });
+
+      test('esc key handler', function(done) {
+        drawer.opened = true;
+
+        window.setTimeout(function() {
+          var e = fireKeydownEvent(document, 27);
+
+          assert.isFalse(drawer.opened, 'should close drawer on esc');
+          assert.isTrue(e.defaultPrevented, 'should prevent default');
+          done();
+        }, 350);
       });
 
       test('scrim', function() {
