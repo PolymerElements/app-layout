@@ -28,10 +28,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * @param {Object} effectDef The effect definition.
    */
   Polymer.AppLayout.registerEffect = function registerEffect(effectName, effectDef) {
-    if (this._scrollEffects[effectName] != null) {
+    if (Polymer.AppLayout._scrollEffects[effectName] != null) {
       throw new Error('effect `'+ effectName + '` is already registered.');
     }
-    this._scrollEffects[effectName] = effectDef;
+    Polymer.AppLayout._scrollEffects[effectName] = effectDef;
   };
 
   /**
