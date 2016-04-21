@@ -41,16 +41,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <test-fixture id="focusDrawer">
     <template>
-      <div>
-        <button>Button</button>
-        <app-drawer>
-          <input type="text">
-          <div tabindex="0">Div</div>
-          <span>Not focusable</span>
-        </app-drawer>
-      </div>
+      <focus-drawer></focus-drawer>
     </template>
   </test-fixture>
+
+  <dom-module id="focus-drawer">
+    <template>
+      <button>Button</button>
+      <app-drawer>
+        <input type="text">
+        <div tabindex="0">Div</div>
+        <span>Not focusable</span>
+      </app-drawer>
+    </template>
+    <script>
+    HTMLImports.whenReady(function() {
+      Polymer({ is: 'focus-drawer' });
+    });
+    </script>
+  </dom-module>
 
   <script>
 
@@ -593,9 +602,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('focus trap', function(done) {
-        var container = fixture('focusDrawer');
-        var button = container.querySelector('button');
-        var drawer = container.querySelector('app-drawer');
+        var focusDrawer = fixture('focusDrawer');
+        var root = Polymer.dom(focusDrawer.root);
+        var button = root.querySelector('button');
+        var drawer = root.querySelector('app-drawer');
         var input = Polymer.dom(drawer).querySelector('input');
         var div = Polymer.dom(drawer).querySelector('div[tabindex]');
         var buttonFocusSpy = sinon.spy(button, 'focus');
@@ -603,7 +613,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var divFocusSpy = sinon.spy(div, 'focus');
         button.focus();
         drawer.opened = true;
-  
+
         window.setTimeout(function() {
           assert.isTrue(inputFocusSpy.called);
 
@@ -627,14 +637,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           assert.isTrue(inputFocusSpy.called);
           assert.isTrue(e.defaultPrevented, 'should prevent default');
-          done();
+
+          buttonFocusSpy.reset();
+          drawer.opened = false;
+
+          window.setTimeout(function() {
+            assert.isTrue(buttonFocusSpy.called);
+            done();
+          }, 350);
         }, 350);
       });
 
       test('no focus trap', function(done) {
-        var container = fixture('focusDrawer');
-        var button = container.querySelector('button');
-        var drawer = container.querySelector('app-drawer');
+        var focusDrawer = fixture('focusDrawer');
+        var root = Polymer.dom(focusDrawer.root);
+        var button = root.querySelector('button');
+        var drawer = root.querySelector('app-drawer');
         var input = Polymer.dom(drawer).querySelector('input');
         var inputFocusSpy = sinon.spy(input, 'focus');
         drawer.noFocusTrap = true;

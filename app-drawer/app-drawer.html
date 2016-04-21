@@ -572,7 +572,7 @@ Custom property                  | Description                            | Defa
           return;
         }
 
-        this._lastFocusedElement = document.activeElement;
+        this._lastFocusedElement = this._getDeepActiveElement();
 
         // NOTE: Unless we use /deep/ (which we shouldn't since it's deprecated), this will
         // not select focusable elements inside shadow roots.
@@ -614,17 +614,28 @@ Custom property                  | Description                            | Defa
         var TAB_KEYCODE = 9;
         if (this._drawerState === this._DRAWER_STATE.OPENED && event.keyCode === TAB_KEYCODE) {
           if (event.shiftKey) {
-            if (this._firstTabStop && document.activeElement === this._firstTabStop) {
+            if (this._firstTabStop && Polymer.dom(event).localTarget === this._firstTabStop) {
               event.preventDefault();
               this._lastTabStop.focus();
             }
           } else {
-            if (this._lastTabStop && document.activeElement === this._lastTabStop) {
+            if (this._lastTabStop && Polymer.dom(event).localTarget === this._lastTabStop) {
               event.preventDefault();
               this._firstTabStop.focus();
             }
           }
         }
+      },
+
+      _getDeepActiveElement: function() {
+        // document.activeElement can be null
+        // https://developer.mozilla.org/en-US/docs/Web/API/Document/activeElement
+        // In case of null, default it to document.body.
+        var active = document.activeElement || document.body;
+        while (active.root && Polymer.dom(active.root).activeElement) {
+          active = Polymer.dom(active.root).activeElement;
+        }
+        return active;
       },
 
       _MIN_FLING_THRESHOLD: 0.2,
