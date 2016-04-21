@@ -65,7 +65,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <sample-content size="100"></sample-content>
 
-    <app-drawer id="drawer" align="end" swipe-open on-app-drawer-transitioned="drawerTransitioned">
+    <app-drawer id="drawer" align="end" swipe-open>
       <div class="drawer-contents">
         <template is="dom-repeat" id="menu" items="[[items]]">
           <paper-icon-item>
@@ -83,21 +83,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       scope.toggleDrawer = function() {
         scope.$.drawer.toggle();
-      };
-
-      scope.drawerTransitioned = function() {
-        if (scope.$.drawer.opened) {
-          document.querySelector('paper-icon-item').focus();
-          document.addEventListener('focus', scope.focusHandler, true /* useCapture */);
-        } else {
-          document.removeEventListener('focus', scope.focusHandler, true /* useCapture */);
-        }
-      };
-
-      scope.focusHandler = function(event) {
-        if (Polymer.dom(event).path.indexOf(scope.$.drawer) === -1) {
-          document.querySelector('paper-icon-item').focus();
-        }
       };
 
       var icons = ['inbox', 'favorite', 'polymer', 'question-answer', 'send', 'archive', 'backup', 'dashboard'];
