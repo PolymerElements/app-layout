@@ -45,7 +45,8 @@ Custom property                  | Description                            | Defa
 `--app-drawer-content-container` | Mixin for the drawer content container | {}
 `--app-drawer-scrim-background`  | Background for the scrim               | rgba(0, 0, 0, 0.5)
 
-@demo app-drawer/demo.html
+@demo app-drawer/demo/demo1.html
+@demo app-drawer/demo/demo2.html
 -->
 
 <dom-module id="app-drawer">
@@ -265,7 +266,7 @@ Custom property                  | Description                            | Defa
           this._setTransitionDuration('');
           this._boundEscKeydownHandler = this._escKeydownHandler.bind(this);
           this._resetDrawerState();
-          
+
           this.listen(this, 'track', '_track');
           this.addEventListener('transitionend', this._transitionend.bind(this));
           this.addEventListener('keydown', this._tabKeydownHandler.bind(this))

@@ -71,7 +71,8 @@ Custom property                          | Description                          
 -----------------------------------------|--------------------------------------|---------
 `--app-drawer-layout-content-transition` | Transition for the content container | none
 
-@demo app-drawer-layout/demo.html
+@demo app-drawer-layout/demo/demo1.html
+@demo app-drawer-layout/demo/demo2.html
 -->
 
 <dom-module id="app-drawer-layout">
@@ -134,7 +135,7 @@ Custom property                          | Description                          
           type: String,
           value: '640px'
         },
-        
+
         _narrow: Boolean
       },
 
@@ -169,7 +170,7 @@ Custom property                          | Description                          
             return;
           }
 
-          var drawer = this.drawer; 
+          var drawer = this.drawer;
           var drawerWidth = this.drawer.getWidth();
           var contentContainer = this.$.contentContainer;
 
