@@ -244,8 +244,6 @@ Custom property                  | Description                            | Defa
 
       _boundEscKeydownHandler: null,
 
-      _lastFocusedElement: null,
-
       _firstTabStop: null,
 
       _lastTabStop: null,
@@ -552,12 +550,11 @@ Custom property                  | Description                            | Defa
 
         if (oldState !== this._drawerState) {
           if (this._drawerState === this._DRAWER_STATE.OPENED) {
+            this._setKeyboardFocusTrap();
             document.addEventListener('keydown', this._boundEscKeydownHandler);
-            this._addKeyboardFocusTrap();
             document.body.style.overflow = 'hidden';
           } else {
             document.removeEventListener('keydown', this._boundEscKeydownHandler);
-            this._removeKeyboardFocusTrap();
             document.body.style.overflow = '';
           }
 
@@ -568,12 +565,10 @@ Custom property                  | Description                            | Defa
         }
       },
 
-      _addKeyboardFocusTrap: function() {
+      _setKeyboardFocusTrap: function() {
         if (this.noFocusTrap) {
           return;
         }
-
-        this._lastFocusedElement = this._getDeepActiveElement();
 
         // NOTE: Unless we use /deep/ (which we shouldn't since it's deprecated), this will
         // not select focusable elements inside shadow roots.
@@ -593,17 +588,18 @@ Custom property                  | Description                            | Defa
         if (focusableElements.length > 0) {
           this._firstTabStop = focusableElements[0];
           this._lastTabStop = focusableElements[focusableElements.length - 1];
-          this._firstTabStop.focus();
         } else {
           // Reset saved tab stops when there are no focusable elements in the drawer.
           this._firstTabStop = null;
           this._lastTabStop = null;
         }
-      },
 
-      _removeKeyboardFocusTrap: function() {
-        if (!this.noFocusTrap && this._lastFocusedElement) {
-          this._lastFocusedElement.focus();
+        // Focus on app-drawer if it has non-zero tabindex. Otherwise, focus the first focusable
+        // element in the drawer, if it exists.
+        if (this.tabIndex !== -1) {
+          this.focus();
+        } else if (this._firstTabStop) {
+          this._firstTabStop.focus();
         }
       },
 
@@ -626,17 +622,6 @@ Custom property                  | Description                            | Defa
             }
           }
         }
-      },
-
-      _getDeepActiveElement: function() {
-        // document.activeElement can be null
-        // https://developer.mozilla.org/en-US/docs/Web/API/Document/activeElement
-        // In case of null, default it to document.body.
-        var active = document.activeElement || document.body;
-        while (active.root && Polymer.dom(active.root).activeElement) {
-          active = Polymer.dom(active.root).activeElement;
-        }
-        return active;
       },
 
       _MIN_FLING_THRESHOLD: 0.2,
