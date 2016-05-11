@@ -595,8 +595,10 @@ Custom property                  | Description                            | Defa
         }
 
         // Focus on app-drawer if it has non-zero tabindex. Otherwise, focus the first focusable
-        // element in the drawer, if it exists.
-        if (this.tabIndex !== -1) {
+        // element in the drawer, if it exists. Use the tabindex attribute since the this.tabIndex
+        // property in IE/Edge returns 0 (instead of -1) when the attribute is not set.
+        var tabindex = this.getAttribute('tabindex');
+        if (tabindex && parseInt(tabindex, 10) > -1) {
           this.focus();
         } else if (this._firstTabStop) {
           this._firstTabStop.focus();
