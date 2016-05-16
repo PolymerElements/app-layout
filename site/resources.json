@@ -37,6 +37,122 @@
       "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/templates/landing-page"
     }
   ],
+  "demos": [
+    {
+      "name": "App Box: Splash Page",
+      "desc": "app-boxes with parallax effect in full page",
+      "demoUrl": "app-box/demo/document-scroll.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-box/demo/document-scroll.html"
+    },
+    {
+      "name": "App Box; Splash Region",
+      "desc": "Using app-boxes in a scrolling region",
+      "demoUrl": "app-box/demo/scrolling-region.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-box/demo/scrolling-region.html"
+    },
+    {
+      "name": "App Drawer: Simple Left Drawer",
+      "desc": "A basic example with left side drawer",
+      "demoUrl": "app-drawer/demo/demo1.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-drawer/demo/demo1.html"
+    },
+    {
+      "name": "App Drawer: Right Drawer with Icons",
+      "desc": "Right side drawer with several icons",
+      "demoUrl": "app-drawer/demo/demo2.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-drawer/demo/demo2.html"
+    },
+    {
+      "name": "App Drawer Layout: Simple Layout",
+      "desc": "A simple left hand layout",
+      "demoUrl": "app-drawer-layout/demo/demo1.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-drawer-layout/demo/demo1.html"
+    },
+    {
+      "name": "App Drawer Layout: Left Drawer and Right Drawer",
+      "desc": "Left drawer with swipeable right drawer",
+      "demoUrl": "app-drawer-layout/demo/demo2.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-drawer-layout/demo/demo2.html"
+    },
+    {
+      "name": "App Header: Contacts Page",
+      "desc": "Header with resize, blend, parallax effects and shrinking FAB",
+      "demoUrl": "app-header/demo/contacts.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-header/demo/contacts.html"
+    },
+    {
+      "name": "App Header: Simple Demo 1",
+      "desc": "Header with resize, blend, parallax effects",
+      "demoUrl": "app-header/demo/demo1.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-header/demo/demo1.html"
+    },
+    {
+      "name": "App Header: Simple Demo 2",
+      "desc": "Header with tall toolbar",
+      "demoUrl": "app-header/demo/demo2.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-header/demo/demo2.html"
+    },
+    {
+      "name": "App Header: Simple Demo 3",
+      "desc": "Header with blended bg color change",
+      "demoUrl": "app-header/demo/demo3.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-header/demo/demo3.html"
+    },
+    {
+      "name": "App Header: Give Page",
+      "desc": "Header with resize snapped title and fade effects",
+      "demoUrl": "app-header/demo/give.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-header/demo/give.html"
+    },
+    {
+      "name": "App Header: No Effects",
+      "desc": "A simple header without effects",
+      "demoUrl": "app-header/demo/no-effects.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-header/demo/no-effects.html"
+    },
+    {
+      "name": "App Header: Notes Page",
+      "desc": "Fixed header",
+      "demoUrl": "app-header/demo/notes.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-header/demo/notes.html"
+    },
+    {
+      "name": "App Header: Pesto Page",
+      "desc": "Condensing fixed header",
+      "demoUrl": "app-header/demo/pesto.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-header/demo/pesto.html"
+    },
+    {
+      "name": "App Header Layout: Simple Demo",
+      "desc": "A basic example of layout",
+      "demoUrl": "app-header-layout/demo/demo1.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-header-layout/demo/demo1.html"
+    },
+    {
+      "name": "App Header Layout: Scrollable Demo",
+      "desc": "A layout embedded in a region",
+      "demoUrl": "app-header-layout/demo/demo2.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-header-layout/demo/demo2.html"
+    },
+    {
+      "name": "App Header Layout: Music",
+      "desc": "A more complex example, with layout embedded in App Box",
+      "demoUrl": "app-header-layout/demo/music.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-header-layout/demo/music.html"
+    },
+    {
+      "name": "App Scrollpos Control: Simple Demo",
+      "desc": "Remembering position after iron page change",
+      "demoUrl": "app-scrollpos-control/demo/index.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/app-scrollpos-control/demo/index.html"
+    },
+    {
+      "name": "App Toolbar: Gallery",
+      "desc": "Several toolbar variations",
+      "demoUrl": "app-toolbar/demo/index.html",
+      "sourceUrl": "https://github.com/PolymerLabs/app-layout/tree/master/web/app-toolbar/demo/index.html"
+    }
+  ],
   "patterns": [
     {
       "name": "Transform Navigation",

@@ -23,6 +23,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../iron-icons/iron-icons.html">
   <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
   <link rel="import" href="../paper-button/paper-button.html">
+  <link rel="import" href="../paper-item/paper-item.html">
+  <link rel="import" href="../paper-item/paper-item-body.html">
   <link rel="import" href="../paper-styles/shadow.html">
   <link rel="import" href="app-layout.html">
   <link rel="import" href="site/device-viewer/device-layout-viewer.html">
@@ -211,6 +213,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-size: contain;
     }
 
+    .scrolling-region {
+      position: relative;
+      height: 480px;
+      width: 100%;
+      overflow-y: auto;
+      /* fixes scroll track's z-index bug in safari*/
+      -webkit-transform: translateZ(0);
+      margin: 8px;
+      background-color: #fff;
+      @apply(--shadow-elevation-2dp);
+    }
+
+    .scrolling-region paper-list-item {
+      border-bottom: 1px solid #ececec;
+    }
+
+    .scrolling-region paper-button {
+      background-color: #4FB6F7;
+      color: #fff;
+      line-height: 1.0;
+    }
+
     @media (max-width: 1024px) {
 
       .heading {
@@ -368,6 +392,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         </template>
 
+      </div>
+
+    </section>
+
+    <section>
+
+      <h1>Demos</h1>
+
+      <p>The demos illustrate the use of individual App Layout components.</p>
+      <div class="grid">
+        <div class="scrolling-region">
+          <template is="dom-repeat" items="{{resources.demos}}">
+            <paper-item style="text-align: left">
+              <paper-item-body two-line>
+                <div>{{item.name}}</div>
+                <div secondary>{{item.desc}}</div>
+              </paper-item-body>
+              <a href="{{item.demoUrl}}" target="_blank" tabindex="-1">
+                <paper-button raised>View</paper-button>
+              </a>
+              <a href="{{item.sourceUrl}}" target="_blank" tabindex="-1">
+                <paper-button raised>Source</paper-button>
+              </a>
+            </paper-item>
+          </template>
+        </div>
       </div>
 
     </section>
