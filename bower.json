@@ -43,6 +43,6 @@
     "paper-styles": "polymerelements/paper-styles#^1.0.0",
     "test-fixture": "polymerelements/test-fixture#^1.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
-    "web-component-tester": "Polymer/web-component-tester#^3.4.0"
+    "web-component-tester": "^4.0.0"
   }
 }
