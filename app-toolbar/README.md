@@ -3,7 +3,7 @@
 app-toolbar is a horizontal toolbar containing items that can be used for
 label, navigation, search and actions.
 
-Example:
+### Example
 
 Add a title to the toolbar.
 
@@ -25,6 +25,16 @@ Add a button to the left and right side of the toolbar.
 
 You can use the attributes `top-item` or `bottom-item` to completely fit an element
 to the top or bottom of the toolbar respectively.
+
+### Content attributes
+
+Attribute            | Description 
+---------------------|---------------------------------------------------------
+`title`              | The main title element.
+`condensed-title`    | The title element if used inside a condensed app-header.
+`spacer`             | Adds a left margin of `64px`.
+`bottom-item`        | Sticks the element to the bottom of the toolbar.
+`top-item`           | Sticks the element to the top of the toolbar.
 
 ### Styling
 
