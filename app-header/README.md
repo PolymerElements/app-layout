@@ -4,7 +4,7 @@
 (http://app-layout-assets.appspot.com/assets/docs/app-header/header.gif)
 
 app-header is container element for app-toolbars at the top of the screen that can have scroll
-effects. By default, an app-header moves away from the viewport when scrolling down and 
+effects. By default, an app-header moves away from the viewport when scrolling down and
 if using `reveals`, the header slides back when scrolling back up. For example,
 
 ```html
@@ -27,24 +27,25 @@ must have a larger height than the `primary` element in the light DOM. For examp
 ```
 
 In this case the header is initially `96px` tall, and it shrinks to `64px` when scrolling down.
-That is what is meant by "condensing". 
+That is what is meant by "condensing".
 
 ### Primary element
 
-This is the element in the light DOM that remains at the top of the header when this is condensed.
-By default, if no element in the light DOM has the `primary` attribute, the `primary` element 
-becomes the first instance of app-toolbar. For example:
+As the header condenses, the immediate children of app-header are stacked up.
+In this case, the primary element is the immediate child that would always stayed above
+the others as the header condenses. By default, the `primary` element is the first app-toolbar
+that is an immediate children of app-header.
 
 ```html
 <app-header condenses>
-  <app-toolbar> Primary element </app-toolbar> 
+  <app-toolbar> Primary element </app-toolbar>
 </app-header>
 ```
 
 ```html
 <app-header condenses>
-  <app-toolbar></app-toolbar> 
-  <app-toolbar primary> Primary element </app-toolbar> 
+  <app-toolbar></app-toolbar>
+  <app-toolbar primary> Primary element </app-toolbar>
 </app-header>
 ```
 
@@ -71,7 +72,7 @@ appHeader.scrollTarget = document.querySelector("#scrollingRegion");
 ```
 
 ## Backgrounds
-app-header has two background layers that can be used for styling when the header is condensed 
+app-header has two background layers that can be used for styling when the header is condensed
 or when the scrollable element is scrolled to the top.
 
 ## Scroll effects
@@ -141,10 +142,8 @@ between 0 and 1 inclusive. If `scalar=0`, the background doesn't move away from 
 [More about configuration for scroll effects](/app-scroll-effects#configuring-effects)
 
 * **resize-title**
-Progressively interpolates the size of the title element based on the scroll position.
-This effect requires two title elements in the light dom. One that has the `title` attribute
-and represents the state when the header is completely visible and another with the
-`condensed-title` attribute when the header is condensed. For example:
+Progressively interpolates the size of the title from the element with the `title` attribute
+to the element with the `condensed-title` attribute as the header condenses. For example:
 
 ```html
 <app-header condenses reveals effects="resize-title">
@@ -185,6 +184,13 @@ app-header {
 
 * **material**
 Installs the waterfall, resize-title, blend-background and parallax-background effects.
+
+### Content attributes
+
+Attribute | Description         | Default
+----------|---------------------|----------------------------------------
+`primary` | Element that remains at the top when the header condenses. | The first app-toolbar in the light DOM.
+
 
 ## Styling
 
