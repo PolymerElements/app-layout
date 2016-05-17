@@ -11,10 +11,10 @@ By default the drawer is aligned to the start, which is left in LTR layouts:
 ```html
 <app-drawer-layout>
   <app-drawer>
-    <!-- drawer content -->
+    drawer content
   </app-drawer>
   <div>
-    <!-- main content -->
+    main content
   </div>
 </app-drawer-layout>
 ```
@@ -24,10 +24,10 @@ Align the drawer at the end:
 ```html
 <app-drawer-layout>
   <app-drawer align="end">
-    <!-- drawer content -->
+     drawer content
   </app-drawer>
   <div>
-    <!-- main content -->
+    main content
   </div>
 </app-drawer-layout>
 ```
@@ -37,7 +37,7 @@ With an app-header-layout:
 ```html
 <app-drawer-layout>
   <app-drawer>
-    <!-- drawer content -->
+    drawer-content
   </app-drawer>
   <app-header-layout>
     <app-header>
@@ -46,9 +46,22 @@ With an app-header-layout:
       </app-toolbar>
     </app-header>
 
-    <!-- main content -->
+    main content
 
   </app-header-layout>
+</app-drawer-layout>
+```
+
+Add the `fullbleed` attribute to app-drawer-layout to make it fit the size of its container:
+
+```html
+<app-drawer-layout fullbleed>
+  <app-drawer>
+     drawer content
+  </app-drawer>
+  <div>
+    main content
+  </div>
 </app-drawer-layout>
 ```
 

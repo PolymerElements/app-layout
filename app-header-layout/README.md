@@ -13,7 +13,7 @@ Using the document scroll:
     </app-toolbar>
   </app-header>
   <div>
-    <!-- content goes here -->
+    main content
   </div>
 </app-header-layout>
 ```
@@ -28,7 +28,7 @@ Using an own scrolling region:
     </app-toolbar>
   </app-header>
   <div>
-    <!-- content goes here -->
+    main content
   </div>
 </app-header-layout>
 ```

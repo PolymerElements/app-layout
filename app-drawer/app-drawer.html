@@ -307,6 +307,13 @@ Custom property                  | Description                            | Defa
         return this.$.contentContainer.offsetWidth;
       },
 
+      /**
+       * Resets the layout. If you changed the size of app-header via CSS
+       * you can notify the changes by either firing the `iron-resize` event
+       * or calling `resetLayout` directly.
+       *
+       * @method resetLayout
+       */
       resetLayout: function() {
         this.debounce('_resetLayout', function() {
           this.fire('app-drawer-reset-layout');
