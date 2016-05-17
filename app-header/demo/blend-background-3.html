@@ -9,11 +9,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <!doctype html>
+<html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-
-  <title>Pesto Demo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>app-header demo</title>
 
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
@@ -21,14 +23,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../../app-toolbar/app-toolbar.html">
   <link rel="import" href="../../app-scroll-effects/app-scroll-effects.html">
-  <link rel="import" href="../app-header.html">
   <link rel="import" href="../../demo/sample-content.html">
+  <link rel="import" href="../app-header.html">
 
   <style is="custom-style">
 
     body {
       margin: 0;
-      font-family: 'Roboto', 'Noto', sans-serif;
+      font-family: arial;
       background-color: #eee;
     }
 
@@ -37,57 +39,68 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       top: 0;
       left: 0;
       width: 100%;
+      height: 212px;
       color: #fff;
-      background-color: #00AA8D;
-    }
-
-    .top-toolbar,
-    .bottom-toolbar {
-      height: 120px;
-      @apply(--layout-center-center);
+      --app-header-background-front-layer: {
+        background-color: red;
+      };
+      --app-header-background-rear-layer: {
+        background-color: blue;
+      };
     }
 
     paper-icon-button {
       --paper-icon-button-ink-color: white;
     }
 
-    sample-content {
-      padding-top: 240px;
+    app-toolbar.tall {
+      height: 148px;
     }
 
-    [condensed-title] {
-      height: 80px;
-      max-width: 76px;
-      margin-bottom: -20px;
-      font-size: 16px;
-      background-image: url(//app-layout-assets.appspot.com/assets/pesto/logo_s.png);
-      background-repeat: no-repeat;
-      background-position: center top;
-      background-size: 76px;
+    sample-content {
+      padding-top: 212px;
     }
 
     [title] {
-      height: 240px;
-      max-width: 240px;
-      margin-bottom: 140px;
-      font-size: 48px;
-      background-image: url(//app-layout-assets.appspot.com/assets/pesto/logo_l.png);
-      background-repeat: no-repeat;
-      background-position: center bottom;
-      background-size: 240px;
+      font-weight: lighter;
+      margin-left: 108px;
+    }
+
+    [condensed-title] {
+      font-weight: lighter;
+      margin-left: 30px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    [condensed-title] i {
+      font-weight: 100;
+      font-style: normal;
+    }
+
+    @media (max-width: 639px) {
+      [title] {
+        margin-left: 50px;
+        font-size: 30px;
+      }
+      [condensed-title] {
+        font-size: 15px;
+      }
     }
 
   </style>
 
 </head>
-<body unresolved>
+<body class="fullbleed" unresolved>
 
-  <app-header effects="waterfall resize-title" condenses fixed>
-    <app-toolbar class="top-toolbar">
-      <div condensed-title></div>
+  <app-header condenses reveals effects="waterfall resize-title blend-background parallax-background">
+    <app-toolbar>
+     <paper-icon-button icon="menu"></paper-icon-button>
+      <h4 condensed-title>What is material? &mdash; Environment</h4>
+      <paper-icon-button icon="search"></paper-icon-button>
     </app-toolbar>
-    <app-toolbar class="bottom-toolbar">
-      <div title></div>
+    <app-toolbar class="tall">
+      <h1 title>What is material?</h1>
     </app-toolbar>
   </app-header>
 
