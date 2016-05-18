@@ -9,8 +9,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../../../polymer/polymer.html">
-<link rel="import" href="../../../../carbon-route/carbon-location.html">
-<link rel="import" href="../../../../carbon-route/carbon-route.html">
+<link rel="import" href="../../../../app-route/app-location.html">
+<link rel="import" href="../../../../app-route/app-route.html">
 <link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../../iron-media-query/iron-media-query.html">
 <link rel="import" href="../../../../paper-icon-button/paper-icon-button.html">
@@ -203,17 +203,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </style>
 
-    <carbon-location route="{{route}}" use-hash-as-path></carbon-location>
-    <carbon-route
+    <app-location route="{{route}}" use-hash-as-path></app-location>
+    <app-route
         route="{{route}}"
         pattern=":section"
         data="{{sectionData}}"
-        tail="{{subRoute}}"></carbon-route>
-    <carbon-route
+        tail="{{subRoute}}"></app-route>
+    <app-route
         route="{{subRoute}}"
         pattern="/:id"
         data="{{idData}}"
-        active="{{onDetailPage}}"></carbon-route>
+        active="{{onDetailPage}}"></app-route>
 
     <iron-media-query query="max-width: 400px" query-matches="{{smallScreen}}"></iron-media-query>
 

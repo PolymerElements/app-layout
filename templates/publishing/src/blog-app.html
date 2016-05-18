@@ -10,8 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../../polymer/polymer.html">
 
-<link rel="import" href="../../../../carbon-route/carbon-location.html">
-<link rel="import" href="../../../../carbon-route/carbon-route.html">
+<link rel="import" href="../../../../app-route/app-location.html">
+<link rel="import" href="../../../../app-route/app-route.html">
 
 <link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../../iron-pages/iron-pages.html">
@@ -143,21 +143,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <!-- setup routes -->
-    <carbon-location route="{{route}}" use-hash-as-path></carbon-location>
-    <carbon-route
+    <app-location route="{{route}}" use-hash-as-path></app-location>
+    <app-route
         route="{{route}}"
         pattern="/:category"
         data="{{categoryData}}"
-        tail="{{subRoute}}"></carbon-route>
-    <carbon-route
+        tail="{{subRoute}}"></app-route>
+    <app-route
         route="{{subRoute}}"
         pattern="/:page"
         data="{{pageData}}"
-        tail="{{subsubRoute}}"></carbon-route>
-    <carbon-route
+        tail="{{subsubRoute}}"></app-route>
+    <app-route
         route="{{subsubRoute}}"
         pattern="/:id"
-        data="{{idData}}"></carbon-route>
+        data="{{idData}}"></app-route>
 
     <!-- manages page's scroll position -->
     <app-scrollpos-control
