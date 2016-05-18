@@ -6,10 +6,10 @@
     "The Polymer Authors"
   ],
   "private": true,
-  "homepage": "https://github.com/PolymerLabs/app-layout",
+  "homepage": "https://github.com/PolymerElements/app-layout",
   "repository": {
     "type": "git",
-    "url": "git://github.com/PolymerLabs/app-layout"
+    "url": "git://github.com/PolymerElements/app-layout"
   },
   "main": "app-layout.html",
   "license": "http://polymer.github.io/LICENSE.txt",
