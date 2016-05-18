@@ -1,15 +1,15 @@
 {
   "name": "app-layout",
-  "version": "0.0.17",
+  "version": "0.9.0",
   "description": "A set of layout elements for your app",
   "authors": [
     "The Polymer Authors"
   ],
   "private": true,
-  "homepage": "https://github.com/PolymerLabs/app-layout",
+  "homepage": "https://github.com/PolymerElements/app-layout",
   "repository": {
     "type": "git",
-    "url": "git://github.com/PolymerLabs/app-layout"
+    "url": "git://github.com/PolymerElements/app-layout"
   },
   "main": "app-layout.html",
   "license": "http://polymer.github.io/LICENSE.txt",
