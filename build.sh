@@ -2,12 +2,12 @@
 #
 
 #git checkout master
-#git update
+#git pull
 #git checkout gh-pages
 #git reset --hard master
 #git push -f
 
-a=`ind . -name "docs.html" -or -name "index.html" -not -path "*/test/*"`
+a=`find . -name "docs.html" -or -name "index.html" -not -path "*/test/*"`
 b=`find . -name "*.html" ! -name 'sample-content.html' -path "*/demo/*"`
 
 c=(`for R in "${a[@]}" "${b[@]}" ; do echo "$R" ; done | sort -du`)
