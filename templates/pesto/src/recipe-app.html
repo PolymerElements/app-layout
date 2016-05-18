@@ -10,8 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../../polymer/polymer.html">
 
-<link rel="import" href="../../../../carbon-route/carbon-location.html">
-<link rel="import" href="../../../../carbon-route/carbon-route.html">
+<link rel="import" href="../../../../app-route/app-location.html">
+<link rel="import" href="../../../../app-route/app-route.html">
 
 <link rel="import" href="../../../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../../iron-pages/iron-pages.html">
@@ -80,16 +80,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     </style>
 
-    <carbon-location route="{{_route}}" use-hash-as-path></carbon-location>
-    <carbon-route
+    <app-location route="{{_route}}" use-hash-as-path></app-location>
+    <app-route
         route="{{_route}}"
         pattern="/:page"
         data="{{_pageData}}"
-        tail="{{_subRoute}}"></carbon-route>
-    <carbon-route
+        tail="{{_subRoute}}"></app-route>
+    <app-route
         route="{{_subRoute}}"
         pattern="/:id"
-        data="{{_idData}}"></carbon-route>
+        data="{{_idData}}"></app-route>
 
     <app-drawer-layout responsive-width="1280px">
 
