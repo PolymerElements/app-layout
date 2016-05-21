@@ -610,6 +610,7 @@ Mixin | Description | Default
         }
 
         if (forceUpdate || progress !== this._progress || lastTop !== top || scrollTop === 0) {
+          this.fire("app-header-scroll", { "progress": progress, "top": top });
           this._progress = progress;
           this._runEffects(progress, top);
           this._transformHeader(top);
@@ -697,6 +698,12 @@ Mixin | Description | Default
        * Fires when the layout of `app-header` changed.
        *
        * @event app-header-reset-layout
+       */
+      
+      /**
+       * Fires when the scroll state of `app-header` is changed.
+       *
+       * @event app-header-scroll
        */
     });
   </script>
