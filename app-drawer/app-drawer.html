@@ -269,14 +269,20 @@ Custom property                  | Description                            | Defa
        * Closes the drawer.
        */
       close: function() {
-        this.opened = false;
+        if (!this.persistent) {
+          this.opened = false;
+        }
       },
 
       /**
        * Toggles the drawer open and close.
        */
       toggle: function() {
-        this.opened = !this.opened;
+        if (this.opened) {
+          this.close();
+        } else {
+          this.open();
+        }
       },
 
       /**

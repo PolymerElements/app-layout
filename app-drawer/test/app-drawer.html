@@ -464,6 +464,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         assert.notEqual(document.elementFromPoint(400, 10).tagName, 'APP-DRAWER');
       });
+      
+      test('persistent drawer should not be closed', function() {
+        drawer.opened = false;
+        drawer.persistent = true;
+        
+        assert.isFalse(drawer.opened);
+
+        drawer.open();
+
+        assert.isTrue(drawer.opened);
+
+        drawer.close();
+
+        assert.isTrue(drawer.opened);
+
+        drawer.toggle();
+
+        assert.isTrue(drawer.opened);
+
+        drawer.toggle();
+
+        assert.isTrue(drawer.opened);
+
+      });
     });
 
   </script>
