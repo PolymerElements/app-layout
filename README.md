@@ -5,6 +5,8 @@
 
 https://polymerelements.github.io/app-layout/
 
+For additional documentation, please check out [Responsive app layout](https://www.polymer-project.org/1.0/toolbox/app-layout).
+
 A set of layout elements for your app. It includes:
 
 - [app-toolbar](/app-toolbar) - A horizontal toolbar containing items that can be used for label, navigation, search and actions.
