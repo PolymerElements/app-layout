@@ -100,7 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         drawerLayout.responsiveWidth = '0px';
         drawerLayout.forceNarrow = true;
 
-        assert.isTrue(drawerLayout._narrow);
+        assert.isTrue(drawerLayout.narrow);
       });
 
       test('responsiveWidth', function(done) {
@@ -108,13 +108,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         drawerLayout.responsiveWidth = '0px';
 
         window.setTimeout(function() {
-          assert.isFalse(drawerLayout._narrow);
+          assert.isFalse(drawerLayout.narrow);
           assert.equal(window.getComputedStyle(drawerToggle)['display'], 'none');
 
           drawerLayout.responsiveWidth = '10000px';
 
           window.setTimeout(function() {
-            assert.isTrue(drawerLayout._narrow);
+            assert.isTrue(drawerLayout.narrow);
             assert.notEqual(window.getComputedStyle(drawerToggle)['display'], 'none');
 
             done();
