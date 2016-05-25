@@ -21,7 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   /**
-   * Registers a scroll effect to be used in elements that implement the 
+   * Registers a scroll effect to be used in elements that implement the
    * `Polymer.AppScrollEffectsBehavior` behavior.
    *
    * @param {string} effectName The effect name.
@@ -91,11 +91,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var elapsedTime = now - startTime;
 
           if (elapsedTime < duration) {
-            scrollTo(
-                timingFn(elapsedTime, currentScrollLeft, deltaScrollLeft, duration),
-                timingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration)
-              );
+            scrollTo(timingFn(elapsedTime, currentScrollLeft, deltaScrollLeft, duration),
+                timingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration));
             requestAnimationFrame(updateFrame.bind(this));
+          } else {
+            scrollTo(scrollLeft, scrollTop);
           }
         }).call(this);
       }
