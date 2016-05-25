@@ -18,16 +18,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   Polymer.AppLayout.registerEffect('blend-background', {
     /** @this Polymer.AppLayout.ElementWithBackground */
     setUp: function setUp() {
-      this.$.backgroundFrontLayer.style.willChange = 'opacity';
-      this.$.backgroundFrontLayer.style.webkitTransform = 'translateZ(0)';
-      this.$.backgroundRearLayer.style.willChange = 'opacity';
-      this.$.backgroundRearLayer.style.webkitTransform = 'translateZ(0)';
-      this.$.backgroundRearLayer.style.opacity = 0;
+      var fx = {};
+      fx.backgroundFrontLayer = this._getDOMRef('backgroundFrontLayer');
+      fx.backgroundRearLayer = this._getDOMRef('backgroundRearLayer');
+      fx.backgroundFrontLayer.style.willChange = 'opacity';
+      fx.backgroundFrontLayer.style.webkitTransform = 'translateZ(0)';
+      fx.backgroundRearLayer.style.willChange = 'opacity';
+      fx.backgroundRearLayer.style.webkitTransform = 'translateZ(0)';
+      fx.backgroundRearLayer.style.opacity = 0;
+      this._fxBlendBackground = fx;
     },
     /** @this Polymer.AppLayout.ElementWithBackground */
     run: function run(p, y) {
-      this.$.backgroundFrontLayer.style.opacity = 1 - p;
-      this.$.backgroundRearLayer.style.opacity = p;
+      var fx = this._fxBlendBackground;
+      fx.backgroundFrontLayer.style.opacity = 1 - p;
+      fx.backgroundRearLayer.style.opacity = p;
+    },
+    /** @this Polymer.AppLayout.ElementWithBackground */
+    tearDown: function tearDown() {
+      delete this._fxBlendBackground;
     }
   });
 </script>

@@ -49,7 +49,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template>
       <div>
         <app-header class="header">
-          <app-toolbar></app-toolbar>
+          <app-toolbar>
+            <div condensed-title>Title</div>
+          </app-toolbar>
           <app-toolbar>
             <div title spacer>Title</div>
           </app-toolbar>
@@ -433,6 +435,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               }
             }
           ]);
+        });
+      });
+
+      test('DOM references', function(done) {
+        flush(function() {
+           assert.isNotNull(header._getDOMRef('backgroundFrontLayer'));
+           assert.isNotNull(header._getDOMRef('backgroundRearLayer'));
+           assert.isNotNull(header._getDOMRef('title'));
+           assert.isNotNull(header._getDOMRef('condensedTitle'));
+           done();
         });
       });
 

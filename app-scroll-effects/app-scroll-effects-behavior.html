@@ -344,6 +344,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._updateScrollState(this._clampedScrollTop);
       }
     },
+    
+    /**
+     * Override this method to return a reference to a node in the local DOM.
+     * The node is consumed by a scroll effect.
+     *
+     * @param {string} id The id for the node.
+     */
+    _getDOMRef: function(id) {
+      this._warn(this._logf('_getDOMRef', '`'+ id +'` is undefined'));
+    },
 
     _getUndefinedMsg: function(effectName) {
       return 'Scroll effect `' + effectName + '` is undefined. ' +

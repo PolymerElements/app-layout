@@ -324,11 +324,6 @@ Mixin | Description | Default
         transition: none !important;
       }
     </style>
-
-    <div id="background">
-      <div id="backgroundRearLayer"></div>
-      <div id="backgroundFrontLayer"></div>
-    </div>
     <div id="contentContainer">
       <content id="content"></content>
     </div>
@@ -680,6 +675,35 @@ Mixin | Description | Default
 
       _clamp: function(v, min, max) {
         return Math.min(max, Math.max(min, v));
+      },
+
+      _getDOMRef: function(id) {
+        if (!this._bgContainer) {
+          this._bgContainer = document.createElement('div');
+          this._bgContainer.id = 'background';
+
+          this._bgRear = document.createElement('div');
+          this._bgRear.id = 'backgroundRearLayer';
+          this._bgContainer.appendChild(this._bgRear);
+
+          this._bgFront = document.createElement('div');
+          this._bgFront.id = 'backgroundFrontLayer';
+          this._bgContainer.appendChild(this._bgFront);
+
+          Polymer.dom(this.root).insertBefore(this._bgContainer, this.$.contentContainer);
+        }
+        if (id === 'backgroundFrontLayer') {
+          return this._bgFront;
+        } else if (id === 'backgroundRearLayer') {
+          return this._bgRear;
+        } else if (id === 'background') {
+          return this._bgContainer;
+        } else if (id === 'title') {
+          return Polymer.dom(this).querySelector('[title]');
+        } else if (id === 'condensedTitle') {
+          return Polymer.dom(this).querySelector('[condensed-title]');
+        }
+        return null;
       },
 
       /**
