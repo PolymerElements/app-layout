@@ -10550,7 +10550,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		});
 	};
 
-	
+
   return Promise;
 }
 
@@ -15013,7 +15013,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   /**
-   * Registers a scroll effect to be used in elements that implement the 
+   * Registers a scroll effect to be used in elements that implement the
    * `Polymer.AppScrollEffectsBehavior` behavior.
    *
    * @param {string} effectName The effect name.
@@ -15244,13 +15244,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * size or hidden state of their children) and "resizables" (elements that need to be
    * notified when they are resized or un-hidden by their parents in order to take
    * action on their new measurements).
-   * 
+   *
    * Elements that perform measurement should add the `IronResizableBehavior` behavior to
    * their element definition and listen for the `iron-resize` event on themselves.
    * This event will be fired when they become showing after having been hidden,
    * when they are resized explicitly by another resizable, or when the window has been
    * resized.
-   * 
+   *
    * Note, the `iron-resize` event is non-bubbling.
    *
    * @polymerBehavior Polymer.IronResizableBehavior
@@ -16333,7 +16333,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        *  </x-element>
        * </div>
        *```
-       * In this case, the `scrollTarget` will point to the outer div element. 
+       * In this case, the `scrollTarget` will point to the outer div element.
        *
        * ### Document scrolling
        *
@@ -16350,7 +16350,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        *```js
        * appHeader.scrollTarget = document.querySelector('#scrollable-element');
        *```
-       * 
+       *
        * @type {HTMLElement}
        */
       scrollTarget: {
@@ -16566,7 +16566,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * based on the scroll position.
    *
    * A scroll effect definition is an object with `setUp()`, `tearDown()` and `run()` functions.
-   * 
+   *
    * To register the effect, you can use `Polymer.AppLayout.registerEffect(effectName, effectDef)`
    * For example, let's define an effect that resizes the header's logo:
    *
@@ -17914,7 +17914,7 @@ to the top or bottom of the toolbar respectively.
 
 ### Content attributes
 
-Attribute            | Description 
+Attribute            | Description
 ---------------------|---------------------------------------------------------
 `title`              | The main title element.
 `condensed-title`    | The title element if used inside a condensed app-header.
@@ -19329,7 +19329,7 @@ Displays a page on different device layouts.
           <a href="https://github.com/PolymerLabs/app-layout" target="_blank" tabindex="-1">
             <paper-button raised=""><iron-icon icon="file-download"></iron-icon>View On GitHub</paper-button>
           </a>
-          <a href="docs.html" target="_blank" tabindex="-1">
+          <a href="https://elements.polymer-project.org/elements/app-layout" target="_blank" tabindex="-1">
             <paper-button raised=""><iron-icon icon="subject"></iron-icon>API Docs</paper-button>
           </a>
         </div>
@@ -19437,8 +19437,9 @@ Displays a page on different device layouts.
 
       <h1>Tools and References</h1>
 
+      <a class="misc-link" href="https://www.polymer-project.org/1.0/toolbox/app-layout" target="_blank">Responsive App Layout</a>
+      <a class="misc-link" href="https://www.polymer-project.org/1.0/toolbox/" target="_blank">Polymer App Toolbox</a>
       <a class="misc-link" href="https://www.google.com/design/spec/layout/adaptive-ui.html#adaptive-ui-patterns" target="_blank">Material Design Adaptive UI Pattern</a>
-      <a class="misc-link" href="https://developers.google.com/web/tools/polymer-starter-kit/" target="_blank">Polymer Starter Kit</a>
 
     </section>
 
