@@ -9,6 +9,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <script>
 
+  /**
+   * Checks two css matrix are approximately equal.
+   *
+   * @param {string} m1 Matrix 1
+   * @param {string} m2 Matrix 2
+   */
   function sameMatrix(m1, m2) {
     var rgx = /((:?\d|\.)+)/g;
     var m1Array = [];
@@ -35,6 +41,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     return true;
   }
 
+  /**
+   * Checks if an element has a given CSS text
+   *
+   * @param {HTMLElement} el
+   * @param {string} cssText
+   */
   function sameCSS(el, cssText) {
     var propName;
     var dummy = document.createElement('div');
