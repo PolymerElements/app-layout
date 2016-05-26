@@ -148,7 +148,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     observers: [
-      '_effectsChanged(effects, effectsConfig)'
+      '_effectsChanged(effects, effectsConfig, isAttached)'
     ],
 
     /**
@@ -242,10 +242,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /**
      * Called when `effects` or `effectsConfig` changes.
      */
-    _effectsChanged: function(effects, effectsConfig) {
+    _effectsChanged: function(effects, effectsConfig, isAttached) {
       this._tearDownEffects();
 
-      if (effects === '') {
+      if (effects === '' || !isAttached) {
         return;
       }
       effects.split(' ').forEach(function(effectName) {
