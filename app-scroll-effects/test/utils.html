@@ -1,0 +1,69 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE
+The complete set of authors may be found at http://polymer.github.io/AUTHORS
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS
+-->
+<script>
+
+  function sameMatrix(m1, m2) {
+    var rgx = /((:?\d|\.)+)/g;
+    var m1Array = [];
+    var m2Array = [];
+    var parts;
+
+    while (parts = rgx.exec(m1)) {
+      m1Array.push(parseFloat(parts[1]));
+    }
+
+    while (parts = rgx.exec(m2)) {
+      m2Array.push(parseFloat(parts[1]));
+    }
+
+    if (m1Array.length != m2Array.length) {
+      return false;
+    }
+
+    for (var i = 0 ; i < m1Array.length; i++) {
+      if (Math.abs(m1Array[i] - m2Array[i]) > 2) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function sameCSS(el, cssText) {
+    var propName;
+    var dummy = document.createElement('div');
+
+    dummy.style.cssText = cssText;
+    document.body.appendChild(dummy);
+
+    var elStyle = window.getComputedStyle(el);
+    var parts = cssText.split(/\s/);
+    var dummyStyle = window.getComputedStyle(dummy);
+
+    for (var i = 0; i < parts.length; i++) {
+      if (parts[i].substr(-1, 1) != ':') {
+        continue;
+      }
+
+      propName = parts[i].substr(0, parts[i].length - 1);
+
+      if (elStyle[propName] !== dummyStyle[propName]) {
+        if (propName === 'transform') {
+          if (sameMatrix(elStyle[propName], dummyStyle[propName])) {
+            continue;
+          }
+        }
+        throw new Error('`' + propName + '` is different: ' +
+          '`' + elStyle[propName] + '` != `' + dummyStyle[propName] + '`');
+      }
+    }
+    return true;
+  }
+
+</script>

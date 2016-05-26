@@ -22,9 +22,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       fx.backgroundFrontLayer = this._getDOMRef('backgroundFrontLayer');
       fx.backgroundRearLayer = this._getDOMRef('backgroundRearLayer');
       fx.backgroundFrontLayer.style.willChange = 'opacity';
-      fx.backgroundFrontLayer.style.webkitTransform = 'translateZ(0)';
+      fx.backgroundFrontLayer.style.transform = 'translateZ(0)';
       fx.backgroundRearLayer.style.willChange = 'opacity';
-      fx.backgroundRearLayer.style.webkitTransform = 'translateZ(0)';
+      fx.backgroundRearLayer.style.transform = 'translateZ(0)';
       fx.backgroundRearLayer.style.opacity = 0;
       this._fxBlendBackground = fx;
     },
