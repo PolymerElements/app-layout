@@ -677,7 +677,7 @@ Mixin | Description | Default
         return Math.min(max, Math.max(min, v));
       },
 
-      _getDOMRef: function(id) {
+      _ensureBgContainers: function() {
         if (!this._bgContainer) {
           this._bgContainer = document.createElement('div');
           this._bgContainer.id = 'background';
@@ -692,16 +692,27 @@ Mixin | Description | Default
 
           Polymer.dom(this.root).insertBefore(this._bgContainer, this.$.contentContainer);
         }
+      },
+
+      _getDOMRef: function(id) {
         if (id === 'backgroundFrontLayer') {
+          this._ensureBgContainers();
           return this._bgFront;
+
         } else if (id === 'backgroundRearLayer') {
+          this._ensureBgContainers();
           return this._bgRear;
+
         } else if (id === 'background') {
+          this._ensureBgContainers();
           return this._bgContainer;
+
         } else if (id === 'title') {
           return Polymer.dom(this).querySelector('[title]');
+
         } else if (id === 'condensedTitle') {
           return Polymer.dom(this).querySelector('[condensed-title]');
+
         }
         return null;
       },
