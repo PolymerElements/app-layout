@@ -61,18 +61,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           container._updateScrollState(0);
 
           assert.isTrue(sameCSS(container.$.backgroundFrontLayer,
-              'translate3d(0px, 0px, 0px);'), 'backgroundFrontLayer when progress = 0');
+              'transform: translate3d(0px, 0px, 0px);'), 'backgroundFrontLayer when progress = 0');
 
           assert.isTrue(sameCSS(container.$.backgroundRearLayer,
-              'translate3d(0px, 0px, 0px);'), 'backgroundRearLayer when progress = 0');
+              'transform: translate3d(0px, 0px, 0px);'), 'backgroundRearLayer when progress = 0');
 
           container._updateScrollState(container.offsetHeight);
 
           assert.isTrue(sameCSS(container.$.backgroundFrontLayer,
-              'translate3d(0px, 200px, 0px);'), 'backgroundFrontLayer when progress = 1');
+              'transform: translate3d(0px, 200px, 0px);'), 'backgroundFrontLayer when progress = 1');
 
           assert.isTrue(sameCSS(container.$.backgroundRearLayer,
-              'translate3d(0px, 200px, 0px);'), 'backgroundRearLayer when progress = 1');
+              'transform: translate3d(0px, 200px, 0px);'), 'backgroundRearLayer when progress = 1');
           done();
         });
       });
