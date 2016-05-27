@@ -32,7 +32,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       propName = parts[i].substr(0, parts[i].length - 1);
 
-      if (elStyle[propName] !== dummyStyle[propName]) {
+      if (elStyle[propName] && elStyle[propName] !== dummyStyle[propName]) {
         throw new Error('`' + propName + '` is different: ' +
           '`' + elStyle[propName] + '` != `' + dummyStyle[propName] + '`');
       }

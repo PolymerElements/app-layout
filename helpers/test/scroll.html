@@ -86,7 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.AppLayout.scroll({top: 500, behavior: 'smooth'});
 
         window.setTimeout(function() {
-          assert.isAbove(scrollSpy.callCount, 5, 'scroll top should be fired multiple times');
+          assert.isAbove(scrollSpy.callCount, 1, 'scroll top should be fired multiple times');
           done();
         }, 300);
       });
