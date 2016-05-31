@@ -52,7 +52,7 @@ With an app-header-layout:
 </app-drawer-layout>
 ```
 
-Add the `drawer-toggle` attribute to toggle the drawer on tap events:
+Add the `drawer-toggle` attribute to elements inside `app-drawer-layout` that toggle the drawer on tap events:
 
 ```html
 <app-drawer-layout>
