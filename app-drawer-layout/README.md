@@ -52,6 +52,27 @@ With an app-header-layout:
 </app-drawer-layout>
 ```
 
+Add the `drawer-toggle` attribute to elements inside `app-drawer-layout` that toggle the drawer on tap events:
+
+```html
+<app-drawer-layout>
+  <app-drawer>
+    drawer-content
+  </app-drawer>
+  <app-header-layout>
+    <app-header>
+      <app-toolbar>
+        <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+        <div title>App name</div>
+      </app-toolbar>
+    </app-header>
+
+    main content
+
+  </app-header-layout>
+</app-drawer-layout>
+```
+
 Add the `fullbleed` attribute to app-drawer-layout to make it fit the size of its container:
 
 ```html
