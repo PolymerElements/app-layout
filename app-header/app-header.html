@@ -220,6 +220,7 @@ Mixin | Description | Default
 @demo app-header/demo/music.html Reveals Demo
 @demo app-header/demo/no-effects.html Condenses and Reveals Demo
 @demo app-header/demo/notes.html Fixed with Dynamic Shadow Demo
+@demo app-header/demo/custom-primary-element.html Custom Primary Element Demo
 -->
 
 <dom-module id="app-header">
@@ -549,7 +550,7 @@ Mixin | Description | Default
         }
 
         if (scrollTop >= this._dHeight) {
-          top = this.condenses ? Math.max(this._dHeight, top) : top;
+          top = this.condenses && !this.fixed ? Math.max(this._dHeight, top) : top;
           this.style.transitionDuration = '0ms';
         }
 
@@ -566,7 +567,7 @@ Mixin | Description | Default
               if (isScrollingDown && scrollTop >= maxHeaderTop) {
                 top = maxHeaderTop;
               } else if (!isScrollingDown && scrollTop >= this._dHeight) {
-                top = this.condenses ? this._dHeight : 0;
+                top = this.condenses && !this.fixed ? this._dHeight : 0;
               }
               var scrollVelocity = dScrollTop / (now - this._lastTimestamp);
               this.style.transitionDuration = this._clamp((top - lastTop) / scrollVelocity, 0, 300) + 'ms';
@@ -691,7 +692,7 @@ Mixin | Description | Default
           case 'title':
             return Polymer.dom(this).querySelector('[title]');
           case 'condensedTitle':
-            return Polymer.dom(this).querySelector('[condensed-title'];
+            return Polymer.dom(this).querySelector('[condensed-title]');
         }
         return null;
       },
