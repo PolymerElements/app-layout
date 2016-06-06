@@ -40,6 +40,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       height: 3000px;
       background-color: red;
     }
+
   </style>
 
 </head>
@@ -55,6 +56,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <app-toolbar>
             <div title spacer>Title</div>
           </app-toolbar>
+        </app-header>
+        <div class="content"></div>
+      </div>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="testPrimaryElement">
+    <template>
+      <div>
+        <app-header fixed condenses reveals class="header">
+          <app-toolbar></app-toolbar>
+          <app-toolbar primary></app-toolbar>
         </app-header>
         <div class="content"></div>
       </div>
@@ -108,7 +121,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       assert.isBelow(headerClientRect.bottom, 0);
     }
 
-
     suite('basic features', function() {
       var container, header, toolbar, testEffect;
 
@@ -125,7 +137,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         container = fixture('testHeader');
         header = container.querySelector('app-header');
         toolbar = container.querySelector('app-toolbar');
-      
+
         testEffect.setUp.reset();
         testEffect.tearDown.reset();
         testEffect.run.reset();
@@ -447,7 +459,45 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
            done();
         });
       });
+    });
 
+    suite('Primary element', function() {
+      var container, header;
+
+      setup(function() {
+        container = fixture('testPrimaryElement');
+        header = container.querySelector('app-header');
+      });
+
+      test('primary element reference', function() {
+        assert.equal(header._getPrimaryEl(), header.querySelector('[primary]'));
+      });
+
+      test('should reveal the entire header', function(done) {
+        flush(function() {
+          scrollTestHelper(header.scrollTarget, [
+            {
+              y: 0,
+              callback: function() {
+                assertHeaderIsFullSized(header);
+              }
+            }, {
+              y: 1000,
+              callback: function() {
+                assertHeaderIsCondensed(header);
+              }
+            }, {
+              y: 980,
+              callback: function() {
+                setTimeout(function() {
+                  assertHeaderIsFullSized(header);
+                  done();
+                }, 100);
+              }
+            } 
+          ]);
+        });
+      });
     });
 
   </script>
