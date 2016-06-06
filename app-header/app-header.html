@@ -227,9 +227,7 @@ Mixin | Description | Default
     <style>
       :host {
         position: relative;
-
         display: block;
-
         transition-timing-function: linear;
         transition-property: -webkit-transform;
         transition-property: transform;
@@ -240,19 +238,14 @@ Mixin | Description | Default
         right: 0px;
         bottom: -5px;
         left: 0px;
-
         width: 100%;
         height: 5px;
-
         content: "";
         transition: opacity 0.4s;
         pointer-events: none;
-
         opacity: 0;
         box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
-
         will-change: opacity;
-
         @apply(--app-header-shadow);
       }
 
@@ -264,7 +257,6 @@ Mixin | Description | Default
         -webkit-transform-origin: left top;
         transform-origin: left top;
         white-space: nowrap;
-
         opacity: 0;
       }
 
@@ -276,18 +268,14 @@ Mixin | Description | Default
 
       #background {
         @apply(--layout-fit);
-
         overflow: hidden;
       }
 
       #backgroundFrontLayer,
       #backgroundRearLayer {
         @apply(--layout-fit);
-
         height: 100%;
-
         pointer-events: none;
-
         background-size: cover;
       }
 
@@ -297,13 +285,11 @@ Mixin | Description | Default
 
       #backgroundRearLayer {
         opacity: 0;
-
         @apply(--app-header-background-rear-layer);
       }
 
       #contentContainer {
         position: relative;
-
         width: 100%;
         height: 100%;
       }
@@ -582,7 +568,6 @@ Mixin | Description | Default
               } else if (!isScrollingDown && scrollTop >= this._dHeight) {
                 top = this.condenses ? this._dHeight : 0;
               }
-
               var scrollVelocity = dScrollTop / (now - this._lastTimestamp);
               this.style.transitionDuration = this._clamp((top - lastTop) / scrollVelocity, 0, 300) + 'ms';
             } else {
@@ -651,7 +636,6 @@ Mixin | Description | Default
         if (this._top === 0) {
           return this._clampedScrollTop > 0;
         }
-
         return this._clampedScrollTop - this._maxHeaderTop >= 0;
       },
 
@@ -662,7 +646,6 @@ Mixin | Description | Default
        */
       _transformHeader: function(y) {
         this.translate3d(0, (-y) + 'px', 0);
-
         if (this._primaryEl && this.condenses && y >= this._primaryElTop) {
           this.translate3d(0, (Math.min(y, this._dHeight) - this._primaryElTop) + 'px', 0,
               this._primaryEl);
@@ -695,24 +678,20 @@ Mixin | Description | Default
       },
 
       _getDOMRef: function(id) {
-        if (id === 'backgroundFrontLayer') {
-          this._ensureBgContainers();
-          return this._bgFront;
-
-        } else if (id === 'backgroundRearLayer') {
-          this._ensureBgContainers();
-          return this._bgRear;
-
-        } else if (id === 'background') {
-          this._ensureBgContainers();
-          return this._bgContainer;
-
-        } else if (id === 'title') {
-          return Polymer.dom(this).querySelector('[title]');
-
-        } else if (id === 'condensedTitle') {
-          return Polymer.dom(this).querySelector('[condensed-title]');
-
+        switch (id) {
+          case 'backgroundFrontLayer':
+            this._ensureBgContainers();
+            return this._bgFront;
+          case 'backgroundRearLayer':
+            this._ensureBgContainers();
+            return this._bgRear;
+          case 'background':
+            this._ensureBgContainers();
+            return this._bgContainer;
+          case 'title':
+            return Polymer.dom(this).querySelector('[title]');
+          case 'condensedTitle':
+            return Polymer.dom(this).querySelector('[condensed-title'];
         }
         return null;
       },
