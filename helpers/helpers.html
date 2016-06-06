@@ -85,19 +85,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var deltaScrollTop = scrollTop - currentScrollTop;
         var deltaScrollLeft = scrollLeft - currentScrollLeft;
         var duration = 300;
-
-        (function updateFrame() {
+        var updateFrame = (function updateFrame() {
           var now = Date.now();
           var elapsedTime = now - startTime;
 
           if (elapsedTime < duration) {
             scrollTo(timingFn(elapsedTime, currentScrollLeft, deltaScrollLeft, duration),
                 timingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration));
-            requestAnimationFrame(updateFrame.bind(this));
+            requestAnimationFrame(updateFrame);
           } else {
             scrollTo(scrollLeft, scrollTop);
           }
-        }).call(this);
+        }).bind(this);
+        
+        updateFrame();
       }
 
     } else if (options.behavior === 'silent') {
