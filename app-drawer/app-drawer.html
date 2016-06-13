@@ -251,9 +251,6 @@ Custom property                  | Description                            | Defa
       _lastTabStop: null,
 
       ready: function() {
-        // Set the scroll direction so you can vertically scroll inside the drawer.
-        this.setScrollDirection('y');
-
         // Only transition the drawer after its first render (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
         this._setTransitionDuration('0s');
@@ -267,9 +264,12 @@ Custom property                  | Description                            | Defa
           this._boundEscKeydownHandler = this._escKeydownHandler.bind(this);
           this._resetDrawerState();
 
-          this.listen(this, 'track', '_track');
           this.addEventListener('transitionend', this._transitionend.bind(this));
           this.addEventListener('keydown', this._tabKeydownHandler.bind(this))
+
+          // Only listen for horizontal track so you can vertically scroll inside the drawer.
+          this.listen(this, 'track', '_track');
+          this.setScrollDirection('y');
         });
       },
 
