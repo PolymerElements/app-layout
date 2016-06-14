@@ -116,8 +116,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isFalse(drawer.noFocusTrap);
       });
 
-      test('set scroll direction', function() {
-        assert.equal(drawer['__polymerGesturesTouchAction'], 'pan-y');
+      test('set scroll direction', function(done) {
+        window.setTimeout(function() {
+          assert.equal(drawer['__polymerGesturesTouchAction'], 'pan-y');
+          done();
+        }, 350);
       });
 
       test('transitions are enabled after attached', function(done) {
