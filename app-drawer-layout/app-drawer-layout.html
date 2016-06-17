@@ -219,13 +219,13 @@ Custom property                          | Description                          
           var contentContainer = this.$.contentContainer;
 
           if (this.narrow) {
-            drawer.opened = drawer.persistent = false;
+            drawer.opened = drawer.persistent === false;
             contentContainer.classList.add('narrow');
 
             contentContainer.style.marginLeft = '';
             contentContainer.style.marginRight = '';
           } else {
-            drawer.opened = drawer.persistent = true;
+            drawer.opened = drawer.persistent === true;
             contentContainer.classList.remove('narrow');
 
             if (drawer.position == 'right') {
