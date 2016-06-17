@@ -130,7 +130,7 @@ Custom property                  | Description                            | Defa
         left: auto;
       }
 
-      :host([opened]) > #contentContainer {
+      #contentContainer.opened {
         -webkit-transform: translate3d(0, 0, 0);
         transform: translate3d(0, 0, 0);
       }
@@ -150,7 +150,7 @@ Custom property                  | Description                            | Defa
         background: var(--app-drawer-scrim-background, rgba(0, 0, 0, 0.5));
       }
 
-      :host([opened]) > #scrim {
+      #scrim.opened {
         opacity: 1;
       }
 
@@ -197,6 +197,8 @@ Custom property                  | Description                            | Defa
       set opened(v) {
         this._opened = v;
         v ? this.setAttribute('opened', '') : this.removeAttribute('opened');
+        this.$.scrim.classList.toggle('opened', v);
+        this.$.contentContainer.classList.toggle('opened', v);
       }
 
         /**
