@@ -209,13 +209,12 @@ Custom property                          | Description                          
       },
 
       resetLayout: function() {
-        this.debounce('_resetLayout', function() {
-          if (!this.isAttached) {
-            return;
-          }
+        if (!this.isAttached) {
+          return;
+        }
 
+        this.debounce('_resetLayout', function() {
           var drawer = this.drawer;
-          var drawerWidth = this.drawer.getWidth();
           var contentContainer = this.$.contentContainer;
 
           if (this.narrow) {
@@ -228,6 +227,7 @@ Custom property                          | Description                          
             drawer.opened = drawer.persistent = true;
             contentContainer.classList.remove('narrow');
 
+            var drawerWidth = this.drawer.getWidth();
             if (drawer.position == 'right') {
               contentContainer.style.marginLeft = '';
               contentContainer.style.marginRight = drawerWidth + 'px';

@@ -234,7 +234,7 @@ Custom property                  | Description                            | Defa
       },
 
       observers: [
-        'resetLayout(position)',
+        'resetLayout(position, isAttached)',
         '_resetPosition(align, isAttached)'
       ],
 
@@ -308,9 +308,8 @@ Custom property                  | Description                            | Defa
       },
 
       /**
-       * Resets the layout. If you changed the size of app-header via CSS
-       * you can notify the changes by either firing the `iron-resize` event
-       * or calling `resetLayout` directly.
+       * Resets the layout. The event fired is used by app-drawer-layout to position the
+       * content.
        *
        * @method resetLayout
        */

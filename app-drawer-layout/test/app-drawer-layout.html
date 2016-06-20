@@ -137,9 +137,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('content layout', function(done) {
-        var listenerSpy = sinon.spy();
         var xResizeable = drawerLayout.querySelector('x-resizeable');
-        xResizeable.addEventListener('iron-resize', listenerSpy);
+        var listenerSpy = sinon.spy(xResizeable, 'notifyResize');
         drawerLayout.responsiveWidth = '10000px';
 
         window.setTimeout(function() {
