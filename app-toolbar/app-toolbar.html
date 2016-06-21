@@ -8,114 +8,66 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<script>
 
-<!--
-app-toolbar is a horizontal toolbar containing items that can be used for
-label, navigation, search and actions.
+  document.registerElement('app-toolbar',
+    class AppToolbar extends HTMLElement {
+      getTemplate() {
+        return `
+          <style>
 
-### Example
+            :host {
+              display: flex;
+              position: relative;
+              flex-direction: row;
+              align-items: center;
+              height: 64px;
+              padding: 0 16px;
+              pointer-events: none;
+              font-size: var(--app-toolbar-font-size, 20px);
+            }
 
-Add a title to the toolbar.
+            ::content > * {
+              pointer-events: auto;
+            }
 
-```html
-<app-toolbar>
-  <div title>App name</div>
-</app-toolbar>
-```
+            ::content > paper-icon-button {
+              font-size: 0;
+            }
 
-Add a button to the left and right side of the toolbar.
+            ::content > [title],
+            ::content > [condensed-title] {
+              pointer-events: none;
+              flex: 1;
+            }
 
-```html
-<app-toolbar>
-  <paper-icon-button icon="menu"></paper-icon-button>
-  <div title>App name</div>
-  <paper-icon-button icon="search"></paper-icon-button>
-</app-toolbar>
-```
+            ::content > [bottom-item] {
+              position: absolute;
+              right: 0;
+              bottom: 0;
+              left: 0;
+            }
 
-You can use the attributes `top-item` or `bottom-item` to completely fit an element
-to the top or bottom of the toolbar respectively.
+            ::content > [top-item] {
+              position: absolute;
+              top: 0;
+              right: 0;
+              left: 0;
+            }
 
-### Content attributes
+            ::content > [spacer] {
+              margin-left: 64px;
+            }
 
-Attribute            | Description 
----------------------|---------------------------------------------------------
-`title`              | The main title element.
-`condensed-title`    | The title element if used inside a condensed app-header.
-`spacer`             | Adds a left margin of `64px`.
-`bottom-item`        | Sticks the element to the bottom of the toolbar.
-`top-item`           | Sticks the element to the top of the toolbar.
-
-### Styling
-
-Custom property              | Description                  | Default
------------------------------|------------------------------|-----------------------
-`--app-toolbar-font-size`    | Toolbar font size            | 20px
-
-@group App Elements
-@element app-toolbar
-@demo app-toolbar/demo/index.html
--->
-
-<dom-module id="app-toolbar">
-  <template>
-    <style>
-      :host {
-        position: relative;
-
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
-
-        height: 64px;
-        padding: 0 16px;
-
-        pointer-events: none;
-
-        font-size: var(--app-toolbar-font-size, 20px);
+          </style>
+          <content></content>
+        `;
       }
 
-      :host > ::content > * {
-        pointer-events: auto;
+      createdCallback() {
+        this.createShadowRoot();
+        this.shadowRoot.innerHTML = this.getTemplate();
       }
-
-      :host > ::content > paper-icon-button {
-        /* paper-icon-button/issues/33 */
-        font-size: 0;
-      }
-
-      :host > ::content > [title],
-      :host > ::content > [condensed-title] {
-        pointer-events: none;
-        @apply(--layout-flex);
-      }
-
-      :host > ::content > [bottom-item] {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        left: 0;
-      }
-
-      :host > ::content > [top-item] {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-      }
-
-      :host > ::content > [spacer] {
-        margin-left: 64px;
-      }
-    </style>
-
-    <content></content>
-  </template>
-
-  <script>
-    Polymer({
-      is: 'app-toolbar'
     });
-  </script>
-</dom-module>
+
+</script>
