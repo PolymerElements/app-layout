@@ -13,59 +13,93 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   document.registerElement('app-toolbar',
     class AppToolbar extends HTMLElement {
       getTemplate() {
+        var hostRules = navigator.userAgent.indexOf('Chrome') > 0 ?
+          `
+            :host {
+              display: block;
+              height: 64px;
+              font-size: 20px;
+              pointer-events: none;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              position: relative;
+              padding: 0 16px;
+              box-sizing: border-box;
+            }
+          `
+            :
+          `
+            :host {
+              display: block;
+              height: 64px;
+              font-size: 20px;
+            }
+
+            slot {
+              pointer-events: none;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              position: relative;
+              width: 100%;
+              height: 100%;
+              padding: 0 16px;
+              box-sizing: border-box;
+            }
+          `;
+
         return `
           <style>
 
-            :host {
-              display: flex;
-              position: relative;
-              flex-direction: row;
-              align-items: center;
-              height: 64px;
-              padding: 0 16px;
-              pointer-events: none;
-              font-size: var(--app-toolbar-font-size, 20px);
-            }
+            ${hostRules}
 
-            ::content > * {
+            ::slotted(*) {
               pointer-events: auto;
             }
 
-            ::content > paper-icon-button {
-              font-size: 0;
+            ::slotted(paper-icon-button) {
+              font-size: 0 !important;
             }
 
-            ::content > [title],
-            ::content > [condensed-title] {
-              pointer-events: none;
-              flex: 1;
-            }
-
-            ::content > [bottom-item] {
-              position: absolute;
+            ::slotted([bottom-item]) {
+              position: absolute !important;
               right: 0;
               bottom: 0;
               left: 0;
             }
 
-            ::content > [top-item] {
-              position: absolute;
+            ::slotted([title]),
+            ::slotted([condensed-title]) {
+              pointer-events: none;
+              flex: 1 1 auto;
+            }
+
+            ::slotted([top-item]) {
+              position: absolute !important;
               top: 0;
               right: 0;
               left: 0;
             }
 
-            ::content > [spacer] {
+            ::slotted([bottom-item]) {
+              position: absolute !important;
+              right: 0;
+              bottom: 0;
+              left: 0;
+            }
+
+            ::slotted([spacer]) {
               margin-left: 64px;
             }
 
           </style>
-          <content></content>
+          <slot id="s1"></slot>
         `;
       }
 
       createdCallback() {
-        this.createShadowRoot();
+        this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = this.getTemplate();
       }
     });
