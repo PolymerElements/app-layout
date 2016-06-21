@@ -320,10 +320,21 @@ Custom property                  | Description                            | Defa
         this.transform('translate3d(' + x + ',' + y + ',' + z + ')', node);
       }
 
+      constructor() {
+        super();
+        this.createdCallback();
+      }
+
       createdCallback() {
-        // TODO: fix hack to find template (document.currentScript doesn't work in classes)
         var htmlImport = document.querySelector('link[rel=import][href*=app-drawer]');
-        var domModule = htmlImport.import.querySelector('dom-module#app-drawer');
+        var domModule;
+        // In CE v1, the constructor is synchronous and `htmlImport.import` won't be set in
+        // polyfilled browsers, so use `document._currentScript` instead.
+        if (htmlImport.import) {
+          domModule = htmlImport.import.querySelector('dom-module#app-drawer');
+        } else {
+          domModule = document._currentScript.parentElement;
+        }
         var template = domModule.querySelector('template');
         this.createShadowRoot ? this.createShadowRoot() : this.attachShadow({ mode: 'open' });
         this.shadowRoot.appendChild(template.content.cloneNode(true /* deep */));
@@ -363,6 +374,10 @@ Custom property                  | Description                            | Defa
         this._setTransitionDuration('0s');
       }
 
+      connectedCallback() {
+        this.attachedCallback();
+      }
+
       attachedCallback() {
         // Only transition the drawer after its first render (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
@@ -383,6 +398,10 @@ Custom property                  | Description                            | Defa
 
           this.$.scrim.addEventListener('click', this.close.bind(this));
         });
+      }
+
+      disconnectedCallback() {
+        this.detachedCallback();
       }
 
       detachedCallback() {
@@ -791,6 +810,10 @@ Custom property                  | Description                            | Defa
        */
     }
 
-    document.registerElement('app-drawer', AppDrawer);
+    if (window.customElements) {
+      customElements.define('app-drawer', AppDrawer);
+    } else {
+      document.registerElement('app-drawer', AppDrawer);
+    }
   </script>
 </dom-module>

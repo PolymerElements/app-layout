@@ -16,7 +16,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>app-drawer demo</title>
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <!-- Feature detect `window.customElements` since the polyfill doesn't. -->
+  <!--<script src="https://polygit.org/webcomponentsjs+:v1/components/webcomponentsjs/src/CustomElements/v1/CustomElements.js"></script>-->
+  <script>
+  if (!window.customElements) {
+    var script = document.createElement('script');
+    script.src = 'https://polygit.org/webcomponentsjs+:v1/components/webcomponentsjs/src/CustomElements/v1/CustomElements.js';
+    document.head.appendChild(script);
+  }
+  </script>
+  <script src="https://polygit.org/components/webcomponentsjs/CustomElements.js"></script>
+  <script src="https://polygit.org/components/webcomponentsjs/HTMLImports.js"></script>
+
   <link rel="import" href="../app-drawer.html">
 
   <style>
