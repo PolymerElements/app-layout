@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-  <title>app-drawer demo</title>
+  <title>app-drawer-layout demo</title>
 
   <!-- Feature detect `window.customElements` since the polyfill doesn't. -->
   <script>
@@ -27,7 +27,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="https://polygit.org/components/webcomponentsjs/CustomElements.js"></script>
   <script src="https://polygit.org/components/webcomponentsjs/HTMLImports.js"></script>
 
-  <link rel="import" href="../app-drawer.html">
+  <link rel="import" href="../../app-drawer/app-drawer.html">
+  <link rel="import" href="../app-drawer-layout.html">
 
   <style>
 
@@ -43,27 +44,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     app-drawer {
-      --app-drawer-width: 150px;
-      --app-drawer-scrim-background: rgba(0, 0, 100, 0.8);
+      --app-drawer-width: 350px;
 
-      /* This mixin doesn't actually work. */
+      /* This mixin doesn't actually work.
       --app-drawer-content-container: {
         background-color: #B0BEC5;
-      }
-    }
-
-    .scroll {
-      height: 100%;
-      overflow: auto;
-    }
-
-    button {
-      display: block;
-      width: 100%;
-      background: none;
-      border: none;
-      padding: 16px;
-      font-size: 16px;
+      } */
     }
 
   </style>
@@ -71,38 +57,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <app-drawer swipe-open opened>
-    <div class="scroll">
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-      <button>Option</button>
-    </div>
-  </app-drawer>
+  <!-- Safari Shadow DOM bug - http://jsbin.com/jaqofi/edit?html,output -->
+  <app-drawer-layout>
 
-  <p>
-    Main Content
-  </p>
+    <app-drawer slot="drawer"></app-drawer>
+
+    <button drawer-toggle>Toggle Drawer</button>
+
+    <p>Lorem ipsum blah blah blah...</p>
+
+  </app-drawer-layout>
 
 </body>
 </html>

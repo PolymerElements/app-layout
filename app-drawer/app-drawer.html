@@ -244,8 +244,11 @@ Custom property                  | Description                            | Defa
       }
 
       set position(v) {
-        this._position = v;
-        this.setAttribute('position', v);
+        if (this._position !== v) {
+          this._position = v;
+          this.setAttribute('position', v);
+          this.resetLayout();
+        }
       }
 
         /**
@@ -309,7 +312,7 @@ Custom property                  | Description                            | Defa
         }
       }
       fire(type) {
-        this.dispatchEvent(new CustomEvent(type));
+        this.dispatchEvent(new CustomEvent(type, { bubbles: true }));
       }
 
       transform(value, node) {
@@ -320,24 +323,28 @@ Custom property                  | Description                            | Defa
         this.transform('translate3d(' + x + ',' + y + ',' + z + ')', node);
       }
 
+      stampTemplate(tagName) {
+        var htmlImport = document.querySelector('link[rel=import][href*=' + tagName + ']');
+        var domModule;
+        // In CE v1, the constructor is synchronous and `htmlImport.import` won't be set in
+        // polyfilled browsers, so use `document._currentScript` instead.
+        if (htmlImport.import) {
+          domModule = htmlImport.import.querySelector('dom-module#' + tagName);
+        } else {
+          domModule = document._currentScript.parentElement;
+        }
+        var template = domModule.querySelector('template');
+        this.attachShadow ? this.attachShadow({ mode: 'open' }) : this.createShadowRoot();
+        this.shadowRoot.appendChild(document.importNode(template.content, true /* deep */));
+      }
+
       constructor() {
         super();
         this.createdCallback();
       }
 
       createdCallback() {
-        var htmlImport = document.querySelector('link[rel=import][href*=app-drawer]');
-        var domModule;
-        // In CE v1, the constructor is synchronous and `htmlImport.import` won't be set in
-        // polyfilled browsers, so use `document._currentScript` instead.
-        if (htmlImport.import) {
-          domModule = htmlImport.import.querySelector('dom-module#app-drawer');
-        } else {
-          domModule = document._currentScript.parentElement;
-        }
-        var template = domModule.querySelector('template');
-        this.createShadowRoot ? this.createShadowRoot() : this.attachShadow({ mode: 'open' });
-        this.shadowRoot.appendChild(template.content.cloneNode(true /* deep */));
+        this.stampTemplate('app-drawer');
 
         this.$ = {};
         this.$.contentContainer = this.shadowRoot.querySelector('#contentContainer');
