@@ -71,8 +71,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             ::slotted([title]),
             ::slotted([condensed-title]) {
+              transform-origin: left top;
               pointer-events: none;
               flex: 1 1 auto;
+              white-space: nowrap;
             }
 
             ::slotted([top-item]) {

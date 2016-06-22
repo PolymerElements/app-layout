@@ -50,18 +50,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               opacity: 1;
             }
 
-            ::slotted([condensed-title]) {
-              transform-origin: left top;
-              white-space: nowrap;
-              opacity: 0;
-            }
-
-            ::slotted([title]) {
-              -webkit-transform-origin: left top;
-              transform-origin: left top;
-              white-space: nowrap;
-            }
-
             #background {
               ${layoutFit}
               overflow: hidden;
@@ -123,18 +111,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._resizeHandler = this._resizeHandler.bind(this);
         this._effects$ = [];
 
-        this.condenses = false;
-        this.fixed = false;
-        this.reveals = false;
-        this.shadow = false;
-
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = this.template;
       }
 
       attachedCallback() {
         this.isAttached = true;
+        this.condenses = this.condenses || this.hasAttribute('condenses');
+        this.fixed = this.fixed || this.hasAttribute('fixed');
+        this.reveals = this.reveals || this.hasAttribute('reveals');
+        this.shadow = this.shadow || this.hasAttribute('shadow');
+        this.scrollTarget = this.scrollTarget || this.getAttribute('scrollTarget') || this._doc;
+        this.effects = this.effects || this.getAttribute('effects') || '';
+
         window.addEventListener('resize', this._resizeHandler);
+        requestAnimationFrame(_ => this.resetLayout());
       }
 
       detachedCallback() {
@@ -180,8 +171,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       set shadow(v) {
-        this._shadow = v;
-        v ? this.setAttribute('shadow', '') : this.removeAttribute('shadow');
+        this._shadow = (v !== false && v != null);
+        this._shadow ? this.setAttribute('shadow', '') : this.removeAttribute('shadow');
       }
 
       get _maxHeaderTop() {
@@ -257,6 +248,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         // restore no transition
         this.disabled = currentDisabled;
+      }
+
+      /**
+       * Forces layout
+       */
+      _layoutIfDirty() {
+        return this.offsetWidth;
+      }
+
+      /**
+       * Returns an effect object bound to the current context.
+       *
+       * @param {Object} effectDef
+       * @param {Object=} effectsConfig The effect config object if the effect accepts config values. (Optional)
+       */
+      _boundEffect(effectDef, effectsConfig) {
+        effectsConfig = effectsConfig || {};
+        var startsAt = parseFloat(effectsConfig.startsAt || 0);
+        var endsAt = parseFloat(effectsConfig.endsAt || 1);
+        var deltaS = endsAt - startsAt;
+        var noop = Function();
+        // fast path if possible
+        var runFn = (startsAt === 0 && endsAt === 1) ? effectDef.run :
+          function(progress, y) {
+            effectDef.run.call(this,
+                Math.max(0, (progress - startsAt) / deltaS), y);
+          };
+        return {
+          setUp: effectDef.setUp ? effectDef.setUp.bind(this, effectsConfig) : noop,
+          run: effectDef.run ? runFn.bind(this) : noop,
+          tearDown: effectDef.tearDown ? effectDef.tearDown.bind(this) : noop
+        };
       }
 
       /**
@@ -389,7 +412,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       translate3d(x, y, z, el) {
-        el.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, ' + z + 'px)';
+        this.transform('translate3d(' + x + ', ' + y + ', ' + z + ')', el);
+      }
+
+      transform(matrix, el) {
+        el = el || this;
+        el.style.transform = matrix;
       }
 
       _resizeHandler() {
@@ -450,6 +478,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       /* #pragma Polymer.AppScrollEffectsBehavior */
 
+      /**
+       * The clamped value of `_scrollTop`.
+       * @type number
+       */
+      get _clampedScrollTop() {
+        return Math.max(0, this._scrollTop);
+      }
+
       get effects() {
         return this._effects;
       }
@@ -463,7 +499,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return this._effectsConfig;
       }
 
-      set effectsConfig() {
+      set effectsConfig(v) {
         this._effectsConfig = v;
         this._effectsChanged();
       }
@@ -474,7 +510,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       set disabled(v) {
         this._disabled = v;
-        v ? this.setAttribute('shadow', '') : this.removeAttribute('shadow');
+        v ? this.setAttribute('disabled', '') : this.removeAttribute('disabled');
       }
 
       _effectsChanged() {
@@ -483,6 +519,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (this.effects === '' || !this.isAttached) {
           return;
         }
+        var effectsConfig = this.effectsConfig || {};
         this.effects.split(' ').forEach(effectName => {
           var effectDef;
           if (effectName !== '') {
@@ -541,16 +578,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
 
-      /**
-       * Override this method to return a reference to a node in the local DOM.
-       * The node is consumed by a scroll effect.
-       *
-       * @param {string} id The id for the node.
-       */
-      _getDOMRef(id) {
-        console.error('_getDOMRef', '`'+ id +'` is undefined'));
-      }
-
       _getUndefinedMsg(effectName) {
         return 'Scroll effect `' + effectName + '` is undefined. ' +
             'Did you forget to import app-layout/app-scroll-effects/effects/' + effectName + '.html ?';
@@ -598,13 +625,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           eventTarget.addEventListener('scroll', this._boundScrollHandler);
         }
       }
-
-      /**
-       * Runs on every scroll event. Consumer of this behavior may override this method.
-       *
-       * @protected
-       */
-      _scrollHandler: Function(),
 
       /**
        * The default scroll target. Consumers of this behavior may want to customize

@@ -56,6 +56,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         fx.title = title;
 
         this._fxResizeTitle = fx;
+
+        console.log(fx.titleDX, fx.titleDY);
       },
       /** @this PolymerElement */
       run: function run(p, y) {
@@ -72,6 +74,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         interpolate(Math.min(1, p), [ [1, fx.scale], [0, -fx.titleDX], [y, y-fx.titleDY] ],
           function(scale, translateX, translateY) {
+            console.log(translateX, translateY);
             this.transform('translate(' + translateX + 'px, ' + translateY + 'px) ' +
                 'scale3d(' + scale + ', ' + scale + ', 1)', fx.title);
           }, this);
