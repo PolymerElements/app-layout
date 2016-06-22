@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   document.registerElement('app-header',
     class AppHeader extends HTMLElement {
-      getTemplate() {
+      get template() {
         var layoutFit = `
           position: absolute;
           top: 0;
@@ -129,7 +129,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.shadow = false;
 
         this.attachShadow({ mode: 'open' });
-        this.shadowRoot.innerHTML = this.getTemplate();
+        this.shadowRoot.innerHTML = this.template;
       }
 
       attachedCallback() {
@@ -183,7 +183,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._shadow = v;
         v ? this.setAttribute('shadow', '') : this.removeAttribute('shadow');
       }
-
 
       get _maxHeaderTop() {
         return this.fixed ? this._dHeight : this._height + 5;
