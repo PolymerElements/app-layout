@@ -8,458 +8,195 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
+<script>
 
-<!--
-app-header is container element for app-toolbars at the top of the screen that can have scroll
-effects. By default, an app-header moves away from the viewport when scrolling down and
-if using `reveals`, the header slides back when scrolling back up. For example:
+  document.registerElement('app-header',
+    class AppHeader extends HTMLElement {
+      get template() {
+        var layoutFit = `
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+        `;
 
-```html
-<app-header reveals>
-  <app-toolbar>
-    <div title>App name</div>
-  </app-toolbar>
-</app-header>
-```
+        return `
+          <style>
 
-app-header can also condense when scrolling down. To achieve this behavior, the header
-must have a larger height than the `primary` element in the light DOM. For example:
+            :host {
+              position: relative;
+              display: block;
+              transition-timing-function: linear;
+              transition-property: transform;
+            }
 
-```html
-<app-header style="height: 96px;" condenses fixed>
-  <app-toolbar style="height: 64px;">
-    <div title>App name</div>
-  </app-toolbar>
-</app-header>
-```
+            :host::after {
+              position: absolute;
+              right: 0px;
+              bottom: -5px;
+              left: 0px;
+              width: 100%;
+              height: 5px;
+              content: "";
+              transition: opacity 0.4s;
+              pointer-events: none;
+              opacity: 0;
+              box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+              will-change: opacity;
+            }
 
-In this case the header is initially `96px` tall, and it shrinks to `64px` when scrolling down.
-That is what is meant by "condensing".
+            :host([shadow])::after {
+              opacity: 1;
+            }
 
-### Primary element
+            ::slotted([condensed-title]) {
+              transform-origin: left top;
+              white-space: nowrap;
+              opacity: 0;
+            }
 
-As the header condenses, the immediate children of app-header are stacked up.
-In this case, the primary element is the immediate child that would always stayed above
-the others as the header condenses. By default, the `primary` element is the first app-toolbar
-that is an immediate children of app-header.
+            ::slotted([title]) {
+              -webkit-transform-origin: left top;
+              transform-origin: left top;
+              white-space: nowrap;
+            }
 
-```html
-<app-header condenses>
-  <app-toolbar> Primary element </app-toolbar>
-</app-header>
-```
+            #background {
+              ${layoutFit}
+              overflow: hidden;
+            }
 
-```html
-<app-header condenses>
-  <app-toolbar></app-toolbar>
-  <app-toolbar primary> Primary element </app-toolbar>
-</app-header>
-```
+            #backgroundFrontLayer,
+            #backgroundRearLayer {
+              ${layoutFit}
+              height: 100%;
+              pointer-events: none;
+              background-size: cover;
+            }
 
-The primary element must be a direct child of app-header.
+            #backgroundRearLayer {
+              opacity: 0;
+            }
 
-### Scroll target
+            #contentContainer {
+              position: relative;
+              width: 100%;
+              height: 100%;
+            }
 
-The app-header's `scrollTarget` property allows to customize the scrollable element to which
-the header responds when the user scrolls. By default, app-header uses the document as
-the scroll target, but you can customize this property by setting the id of the element, e.g.
+            :host([disabled]),
+            :host([disabled])::after,
+            :host([disabled]) #backgroundFrontLayer,
+            :host([disabled]) #backgroundRearLayer,
+            :host([disabled]) ::slotted(app-toolbar:first-of-type),
+            :host([disabled]) ::slotted([primary]),
+            /* Silent scrolling should not run CSS transitions */
+            :host-context(.app-layout-silent-scroll),
+            :host-context(.app-layout-silent-scroll)::after,
+            :host-context(.app-layout-silent-scroll) #backgroundFrontLayer,
+            :host-context(.app-layout-silent-scroll) #backgroundRearLayer,
+            :host-context(.app-layout-silent-scroll) ::slotted(app-toolbar:first-of-type),
+            :host-context(.app-layout-silent-scroll) ::slotted([primary]) {
+              transition: none !important;
+            }
 
-```html
-<div id="scrollingRegion" style="overflow-y: auto;">
-  <app-header scroll-target="scrollingRegion">
-  </app-header>
-</div>
-```
-
-In this case, the `scrollTarget` property points to the outer div element. Alternatively,
-you can set this property programmatically:
-
-```js
-appHeader.scrollTarget = document.querySelector("#scrollingRegion");
-```
-
-## Backgrounds
-app-header has two background layers that can be used for styling when the header is condensed
-or when the scrollable element is scrolled to the top.
-
-## Scroll effects
-
-Scroll effects are _optional_ visual effects applied in app-header based on scroll position. For example,
-The [Material Design scrolling techniques](https://www.google.com/design/spec/patterns/scrolling-techniques.html)
-recommends effects that can be installed via the `effects` property. e.g.
-
-```html
-<app-header effects="waterfall">
-  <app-toolbar>App name</app-toolbar>
-</app-header>
-```
-
-#### Importing the effects
-
-To use the scroll effects, you must explicitly import them in addition to `app-header`:
-
-```html
-<link rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
-```
-
-#### List of effects
-
-* **blend-background**
-Fades in/out two background elements by applying CSS opacity based on scroll position.
-You can use this effect to smoothly change the background color or image of the header.
-For example, using the mixin `--app-header-background-rear-layer` lets you assign a different
-background when the header is condensed:
-
-```css
-app-header {
-  background-color: red;
-  --app-header-background-rear-layer: {
-    /* The header is blue when condensed */
-    background-color: blue;
-  };
-}
-```
-
-* **fade-background**
-Upon scrolling past a threshold, this effect will trigger an opacity transition to
-fade in/out the backgrounds. Compared to the `blend-background` effect,
-this effect doesn't interpolate the opacity based on scroll position.
-
-
-* **parallax-background**
-A simple parallax effect that vertically translates the backgrounds based on a fraction
-of the scroll position. For example:
-
-```css
-app-header {
-  --app-header-background-front-layer: {
-    background-image: url(...);
-  };
-}
-```
-```html
-<app-header style="height: 300px;" effects="parallax-background">
-  <app-toolbar>App name</app-toolbar>
-</app-header>
-```
-
-The fraction determines how far the background moves relative to the scroll position.
-This value can be assigned via the `scalar` config value and it is typically a value
-between 0 and 1 inclusive. If `scalar=0`, the background doesn't move away from the header.
-
-* **resize-title**
-Progressively interpolates the size of the title from the element with the `title` attribute
-to the element with the `condensed-title` attribute as the header condenses. For example:
-
-```html
-<app-header condenses reveals effects="resize-title">
-  <app-toolbar>
-      <h4 condensed-title>App name</h4>
-  </app-toolbar>
-  <app-toolbar>
-      <h1 title>App name</h1>
-  </app-toolbar>
-</app-header>
-```
-
-* **resize-snapped-title**
-Upon scrolling past a threshold, this effect fades in/out the titles using opacity transitions.
-Similarly to `resize-title`, the `title` and `condensed-title` elements must be placed in the
-light DOM.
-
-* **waterfall**
-Toggles the shadow property in app-header to create a sense of depth (as recommended in the
-MD spec) between the header and the underneath content. You can change the shadow by
-customizing the `--app-header-shadow` mixin. For example:
-
-```css
-app-header {
-  --app-header-shadow: {
-    box-shadow: inset 0px 5px 2px -3px rgba(0, 0, 0, 0.2);
-  };
-}
-```
-
-```html
-<app-header condenses reveals effects="waterfall">
-  <app-toolbar>
-      <h1 title>App name</h1>
-  </app-toolbar>
-</app-header>
-```
-
-* **material**
-Installs the waterfall, resize-title, blend-background and parallax-background effects.
-
-### Content attributes
-
-Attribute | Description         | Default
-----------|---------------------|----------------------------------------
-`primary` | Element that remains at the top when the header condenses. | The first app-toolbar in the light DOM.
-
-
-## Styling
-
-Mixin | Description | Default
-------|-------------|----------
-`--app-header-background-front-layer` | Applies to the front layer of the background. | {}
-`--app-header-background-rear-layer` | Applies to the rear layer of the background. | {}
-`--app-header-shadow` | Applies to the shadow. | {}
-
-@group App Elements
-@element app-header
-@demo app-header/demo/blend-background-1.html Blend Background Image
-@demo app-header/demo/blend-background-2.html Blend 2 Background Images
-@demo app-header/demo/blend-background-3.html Blend Background Colors
-@demo app-header/demo/contacts.html Contacts Demo
-@demo app-header/demo/give.html Resize Snapped Title Demo
-@demo app-header/demo/music.html Reveals Demo
-@demo app-header/demo/no-effects.html Condenses and Reveals Demo
-@demo app-header/demo/notes.html Fixed with Dynamic Shadow Demo
-@demo app-header/demo/custom-primary-element.html Custom Primary Element Demo
--->
-
-<dom-module id="app-header">
-  <template>
-    <style>
-      :host {
-        position: relative;
-        display: block;
-        transition-timing-function: linear;
-        transition-property: -webkit-transform;
-        transition-property: transform;
+          </style>
+          <div id="contentContainer">
+            <slot></slot>
+          </div>
+        `;
       }
 
-      :host::after {
-        position: absolute;
-        right: 0px;
-        bottom: -5px;
-        left: 0px;
-        width: 100%;
-        height: 5px;
-        content: "";
-        transition: opacity 0.4s;
-        pointer-events: none;
-        opacity: 0;
-        box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
-        will-change: opacity;
-        @apply(--app-header-shadow);
+      createdCallback() {
+        this._height = 0;
+        this._dHeight = 0;
+        this._primaryElTop = 0;
+        this._primaryEl = null;
+        this._top = 0;
+        this._progress = 0;
+        this._wasScrollingDown = false;
+        this._initScrollTop = 0;
+        this._initTimestamp = 0;
+        this._lastTimestamp = 0;
+        this._lastScrollTop = 0;
+        this._resizeHandler = this._resizeHandler.bind(this);
+        this._effects$ = [];
+
+        this.condenses = false;
+        this.fixed = false;
+        this.reveals = false;
+        this.shadow = false;
+
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = this.template;
       }
 
-      :host([shadow])::after {
-        opacity: 1;
+      attachedCallback() {
+        this.isAttached = true;
+        window.addEventListener('resize', this._resizeHandler);
       }
 
-      #contentContainer > ::content [condensed-title] {
-        -webkit-transform-origin: left top;
-        transform-origin: left top;
-        white-space: nowrap;
-        opacity: 0;
+      detachedCallback() {
+        this.isAttached = false;
+        window.removeEventListener('resize', this._resizeHandler);
       }
 
-      #contentContainer > ::content [title] {
-        -webkit-transform-origin: left top;
-        transform-origin: left top;
-        white-space: nowrap;
-      }
-
-      #background {
-        @apply(--layout-fit);
-        overflow: hidden;
-      }
-
-      #backgroundFrontLayer,
-      #backgroundRearLayer {
-        @apply(--layout-fit);
-        height: 100%;
-        pointer-events: none;
-        background-size: cover;
-      }
-
-      #backgroundFrontLayer {
-        @apply(--app-header-background-front-layer);
-      }
-
-      #backgroundRearLayer {
-        opacity: 0;
-        @apply(--app-header-background-rear-layer);
-      }
-
-      #contentContainer {
-        position: relative;
-        width: 100%;
-        height: 100%;
-      }
-
-      :host([disabled]),
-      :host([disabled])::after,
-      :host([disabled]) #backgroundFrontLayer,
-      :host([disabled]) #backgroundRearLayer,
-      :host([disabled]) ::content > app-toolbar:first-of-type,
-      :host([disabled]) ::content > [primary],
-      /* Silent scrolling should not run CSS transitions */
-      :host-context(.app-layout-silent-scroll),
-      :host-context(.app-layout-silent-scroll)::after,
-      :host-context(.app-layout-silent-scroll) #backgroundFrontLayer,
-      :host-context(.app-layout-silent-scroll) #backgroundRearLayer,
-      :host-context(.app-layout-silent-scroll) ::content > app-toolbar:first-of-type,
-      :host-context(.app-layout-silent-scroll) ::content > [primary] {
-        transition: none !important;
-      }
-    </style>
-    <div id="contentContainer">
-      <content id="content"></content>
-    </div>
-  </template>
-
-  <script>
-    Polymer({
-      is: 'app-header',
-
-      behaviors: [
-        Polymer.AppScrollEffectsBehavior,
-        Polymer.IronResizableBehavior
-      ],
-
-      properties: {
-        /**
-         * If true, the header will automatically collapse when scrolling down.
-         * That is, the `primary` element remains visible when the header is fully condensed
-         * whereas the rest of the elements will collapse below `primary` element.
-         *
-         * By default, the `primary` element is the first toolbar in the light DOM:
-         *
-         *```html
-         * <app-header condenses>
-         *   <app-toolbar>This toolbar remains on top</app-toolbar>
-         *   <app-toolbar></app-toolbar>
-         *   <app-toolbar></app-toolbar>
-         * </app-header>
-         * ```
-         *
-         * Additionally, you can specify which toolbar or element remains visible in condensed mode
-         * by adding the `primary` attribute to that element. For example: if we want the last
-         * toolbar to remain visible, we can add the `primary` attribute to it.
-         *
-         *```html
-         * <app-header condenses>
-         *   <app-toolbar></app-toolbar>
-         *   <app-toolbar></app-toolbar>
-         *   <app-toolbar primary>This toolbar remains on top</app-toolbar>
-         * </app-header>
-         * ```
-         *
-         * Note the `primary` element must be a child of `app-header`.
-         */
-        condenses: {
-          type: Boolean,
-          value: false
-        },
-
-        /**
-         * Mantains the header fixed at the top so it never moves away.
-         */
-        fixed: {
-          type: Boolean,
-          value: false
-        },
-
-        /**
-         * Slides back the header when scrolling back up.
-         */
-        reveals: {
-          type: Boolean,
-          value: false
-        },
-
-        /**
-         * Displays a shadow below the header.
-         */
-        shadow: {
-          type: Boolean,
-          reflectToAttribute: true,
-          value: false
+      attributeChangedCallback(name, o, v) {
+        var desc = Object.getOwnPropertyDescriptor(this.__proto__, name);
+        if (desc.set != null) {
+          this[name] = v;
         }
-      },
+      }
 
-      observers: [
-        'resetLayout(isAttached, condenses, fixed)'
-      ],
+      get condenses() {
+        return this._condenses;
+      }
 
-      listeners: {
-        'iron-resize': '_resizeHandler'
-      },
+      set condenses(v) {
+        this._condenses = v;
+        this.resetLayout();
+      }
 
-      /**
-       * A cached offsetHeight of the current element.
-       *
-       * @type {number}
-       */
-      _height: 0,
+      get fixed() {
+        return this._fixed;
+      }
 
-      /**
-       * The distance in pixels the header will be translated to when scrolling.
-       *
-       * @type {number}
-       */
-      _dHeight: 0,
+      set fixed(v) {
+        this._fixed = v;
+        this.resetLayout();
+      }
 
-      /**
-       * The offsetTop of `_primaryEl`
-       *
-       * @type {number}
-       */
-      _primaryElTop: 0,
+      get reveals() {
+        return this._reveal;
+      }
 
-      /**
-       * The element that remains visible when the header condenses.
-       *
-       * @type {HTMLElement}
-       */
-      _primaryEl: null,
+      set reveals(v) {
+        this._reveal = v;
+      }
 
-      /**
-       * The header's top value used for the `transformY`
-       *
-       * @type {number}
-       */
-      _top: 0,
+      get shadow() {
+        return this._shadow;
+      }
 
-      /**
-       * The current scroll progress.
-       *
-       * @type {number}
-       */
-      _progress: 0,
+      set shadow(v) {
+        this._shadow = v;
+        v ? this.setAttribute('shadow', '') : this.removeAttribute('shadow');
+      }
 
-      _wasScrollingDown: false,
-      _initScrollTop: 0,
-      _initTimestamp: 0,
-      _lastTimestamp: 0,
-      _lastScrollTop: 0,
-
-      /**
-       * The distance the header is allowed to move away.
-       *
-       * @type {number}
-       */
       get _maxHeaderTop() {
         return this.fixed ? this._dHeight : this._height + 5;
-      },
+      }
 
       /**
        * Returns a reference to the element that remains visible when the header condenses.
        *
        * @return {HTMLElement}?
        */
-      _getPrimaryEl: function() {
+      _getPrimaryEl() {
         /** @type {HTMLElement} */
         var primaryEl;
-        var nodes = Polymer.dom(this.$.content).getDistributedNodes();
+        var nodes = this.shadowRoot.querySelector('slot').assignedNodes();
 
         for (var i = 0; i < nodes.length; i++) {
           if (nodes[i].nodeType === Node.ELEMENT_NODE) {
@@ -473,7 +210,7 @@ Mixin | Description | Default
           }
         }
         return primaryEl;
-      },
+      }
 
       /**
        * Resets the layout. If you changed the size of app-header via CSS
@@ -482,47 +219,45 @@ Mixin | Description | Default
        *
        * @method resetLayout
        */
-      resetLayout: function() {
-        this.fire('app-header-reset-layout');
+      resetLayout() {
+        if (!this.isAttached || this.fixed == null || this.condenses == null) {
+          return;
+        }
+        if (this.offsetWidth === 0 && this.offsetHeight === 0) {
+          return;
+        }
 
-        this.debounce('_resetLayout', function() {
-          // noop if the header isn't visible
-          if (this.offsetWidth === 0 && this.offsetHeight === 0) {
-            return;
-          }
+        var scrollTop = this._clampedScrollTop;
+        var firstSetup = this._height === 0 || scrollTop === 0;
+        var currentDisabled = this.disabled;
 
-          var scrollTop = this._clampedScrollTop;
-          var firstSetup = this._height === 0 || scrollTop === 0;
-          var currentDisabled = this.disabled;
+        this._height = this.offsetHeight;
+        this._primaryEl = this._getPrimaryEl();
+        this.disabled = true;
 
-          this._height = this.offsetHeight;
-          this._primaryEl = this._getPrimaryEl();
-          this.disabled = true;
+        // prepare for measurement
+        if  (!firstSetup) {
+          this._updateScrollState(0, true);
+        }
 
-          // prepare for measurement
-          if  (!firstSetup) {
-            this._updateScrollState(0, true);
-          }
+        if (this._mayMove()) {
+          this._dHeight = this._primaryEl ? this._height - this._primaryEl.offsetHeight : 0;
+        } else {
+          this._dHeight = 0;
+        }
 
-          if (this._mayMove()) {
-            this._dHeight = this._primaryEl ? this._height - this._primaryEl.offsetHeight : 0;
-          } else {
-            this._dHeight = 0;
-          }
+        this._primaryElTop = this._primaryEl ? this._primaryEl.offsetTop : 0;
+        this._setUpEffect();
 
-          this._primaryElTop = this._primaryEl ? this._primaryEl.offsetTop : 0;
-          this._setUpEffect();
-
-          if (firstSetup) {
-            this._updateScrollState(scrollTop, true);
-          } else {
-            this._updateScrollState(this._lastScrollTop, true);
-            this._layoutIfDirty();
-          }
-          // restore no transition
-          this.disabled = currentDisabled;
-        });
-      },
+        if (firstSetup) {
+          this._updateScrollState(scrollTop, true);
+        } else {
+          this._updateScrollState(this._lastScrollTop, true);
+          this._layoutIfDirty();
+        }
+        // restore no transition
+        this.disabled = currentDisabled;
+      }
 
       /**
        * Updates the scroll state.
@@ -530,7 +265,7 @@ Mixin | Description | Default
        * @param {number} scrollTop
        * @param {boolean=} forceUpdate (default: false)
        */
-      _updateScrollState: function(scrollTop, forceUpdate) {
+      _updateScrollState(scrollTop, forceUpdate) {
         if (this._height === 0) {
           return;
         }
@@ -595,16 +330,16 @@ Mixin | Description | Default
           this._runEffects(progress, top);
           this._transformHeader(top);
         }
-      },
+      }
 
       /**
        * Returns true if the current header is allowed to move as the user scrolls.
        *
        * @return {boolean}
        */
-      _mayMove: function() {
+      _mayMove() {
         return this.condenses || !this.fixed;
-      },
+      }
 
       /**
        * Returns true if the current header will condense based on the size of the header
@@ -612,9 +347,9 @@ Mixin | Description | Default
        *
        * @return {boolean}
        */
-      willCondense: function() {
+      willCondense() {
         return this._dHeight > 0 && this.condenses;
-      },
+      }
 
       /**
        * Returns true if the current element is on the screen.
@@ -623,9 +358,9 @@ Mixin | Description | Default
        * @method isOnScreen
        * @return {boolean}
        */
-      isOnScreen: function() {
+      isOnScreen() {
         return this._height !== 0 && this._top < this._height;
-      },
+      }
 
       /**
        * Returns true if there's content below the current element.
@@ -633,35 +368,39 @@ Mixin | Description | Default
        * @method isContentBelow
        * @return {boolean}
        */
-      isContentBelow: function() {
+      isContentBelow() {
         if (this._top === 0) {
           return this._clampedScrollTop > 0;
         }
         return this._clampedScrollTop - this._maxHeaderTop >= 0;
-      },
+      }
 
       /**
        * Transforms the header.
        *
        * @param {number} y
        */
-      _transformHeader: function(y) {
+      _transformHeader(y) {
         this.translate3d(0, (-y) + 'px', 0);
         if (this._primaryEl && this.condenses && y >= this._primaryElTop) {
           this.translate3d(0, (Math.min(y, this._dHeight) - this._primaryElTop) + 'px', 0,
               this._primaryEl);
         }
-      },
+      }
 
-      _resizeHandler: function() {
+      translate3d(x, y, z, el) {
+        el.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, ' + z + 'px)';
+      }
+
+      _resizeHandler() {
         this.resetLayout();
-      },
+      }
 
-      _clamp: function(v, min, max) {
+      _clamp(v, min, max) {
         return Math.min(max, Math.max(min, v));
-      },
+      }
 
-      _ensureBgContainers: function() {
+      _ensureBgContainers() {
         if (!this._bgContainer) {
           this._bgContainer = document.createElement('div');
           this._bgContainer.id = 'background';
@@ -674,11 +413,12 @@ Mixin | Description | Default
           this._bgFront.id = 'backgroundFrontLayer';
           this._bgContainer.appendChild(this._bgFront);
 
-          Polymer.dom(this.root).insertBefore(this._bgContainer, this.$.contentContainer);
+          this.shadowRoot.insertBefore(this._bgContainer,
+              this.shadowRoot.querySelector('#contentContainer'));
         }
-      },
+      }
 
-      _getDOMRef: function(id) {
+      _getDOMRef(id) {
         switch (id) {
           case 'backgroundFrontLayer':
             this._ensureBgContainers();
@@ -690,12 +430,12 @@ Mixin | Description | Default
             this._ensureBgContainers();
             return this._bgContainer;
           case 'title':
-            return Polymer.dom(this).querySelector('[title]');
+            return this.querySelector('[title]');
           case 'condensedTitle':
-            return Polymer.dom(this).querySelector('[condensed-title]');
+            return this.querySelector('[condensed-title]');
         }
         return null;
-      },
+      }
 
       /**
        * Returns an object containing the progress value of the scroll effects
@@ -704,15 +444,285 @@ Mixin | Description | Default
        * @method getScrollState
        * @return {Object}
        */
-      getScrollState: function() {
+      getScrollState() {
         return { progress: this._progress, top: this._top };
       }
 
+      /* #pragma Polymer.AppScrollEffectsBehavior */
+
+      get effects() {
+        return this._effects;
+      }
+
+      set effects(v) {
+        this._effects = v;
+        this._effectsChanged();
+      }
+
+      get effectsConfig() {
+        return this._effectsConfig;
+      }
+
+      set effectsConfig() {
+        this._effectsConfig = v;
+        this._effectsChanged();
+      }
+
+      get disabled() {
+        return this._disabled;
+      }
+
+      set disabled(v) {
+        this._disabled = v;
+        v ? this.setAttribute('shadow', '') : this.removeAttribute('shadow');
+      }
+
+      _effectsChanged() {
+        this._tearDownEffects();
+
+        if (this.effects === '' || !this.isAttached) {
+          return;
+        }
+        this.effects.split(' ').forEach(effectName => {
+          var effectDef;
+          if (effectName !== '') {
+            if ((effectDef = Polymer.AppLayout._scrollEffects[effectName])) {
+              this._effects$.push(this._boundEffect(effectDef, effectsConfig[effectName]));
+            } else {
+              console.error(this._getUndefinedMsg(effectName));
+            }
+          }
+        });
+
+        this._setUpEffect();
+      }
+
       /**
-       * Fires when the layout of `app-header` changed.
-       *
-       * @event app-header-reset-layout
+       * Sets up the effects.
        */
+      _setUpEffect() {
+        if (!this.isAttached) {
+          return;
+        }
+        this._effectsRunFn$ = [];
+        this._effects$.forEach(effectDef => {
+          // install the effect only if no error was reported
+          if (effectDef.setUp() !== false) {
+            this._effectsRunFn$.push(effectDef.run);
+          }
+        });
+      }
+
+      /**
+       * Tears down the effects.
+       */
+      _tearDownEffects() {
+        this._effects$.forEach(effectDef => effectDef.tearDown());
+        this._effectsRunFn$ = [];
+        this._effects$ = [];
+      }
+
+      /**
+       * Runs the effects.
+       *
+       * @param {number} p The progress
+       * @param {number} y The top position of the current element relative to the viewport.
+       */
+      _runEffects(p, y) {
+        this._effectsRunFn$.forEach(run => run(p, y));
+      }
+
+      /**
+       * Overrides the `_scrollHandler`.
+       */
+      _scrollHandler() {
+        if (!this.disabled) {
+          this._updateScrollState(this._clampedScrollTop);
+        }
+      }
+
+      /**
+       * Override this method to return a reference to a node in the local DOM.
+       * The node is consumed by a scroll effect.
+       *
+       * @param {string} id The id for the node.
+       */
+      _getDOMRef(id) {
+        console.error('_getDOMRef', '`'+ id +'` is undefined'));
+      }
+
+      _getUndefinedMsg(effectName) {
+        return 'Scroll effect `' + effectName + '` is undefined. ' +
+            'Did you forget to import app-layout/app-scroll-effects/effects/' + effectName + '.html ?';
+      }
+
+      /* #pragma Polymer.IronScrollTargetBehavior */
+
+      get scrollTarget() {
+        return this._scrollTarget;
+      }
+
+      set scrollTarget(v) {
+        this._scrollTarget = v;
+        this._scrollTargetChanged();
+      }
+
+      _scrollTargetChanged() {
+        var eventTarget;
+        var scrollTarget = this.scrollTarget;
+
+        if (this._oldScrollTarget) {
+          eventTarget = this._oldScrollTarget === this._doc ? window : this._oldScrollTarget;
+          eventTarget.removeEventListener('scroll', this._boundScrollHandler);
+          this._oldScrollTarget = null;
+        }
+
+        if (!this.isAttached) {
+          return;
+        }
+        // Support element id references
+        if (scrollTarget === 'document') {
+
+          this.scrollTarget = this._doc;
+
+        } else if (typeof scrollTarget === 'string') {
+
+          this.scrollTarget = (this.rootNode || document).getElementById(this.scrollTarget);
+
+        } else if (this._isValidScrollTarget()) {
+
+          eventTarget = scrollTarget === this._doc ? window : scrollTarget;
+          this._boundScrollHandler = this._boundScrollHandler || this._scrollHandler.bind(this);
+          this._oldScrollTarget = scrollTarget;
+
+          eventTarget.addEventListener('scroll', this._boundScrollHandler);
+        }
+      }
+
+      /**
+       * Runs on every scroll event. Consumer of this behavior may override this method.
+       *
+       * @protected
+       */
+      _scrollHandler: Function(),
+
+      /**
+       * The default scroll target. Consumers of this behavior may want to customize
+       * the default scroll target.
+       *
+       * @type {Element}
+       */
+      get _defaultScrollTarget() {
+        return this._doc;
+      }
+
+      /**
+       * Shortcut for the document element
+       *
+       * @type {Element}
+       */
+      get _doc() {
+        return this.ownerDocument.documentElement;
+      }
+
+      /**
+       * Gets the number of pixels that the content of an element is scrolled upward.
+       *
+       * @type {number}
+       */
+      get _scrollTop() {
+        if (this._isValidScrollTarget()) {
+          return this.scrollTarget === this._doc ? window.pageYOffset : this.scrollTarget.scrollTop;
+        }
+        return 0;
+      }
+
+      /**
+       * Gets the number of pixels that the content of an element is scrolled to the left.
+       *
+       * @type {number}
+       */
+      get _scrollLeft() {
+        if (this._isValidScrollTarget()) {
+          return this.scrollTarget === this._doc ? window.pageXOffset : this.scrollTarget.scrollLeft;
+        }
+        return 0;
+      }
+
+      /**
+       * Sets the number of pixels that the content of an element is scrolled upward.
+       *
+       * @type {number}
+       */
+      set _scrollTop(top) {
+        if (this.scrollTarget === this._doc) {
+          window.scrollTo(window.pageXOffset, top);
+        } else if (this._isValidScrollTarget()) {
+          this.scrollTarget.scrollTop = top;
+        }
+      }
+
+      /**
+       * Sets the number of pixels that the content of an element is scrolled to the left.
+       *
+       * @type {number}
+       */
+      set _scrollLeft(left) {
+        if (this.scrollTarget === this._doc) {
+          window.scrollTo(left, window.pageYOffset);
+        } else if (this._isValidScrollTarget()) {
+          this.scrollTarget.scrollLeft = left;
+        }
+      }
+
+      /**
+       * Scrolls the content to a particular place.
+       *
+       * @method scroll
+       * @param {number} left The left position
+       * @param {number} top The top position
+       */
+      scroll(left, top) {
+         if (this.scrollTarget === this._doc) {
+          window.scrollTo(left, top);
+        } else if (this._isValidScrollTarget()) {
+          this.scrollTarget.scrollLeft = left;
+          this.scrollTarget.scrollTop = top;
+        }
+      }
+
+      /**
+       * Gets the width of the scroll target.
+       *
+       * @type {number}
+       */
+      get _scrollTargetWidth() {
+        if (this._isValidScrollTarget()) {
+          return this.scrollTarget === this._doc ? window.innerWidth : this.scrollTarget.offsetWidth;
+        }
+        return 0;
+      }
+
+      /**
+       * Gets the height of the scroll target.
+       *
+       * @type {number}
+       */
+      get _scrollTargetHeight() {
+        if (this._isValidScrollTarget()) {
+          return this.scrollTarget === this._doc ? window.innerHeight : this.scrollTarget.offsetHeight;
+        }
+        return 0;
+      }
+
+      /**
+       * Returns true if the scroll target is a valid HTMLElement.
+       *
+       * @return {boolean}
+       */
+      _isValidScrollTarget() {
+        return this.scrollTarget instanceof HTMLElement;
+      }
     });
-  </script>
-</dom-module>
+
+</script>
