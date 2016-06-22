@@ -9,7 +9,7 @@ Add a title to the toolbar.
 
 ```html
 <app-toolbar>
-  <div title>App name</div>
+  <div main-title>App name</div>
 </app-toolbar>
 ```
 
@@ -18,7 +18,7 @@ Add a button to the left and right side of the toolbar.
 ```html
 <app-toolbar>
   <paper-icon-button icon="menu"></paper-icon-button>
-  <div title>App name</div>
+  <div main-title>App name</div>
   <paper-icon-button icon="search"></paper-icon-button>
 </app-toolbar>
 ```
@@ -30,7 +30,7 @@ to the top or bottom of the toolbar respectively.
 
 Attribute            | Description 
 ---------------------|---------------------------------------------------------
-`title`              | The main title element.
+`main-title`         | The main title element.
 `condensed-title`    | The title element if used inside a condensed app-header.
 `spacer`             | Adds a left margin of `64px`.
 `bottom-item`        | Sticks the element to the bottom of the toolbar.
