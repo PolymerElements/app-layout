@@ -16,7 +16,7 @@ if using `reveals`, the header slides back when scrolling back up. For example,
 ```
 
 app-header can also condense when scrolling down. To achieve this behavior, the header
-must have a larger height than the `primary` element in the light DOM. For example:
+must have a larger height than the `sticky` element in the light DOM. For example:
 
 ```html
 <app-header style="height: 96px;" condenses fixed>
@@ -29,27 +29,27 @@ must have a larger height than the `primary` element in the light DOM. For examp
 In this case the header is initially `96px` tall, and it shrinks to `64px` when scrolling down.
 That is what is meant by "condensing".
 
-### Primary element
+### Sticky element
 
-As the header condenses, the immediate children of app-header are stacked up.
-In this case, the primary element is the immediate child that would always stayed above
-the others as the header condenses. By default, the `primary` element is the first app-toolbar
-that is an immediate children of app-header.
+The element that is positioned fixed to top of the header's `scrollTarget` when a threshold
+is reached, similar to `position: sticky` in CSS. This element **must** be an immediate
+child of app-header. By default, the `sticky` element is the first `app-toolbar that
+is an immediate child of app-header.
 
 ```html
 <app-header condenses>
-  <app-toolbar> Primary element </app-toolbar>
+  <app-toolbar> Sticky element </app-toolbar>
 </app-header>
 ```
+
+#### Customizing the sticky element
 
 ```html
 <app-header condenses>
   <app-toolbar></app-toolbar>
-  <app-toolbar primary> Primary element </app-toolbar>
+  <app-toolbar sticky> Sticky element </app-toolbar>
 </app-header>
 ```
-
-The primary element must be a direct child of app-header.
 
 ### Scroll target
 
@@ -189,7 +189,7 @@ Installs the waterfall, resize-title, blend-background and parallax-background e
 
 Attribute | Description         | Default
 ----------|---------------------|----------------------------------------
-`primary` | Element that remains at the top when the header condenses. | The first app-toolbar in the light DOM.
+`sticky` | Element that remains at the top when the header condenses. | The first app-toolbar in the light DOM.
 
 
 ## Styling
