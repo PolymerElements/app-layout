@@ -63,12 +63,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-  <test-fixture id="testPrimaryElement">
+  <test-fixture id="testStickyElement">
     <template>
       <div>
         <app-header fixed condenses reveals class="header">
           <app-toolbar></app-toolbar>
-          <app-toolbar primary></app-toolbar>
+          <app-toolbar sticky></app-toolbar>
         </app-header>
         <div class="content"></div>
       </div>
@@ -116,7 +116,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     function assertHeaderIsCondensed(header) {
       header._updateScrollState(header._scrollTop, true);
       var headerClientRect = header.getBoundingClientRect();
-      assert.equal(headerClientRect.top + headerClientRect.height, header._primaryEl.offsetHeight,
+      assert.equal(headerClientRect.top + headerClientRect.height, header._stickyEl.offsetHeight,
           'condensed at ' + header._scrollTop);
     }
 
@@ -467,16 +467,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     });
 
-    suite('Primary element', function() {
+    suite('Sticky element', function() {
       var container, header;
 
       setup(function() {
-        container = fixture('testPrimaryElement');
+        container = fixture('testStickyElement');
         header = container.querySelector('app-header');
       });
 
-      test('primary element reference', function() {
-        assert.equal(header._getPrimaryEl(), header.querySelector('[primary]'));
+      test('sticky element reference', function() {
+        assert.equal(header._getStickyEl(), header.querySelector('[sticky]'));
       });
 
       test('should reveal the entire header', function(done) {

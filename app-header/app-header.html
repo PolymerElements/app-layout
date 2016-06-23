@@ -27,7 +27,7 @@ if using `reveals`, the header slides back when scrolling back up. For example:
 ```
 
 app-header can also condense when scrolling down. To achieve this behavior, the header
-must have a larger height than the `primary` element in the light DOM. For example:
+must have a larger height than the `sticky` element in the light DOM. For example:
 
 ```html
 <app-header style="height: 96px;" condenses fixed>
@@ -40,27 +40,27 @@ must have a larger height than the `primary` element in the light DOM. For examp
 In this case the header is initially `96px` tall, and it shrinks to `64px` when scrolling down.
 That is what is meant by "condensing".
 
-### Primary element
+### Sticky element
 
-As the header condenses, the immediate children of app-header are stacked up.
-In this case, the primary element is the immediate child that would always stayed above
-the others as the header condenses. By default, the `primary` element is the first app-toolbar
-that is an immediate children of app-header.
+The element that is positioned fixed to top of the header's `scrollTarget` when a threshold
+is reached, similar to `position: sticky` in CSS. This element **must** be an immediate
+child of app-header. By default, the `sticky` element is the first `app-toolbar that
+is an immediate child of app-header.
 
 ```html
 <app-header condenses>
-  <app-toolbar> Primary element </app-toolbar>
+  <app-toolbar> Sticky element </app-toolbar>
 </app-header>
 ```
+
+#### Customizing the sticky element
 
 ```html
 <app-header condenses>
   <app-toolbar></app-toolbar>
-  <app-toolbar primary> Primary element </app-toolbar>
+  <app-toolbar sticky> Sticky element </app-toolbar>
 </app-header>
 ```
-
-The primary element must be a direct child of app-header.
 
 ### Scroll target
 
@@ -199,7 +199,7 @@ Installs the waterfall, resize-title, blend-background and parallax-background e
 
 Attribute | Description         | Default
 ----------|---------------------|----------------------------------------
-`primary` | Element that remains at the top when the header condenses. | The first app-toolbar in the light DOM.
+`sticky` | Element that remains at the top when the header condenses. | The first app-toolbar in the light DOM.
 
 
 ## Styling
@@ -220,7 +220,7 @@ Mixin | Description | Default
 @demo app-header/demo/music.html Reveals Demo
 @demo app-header/demo/no-effects.html Condenses and Reveals Demo
 @demo app-header/demo/notes.html Fixed with Dynamic Shadow Demo
-@demo app-header/demo/custom-primary-element.html Custom Primary Element Demo
+@demo app-header/demo/custom-sticky-element.html Custom Sticky Element Demo
 -->
 
 <dom-module id="app-header">
@@ -300,14 +300,14 @@ Mixin | Description | Default
       :host([disabled]) #backgroundFrontLayer,
       :host([disabled]) #backgroundRearLayer,
       :host([disabled]) ::content > app-toolbar:first-of-type,
-      :host([disabled]) ::content > [primary],
+      :host([disabled]) ::content > [sticky],
       /* Silent scrolling should not run CSS transitions */
       :host-context(.app-layout-silent-scroll),
       :host-context(.app-layout-silent-scroll)::after,
       :host-context(.app-layout-silent-scroll) #backgroundFrontLayer,
       :host-context(.app-layout-silent-scroll) #backgroundRearLayer,
       :host-context(.app-layout-silent-scroll) ::content > app-toolbar:first-of-type,
-      :host-context(.app-layout-silent-scroll) ::content > [primary] {
+      :host-context(.app-layout-silent-scroll) ::content > [sticky] {
         transition: none !important;
       }
     </style>
@@ -328,10 +328,10 @@ Mixin | Description | Default
       properties: {
         /**
          * If true, the header will automatically collapse when scrolling down.
-         * That is, the `primary` element remains visible when the header is fully condensed
-         * whereas the rest of the elements will collapse below `primary` element.
+         * That is, the `sticky` element remains visible when the header is fully condensed
+         * whereas the rest of the elements will collapse below `sticky` element.
          *
-         * By default, the `primary` element is the first toolbar in the light DOM:
+         * By default, the `sticky` element is the first toolbar in the light DOM:
          *
          *```html
          * <app-header condenses>
@@ -342,18 +342,18 @@ Mixin | Description | Default
          * ```
          *
          * Additionally, you can specify which toolbar or element remains visible in condensed mode
-         * by adding the `primary` attribute to that element. For example: if we want the last
-         * toolbar to remain visible, we can add the `primary` attribute to it.
+         * by adding the `sticky` attribute to that element. For example: if we want the last
+         * toolbar to remain visible, we can add the `sticky` attribute to it.
          *
          *```html
          * <app-header condenses>
          *   <app-toolbar></app-toolbar>
          *   <app-toolbar></app-toolbar>
-         *   <app-toolbar primary>This toolbar remains on top</app-toolbar>
+         *   <app-toolbar sticky>This toolbar remains on top</app-toolbar>
          * </app-header>
          * ```
          *
-         * Note the `primary` element must be a child of `app-header`.
+         * Note the `sticky` element must be a direct child of `app-header`.
          */
         condenses: {
           type: Boolean,
@@ -409,18 +409,18 @@ Mixin | Description | Default
       _dHeight: 0,
 
       /**
-       * The offsetTop of `_primaryEl`
+       * The offsetTop of `_stickyEl`
        *
        * @type {number}
        */
-      _primaryElTop: 0,
+      _stickyElTop: 0,
 
       /**
        * The element that remains visible when the header condenses.
        *
        * @type {HTMLElement}
        */
-      _primaryEl: null,
+      _stickyEl: null,
 
       /**
        * The header's top value used for the `transformY`
@@ -452,27 +452,27 @@ Mixin | Description | Default
       },
 
       /**
-       * Returns a reference to the element that remains visible when the header condenses.
+       * Returns a reference to the sticky element.
        *
        * @return {HTMLElement}?
        */
-      _getPrimaryEl: function() {
+      _getStickyEl: function() {
         /** @type {HTMLElement} */
-        var primaryEl;
+        var stickyEl;
         var nodes = Polymer.dom(this.$.content).getDistributedNodes();
 
         for (var i = 0; i < nodes.length; i++) {
           if (nodes[i].nodeType === Node.ELEMENT_NODE) {
             var node = /** @type {HTMLElement} */ (nodes[i]);
-            if (node.hasAttribute('primary')) {
-              primaryEl = node;
+            if (node.hasAttribute('sticky')) {
+              stickyEl = node;
               break;
-            } else if (!primaryEl) {
-              primaryEl = node;
+            } else if (!stickyEl) {
+              stickyEl = node;
             }
           }
         }
-        return primaryEl;
+        return stickyEl;
       },
 
       /**
@@ -496,7 +496,7 @@ Mixin | Description | Default
           var currentDisabled = this.disabled;
 
           this._height = this.offsetHeight;
-          this._primaryEl = this._getPrimaryEl();
+          this._stickyEl = this._getStickyEl();
           this.disabled = true;
 
           // prepare for measurement
@@ -505,12 +505,12 @@ Mixin | Description | Default
           }
 
           if (this._mayMove()) {
-            this._dHeight = this._primaryEl ? this._height - this._primaryEl.offsetHeight : 0;
+            this._dHeight = this._stickyEl ? this._height - this._stickyEl.offsetHeight : 0;
           } else {
             this._dHeight = 0;
           }
 
-          this._primaryElTop = this._primaryEl ? this._primaryEl.offsetTop : 0;
+          this._stickyElTop = this._stickyEl ? this._stickyEl.offsetTop : 0;
           this._setUpEffect();
 
           if (firstSetup) {
@@ -647,9 +647,9 @@ Mixin | Description | Default
        */
       _transformHeader: function(y) {
         this.translate3d(0, (-y) + 'px', 0);
-        if (this._primaryEl && this.condenses && y >= this._primaryElTop) {
-          this.translate3d(0, (Math.min(y, this._dHeight) - this._primaryElTop) + 'px', 0,
-              this._primaryEl);
+        if (this._stickyEl && this.condenses && y >= this._stickyElTop) {
+          this.translate3d(0, (Math.min(y, this._dHeight) - this._stickyElTop) + 'px', 0,
+              this._stickyEl);
         }
       },
 
