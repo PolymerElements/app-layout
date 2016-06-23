@@ -142,7 +142,7 @@ between 0 and 1 inclusive. If `scalar=0`, the background doesn't move away from 
 [More about configuration for scroll effects](/app-scroll-effects#configuring-effects)
 
 * **resize-title**
-Progressively interpolates the size of the title from the element with the `title` attribute
+Progressively interpolates the size of the title from the element with the `main-title` attribute
 to the element with the `condensed-title` attribute as the header condenses. For example:
 
 ```html
@@ -158,7 +158,7 @@ to the element with the `condensed-title` attribute as the header condenses. For
 
 * **resize-snapped-title**
 Upon scrolling past a threshold, this effect fades in/out the titles using opacity transitions.
-Similarly to `resize-title`, the `title` and `condensed-title` elements must be placed in the
+Similarly to `resize-title`, the `main-title` and `condensed-title` elements must be placed in the
 light DOM.
 
 * **waterfall**
