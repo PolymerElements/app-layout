@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
 
-  document.registerElement('app-header',
+  customElements.define('app-header',
     class AppHeader extends HTMLElement {
       get template() {
         var layoutFit = `
@@ -96,7 +96,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         `;
       }
 
-      createdCallback() {
+      constructor() {
+        super();
         this._height = 0;
         this._dHeight = 0;
         this._primaryElTop = 0;
@@ -115,8 +116,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.shadowRoot.innerHTML = this.template;
       }
 
-      attachedCallback() {
-        this.isAttached = true;
+      connectedCallback() {
+        // `isConnected` is undefined in safari even using the polyfill
+        if (this.isConnected == null) {
+          this.isConnected = true;
+        }
         this.condenses = this.condenses || this.hasAttribute('condenses');
         this.fixed = this.fixed || this.hasAttribute('fixed');
         this.reveals = this.reveals || this.hasAttribute('reveals');
@@ -128,8 +132,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         requestAnimationFrame(_ => this.resetLayout());
       }
 
-      detachedCallback() {
-        this.isAttached = false;
+      disconnectedCallback() {
+        if (this.isConnected == null) {
+          this.isConnected = false;
+        }
         window.removeEventListener('resize', this._resizeHandler);
       }
 
@@ -211,7 +217,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        * @method resetLayout
        */
       resetLayout() {
-        if (!this.isAttached || this.fixed == null || this.condenses == null) {
+        if (!this.isConnected || this.fixed == null || this.condenses == null) {
           return;
         }
         if (this.offsetWidth === 0 && this.offsetHeight === 0) {
@@ -516,7 +522,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _effectsChanged() {
         this._tearDownEffects();
 
-        if (this.effects === '' || !this.isAttached) {
+        if (this.effects === '' || !this.isConnected) {
           return;
         }
         var effectsConfig = this.effectsConfig || {};
@@ -538,7 +544,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        * Sets up the effects.
        */
       _setUpEffect() {
-        if (!this.isAttached) {
+        if (!this.isConnected) {
           return;
         }
         this._effectsRunFn$ = [];
@@ -604,7 +610,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this._oldScrollTarget = null;
         }
 
-        if (!this.isAttached) {
+        if (!this.isConnected) {
           return;
         }
         // Support element id references
@@ -741,7 +747,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        * @return {boolean}
        */
       _isValidScrollTarget() {
-        return this.scrollTarget instanceof HTMLElement;
+        // BUG in the polyfill: (docElement || body) instanceof HTMLElement = false
+        return this.scrollTarget && this.scrollTarget.nodeType === 1;
       }
     });
 

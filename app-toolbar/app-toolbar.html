@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
 
-  document.registerElement('app-toolbar',
+  customElements.define('app-toolbar',
     class AppToolbar extends HTMLElement {
       get template() {
         var hostRules = navigator.userAgent.indexOf('Chrome') > 0 ?
@@ -62,13 +62,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               font-size: 0 !important;
             }
 
-            ::slotted([bottom-item]) {
-              position: absolute !important;
-              right: 0;
-              bottom: 0;
-              left: 0;
-            }
-
             ::slotted([title]),
             ::slotted([condensed-title]) {
               transform-origin: left top;
@@ -100,7 +93,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         `;
       }
 
-      createdCallback() {
+      constructor() {
+        super();
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = this.template;
       }
