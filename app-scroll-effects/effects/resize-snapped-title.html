@@ -20,7 +20,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * @this Polymer.AppLayout.ElementWithBackground
      */
     setUp: function setUp(config) {
-      var title = this._getDOMRef('title');
+      var title = this._getDOMRef('mainTitle');
       var condensedTitle = this._getDOMRef('condensedTitle');
       var duration = config.duration || '0.2s';
       var fx = {};
@@ -30,7 +30,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return false;
       }
       if (!title) {
-        this._warn(this._logf('effects[resize-snapped-title]', 'undefined `title`'));
+        this._warn(this._logf('effects[resize-snapped-title]', 'undefined `main-title`'));
         return false;
       }
 

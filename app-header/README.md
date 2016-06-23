@@ -10,7 +10,7 @@ if using `reveals`, the header slides back when scrolling back up. For example,
 ```html
 <app-header reveals>
   <app-toolbar>
-    <div title>App name</div>
+    <div main-title>App name</div>
   </app-toolbar>
 </app-header>
 ```
@@ -21,7 +21,7 @@ must have a larger height than the `primary` element in the light DOM. For examp
 ```html
 <app-header style="height: 96px;" condenses fixed>
   <app-toolbar style="height: 64px;">
-    <div title>App name</div>
+    <div main-title>App name</div>
   </app-toolbar>
 </app-header>
 ```
@@ -142,7 +142,7 @@ between 0 and 1 inclusive. If `scalar=0`, the background doesn't move away from 
 [More about configuration for scroll effects](/app-scroll-effects#configuring-effects)
 
 * **resize-title**
-Progressively interpolates the size of the title from the element with the `title` attribute
+Progressively interpolates the size of the title from the element with the `main-title` attribute
 to the element with the `condensed-title` attribute as the header condenses. For example:
 
 ```html
@@ -151,14 +151,14 @@ to the element with the `condensed-title` attribute as the header condenses. For
       <h4 condensed-title>App name</h4>
   </app-toolbar>
   <app-toolbar>
-      <h1 title>App name</h1>
+      <h1 main-title>App name</h1>
   </app-toolbar>
 </app-header>
 ```
 
 * **resize-snapped-title**
 Upon scrolling past a threshold, this effect fades in/out the titles using opacity transitions.
-Similarly to `resize-title`, the `title` and `condensed-title` elements must be placed in the
+Similarly to `resize-title`, the `main-title` and `condensed-title` elements must be placed in the
 light DOM.
 
 * **waterfall**
@@ -177,7 +177,7 @@ app-header {
 ```html
 <app-header condenses reveals effects="waterfall">
   <app-toolbar>
-      <h1 title>App name</h1>
+      <h1 main-title>App name</h1>
   </app-toolbar>
 </app-header>
 ```
