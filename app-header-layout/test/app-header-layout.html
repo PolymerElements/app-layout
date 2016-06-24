@@ -98,6 +98,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       });
 
+      test('fullbleed', function(done) {
+        headerLayout.setAttribute('fullbleed', '');
+        flush(function() {
+          assert.deepEqual(headerLayout.getBoundingClientRect(),
+              headerLayout.offsetParent.getBoundingClientRect());
+          done();
+        });
+      });
+
     });
 
   </script>
