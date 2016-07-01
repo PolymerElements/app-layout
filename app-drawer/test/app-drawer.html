@@ -227,15 +227,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(drawer.getWidth(), contentContainer.offsetWidth);
       });
 
-      test('app-drawer-reset-layout', function(done) {
+      test('app-drawer-reset-layout', function() {
         var listenerSpy = sinon.spy();
         drawer.addEventListener('app-drawer-reset-layout', listenerSpy);
         drawer.align = 'right';
 
-        window.setTimeout(function() {
-          assert.isTrue(listenerSpy.called);
-          done();
-        }, 1);
+        assert.isTrue(listenerSpy.called);
       });
 
       test('app-drawer-transitioned', function(done) {

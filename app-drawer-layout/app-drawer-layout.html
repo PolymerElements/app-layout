@@ -209,10 +209,6 @@ Custom property                          | Description                          
       },
 
       resetLayout: function() {
-        if (!this.isAttached) {
-          return;
-        }
-
         this.debounce('_resetLayout', function() {
           var drawer = this.drawer;
           var contentContainer = this.$.contentContainer;

@@ -211,7 +211,6 @@ Custom property                  | Description                            | Defa
         position: {
           type: String,
           readOnly: true,
-          value: 'left',
           reflectToAttribute: true
         },
 
@@ -314,9 +313,7 @@ Custom property                  | Description                            | Defa
        * @method resetLayout
        */
       resetLayout: function() {
-        this.debounce('_resetLayout', function() {
-          this.fire('app-drawer-reset-layout');
-        }, 1);
+        this.fire('app-drawer-reset-layout');
       },
 
       _isRTL: function() {
