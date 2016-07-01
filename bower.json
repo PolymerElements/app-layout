@@ -15,7 +15,7 @@
   "license": "http://polymer.github.io/LICENSE.txt",
   "ignore": [],
   "dependencies": {
-    "polymer": "polymer/polymer#master",
+    "polymer": "polymer/polymer#^1.6.0",
     "iron-flex-layout": "polymerelements/iron-flex-layout#^1.0.0",
     "iron-media-query": "polymerelements/iron-media-query#^1.0.0",
     "iron-resizable-behavior": "polymerelements/iron-resizable-behavior#^1.0.0",
@@ -41,8 +41,5 @@
     "test-fixture": "polymerelements/test-fixture#^1.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
     "web-component-tester": "^4.0.0"
-  },
-  "resolutions": {
-    "polymer": "master"
   }
 }
