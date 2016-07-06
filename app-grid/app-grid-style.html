@@ -16,8 +16,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       :host {
         --app-grid-expandible-item: {
-          flex-basis: calc((100% - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1)))) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1)) !important;
-          max-width: calc((100% - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1)))) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1)) !important;
+          -webkit-flex-basis: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1)))) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1)) !important;
+          flex-basis: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1) + 1))) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1)) !important;
+          max-width: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1) + 1))) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1)) !important;
         };
       }
 
@@ -39,12 +40,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .app-grid > * {
-        flex: 1 1;
-        flex-basis: calc((100% - (var(--app-grid-gutter, 0px) * var(--app-grid-columns, 1))) / var(--app-grid-columns, 1));
-        max-width: calc((100% - (var(--app-grid-gutter, 0px) * var(--app-grid-columns, 1))) / var(--app-grid-columns, 1));
+        /* required for IE 10*/
+        -ms-flex: 1 1 100%;
+        -webkit-flex: 1;
+        flex: 1;
+
+        -webkit-flex-basis: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * var(--app-grid-columns, 1))) / var(--app-grid-columns, 1));
+        flex-basis: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * var(--app-grid-columns, 1))) / var(--app-grid-columns, 1));
+
+        max-width: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * var(--app-grid-columns, 1))) / var(--app-grid-columns, 1));
         margin-bottom: var(--app-grid-gutter, 0px);
         margin-right: var(--app-grid-gutter, 0px);
         height: var(--app-grid-item-height, auto);
+        box-sizing: border-box;
       }
 
       .app-grid[has-aspect-ratio] > * {
