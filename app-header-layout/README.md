@@ -32,3 +32,11 @@ Using an own scrolling region:
   </div>
 </app-header-layout>
 ```
+
+Add the `fullbleed` attribute to app-header-layout to make it fit the size of its container:
+
+```html
+<app-header-layout fullbleed>
+ ...
+</app-header-layout>
+```

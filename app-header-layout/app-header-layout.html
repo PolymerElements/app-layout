@@ -46,11 +46,20 @@ Using an own scrolling region:
 </app-header-layout>
 ```
 
+Add the `fullbleed` attribute to app-header-layout to make it fit the size of its container:
+
+```html
+<app-header-layout fullbleed>
+ ...
+</app-header-layout>
+```
+
 @group App Elements
 @element app-header-layout
 @demo app-header-layout/demo/simple.html Simple Demo
 @demo app-header-layout/demo/scrolling-region.html Scrolling Region
 @demo app-header-layout/demo/music.html Music Demo
+@demo app-header-layout/demo/footer.html Footer Demo
 -->
 
 <dom-module id="app-header-layout">
@@ -58,7 +67,6 @@ Using an own scrolling region:
     <style>
       :host {
         display: block;
-
         /**
          * Force app-header-layout to have its own stacking context so that its parent can
          * control the stacking of it relative to other elements (e.g. app-drawer-layout).
@@ -69,18 +77,33 @@ Using an own scrolling region:
         z-index: 0;
       }
 
+      :host > ::content > app-header {
+        @apply(--layout-fixed-top);
+        z-index: 1;
+      }
+
       :host([has-scrolling-region]) {
         height: 100%;
       }
 
-      :host > ::content > app-header {
-        @apply(--layout-fixed-top);
-
-        z-index: 1;
-      }
-
       :host([has-scrolling-region]) > ::content > app-header {
         position: absolute;
+      }
+
+      :host([has-scrolling-region]) > #contentContainer {
+        @apply(--layout-fit);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      :host([fullbleed]) {
+        @apply(--layout-vertical);
+        @apply(--layout-fit);
+      }
+
+      :host([fullbleed]) > #contentContainer {
+        @apply(--layout-vertical);
+        @apply(--layout-flex);
       }
 
       #contentContainer {
@@ -89,12 +112,6 @@ Using an own scrolling region:
         z-index: 0;
       }
 
-      :host([has-scrolling-region]) > #contentContainer {
-        @apply(--layout-fit);
-
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-      }
     </style>
 
     <content id="header" select="app-header"></content>
@@ -159,11 +176,9 @@ Using an own scrolling region:
         if (!this.isAttached || !header) {
           return;
         }
-
         // Get header height here so that style reads are batched together before style writes
         // (i.e. getBoundingClientRect() below).
         var headerHeight = header.offsetHeight;
-
         // Update the header position.
         if (!this.hasScrollingRegion) {
           var rect = this.getBoundingClientRect();
@@ -174,7 +189,6 @@ Using an own scrolling region:
           header.style.left = '';
           header.style.right = '';
         }
-
         // Update the content container position.
         var containerStyle = this.$.contentContainer.style;
         if (header.fixed && !header.willCondense() && this.hasScrollingRegion) {
