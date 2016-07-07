@@ -15,8 +15,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
 
       :host {
+        /**
+         * The width for the expandible item is:
+         * (100% - subPixelAdjustment - gutter * (columns - itemColumns + 1)) / columns * itemColumns
+         *
+         * - subPixelAdjustment: 0.5px (Required for IE 11)
+         * - gutter: var(--app-grid-gutter)
+         * - columns: var(--app-grid-columns)
+         * - itemColumn: var(--app-grid-expandible-item-columns)
+         */
         --app-grid-expandible-item: {
-          -webkit-flex-basis: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1)))) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1)) !important;
+          -webkit-flex-basis: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1) + 1))) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1)) !important;
           flex-basis: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1) + 1))) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1)) !important;
           max-width: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1) + 1))) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1)) !important;
         };
@@ -40,11 +49,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .app-grid > * {
-        /* required for IE 10*/
+        /* Required for IE 10 */
         -ms-flex: 1 1 100%;
         -webkit-flex: 1;
         flex: 1;
 
+        /* The width for an item is: (100% - subPixelAdjustment - gutter * columns) / columns */
         -webkit-flex-basis: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * var(--app-grid-columns, 1))) / var(--app-grid-columns, 1));
         flex-basis: calc((100% - 0.5px - (var(--app-grid-gutter, 0px) * var(--app-grid-columns, 1))) / var(--app-grid-columns, 1));
 
