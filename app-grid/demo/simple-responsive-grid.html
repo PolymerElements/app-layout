@@ -22,10 +22,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../app-grid-style.html">
 
   <style>
+
     body {
       margin: 0;
       background-color: #ddd;
     }
+
   </style>
 </head>
 <body>
@@ -37,7 +39,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           display: block;
           --app-grid-columns: 3;
           --app-grid-gutter: 10px;
-          --app-grid-expandible-item-columns: 3;
+          --app-grid-expandible-item-columns: 2;
           --app-grid-item-height: 20vw;
         }
 
@@ -61,20 +63,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           background-color: white;
         }
 
-        @media(min-width: 801px) {
-          .item:nth-child(4n + 1) {
+        @media (min-width: 800px) {
+          .item:nth-child(5n+1) {
             @apply(--app-grid-expandible-item);
           }
         }
 
-        @media(max-width: 800px) {
+        @media (max-width: 799px) {
           :host {
             --app-grid-columns: 2;
             --app-grid-gutter: 5px;
-            --app-grid-item-columns: 2;
+            --app-grid-expandible-item-columns: 2;
           }
 
-          .item:nth-child(3n + 1) {
+          .item:nth-child(3n+1) {
             @apply(--app-grid-expandible-item);
           }
         }

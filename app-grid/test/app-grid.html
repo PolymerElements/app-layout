@@ -39,7 +39,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           --app-grid-gutter: 10px;
           --app-grid-expandible-item-columns: 3;
           --app-grid-item-height: 20vw;
-          width: 300px;
+          width: 200px;
+          background-color: red;
+
         }
 
         ul {
@@ -61,7 +63,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <ul class="app-grid">
         <template items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]" is="dom-repeat">
-          <li class="item">1</li>
+          <li class="item">[[item]]</li>
         </template>
       </ul>
 
@@ -113,30 +115,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var i, k, currentRect;
           var gridItems = Polymer.dom(grid.root).querySelectorAll('li');
           var expectedBoundingRect = [
-            {top: 10, right: 290, bottom: 110, left: 10, width: 280},
-            {top: 120, right: 96, bottom: 220, left: 10, width: 86},
-            {top: 120, right: 193, bottom: 220, left: 106, width: 86},
-            {top: 120, right: 289, bottom: 220, left: 203, width: 86},
-            {top: 230, right: 290, bottom: 330, left: 10, width: 280},
-            {top: 340, right: 96, bottom: 440, left: 10, width: 86},
-            {top: 340, right: 193, bottom: 440, left: 106, width: 86},
-            {top: 340, right: 289, bottom: 440, left: 203, width: 86},
-            {top: 450, right: 290, bottom: 550, left: 10, width: 280},
-            {top: 560, right: 96, bottom: 660, left: 10, width: 86},
-            {top: 560, right: 193, bottom: 660, left: 106, width: 86},
-            {top: 560, right: 289, bottom: 660, left: 203, width: 86}
+            {top: 10, right: 190, bottom: 110, left: 10, width: 180},
+            {top: 120, right: 63, bottom: 220, left: 10, width: 53},
+            {top: 120, right: 126, bottom: 220, left: 73, width: 53},
+            {top: 120, right: 189, bottom: 220, left: 136, width: 53},
+            {top: 230, right: 190, bottom: 330, left: 10, width: 180},
+            {top: 340, right: 63, bottom: 440, left: 10, width: 53},
+            {top: 340, right: 126, bottom: 440, left: 73, width: 53},
+            {top: 340, right: 189, bottom: 440, left: 136, width: 53},
+            {top: 450, right: 190, bottom: 550, left: 10, width: 180},
+            {top: 560, right: 63, bottom: 660, left: 10, width: 53},
+            {top: 560, right: 126, bottom: 660, left: 73, width: 53},
+            {top: 560, right: 189, bottom: 660, left: 136, width: 53}
           ];
 
           for (i = 0; i < gridItems.length; i++) {
             currentRect = valueAsInt(gridItems[i].getBoundingClientRect());
+
             for (k in expectedBoundingRect[i]) {
               if (expectedBoundingRect[i].hasOwnProperty(k)) {
                 assert.approximately(expectedBoundingRect[i][k],
-                    currentRect[k], 1, ' ItemRect[' + i + ']. ' + k);
+                    currentRect[k], 1, ' ItemRect[' + i + '].' + k);
               }
             }
           }
-          done();
+
+        done();
 
         });
 
