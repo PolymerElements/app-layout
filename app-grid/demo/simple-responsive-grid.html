@@ -27,7 +27,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       margin: 0;
       background-color: #ddd;
     }
-    
+
   </style>
 </head>
 <body>
@@ -39,7 +39,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           display: block;
           --app-grid-columns: 3;
           --app-grid-gutter: 10px;
-          --app-grid-expandible-item-columns: 3;
+          --app-grid-expandible-item-columns: 2;
           --app-grid-item-height: 20vw;
         }
 
@@ -64,7 +64,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
 
         @media (min-width: 800px) {
-          .item:nth-child(4n+1) {
+          .item:nth-child(5n+1) {
             @apply(--app-grid-expandible-item);
           }
         }
