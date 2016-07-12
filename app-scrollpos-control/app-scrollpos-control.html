@@ -9,7 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../helpers/helpers.html">
+<link rel="import" href="../../iron-scroll-target-behavior/iron-scroll-target-behavior.html">
 
 <!--
 app-scrollpos-control is a manager for saving and restoring the scroll position when multiple
@@ -56,6 +56,10 @@ Example:
     Polymer({
       is: 'app-scrollpos-control',
 
+      behaviors: [
+        Polymer.IronScrollTargetBehavior
+      ],
+
       properties: {
         /**
          * The selected page.
@@ -84,7 +88,7 @@ Example:
 
       _selectedChanged: function(selected, old) {
         if (old != null) {
-          this._scrollposMap[old] = {x: window.pageXOffset, y: window.pageYOffset};
+          this._scrollposMap[old] = {x: this._scrollLeft, y: this._scrollTop};
         }
       },
 
@@ -92,18 +96,10 @@ Example:
         this.debounce('_updateScrollPos', function() {
           var pos = this._scrollposMap[this.selected];
           if (pos != null && !this.reset) {
-            this._scrollTo(pos.x, pos.y);
+            this.scroll(pos.x, pos.y);
           } else {
-            this._scrollTo(0, 0);
+            this.scroll(0, 0);
           }
-        });
-      },
-
-      _scrollTo: function(x, y) {
-        Polymer.AppLayout.scroll({
-          left: x,
-          top: y,
-          behavior: 'silent'
         });
       }
     });
