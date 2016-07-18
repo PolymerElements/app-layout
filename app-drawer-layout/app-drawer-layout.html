@@ -204,7 +204,10 @@ Custom property                          | Description                          
       _tapHandler: function(e) {
         var target = Polymer.dom(e).localTarget;
         if (target && target.hasAttribute('drawer-toggle')) {
-          this.drawer.toggle();
+          var hostClasses = this.hasAttribute('class') ? this.getAttribute('class').split() : false;
+          if (hostClasses && hostClasses.indexOf(target.getAttribute('drawer-toggle')) >= 0) {
+            this.drawer.toggle();
+          }
         }
       },
 
