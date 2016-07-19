@@ -50,7 +50,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           display: block;
           --app-grid-columns: 4;
           --app-grid-gutter: 10px;
-          --app-grid-item-height: 250px;
           --app-grid-expandible-item-columns: 4;
           --paper-icon-button-ink-color: white;
         }
@@ -61,7 +60,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
 
         ul {
-          margin: 0;
           padding: 0;
           list-style: none;
         }
@@ -73,14 +71,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
 
         .item {
+          height: 250px;
           position: relative;
           background-color: white;
-          background-image: url();
           background-size: cover;
           background-position: center center;
         }
 
         .item:nth-child(5n + 1) {
+          height: 30vmax;
           @apply(--app-grid-expandible-item);
         }
 
