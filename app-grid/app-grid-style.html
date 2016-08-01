@@ -132,10 +132,9 @@ Custom property                               | Description                     
          * - itemColumn: var(--app-grid-expandible-item-columns)
          */
         --app-grid-expandible-item: {
-          -webkit-flex-basis: calc((100% - 0.1px) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1) - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1)))) !important;
-          flex-basis: calc((100% - 0.1px) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1) - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1)))) !important;
-          max-width: calc((100% - 0.1px) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1) - (var(--app-grid-gutter, 0px) * (var(--app-grid-columns, 1) - var(--app-grid-expandible-item-columns, 1)))) !important;
-
+          -webkit-flex-basis: calc((100% - 0.1px) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1) - (var(--app-grid-gutter, 0px))) !important;
+          flex-basis: calc((100% - 0.1px) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1) - (var(--app-grid-gutter, 0px))) !important;
+          max-width: calc((100% - 0.1px) / var(--app-grid-columns, 1) * var(--app-grid-expandible-item-columns, 1) - (var(--app-grid-gutter, 0px) )) !important;
         };
       }
 
@@ -152,8 +151,9 @@ Custom property                               | Description                     
         -webkit-flex-wrap: wrap;
         flex-wrap: wrap;
 
-        margin-top: var(--app-grid-gutter, 0px);
-        margin-left: var(--app-grid-gutter, 0px);
+        padding-top: var(--app-grid-gutter, 0px);
+        padding-left: var(--app-grid-gutter, 0px);
+        box-sizing: border-box;
       }
 
       .app-grid > * {

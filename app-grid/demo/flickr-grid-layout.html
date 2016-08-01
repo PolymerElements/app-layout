@@ -66,6 +66,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           list-style: none;
         }
 
+        [title] {
+          font-weight: bold;
+        }
+
         .centered-container {
           margin-top: 40px;
           max-width: 1000px;
@@ -89,12 +93,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           background-position: center center;
         }
 
-        li.item:first-child {
-          height: 400px;
-        }
-
         .item:nth-child(5n + 1) {
           @apply(--app-grid-expandible-item);
+          height: 400px;
         }
 
         @media(max-width: 799px) {
@@ -113,6 +114,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             height: 250px;
           }
 
+          [spacer] {
+            margin-left: 0;
+          }
+
         }
 
       </style>
@@ -126,18 +131,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="centered-container">
           <ul class="app-grid">
             <template is="dom-repeat" items="[[photos]]" as="photo">
-              <li class="item" style$="[[getItemStyle(photo)]]"></li>
+              <li class="item" style$="[[_getItemStyle(photo)]]"></li>
             </template>
           </ul>
         </div>
       </app-header-layout>
 
       <div class="loadingIndicator" hidden$="[[!loadingPhotos]]">
-        <paper-spinner active$="[[loadingPhotos]]"></paper-spinner> Fetching photos for <b>[[searchText]]</b>
+        <paper-spinner active$="[[loadingPhotos]]"></paper-spinner> Fetching photos
       </div>
 
-      <iron-ajax id="ajax" loading="{{loadingPhotos}}" url="[[_getAPIEndpoint(apiKey, searchText, page)]]"
-          handle-as="text" on-response="_didReceiveResponse"></iron-ajax>
+      <iron-ajax id="ajax" loading="{{loadingPhotos}}" handle-as="text" on-response="_didReceiveResponse"></iron-ajax>
 
       <!-- this element loads more photos when the user scrolls down and reached the lower threshold -->
       <iron-scroll-threshold id="scrollTheshold"
@@ -162,7 +166,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               value: 'c304f1096a06486d3c1e7ab271bf7f3f'
             },
 
-            photos: Array,
+            photos: {
+              type: Array,
+              value: function() {
+                return [];
+              }
+            },
 
             perPage: {
               type: Number,
@@ -171,20 +180,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             page: {
               type: Number,
-              value: 1
+              value: 0
             },
 
-            searchText: {
+            userId: {
               type: String,
-              value: 'Big sur'
+              value: '142203852@N04'
+            },
+
+            totalPages: {
+              type: Number,
+              value: 1
             },
 
             loadingPhotos: Boolean
           },
-
-          observers: [
-            '_resetPhotos(searchText)'
-          ],
 
           attached: function() {
             this._updateGridStyles = this._updateGridStyles || function() {
@@ -197,11 +207,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             window.removeEventListener('resize', this._updateGridStyles);
           },
 
-          _getAPIEndpoint: function(apiKey, searchText, page) {
+          _getAPIEndpoint: function(apiKey, userId, page) {
             return 'https://api.flickr.com/services/rest/?method=flickr.photos.search' +
                 '&api_key=' + apiKey +
                 '&safe_search=1&sort=interestingness-desc'+
-                '&text=' + encodeURIComponent(searchText) +
+                '&user_id=' + userId +
                 '&page=' + page +
                 '&format=json' +
                 '&per_page=' + this.perPage;
@@ -214,6 +224,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               return;
             }
 
+            this.totalPages = payload.photos.pages;
+
             payload.photos.photo.forEach(function(photo) {
               this.push('photos', photo);
             }, this);
@@ -222,25 +234,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
 
           _loadMorePhotos: function() {
-            if (this.$.ajax.lastRequest) {
-              this.$.ajax.lastRequest.abort();
+            if (this.loadingPhotos) {
+              return;
             }
-            this.page++;
-            this.$.ajax.generateRequest();
-          },
-
-          _resetPhotos: function(searchText) {
-            this.page = 1;
-            this.photos = [];
-
-            if (searchText.trim() !== '') {
-              this.debounce('_loadPhotos', this._loadMorePhotos, 400);
+            if (this.page < this.totalPages) {
+              this.page++;
+              this.$.ajax.url = this._getAPIEndpoint(this.apiKey, this.userId, this.page);
+              this.$.ajax.generateRequest();
+            } else {
+              this.$.scrollTheshold.clearTriggers();
             }
           },
 
-          getItemStyle: function(photo) {
+          _getItemStyle: function(photo) {
             return 'background-image: url(//farm' + photo.farm +
-                '.staticflickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '_n.jpg);';
+                '.staticflickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '_b.jpg);';
           }
 
         });
