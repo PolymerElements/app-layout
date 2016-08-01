@@ -183,9 +183,12 @@ Custom property                          | Description                          
         }
       },
 
+      _notifyingResize: false,
+
       listeners: {
         'tap': '_tapHandler',
-        'app-drawer-reset-layout': 'resetLayout'
+        'app-drawer-reset-layout': 'resetLayout',
+        'iron-resize': '_resizeHandler'
       },
 
       observers: [
@@ -233,8 +236,16 @@ Custom property                          | Description                          
             }
           }
 
+          this._notifyingResize = true;
           this.notifyResize();
+          this._notifyingResize = false;
         });
+      },
+
+      _resizeHandler: function() {
+        if (!this._notifyingResize) {
+          this.resetLayout();
+        }
       },
 
       _onQueryMatchesChanged: function(event) {

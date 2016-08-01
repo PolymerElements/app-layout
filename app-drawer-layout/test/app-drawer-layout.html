@@ -167,6 +167,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }, 50);
         }, 50);
       });
+
+      test('iron-resize triggers content layout', function() {
+        var resetLayoutSpy = sinon.spy(drawerLayout, 'resetLayout');
+
+        assert.isFalse(resetLayoutSpy.called);
+
+        drawerLayout.notifyResize();
+
+        assert.isTrue(resetLayoutSpy.called);
+
+        resetLayoutSpy.restore();
+      });
     });
 
   </script>
