@@ -95,7 +95,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var rtn = {top: 0, right: 0, bottom: 0, left: 0, width: 0};
       for (var k in obj) {
         if (rtn.hasOwnProperty(k)) {
-          rtn[k] = parseInt(obj[k], 10);
+          rtn[k] = Math.round(obj[k]);
         }
       }
       return rtn;
@@ -135,7 +135,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             for (k in expectedBoundingRect[i]) {
               if (expectedBoundingRect[i].hasOwnProperty(k)) {
                 assert.approximately(expectedBoundingRect[i][k],
-                    currentRect[k], 1, ' ItemRect[' + i + '].' + k);
+                    currentRect[k], 4, ' ItemRect[' + i + '].' + k);
               }
             }
           }
