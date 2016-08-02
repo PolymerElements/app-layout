@@ -135,7 +135,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             for (k in expectedBoundingRect[i]) {
               if (expectedBoundingRect[i].hasOwnProperty(k)) {
                 assert.approximately(expectedBoundingRect[i][k],
-                    currentRect[k], 1, ' ItemRect[' + i + '].' + k);
+                    currentRect[k], 4, ' ItemRect[' + i + '].' + k);
               }
             }
           }
