@@ -6,7 +6,7 @@
     "The Polymer Authors"
   ],
   "license": "https://polymer.github.io/LICENSE.txt",
-  "homepage": "https://elements.polymer-project.org/elements/app-layout",
+  "homepage": "https://github.com/PolymerElements/app-layout",
   "repository": {
     "type": "git",
     "url": "git://github.com/PolymerElements/app-layout"
