@@ -90,6 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('default values', function() {
         assert.isFalse(drawerLayout.forceNarrow);
         assert.equal(drawerLayout.responsiveWidth, '640px');
+        assert.isFalse(drawerLayout.openedWhenNarrow);
       });
 
       test('get drawer', function() {
@@ -109,12 +110,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         window.setTimeout(function() {
           assert.isFalse(drawerLayout.narrow);
+          assert.isTrue(drawer.opened);
           assert.equal(window.getComputedStyle(drawerToggle)['display'], 'none');
 
           drawerLayout.responsiveWidth = '10000px';
 
           window.setTimeout(function() {
             assert.isTrue(drawerLayout.narrow);
+            assert.isFalse(drawer.opened);
             assert.notEqual(window.getComputedStyle(drawerToggle)['display'], 'none');
 
             done();
@@ -178,6 +181,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(resetLayoutSpy.called);
 
         resetLayoutSpy.restore();
+      });
+
+      test('openedWhenNarrow', function(done) {
+        drawerLayout.openedWhenNarrow = true;
+        drawerLayout.responsiveWidth = '0px';
+
+        window.setTimeout(function() {
+          assert.isFalse(drawerLayout.narrow);
+          assert.isTrue(drawer.opened);
+
+          drawerLayout.responsiveWidth = '10000px';
+
+          window.setTimeout(function() {
+            assert.isTrue(drawerLayout.narrow);
+            assert.isTrue(drawer.opened);
+
+            done();
+          }, 50);
+        }, 50);
+
       });
     });
 

@@ -180,6 +180,14 @@ Custom property                          | Description                          
           type: Boolean,
           readOnly: true,
           notify: true
+        },
+
+        /**
+         * If true, the drawer will initially be opened when in narrow layout mode.
+         */
+        openedWhenNarrow: {
+          type: Boolean,
+          value: false
         }
       },
 
@@ -217,7 +225,8 @@ Custom property                          | Description                          
           var contentContainer = this.$.contentContainer;
 
           if (this.narrow) {
-            drawer.opened = drawer.persistent = false;
+            drawer.opened = this.openedWhenNarrow;
+            drawer.persistent = false;
             contentContainer.classList.add('narrow');
 
             contentContainer.style.marginLeft = '';
