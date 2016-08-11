@@ -90,6 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('default values', function() {
         assert.isFalse(drawerLayout.forceNarrow);
         assert.equal(drawerLayout.responsiveWidth, '640px');
+        assert.isFalse(drawerLayout.openedWhenNarrow);
       });
 
       test('get drawer', function() {
@@ -103,23 +104,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(drawerLayout.narrow);
       });
 
-      test('responsiveWidth', function(done) {
+      test('responsiveWidth', function() {
+        var xResizeable = drawerLayout.querySelector('x-resizeable');
+        var notifyResizeSpy = sinon.spy(xResizeable, 'notifyResize');
         var drawerToggle = drawerLayout.querySelector('[drawer-toggle]');
         drawerLayout.responsiveWidth = '0px';
 
-        window.setTimeout(function() {
-          assert.isFalse(drawerLayout.narrow);
-          assert.equal(window.getComputedStyle(drawerToggle)['display'], 'none');
+        assert.isFalse(drawerLayout.narrow);
+        assert.isTrue(drawer.opened);
+        assert.equal(window.getComputedStyle(drawerToggle)['display'], 'none');
+        assert.isTrue(notifyResizeSpy.called);
 
-          drawerLayout.responsiveWidth = '10000px';
+        notifyResizeSpy.reset();
+        drawerLayout.responsiveWidth = '10000px';
 
-          window.setTimeout(function() {
-            assert.isTrue(drawerLayout.narrow);
-            assert.notEqual(window.getComputedStyle(drawerToggle)['display'], 'none');
-
-            done();
-          }, 50);
-        }, 50);
+        assert.isTrue(drawerLayout.narrow);
+        assert.isFalse(drawer.opened);
+        assert.notEqual(window.getComputedStyle(drawerToggle)['display'], 'none');
+        assert.isTrue(notifyResizeSpy.called);
       });
 
       test('drawer-toggle', function() {
@@ -137,30 +139,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('content layout', function(done) {
-        var xResizeable = drawerLayout.querySelector('x-resizeable');
-        var listenerSpy = sinon.spy(xResizeable, 'notifyResize');
         drawerLayout.responsiveWidth = '10000px';
 
         window.setTimeout(function() {
           assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
           assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
-          assert.isTrue(listenerSpy.called);
-          listenerSpy.reset();
 
           drawerLayout.responsiveWidth = '0px';
 
           window.setTimeout(function() {
             assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '256px');
             assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
-            assert.isTrue(listenerSpy.called);
-            listenerSpy.reset();
 
             drawer.align = 'end';
 
             window.setTimeout(function() {
               assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
               assert.equal(drawerLayout.$.contentContainer.style.marginRight, '256px');
-              assert.isTrue(listenerSpy.called);
 
               done();
             }, 50);
@@ -178,6 +173,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(resetLayoutSpy.called);
 
         resetLayoutSpy.restore();
+      });
+
+      test('openedWhenNarrow', function() {
+        drawerLayout.openedWhenNarrow = true;
+        drawerLayout.responsiveWidth = '0px';
+
+        assert.isFalse(drawerLayout.narrow);
+        assert.isTrue(drawer.opened);
+
+        drawerLayout.responsiveWidth = '10000px';
+
+        assert.isTrue(drawerLayout.narrow);
+        assert.isTrue(drawer.opened);
       });
     });
 

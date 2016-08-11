@@ -180,19 +180,26 @@ Custom property                          | Description                          
           type: Boolean,
           readOnly: true,
           notify: true
+        },
+
+        /**
+         * If true, the drawer will initially be opened when in narrow layout mode.
+         */
+        openedWhenNarrow: {
+          type: Boolean,
+          value: false
         }
       },
-
-      _notifyingResize: false,
 
       listeners: {
         'tap': '_tapHandler',
         'app-drawer-reset-layout': 'resetLayout',
-        'iron-resize': '_resizeHandler'
+        'iron-resize': 'resetLayout'
       },
 
       observers: [
-        'resetLayout(narrow, isAttached)'
+        'resetLayout(narrow, isAttached)',
+        '_narrowChanged(narrow, isAttached)'
       ],
 
       /**
@@ -213,20 +220,14 @@ Custom property                          | Description                          
 
       resetLayout: function() {
         this.debounce('_resetLayout', function() {
-          var drawer = this.drawer;
           var contentContainer = this.$.contentContainer;
 
           if (this.narrow) {
-            drawer.opened = drawer.persistent = false;
-            contentContainer.classList.add('narrow');
-
             contentContainer.style.marginLeft = '';
             contentContainer.style.marginRight = '';
           } else {
-            drawer.opened = drawer.persistent = true;
-            contentContainer.classList.remove('narrow');
-
-            var drawerWidth = this.drawer.getWidth();
+            var drawer = this.drawer;
+            var drawerWidth = drawer.getWidth();
             if (drawer.position == 'right') {
               contentContainer.style.marginLeft = '';
               contentContainer.style.marginRight = drawerWidth + 'px';
@@ -235,17 +236,22 @@ Custom property                          | Description                          
               contentContainer.style.marginRight = '';
             }
           }
-
-          this._notifyingResize = true;
-          this.notifyResize();
-          this._notifyingResize = false;
         });
       },
 
-      _resizeHandler: function() {
-        if (!this._notifyingResize) {
-          this.resetLayout();
+      _narrowChanged: function(narrow) {
+        var drawer = this.drawer;
+        var contentContainer = this.$.contentContainer;
+        if (narrow) {
+          drawer.opened = this.openedWhenNarrow;
+          drawer.persistent = false;
+          contentContainer.classList.add('narrow');
+        } else {
+          drawer.opened = drawer.persistent = true;
+          contentContainer.classList.remove('narrow');
         }
+
+        this.notifyResize();
       },
 
       _onQueryMatchesChanged: function(event) {
