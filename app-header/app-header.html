@@ -254,17 +254,15 @@ Mixin | Description | Default
         opacity: 1;
       }
 
-      #contentContainer > ::content [condensed-title] {
+      ::content [main-title],
+      ::content [condensed-title] {
         -webkit-transform-origin: left top;
         transform-origin: left top;
         white-space: nowrap;
-        opacity: 0;
       }
 
-      #contentContainer > ::content [main-title] {
-        -webkit-transform-origin: left top;
-        transform-origin: left top;
-        white-space: nowrap;
+      ::content [condensed-title] {
+        opacity: 0;
       }
 
       #background {

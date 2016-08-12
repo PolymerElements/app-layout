@@ -63,49 +63,45 @@ Custom property              | Description                  | Default
   <template>
     <style>
       :host {
-        position: relative;
-
         @apply(--layout-horizontal);
         @apply(--layout-center);
-
+        position: relative;
         height: 64px;
         padding: 0 16px;
-
         pointer-events: none;
-
         font-size: var(--app-toolbar-font-size, 20px);
       }
 
-      :host > ::content > * {
+      ::content > * {
         pointer-events: auto;
       }
 
-      :host > ::content > paper-icon-button {
+      ::content > paper-icon-button {
         /* paper-icon-button/issues/33 */
         font-size: 0;
       }
 
-      :host > ::content > [main-title],
-      :host > ::content > [condensed-title] {
+      ::content > [main-title],
+      ::content > [condensed-title] {
         pointer-events: none;
         @apply(--layout-flex);
       }
 
-      :host > ::content > [bottom-item] {
+      ::content > [bottom-item] {
         position: absolute;
         right: 0;
         bottom: 0;
         left: 0;
       }
 
-      :host > ::content > [top-item] {
+      ::content > [top-item] {
         position: absolute;
         top: 0;
         right: 0;
         left: 0;
       }
 
-      :host > ::content > [spacer] {
+      ::content > [spacer] {
         margin-left: 64px;
       }
     </style>
