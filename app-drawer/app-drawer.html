@@ -93,8 +93,6 @@ Custom property                  | Description                            | Defa
 
         transition-property: -webkit-transform;
         transition-property: transform;
-        transition-duration: inherit;
-        transition-timing-function: inherit;
         -webkit-transform: translate3d(-100%, 0, 0);
         transform: translate3d(-100%, 0, 0);
 
@@ -142,8 +140,6 @@ Custom property                  | Description                            | Defa
         left: 0;
 
         transition-property: opacity;
-        transition-duration: inherit;
-        transition-timing-function: inherit;
         -webkit-transform: translateZ(0);
         transform:  translateZ(0);
 
@@ -203,8 +199,7 @@ Custom property                  | Description                            | Defa
          */
         transitionDuration: {
           type: Number,
-          value: 200,
-          observer: '_transitionDurationChanged'
+          value: 200
         },
 
         /**
@@ -247,6 +242,7 @@ Custom property                  | Description                            | Defa
       observers: [
         'resetLayout(position, isAttached)',
         '_resetPosition(align, isAttached)',
+        '_styleTransitionDuration(transitionDuration)',
         '_openedPersistentChanged(opened, persistent)'
       ],
 
@@ -265,9 +261,9 @@ Custom property                  | Description                            | Defa
       attached: function() {
         // Only transition the drawer after its first render (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
-        this.style.transitionDuration = '';
+        this._styleTransitionDuration(0);
         Polymer.RenderStatus.afterNextRender(this, function() {
-          this.style.transitionDuration = this.transitionDuration + 'ms';
+          this._styleTransitionDuration(this.transitionDuration);
           this._boundEscKeydownHandler = this._escKeydownHandler.bind(this);
           this._resetDrawerState();
 
@@ -379,7 +375,7 @@ Custom property                  | Description                            | Defa
         this._drawerState = this._DRAWER_STATE.TRACKING;
 
         // Disable transitions since style attributes will reflect user track events.
-        this.style.transitionDuration = '';
+        this._styleTransitionDuration(0);
         this.style.visibility = 'visible';
 
         var rect = this.$.contentContainer.getBoundingClientRect();
@@ -435,7 +431,7 @@ Custom property                  | Description                            | Defa
           this._resetDrawerState();
         }
 
-        this.style.transitionDuration = this.transitionDuration + 'ms';
+        this._styleTransitionDuration(this.transitionDuration);
         this._resetDrawerTranslate();
         this.style.visibility = '';
       },
@@ -504,8 +500,8 @@ Custom property                  | Description                            | Defa
 
         // Calculate the amount of time needed to finish the transition based on the
         // initial slope of the timing function.
-        this.style.transitionDuration = this._FLING_INITIAL_SLOPE * dx / velocity + 'ms';
-        this.style.transitionTimingFunction = this._FLING_TIMING_FUNCTION;
+        this._styleTransitionDuration(this._FLING_INITIAL_SLOPE * dx / velocity);
+        this._styleTransitionTimingFunction(this._FLING_TIMING_FUNCTION);
 
         this._resetDrawerTranslate();
       },
@@ -513,12 +509,23 @@ Custom property                  | Description                            | Defa
       _transitionend: function() {
         // If the drawer was flinging, we need to reset the style attributes.
         if (this._drawerState === this._DRAWER_STATE.FLINGING) {
-          this.style.transitionDuration = this.transitionDuration + 'ms';
-          this.style.transitionTimingFunction = '';
+          this._styleTransitionDuration(this.transitionDuration);
+          this._styleTransitionTimingFunction('');
           this.style.visibility = '';
         }
 
         this._resetDrawerState();
+      },
+
+      _styleTransitionDuration: function(duration) {
+        this.style.transitionDuration = duration + 'ms';
+        this.$.contentContainer.style.transitionDuration = duration + 'ms';
+        this.$.scrim.style.transitionDuration = duration + 'ms';
+      },
+
+      _styleTransitionTimingFunction: function(timingFunction) {
+        this.$.contentContainer.style.transitionTimingFunction = timingFunction;
+        this.$.scrim.style.transitionTimingFunction = timingFunction;
       },
 
       _translateDrawer: function(x) {
@@ -625,10 +632,6 @@ Custom property                  | Description                            | Defa
             }
           }
         }
-      },
-
-      _transitionDurationChanged: function(duration) {
-        this.style.transitionDuration = duration + 'ms';
       },
 
       _openedPersistentChanged: function() {
