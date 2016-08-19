@@ -63,7 +63,7 @@ Custom property                  | Description                            | Defa
 
         visibility: hidden;
 
-        transition: visibility 0.2s ease;
+        transition-property: visibility;
       }
 
       :host([opened]) {
@@ -91,9 +91,10 @@ Custom property                  | Description                            | Defa
         width: var(--app-drawer-width, 256px);
         padding: 120px 0;
 
-        transition: 0.2s ease;
         transition-property: -webkit-transform;
         transition-property: transform;
+        transition-duration: inherit;
+        transition-timing-function: inherit;
         -webkit-transform: translate3d(-100%, 0, 0);
         transform: translate3d(-100%, 0, 0);
 
@@ -140,7 +141,9 @@ Custom property                  | Description                            | Defa
         bottom: 0;
         left: 0;
 
-        transition: opacity 0.2s ease;
+        transition-property: opacity;
+        transition-duration: inherit;
+        transition-timing-function: inherit;
         -webkit-transform: translateZ(0);
         transform:  translateZ(0);
 
@@ -196,6 +199,15 @@ Custom property                  | Description                            | Defa
         },
 
         /**
+         * The transition duration of the drawer in milliseconds.
+         */
+        transitionDuration: {
+          type: Number,
+          value: 200,
+          observer: '_transitionDurationChanged'
+        },
+
+        /**
          * The alignment of the drawer on the screen ('left', 'right', 'start' or 'end').
          * 'start' computes to left and 'end' to right in LTR layout and vice versa in RTL
          * layout.
@@ -234,7 +246,8 @@ Custom property                  | Description                            | Defa
 
       observers: [
         'resetLayout(position, isAttached)',
-        '_resetPosition(align, isAttached)'
+        '_resetPosition(align, isAttached)',
+        '_openedPersistentChanged(opened, persistent)'
       ],
 
       _translateOffset: 0,
@@ -249,21 +262,21 @@ Custom property                  | Description                            | Defa
 
       _lastTabStop: null,
 
-      ready: function() {
-        // Only transition the drawer after its first render (e.g. app-drawer-layout
-        // may need to set the initial opened state which should not be transitioned).
-        this._setTransitionDuration('0s');
-      },
-
       attached: function() {
         // Only transition the drawer after its first render (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
+        this.style.transitionDuration = '';
         Polymer.RenderStatus.afterNextRender(this, function() {
-          this._setTransitionDuration('');
+          this.style.transitionDuration = this.transitionDuration + 'ms';
           this._boundEscKeydownHandler = this._escKeydownHandler.bind(this);
           this._resetDrawerState();
 
-          this.addEventListener('transitionend', this._transitionend.bind(this));
+          // contentContainer will transition on opened state changed, and scrim will
+          // transition on persistent state changed when opened - these are the
+          // transitions we are interested in.
+          this.$.scrim.addEventListener('transitionend', this._transitionend.bind(this));
+          this.$.contentContainer.addEventListener('transitionend', this._transitionend.bind(this));
+
           this.addEventListener('keydown', this._tabKeydownHandler.bind(this))
 
           // Only listen for horizontal track so you can vertically scroll inside the drawer.
@@ -366,7 +379,7 @@ Custom property                  | Description                            | Defa
         this._drawerState = this._DRAWER_STATE.TRACKING;
 
         // Disable transitions since style attributes will reflect user track events.
-        this._setTransitionDuration('0s');
+        this.style.transitionDuration = '';
         this.style.visibility = 'visible';
 
         var rect = this.$.contentContainer.getBoundingClientRect();
@@ -417,12 +430,12 @@ Custom property                  | Description                            | Defa
           this.opened = this.position === 'left';
         }
 
-        // Trigger app-drawer-transitioned now since there will be no transitionend event.
         if (isInEndState) {
+          // Reset drawer state now since there will be no transitionend event.
           this._resetDrawerState();
         }
 
-        this._setTransitionDuration('');
+        this.style.transitionDuration = this.transitionDuration + 'ms';
         this._resetDrawerTranslate();
         this.style.visibility = '';
       },
@@ -491,38 +504,21 @@ Custom property                  | Description                            | Defa
 
         // Calculate the amount of time needed to finish the transition based on the
         // initial slope of the timing function.
-        this._setTransitionDuration((this._FLING_INITIAL_SLOPE * dx / velocity) + 'ms');
-        this._setTransitionTimingFunction(this._FLING_TIMING_FUNCTION);
+        this.style.transitionDuration = this._FLING_INITIAL_SLOPE * dx / velocity + 'ms';
+        this.style.transitionTimingFunction = this._FLING_TIMING_FUNCTION;
 
         this._resetDrawerTranslate();
       },
 
-      _transitionend: function(event) {
-        // contentContainer will transition on opened state changed, and scrim will
-        // transition on persistent state changed when opened - these are the
-        // transitions we are interested in.
-        var target = Polymer.dom(event).rootTarget;
-        if (target === this.$.contentContainer || target === this.$.scrim) {
-
-          // If the drawer was flinging, we need to reset the style attributes.
-          if (this._drawerState === this._DRAWER_STATE.FLINGING) {
-            this._setTransitionDuration('');
-            this._setTransitionTimingFunction('');
-            this.style.visibility = '';
-          }
-
-          this._resetDrawerState();
+      _transitionend: function() {
+        // If the drawer was flinging, we need to reset the style attributes.
+        if (this._drawerState === this._DRAWER_STATE.FLINGING) {
+          this.style.transitionDuration = this.transitionDuration + 'ms';
+          this.style.transitionTimingFunction = '';
+          this.style.visibility = '';
         }
-      },
 
-      _setTransitionDuration: function(duration) {
-        this.$.contentContainer.style.transitionDuration = duration;
-        this.$.scrim.style.transitionDuration = duration;
-      },
-
-      _setTransitionTimingFunction: function(timingFunction) {
-        this.$.contentContainer.style.transitionTimingFunction = timingFunction;
-        this.$.scrim.style.transitionTimingFunction = timingFunction;
+        this._resetDrawerState();
       },
 
       _translateDrawer: function(x) {
@@ -628,6 +624,17 @@ Custom property                  | Description                            | Defa
               this._firstTabStop.focus();
             }
           }
+        }
+      },
+
+      _transitionDurationChanged: function(duration) {
+        this.style.transitionDuration = duration + 'ms';
+      },
+
+      _openedPersistentChanged: function() {
+        if (this.transitionDuration === 0) {
+          // Reset drawer state now since there will be no transitionend event.
+          this._resetDrawerState();
         }
       },
 
