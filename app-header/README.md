@@ -5,7 +5,7 @@
 
 app-header is container element for app-toolbars at the top of the screen that can have scroll
 effects. By default, an app-header moves away from the viewport when scrolling down and
-if using `reveals`, the header slides back when scrolling back up. For example,
+if using `reveals`, the header slides back when scrolling back up. For example:
 
 ```html
 <app-header reveals>
@@ -139,7 +139,6 @@ app-header {
 The fraction determines how far the background moves relative to the scroll position.
 This value can be assigned via the `scalar` config value and it is typically a value
 between 0 and 1 inclusive. If `scalar=0`, the background doesn't move away from the header.
-[More about configuration for scroll effects](/app-scroll-effects#configuring-effects)
 
 * **resize-title**
 Progressively interpolates the size of the title from the element with the `main-title` attribute
@@ -160,6 +159,25 @@ to the element with the `condensed-title` attribute as the header condenses. For
 Upon scrolling past a threshold, this effect fades in/out the titles using opacity transitions.
 Similarly to `resize-title`, the `main-title` and `condensed-title` elements must be placed in the
 light DOM.
+
+* **toggle-class**
+Toggles a CSS class when a `scrollTop` threshold is reached. For example:
+
+```css
+.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+```
+
+```html
+<app-header effects="toggle-class"
+  effects-config='{"toggle-class": { "className": "fixed", "minScrollTop": 100 }}'>
+</app-header>
+```
+The above code will toggle the class `fixed` when the `scrollTop` is at least `100px`.
 
 * **waterfall**
 Toggles the shadow property in app-header to create a sense of depth (as recommended in the
@@ -195,8 +213,7 @@ Attribute | Description         | Default
 ## Styling
 
 Mixin | Description | Default
-----------------|-------------|----------
-`--app-header-background-front-layer` | Applies to the front layer of the background | {}
-`--app-header-background-rear-layer` | Applies to the rear layer of the background | {}
-`--app-header-shadow` | Applies to the shadow | {}
-
+------|-------------|----------
+`--app-header-background-front-layer` | Applies to the front layer of the background. | {}
+`--app-header-background-rear-layer` | Applies to the rear layer of the background. | {}
+`--app-header-shadow` | Applies to the shadow. | {}
