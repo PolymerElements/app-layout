@@ -44,7 +44,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template>
       <x-container
           effects="toggle-class"
-          effects-config='{"toggle-class": {"className": "fixed", "minScrollTop": 100}}'>
+          effects-config='{"toggle-class": {"minScrollTop": 100}}'>
       </x-container>
     </template>
   </test-fixture>
@@ -61,9 +61,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('toggle the class when the threshold is reached', function(done) {
         flush(function() {
           container._updateScrollState(0);
-          assert.isFalse(container.classList.contains('fixed'));
+          assert.isFalse(container.classList.contains('active'));
           container._updateScrollState(100);
-          assert.isTrue(container.classList.contains('fixed'));
+          assert.isTrue(container.classList.contains('active'));
+          container.effectsConfig = {'toggle-class': { className: 'fixed', minScrollTop: 100 }};
           container._updateScrollState(200);
           assert.isTrue(container.classList.contains('fixed'));
           container._updateScrollState(99);

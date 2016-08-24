@@ -118,7 +118,6 @@ Upon scrolling past a threshold, this effect will trigger an opacity transition 
 fade in/out the backgrounds. Compared to the `blend-background` effect,
 this effect doesn't interpolate the opacity based on scroll position.
 
-
 * **parallax-background**
 A simple parallax effect that vertically translates the backgrounds based on a fraction
 of the scroll position. For example:
@@ -161,7 +160,8 @@ Similarly to `resize-title`, the `main-title` and `condensed-title` elements mus
 light DOM.
 
 * **toggle-class**
-Toggles a CSS class when a `scrollTop` threshold is reached. For example:
+Toggles a CSS class when a `scrollTop` threshold is reached. By default the class `active`
+is set on the element, but you can customize it. For example:
 
 ```css
 .fixed {

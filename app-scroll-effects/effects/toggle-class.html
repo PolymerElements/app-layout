@@ -12,7 +12,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
   /**
-   * Toggles a CSS class when a `scrollTop` threshold is reached. For example:
+   * Toggles a CSS class when a `scrollTop` threshold is reached. By default the class `active`
+   * is set on the element, but you can customize it. For example:
    *
    * ```html
    * <x-element effects="toggle-class"
@@ -27,7 +28,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * @this Polymer.AppLayout.ElementWithBackground
      */
     setUp: function setUp(config) {
-      this._fxToggleClass = config;
+      this._fxToggleClass = {
+        className: config.className || 'active',
+        minScrollTop: config.minScrollTop
+      };
     },
 
     /**
