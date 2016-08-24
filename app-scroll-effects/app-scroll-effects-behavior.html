@@ -367,7 +367,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var scrollTop = this._clampedScrollTop;
         this._updateScrollState(scrollTop);
         if (this.threshold > 0) {
-          this.thresholdTriggered = scrollTop >= this.threshold;
+          this._setThresholdTriggered(scrollTop >= this.threshold);
         }
       }
     },
