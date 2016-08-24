@@ -10,9 +10,10 @@ rate than the foreground.
 </app-box>
 ```
 
-Notice the `background` attribute in the `img` element; this attribute specifies that that image is used as the background.
-By adding the background to the light dom, you can compose backgrounds that can change dynamically.
-Alternatively, the mixin `--app-box-background-front-layer` allows to style the background. For example:
+Notice the `background` attribute in the `img` element; this attribute specifies that that
+image is used as the background. By adding the background to the light dom, you can compose
+backgrounds that can change dynamically. Alternatively, the mixin `--app-box-background-front-layer`
+ allows to style the background. For example:
 
 ```css
   .parallaxAppBox {
@@ -30,11 +31,36 @@ Finally, app-box can have content inside. For example:
 </app-box>
 ```
 
-## Scroll effects
+#### Importing the effects
 
-Effect name | Description
-----------------|-------------
-`parallax-background` | A parallax effect
+To use the scroll effects, you must explicitly import them in addition to `app-box`:
+
+```html
+<link rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+```
+
+#### List of effects
+
+* **parallax-background**
+A simple parallax effect that vertically translates the backgrounds based on a fraction
+of the scroll position. For example:
+
+```css
+app-header {
+  --app-header-background-front-layer: {
+    background-image: url(...);
+  };
+}
+```
+```html
+<app-header style="height: 300px;" effects="parallax-background">
+  <app-toolbar>App name</app-toolbar>
+</app-header>
+```
+
+The fraction determines how far the background moves relative to the scroll position.
+This value can be assigned via the `scalar` config value and it is typically a value
+between 0 and 1 inclusive. If `scalar=0`, the background doesn't move away from the header.
 
 ## Styling
 

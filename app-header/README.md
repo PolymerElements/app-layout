@@ -5,7 +5,7 @@
 
 app-header is container element for app-toolbars at the top of the screen that can have scroll
 effects. By default, an app-header moves away from the viewport when scrolling down and
-if using `reveals`, the header slides back when scrolling back up. For example,
+if using `reveals`, the header slides back when scrolling back up. For example:
 
 ```html
 <app-header reveals>
@@ -118,7 +118,6 @@ Upon scrolling past a threshold, this effect will trigger an opacity transition 
 fade in/out the backgrounds. Compared to the `blend-background` effect,
 this effect doesn't interpolate the opacity based on scroll position.
 
-
 * **parallax-background**
 A simple parallax effect that vertically translates the backgrounds based on a fraction
 of the scroll position. For example:
@@ -139,7 +138,6 @@ app-header {
 The fraction determines how far the background moves relative to the scroll position.
 This value can be assigned via the `scalar` config value and it is typically a value
 between 0 and 1 inclusive. If `scalar=0`, the background doesn't move away from the header.
-[More about configuration for scroll effects](/app-scroll-effects#configuring-effects)
 
 * **resize-title**
 Progressively interpolates the size of the title from the element with the `main-title` attribute
@@ -195,8 +193,7 @@ Attribute | Description         | Default
 ## Styling
 
 Mixin | Description | Default
-----------------|-------------|----------
-`--app-header-background-front-layer` | Applies to the front layer of the background | {}
-`--app-header-background-rear-layer` | Applies to the rear layer of the background | {}
-`--app-header-shadow` | Applies to the shadow | {}
-
+------|-------------|----------
+`--app-header-background-front-layer` | Applies to the front layer of the background. | {}
+`--app-header-background-rear-layer` | Applies to the rear layer of the background. | {}
+`--app-header-shadow` | Applies to the shadow. | {}

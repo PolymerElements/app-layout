@@ -458,11 +458,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('DOM references', function(done) {
         flush(function() {
-           assert.isNotNull(header._getDOMRef('backgroundFrontLayer'));
-           assert.isNotNull(header._getDOMRef('backgroundRearLayer'));
-           assert.isNotNull(header._getDOMRef('mainTitle'));
-           assert.isNotNull(header._getDOMRef('condensedTitle'));
-           done();
+          assert.isNotNull(header._getDOMRef('backgroundFrontLayer'));
+          assert.isNotNull(header._getDOMRef('backgroundRearLayer'));
+          assert.isNotNull(header._getDOMRef('mainTitle'));
+          assert.isNotNull(header._getDOMRef('condensedTitle'));
+          done();
         });
       });
     });
