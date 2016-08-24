@@ -181,6 +181,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           ]);
         });
       });
+
+      test('threshold and threshold-triggered', function(done) {
+        flush(function() {
+          assert.isUndefined(container.thresholdTriggered);
+          assert.equal(container.threshold, 0);
+          container.threshold = 100;
+
+          scrollTestHelper(container.scrollTarget, [
+            {
+              y: 0,
+              callback: function() {
+                assert.isFalse(container.thresholdTriggered);
+              }
+            }, {
+              y: 100,
+              callback: function() {
+                assert.isTrue(container.thresholdTriggered);
+              }
+            }, {
+              y: 50,
+              callback: function() {
+                assert.isFalse(container.thresholdTriggered);
+                done();
+              }
+            }
+          ]);
+        });
+      });
     });
 
   </script>

@@ -147,8 +147,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       /**
-       * When greater than 0, the class name set in `thresholdClass` is
-       * added or removing depending on whether the `scrollTop` threshold is reached.
+       * Allows to set a `scrollTop` threshold. When greater than 0, `thresholdTriggered`
+       * is true only when the scroll target's `scrollTop` has reached this value.
+       *
+       * For example, if `threshold = 100`, `thresholdTriggered` is true when the `scrollTop`
+       * is at least `100`.
        */
       threshold: {
         type: Number,
@@ -156,13 +159,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       /**
-       * The class name that would be added or removed depending on whether
-       * the `scrollTop` threshold (set in `scrollTopThreshold`) is reached or not.
-       * By default, the class `active` is toggled.
+       * True if the `scrollTop` threshold (set in `scrollTopThreshold`) has
+       * been reached.
        */
-      thresholdClass: {
-        type: String,
-        value: 'active'
+      thresholdTriggered: {
+        type: Boolean,
+        reflectToAttribute: true,
+        notify: true
       }
     },
 
@@ -363,7 +366,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var scrollTop = this._clampedScrollTop;
         this._updateScrollState(scrollTop);
         if (this.threshold > 0) {
-          this.toggleClass(this.thresholdClass, scrollTop >= this.threshold);
+          this.thresholdTriggered = scrollTop >= this.threshold;
         }
       }
     },
