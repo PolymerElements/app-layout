@@ -171,25 +171,6 @@ Upon scrolling past a threshold, this effect fades in/out the titles using opaci
 Similarly to `resize-title`, the `main-title` and `condensed-title` elements must be placed in the
 light DOM.
 
-* **toggle-class**
-Toggles a CSS class when a `scrollTop` threshold is reached. By default the class `active`
-is set on the element, but you can customize it. For example:
-
-```css
-.fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-}
-```
-```html
-<app-header effects="toggle-class"
-  effects-config='{"toggle-class": { "className": "fixed", "minScrollTop": 100 }}'>
-</app-header>
-```
-The above code will toggle the class `fixed` when the `scrollTop` is at least `100px`.
-
 * **waterfall**
 Toggles the shadow property in app-header to create a sense of depth (as recommended in the
 MD spec) between the header and the underneath content. You can change the shadow by

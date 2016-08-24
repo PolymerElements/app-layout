@@ -144,6 +144,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         type: Boolean,
         reflectToAttribute: true,
         value: false
+      },
+
+      /**
+       * When greater than 0, the class name set in `thresholdClass` is
+       * added or removing depending on whether the `scrollTop` threshold is reached.
+       */
+      threshold: {
+        type: Number,
+        value: 0
+      },
+
+      /**
+       * The class name that would be added or removed depending on whether
+       * the `scrollTop` threshold (set in `scrollTopThreshold`) is reached or not.
+       * By default, the class `active` is toggled.
+       */
+      thresholdClass: {
+        type: String,
+        value: 'active'
       }
     },
 
@@ -341,7 +360,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      */
     _scrollHandler: function() {
       if (!this.disabled) {
-        this._updateScrollState(this._clampedScrollTop);
+        var scrollTop = this._clampedScrollTop;
+        this._updateScrollState(scrollTop);
+        if (this.threshold > 0) {
+          this.toggleClass(this.thresholdClass, scrollTop >= this.threshold);
+        }
       }
     },
 

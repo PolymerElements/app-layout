@@ -458,11 +458,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('DOM references', function(done) {
         flush(function() {
-           assert.isNotNull(header._getDOMRef('backgroundFrontLayer'));
-           assert.isNotNull(header._getDOMRef('backgroundRearLayer'));
-           assert.isNotNull(header._getDOMRef('mainTitle'));
-           assert.isNotNull(header._getDOMRef('condensedTitle'));
-           done();
+          assert.isNotNull(header._getDOMRef('backgroundFrontLayer'));
+          assert.isNotNull(header._getDOMRef('backgroundRearLayer'));
+          assert.isNotNull(header._getDOMRef('mainTitle'));
+          assert.isNotNull(header._getDOMRef('condensedTitle'));
+          done();
+        });
+      });
+
+      test('threshold and threshold-class', function(done) {
+        flush(function() {
+          assert.equal(header.thresholdClass, 'active');
+          assert.equal(header.threshold, 0);
+
+          header.threshold = 100;
+
+          scrollTestHelper(header.scrollTarget, [
+            {
+              y: 0,
+              callback: function() {
+                assert.isFalse(header.classList.contains('active'));
+              }
+            }, {
+              y: 100,
+              callback: function() {
+                assert.isTrue(header.classList.contains('active'));
+                header.thresholdClass = 'active-2';
+              }
+            }, {
+              y: 110,
+              callback: function() {
+                assert.isTrue(header.classList.contains('active-2'));
+              }
+            }, {
+              y: 50,
+              callback: function() {
+                assert.isFalse(header.classList.contains('active-2'));
+                done();
+              }
+            }
+          ]);
         });
       });
     });

@@ -22,7 +22,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../app-toolbar/app-toolbar.html">
   <link rel="import" href="../../demo/sample-content.html">
   <link rel="import" href="../../app-scroll-effects/effects/parallax-background.html">
-  <link rel="import" href="../../app-scroll-effects/effects/toggle-class.html">
   <link rel="import" href="../app-box.html">
 
   <style is="custom-style">
@@ -155,7 +154,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-toolbar>
       <div main-title>POLYMER</div>
     </app-toolbar>
-    <app-box effects="toggle-class" effects-config='{"toggle-class": {"className": "nav-fixed", "minScrollTop": 64}}'>
+    <app-box threshold="64" threshold-class="nav-fixed">
       <ul role="navigation" class="nav">
         <li><a href="#speed">Speed</a></li>
         <li><a href="#modern">Modern</a></li>

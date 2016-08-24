@@ -46,17 +46,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     paper-tabs {
       background-color: #4285f4;
-      transition: background-color 0.2s ease-out;
-    }
-
-    /* The class `.active` is set by the default by the toggle-class effect */
-    app-header.active paper-tabs {
-      position: fixed;
-      top: 0px;
-      left: 0;
-      right: 0;
-      z-index: 1;
-      background-color: #0b8043;
+      will-change: position;
     }
 
     paper-icon-button {
@@ -67,20 +57,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       margin-bottom: 20px;
     }
 
+    .fixed-header paper-tabs {
+      position: fixed;
+      top: 0px;
+      left: 0;
+      right: 0;
+      z-index: 1;
+    }
+
   </style>
 
 </head>
 <body unresolved>
 
-  <app-header condenses fixed effects="toggle-class"
-      effects-config='{"toggle-class": {"minScrollTop": 84}}'>
+  <app-header threshold="84" threshold-class="fixed-header">
     <app-toolbar>
       <paper-icon-button icon="menu"></paper-icon-button>
       <h1 main-title></h1>
       <paper-icon-button icon="search"></paper-icon-button>
     </app-toolbar>
 
-    <paper-tabs selected="0" sticky>
+    <paper-tabs selected="0">
       <paper-tab>TAB 1</paper-tab>
       <paper-tab>TAB 2</paper-tab>
       <paper-tab>TAB 3</paper-tab>

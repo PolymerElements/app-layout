@@ -62,25 +62,6 @@ The fraction determines how far the background moves relative to the scroll posi
 This value can be assigned via the `scalar` config value and it is typically a value
 between 0 and 1 inclusive. If `scalar=0`, the background doesn't move away from the header.
 
-* **toggle-class**
-Toggles a CSS class when a `scrollTop` threshold is reached. By default the class `active`
-is set on the element, but you can customize it. For example:
-
-```css
-.fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-}
-```
-```html
-<app-header effects="toggle-class"
-  effects-config='{"toggle-class": { "className": "fixed", "minScrollTop": 100 }}'>
-</app-header>
-```
-The above code will toggle the class `fixed` when the `scrollTop` is at least `100px`.
-
 ## Styling
 
 Mixin | Description | Default
