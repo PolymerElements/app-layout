@@ -65,7 +65,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-    <script>
+  <script>
     HTMLImports.whenReady(function() {
       Polymer({
         is: 'x-resizeable',
@@ -74,10 +74,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         ]
       });
     });
-    </script>
-  </dom-module>
-
-  <script>
 
     suite('basic features', function() {
       var drawerLayout, drawer;
@@ -186,6 +182,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         assert.isTrue(drawerLayout.narrow);
         assert.isTrue(drawer.opened);
+      });
+
+      test('app-drawer appended later', function(done) {
+        assert.doesNotThrow(function() {
+          drawerLayout = document.body.appendChild(document.createElement('app-drawer-layout'));
+        });
+        assert.isUndefined(drawerLayout.drawer);
+        assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
+        assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+
+        drawerLayout.responsiveWidth = '0px';
+        Polymer.dom(drawerLayout).appendChild(document.createElement('app-drawer'));
+        Polymer.dom.flush();
+
+        assert.isTrue(drawerLayout.drawer.opened);
+        window.setTimeout(function() {
+          assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '256px');
+          assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+
+          done();
+        }, 50);
       });
     });
 
