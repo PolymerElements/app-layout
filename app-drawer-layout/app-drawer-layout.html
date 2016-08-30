@@ -193,7 +193,8 @@ Custom property                          | Description                          
 
       listeners: {
         'tap': '_tapHandler',
-        'app-drawer-reset-layout': '_handleDrawerResetLayout',
+        'app-drawer-attached': '_resetDrawerState',
+        'app-drawer-reset-layout': 'resetLayout',
         'iron-resize': 'resetLayout'
       },
 
@@ -243,28 +244,25 @@ Custom property                          | Description                          
       },
 
       _resetDrawerState: function() {
-        var drawer = this.drawer;
-        if (!drawer) {
-          return;
-        }
+        this.debounce('_resetDrawerState', function() {
+          var drawer = this.drawer;
+          if (!drawer) {
+            return;
+          }
 
-        if (this.narrow) {
-          drawer.opened = this.openedWhenNarrow;
-          drawer.persistent = false;
-        } else {
-          drawer.opened = drawer.persistent = true;
-        }
+          if (this.narrow) {
+            drawer.opened = this.openedWhenNarrow;
+            drawer.persistent = false;
+          } else {
+            drawer.opened = drawer.persistent = true;
+          }
+        });
       },
 
       _narrowChanged: function(narrow) {
         this.toggleClass('narrow', narrow, this.$.contentContainer);
         this._resetDrawerState();
         this.notifyResize();
-      },
-
-      _handleDrawerResetLayout: function() {
-        this._resetDrawerState();
-        this.resetLayout();
       },
 
       _onQueryMatchesChanged: function(event) {
