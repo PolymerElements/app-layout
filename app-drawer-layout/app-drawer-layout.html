@@ -193,6 +193,7 @@ Custom property                          | Description                          
 
       listeners: {
         'tap': '_tapHandler',
+        'app-drawer-attached': '_resetDrawerState',
         'app-drawer-reset-layout': 'resetLayout',
         'iron-resize': 'resetLayout'
       },
@@ -214,19 +215,22 @@ Custom property                          | Description                          
       _tapHandler: function(e) {
         var target = Polymer.dom(e).localTarget;
         if (target && target.hasAttribute('drawer-toggle')) {
-          this.drawer.toggle();
+          var drawer = this.drawer;
+          if (drawer && !drawer.persistent) {
+            drawer.toggle();
+          }
         }
       },
 
       resetLayout: function() {
         this.debounce('_resetLayout', function() {
+          var drawer = this.drawer;
           var contentContainer = this.$.contentContainer;
 
-          if (this.narrow) {
+          if (this.narrow || !drawer) {
             contentContainer.style.marginLeft = '';
             contentContainer.style.marginRight = '';
           } else {
-            var drawer = this.drawer;
             var drawerWidth = drawer.getWidth();
             if (drawer.position == 'right') {
               contentContainer.style.marginLeft = '';
@@ -239,18 +243,25 @@ Custom property                          | Description                          
         });
       },
 
-      _narrowChanged: function(narrow) {
-        var drawer = this.drawer;
-        var contentContainer = this.$.contentContainer;
-        if (narrow) {
-          drawer.opened = this.openedWhenNarrow;
-          drawer.persistent = false;
-          contentContainer.classList.add('narrow');
-        } else {
-          drawer.opened = drawer.persistent = true;
-          contentContainer.classList.remove('narrow');
-        }
+      _resetDrawerState: function() {
+        this.debounce('_resetDrawerState', function() {
+          var drawer = this.drawer;
+          if (!drawer) {
+            return;
+          }
 
+          if (this.narrow) {
+            drawer.opened = this.openedWhenNarrow;
+            drawer.persistent = false;
+          } else {
+            drawer.opened = drawer.persistent = true;
+          }
+        });
+      },
+
+      _narrowChanged: function(narrow) {
+        this.toggleClass('narrow', narrow, this.$.contentContainer);
+        this._resetDrawerState();
         this.notifyResize();
       },
 

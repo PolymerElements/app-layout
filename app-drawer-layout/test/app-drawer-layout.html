@@ -65,7 +65,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-    <script>
+  <script>
     HTMLImports.whenReady(function() {
       Polymer({
         is: 'x-resizeable',
@@ -74,10 +74,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         ]
       });
     });
-    </script>
-  </dom-module>
-
-  <script>
 
     suite('basic features', function() {
       var drawerLayout, drawer;
@@ -104,27 +100,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(drawerLayout.narrow);
       });
 
-      test('responsiveWidth', function() {
+      test('responsiveWidth', function(done) {
         var xResizeable = drawerLayout.querySelector('x-resizeable');
         var notifyResizeSpy = sinon.spy(xResizeable, 'notifyResize');
         var drawerToggle = drawerLayout.querySelector('[drawer-toggle]');
         drawerLayout.responsiveWidth = '0px';
 
-        assert.isFalse(drawerLayout.narrow);
-        assert.isTrue(drawer.opened);
-        assert.equal(window.getComputedStyle(drawerToggle)['display'], 'none');
-        assert.isTrue(notifyResizeSpy.called);
+        window.setTimeout(function() {
+          assert.isFalse(drawerLayout.narrow);
+          assert.isTrue(drawer.opened);
+          assert.equal(window.getComputedStyle(drawerToggle)['display'], 'none');
+          assert.isTrue(notifyResizeSpy.called);
 
-        notifyResizeSpy.reset();
-        drawerLayout.responsiveWidth = '10000px';
+          notifyResizeSpy.reset();
+          drawerLayout.responsiveWidth = '10000px';
 
-        assert.isTrue(drawerLayout.narrow);
-        assert.isFalse(drawer.opened);
-        assert.notEqual(window.getComputedStyle(drawerToggle)['display'], 'none');
-        assert.isTrue(notifyResizeSpy.called);
+          window.setTimeout(function() {
+            assert.isTrue(drawerLayout.narrow);
+            assert.isFalse(drawer.opened);
+            assert.notEqual(window.getComputedStyle(drawerToggle)['display'], 'none');
+            assert.isTrue(notifyResizeSpy.called);
+
+            done();
+          }, 50);
+        }, 50);
       });
 
-      test('drawer-toggle', function() {
+      test('drawer-toggle', function(done) {
         drawerLayout.responsiveWidth = '10000px';
 
         assert.isFalse(drawer.opened);
@@ -136,6 +138,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.Base.fire('tap', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
 
         assert.isTrue(drawer.opened);
+
+        drawerLayout.responsiveWidth = '0px';
+
+        window.setTimeout(function() {
+          Polymer.Base.fire('tap', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
+
+          assert.isTrue(drawer.opened);
+
+          done();
+        }, 50);
       });
 
       test('content layout', function(done) {
@@ -175,17 +187,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         resetLayoutSpy.restore();
       });
 
-      test('openedWhenNarrow', function() {
+      test('openedWhenNarrow', function(done) {
         drawerLayout.openedWhenNarrow = true;
         drawerLayout.responsiveWidth = '0px';
 
-        assert.isFalse(drawerLayout.narrow);
-        assert.isTrue(drawer.opened);
+        window.setTimeout(function() {
+          assert.isFalse(drawerLayout.narrow);
+          assert.isTrue(drawer.opened);
 
-        drawerLayout.responsiveWidth = '10000px';
+          drawerLayout.responsiveWidth = '10000px';
 
-        assert.isTrue(drawerLayout.narrow);
-        assert.isTrue(drawer.opened);
+          window.setTimeout(function() {
+            assert.isTrue(drawerLayout.narrow);
+            assert.isTrue(drawer.opened);
+
+            done();
+          }, 50);
+        }, 50);
+      });
+
+      test('app-drawer appended later', function(done) {
+        assert.doesNotThrow(function() {
+          drawerLayout = document.body.appendChild(document.createElement('app-drawer-layout'));
+        });
+        assert.isUndefined(drawerLayout.drawer);
+        assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
+        assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+
+        drawerLayout.responsiveWidth = '0px';
+        Polymer.dom(drawerLayout).appendChild(document.createElement('app-drawer'));
+        Polymer.dom.flush();
+
+        window.setTimeout(function() {
+          assert.isTrue(drawerLayout.drawer.opened);
+          assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '256px');
+          assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+
+          done();
+        }, 50);
       });
     });
 

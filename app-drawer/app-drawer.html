@@ -279,6 +279,8 @@ Custom property                  | Description                            | Defa
           this.listen(this, 'track', '_track');
           this.setScrollDirection('y');
         });
+
+        this.fire('app-drawer-attached');
       },
 
       detached: function() {
@@ -657,6 +659,12 @@ Custom property                  | Description                            | Defa
         TRACKING: 4,
         FLINGING: 5
       }
+
+      /**
+       * Fired when the layout of app-drawer is attached.
+       *
+       * @event app-drawer-attached
+       */
 
       /**
        * Fired when the layout of app-drawer has changed.
