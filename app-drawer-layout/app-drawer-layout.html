@@ -216,7 +216,7 @@ Custom property                          | Description                          
         var target = Polymer.dom(e).localTarget;
         if (target && target.hasAttribute('drawer-toggle')) {
           var drawer = this.drawer;
-          if (drawer) {
+          if (drawer && !drawer.persistent) {
             drawer.toggle();
           }
         }

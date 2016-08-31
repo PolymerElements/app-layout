@@ -126,7 +126,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }, 50);
       });
 
-      test('drawer-toggle', function() {
+      test('drawer-toggle', function(done) {
         drawerLayout.responsiveWidth = '10000px';
 
         assert.isFalse(drawer.opened);
@@ -138,6 +138,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.Base.fire('tap', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
 
         assert.isTrue(drawer.opened);
+
+        drawerLayout.responsiveWidth = '0px';
+
+        window.setTimeout(function() {
+          Polymer.Base.fire('tap', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
+
+          assert.isTrue(drawer.opened);
+
+          done();
+        }, 50);
       });
 
       test('content layout', function(done) {
