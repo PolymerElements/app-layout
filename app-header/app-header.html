@@ -645,9 +645,9 @@ Mixin | Description | Default
        */
       _transformHeader: function(y) {
         this.translate3d(0, (-y) + 'px', 0);
-        if (this._stickyEl && this.condenses && y >= this._stickyElTop) {
-          this.translate3d(0, (Math.min(y, this._dHeight) - this._stickyElTop) + 'px', 0,
-              this._stickyEl);
+        if (this._stickyEl) {
+          this.translate3d(0, this.condenses && y >= this._stickyElTop ?
+              (Math.min(y, this._dHeight) - this._stickyElTop) + 'px' : 0,  0, this._stickyEl);
         }
       },
 
