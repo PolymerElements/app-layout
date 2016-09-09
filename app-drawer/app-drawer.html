@@ -165,7 +165,8 @@ Custom property                  | Description                            | Defa
     <div id="scrim" on-tap="close"></div>
 
     <div id="contentContainer">
-      <content></content>
+      <content select=":not([slot])"></content>
+      <slot></slot>
     </div>
   </template>
 

@@ -129,17 +129,15 @@ Custom property                          | Description                          
 
         transition: var(--app-drawer-layout-content-transition, none);
       }
-
-      #contentContainer:not(.narrow) > ::content [drawer-toggle] {
-        display: none;
-      }
     </style>
 
     <div id="contentContainer">
-      <content select=":not(app-drawer)"></content>
+      <content select=":not([slot])"></content>
+      <slot></slot>
     </div>
 
-    <content id="drawerContent" select="app-drawer"></content>
+    <content select="[slot=drawer]"></content>
+    <slot name="drawer"></slot>
 
     <iron-media-query
         query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]"
@@ -209,7 +207,7 @@ Custom property                          | Description                          
        * @property drawer
        */
       get drawer() {
-        return Polymer.dom(this.$.drawerContent).getDistributedNodes()[0];
+        return Polymer.dom(this).querySelector('[slot=drawer]');
       },
 
       _tapHandler: function(e) {
@@ -224,22 +222,24 @@ Custom property                          | Description                          
 
       resetLayout: function() {
         this.debounce('_resetLayout', function() {
-          var drawer = this.drawer;
-          var contentContainer = this.$.contentContainer;
+          Polymer.RenderStatus.afterNextRender(this, function() {
+            var drawer = this.drawer;
+            var contentContainer = this.$.contentContainer;
 
-          if (this.narrow || !drawer) {
-            contentContainer.style.marginLeft = '';
-            contentContainer.style.marginRight = '';
-          } else {
-            var drawerWidth = drawer.getWidth();
-            if (drawer.position == 'right') {
+            if (this.narrow || !drawer) {
               contentContainer.style.marginLeft = '';
-              contentContainer.style.marginRight = drawerWidth + 'px';
-            } else {
-              contentContainer.style.marginLeft = drawerWidth + 'px';
               contentContainer.style.marginRight = '';
+            } else {
+              var drawerWidth = drawer.getWidth();
+              if (drawer.position == 'right') {
+                contentContainer.style.marginLeft = '';
+                contentContainer.style.marginRight = drawerWidth + 'px';
+              } else {
+                contentContainer.style.marginLeft = drawerWidth + 'px';
+                contentContainer.style.marginRight = '';
+              }
             }
-          }
+          });
         });
       },
 
@@ -260,7 +260,6 @@ Custom property                          | Description                          
       },
 
       _narrowChanged: function(narrow) {
-        this.toggleClass('narrow', narrow, this.$.contentContainer);
         this._resetDrawerState();
         this.notifyResize();
       },

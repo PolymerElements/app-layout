@@ -57,7 +57,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <test-fixture id="testDrawerLayout">
     <template>
       <app-drawer-layout>
-        <app-drawer>Drawer</app-drawer>
+        <app-drawer slot="drawer">Drawer</app-drawer>
         <div drawer-toggle>Toggle</div>
         <p>Content</p>
         <x-resizeable></x-resizeable>
@@ -109,7 +109,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         window.setTimeout(function() {
           assert.isFalse(drawerLayout.narrow);
           assert.isTrue(drawer.opened);
-          assert.equal(window.getComputedStyle(drawerToggle)['display'], 'none');
           assert.isTrue(notifyResizeSpy.called);
 
           notifyResizeSpy.reset();
@@ -118,7 +117,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           window.setTimeout(function() {
             assert.isTrue(drawerLayout.narrow);
             assert.isFalse(drawer.opened);
-            assert.notEqual(window.getComputedStyle(drawerToggle)['display'], 'none');
             assert.isTrue(notifyResizeSpy.called);
 
             done();
@@ -210,12 +208,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.doesNotThrow(function() {
           drawerLayout = document.body.appendChild(document.createElement('app-drawer-layout'));
         });
-        assert.isUndefined(drawerLayout.drawer);
+        assert.isNull(drawerLayout.drawer);
+        Polymer.dom.flush();
         assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
         assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
 
         drawerLayout.responsiveWidth = '0px';
-        Polymer.dom(drawerLayout).appendChild(document.createElement('app-drawer'));
+        drawer = document.createElement('app-drawer');
+        drawer.setAttribute('slot', 'drawer');
+        Polymer.dom(drawerLayout).appendChild(drawer);
         Polymer.dom.flush();
 
         window.setTimeout(function() {
