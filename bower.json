@@ -1,6 +1,6 @@
 {
   "name": "app-layout",
-  "version": "0.10.4",
+  "version": "2.0.0",
   "description": "A set of layout elements for your app",
   "authors": [
     "The Polymer Authors"
@@ -13,11 +13,11 @@
   },
   "main": "app-layout.html",
   "dependencies": {
-    "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#2.0-preview",
     "iron-media-query": "PolymerElements/iron-media-query#^1.0.0",
-    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.0",
+    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#2.0-preview",
     "iron-scroll-target-behavior": "PolymerElements/iron-scroll-target-behavior#^1.0.0",
-    "polymer": "Polymer/polymer#^1.6.0"
+    "polymer": "Polymer/polymer#2.0-preview"
   },
   "devDependencies": {
     "font-roboto": "PolymerElements/font-roboto#^1.0.0",
@@ -36,9 +36,16 @@
     "paper-spinner": "PolymerElements/paper-spinner#^1.0.0",
     "paper-styles": "PolymerElements/paper-styles#^1.0.0",
     "paper-tabs": "PolymerElements/paper-tabs#^1.0.0",
-    "test-fixture": "PolymerElements/test-fixture#^1.0.0",
+    "test-fixture": "PolymerElements/test-fixture#custom-elements-v1",
     "web-component-tester": "^4.0.0",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+    "webcomponentsjs": "webcomponents/webcomponentsjs#v1"
+  },
+  "resolutions": {
+    "iron-resizable-behavior": "2.0-preview",
+    "iron-flex-layout": "2.0-preview",
+    "polymer": "2.0-preview",
+    "test-fixture": "custom-elements-v1",
+    "webcomponentsjs": "v1"
   },
   "ignore": [],
   "private": true
