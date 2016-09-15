@@ -30,7 +30,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <test-fixture id="testDrawer">
     <template>
-      <app-drawer></app-drawer>
+      <app-drawer>
+        <input type="text">
+        <div tabindex="0">Div</div>
+        <span>Not focusable</span>
+      </app-drawer>
     </template>
   </test-fixture>
 
@@ -39,27 +43,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-drawer dir="rtl"></app-drawer>
     </template>
   </test-fixture>
-
-  <test-fixture id="focusDrawer">
-    <template>
-      <focus-drawer></focus-drawer>
-    </template>
-  </test-fixture>
-
-  <dom-module id="focus-drawer">
-    <template>
-      <app-drawer>
-        <input type="text">
-        <div tabindex="0">Div</div>
-        <span>Not focusable</span>
-      </app-drawer>
-    </template>
-    <script>
-    HTMLImports.whenReady(function() {
-      Polymer({ is: 'focus-drawer' });
-    });
-    </script>
-  </dom-module>
 
   <script>
 
@@ -120,7 +103,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('set scroll direction', function(done) {
         Polymer.RenderStatus.afterNextRender(drawer, function() {
-          assert.equal(drawer['__polymerGesturesTouchAction'], 'pan-y');
+          assert.equal(drawer['__polymerGesturesTouchAction'], 'y');
           done();
         });
       });
@@ -649,9 +632,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('focus trap', function(done) {
-        var focusDrawer = fixture('focusDrawer');
-        var root = Polymer.dom(focusDrawer.root);
-        var drawer = root.querySelector('app-drawer');
         var input = Polymer.dom(drawer).querySelector('input');
         var div = Polymer.dom(drawer).querySelector('div[tabindex]');
         var inputFocusSpy = sinon.spy(input, 'focus');
@@ -688,9 +668,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('focus trap with app-drawer tabindex set', function(done) {
-        var focusDrawer = fixture('focusDrawer');
-        var root = Polymer.dom(focusDrawer.root);
-        var drawer = root.querySelector('app-drawer');
         var input = Polymer.dom(drawer).querySelector('input');
         var drawerFocusSpy = sinon.spy(drawer, 'focus');
         var inputFocusSpy = sinon.spy(input, 'focus');
@@ -707,9 +684,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('no focus trap', function(done) {
-        var focusDrawer = fixture('focusDrawer');
-        var root = Polymer.dom(focusDrawer.root);
-        var drawer = root.querySelector('app-drawer');
         var input = Polymer.dom(drawer).querySelector('input');
         var inputFocusSpy = sinon.spy(input, 'focus');
   

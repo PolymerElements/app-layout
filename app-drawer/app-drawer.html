@@ -98,7 +98,7 @@ Custom property                  | Description                            | Defa
 
         background-color: #FFF;
 
-        @apply(--app-drawer-content-container);
+        @apply --app-drawer-content-container;
       }
 
       :host([position=right]) > #contentContainer {
@@ -165,7 +165,8 @@ Custom property                  | Description                            | Defa
     <div id="scrim" on-tap="close"></div>
 
     <div id="contentContainer">
-      <content></content>
+      <content select=":not([slot])"></content>
+      <slot></slot>
     </div>
   </template>
 
