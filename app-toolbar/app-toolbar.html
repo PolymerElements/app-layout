@@ -63,8 +63,8 @@ Custom property              | Description                  | Default
   <template>
     <style>
       :host {
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
+        @apply --layout-horizontal;
+        @apply --layout-center;
         position: relative;
         height: 64px;
         padding: 0 16px;
@@ -76,7 +76,16 @@ Custom property              | Description                  | Default
         pointer-events: auto;
       }
 
+      ::slotted(*) {
+        pointer-events: auto;
+      }
+
       ::content > paper-icon-button {
+        /* paper-icon-button/issues/33 */
+        font-size: 0;
+      }
+
+      ::slotted(paper-icon-button) {
         /* paper-icon-button/issues/33 */
         font-size: 0;
       }
@@ -84,10 +93,23 @@ Custom property              | Description                  | Default
       ::content > [main-title],
       ::content > [condensed-title] {
         pointer-events: none;
-        @apply(--layout-flex);
+        @apply --layout-flex;
+      }
+
+      ::slotted([main-title]),
+      ::slotted([condensed-title]) {
+        pointer-events: none;
+        @apply --layout-flex;
       }
 
       ::content > [bottom-item] {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+
+      ::slotted([bottom-item]) {
         position: absolute;
         right: 0;
         bottom: 0;
@@ -101,12 +123,24 @@ Custom property              | Description                  | Default
         left: 0;
       }
 
+      ::slotted([top-item]) {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+      }
+
       ::content > [spacer] {
+        margin-left: 64px;
+      }
+
+      ::slotted([spacer]) {
         margin-left: 64px;
       }
     </style>
 
     <content></content>
+    <slot></slot>
   </template>
 
   <script>
