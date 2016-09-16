@@ -94,7 +94,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
 
         .item:nth-child(5n + 1) {
-          @apply(--app-grid-expandible-item);
+          @apply --app-grid-expandible-item;
           height: 400px;
         }
 
@@ -130,9 +130,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header>
         <div class="centered-container">
           <ul class="app-grid">
-            <template is="dom-repeat" items="[[photos]]" as="photo">
-              <li class="item" style$="[[_getItemStyle(photo)]]"></li>
-            </template>
+            <dom-repeat items="[[photos]]" as="photo">
+              <template>
+                <li class="item" style$="[[_getItemStyle(photo)]]"></li>
+              </template>
+            </dom-repeat>
           </ul>
         </div>
       </app-header-layout>
@@ -252,7 +254,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
 
         });
-      
+
       });
 
     </script>
