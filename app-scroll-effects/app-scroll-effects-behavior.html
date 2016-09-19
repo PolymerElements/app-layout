@@ -268,7 +268,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     _effectsChanged: function(effects, effectsConfig, isAttached) {
       this._tearDownEffects();
 
-      if (effects === '' || !isAttached) {
+      if (!effects || !isAttached) {
         return;
       }
       effects.split(' ').forEach(function(effectName) {

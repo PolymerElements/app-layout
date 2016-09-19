@@ -220,7 +220,9 @@ Mixin | Description | Default
 @demo app-header/demo/music.html Reveals Demo
 @demo app-header/demo/no-effects.html Condenses and Reveals Demo
 @demo app-header/demo/notes.html Fixed with Dynamic Shadow Demo
-@demo app-header/demo/custom-sticky-element.html Custom Sticky Element Demo
+@demo app-header/demo/custom-sticky-element-1.html Custom Sticky Element Demo 1
+@demo app-header/demo/custom-sticky-element-2.html Custom Sticky Element Demo 2
+
 -->
 
 <dom-module id="app-header">
@@ -247,44 +249,33 @@ Mixin | Description | Default
         opacity: 0;
         box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
         will-change: opacity;
-        @apply(--app-header-shadow);
+        @apply --app-header-shadow;
       }
 
       :host([shadow])::after {
         opacity: 1;
       }
 
-      ::content [main-title],
-      ::content [condensed-title] {
-        -webkit-transform-origin: left top;
-        transform-origin: left top;
-        white-space: nowrap;
-      }
-
-      ::content [condensed-title] {
-        opacity: 0;
-      }
-
       #background {
-        @apply(--layout-fit);
+        @apply --layout-fit;
         overflow: hidden;
       }
 
       #backgroundFrontLayer,
       #backgroundRearLayer {
-        @apply(--layout-fit);
+        @apply --layout-fit;
         height: 100%;
         pointer-events: none;
         background-size: cover;
       }
 
       #backgroundFrontLayer {
-        @apply(--app-header-background-front-layer);
+        @apply --app-header-background-front-layer;
       }
 
       #backgroundRearLayer {
         opacity: 0;
-        @apply(--app-header-background-rear-layer);
+        @apply --app-header-background-rear-layer;
       }
 
       #contentContainer {
@@ -296,21 +287,24 @@ Mixin | Description | Default
       :host([disabled]),
       :host([disabled])::after,
       :host([disabled]) #backgroundFrontLayer,
-      :host([disabled]) #backgroundRearLayer,
-      :host([disabled]) ::content > app-toolbar:first-of-type,
-      :host([disabled]) ::content > [sticky],
-      /* Silent scrolling should not run CSS transitions */
-      :host-context(.app-layout-silent-scroll),
-      :host-context(.app-layout-silent-scroll)::after,
-      :host-context(.app-layout-silent-scroll) #backgroundFrontLayer,
-      :host-context(.app-layout-silent-scroll) #backgroundRearLayer,
-      :host-context(.app-layout-silent-scroll) ::content > app-toolbar:first-of-type,
-      :host-context(.app-layout-silent-scroll) ::content > [sticky] {
+      :host([disabled]) #backgroundRearLayer {
         transition: none !important;
       }
+
+      :host([disabled]) ::slotted(app-toolbar:first-of-type),
+      :host([disabled]) ::slotted([sticky]) {
+        transition: none !important;
+      }
+
+      :host([disabled]) ::content > app-toolbar:first-of-type,
+      :host([disabled]) ::content > [sticky] {
+        transition: none !important;
+      }
+
     </style>
     <div id="contentContainer">
-      <content id="content"></content>
+      <content id="content" select=":not([slot])"></content>
+      <slot id="slot"></slot>
     </div>
   </template>
 
@@ -454,25 +448,37 @@ Mixin | Description | Default
        *
        * @return {HTMLElement}?
        */
-      _getStickyEl: function() {
+      get _stickyEl() {
+        if (this._stickyElRef != null) {
+          return this._stickyElRef;
+        }
         /** @type {HTMLElement} */
-        var stickyEl;
-        var nodes = Polymer.dom(this.$.content).getDistributedNodes();
+        var nodes = Polymer.Element ? Polymer.dom(this.$.slot).assignedNodes({ flatten : true }) :
+            Polymer.dom(this.$.content).getDistributedNodes();
 
-        for (var i = 0; i < nodes.length; i++) {
-          if (nodes[i].nodeType === Node.ELEMENT_NODE) {
-            var node = /** @type {HTMLElement} */ (nodes[i]);
+        for (var i = 0, node; node = nodes[i]; i++) {
+          if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.hasAttribute('sticky')) {
-              stickyEl = node;
+              this._stickyElRef = node;
               break;
-            } else if (!stickyEl) {
-              stickyEl = node;
+            } else if (!this._stickyElRef) {
+              this._stickyElRef = node;
             }
           }
         }
-        return stickyEl;
+        return this._stickyElRef;
       },
 
+      _debounceRaf: function(fn) {
+        var self = this;
+        if (this._raf) {
+          cancelAnimationFrame(this._raf);
+        }
+        this._raf = requestAnimationFrame(function() {
+          self._raf = null;
+          fn.call(self);
+        });
+      },
       /**
        * Resets the layout. If you changed the size of app-header via CSS
        * you can notify the changes by either firing the `iron-resize` event
@@ -483,7 +489,7 @@ Mixin | Description | Default
       resetLayout: function() {
         this.fire('app-header-reset-layout');
 
-        this.debounce('_resetLayout', function() {
+        this._debounceRaf(function() {
           // noop if the header isn't visible
           if (this.offsetWidth === 0 && this.offsetHeight === 0) {
             return;
@@ -494,7 +500,7 @@ Mixin | Description | Default
           var currentDisabled = this.disabled;
 
           this._height = this.offsetHeight;
-          this._stickyEl = this._getStickyEl();
+          this._stickyElRef = null;
           this.disabled = true;
 
           // prepare for measurement

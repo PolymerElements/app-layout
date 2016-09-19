@@ -25,69 +25,70 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../demo/sample-content.html">
   <link rel="import" href="../app-header.html">
 
-  <style is="custom-style">
+  <custom-style>
+    <style is="custom-style">
 
-    body {
-      margin: 0;
-      font-family: 'Roboto', 'Noto', sans-serif;
-      background-color: #eee;
-    }
+      body {
+        margin: 0;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        background-color: #eee;
+      }
 
-    app-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      color: #fff;
-      background-color: #3f51b5;
-      --app-header-background-front-layer: {
-        background-image: url(//app-layout-assets.appspot.com/assets/PharrellWilliams.jpg);
-      };
-    }
+      app-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        color: #fff;
+        background-color: #3f51b5;
+        --app-header-background-front-layer: {
+          background-image: url(https://app-layout-assets.appspot.com/assets/PharrellWilliams.jpg);
+        };
+      }
 
-    paper-icon-button {
-      --paper-icon-button-ink-color: white;
-    }
+      paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
 
-    paper-fab {
-      position: absolute;
-      right: 16px;
-      top: 248px;
-      will-change: transform;
-      transition: 0.1s -webkit-transform;
-      transition: 0.1s transform;
-    }
+      paper-fab {
+        position: absolute;
+        right: 16px;
+        top: 248px;
+        will-change: transform;
+        transition: 0.1s -webkit-transform;
+        transition: 0.1s transform;
+      }
 
-    paper-fab.shrink-to-hidden {
-      -webkit-transform: scale3d(0, 0, 0);
-      transform: scale3d(0, 0, 0);
-    }
+      paper-fab.shrink-to-hidden {
+        -webkit-transform: scale3d(0, 0, 0);
+        transform: scale3d(0, 0, 0);
+      }
 
-    app-toolbar.middle {
-      height: 120px;
-    }
+      app-toolbar.middle {
+        height: 120px;
+      }
 
-    app-toolbar.bottom {
-      height: 92px;
-    }
+      app-toolbar.bottom {
+        height: 92px;
+      }
 
-    sample-content {
-      padding-top: 276px;
-    }
+      sample-content {
+        padding-top: 276px;
+      }
 
-    [main-title] {
-      margin-left: 64px;
-      font-size: 32px;
-      font-weight: 300;
-    }
+      [main-title] {
+        margin-left: 64px;
+        font-size: 32px;
+        font-weight: 300;
+      }
 
-    [condensed-title] {
-      margin-left: 20px;
-      font-weight: 300;
-    }
+      [condensed-title] {
+        margin-left: 20px;
+        font-weight: 300;
+      }
 
-  </style>
-
+    </style>
+  </custom-style>
 </head>
 <body unresolved>
 
