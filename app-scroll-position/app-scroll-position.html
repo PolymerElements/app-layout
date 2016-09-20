@@ -12,13 +12,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../iron-scroll-target-behavior/iron-scroll-target-behavior.html">
 
 <!--
-app-scrollpos-control is a manager for saving and restoring the scroll position when multiple
+app-scroll-position is a manager for saving and restoring the scroll position when multiple
 pages are sharing the same document scroller.
 
 Example:
 
 ```html
-<app-scrollpos-control selected="{{page}}"></app-scrollpos-control>
+<app-scroll-position selected="{{page}}"></app-scroll-position>
 
 <app-drawer-layout>
 
@@ -47,14 +47,14 @@ Example:
 ```
 
 @group App Elements
-@element app-scrollpos-control
-@demo app-scrollpos-control/demo/index.html
+@element app-scroll-position
+@demo app-scroll-position/demo/index.html
 -->
 
-<dom-module id="app-scrollpos-control">
+<dom-module id="app-scroll-position">
   <script>
     Polymer({
-      is: 'app-scrollpos-control',
+      is: 'app-scroll-position',
 
       behaviors: [
         Polymer.IronScrollTargetBehavior

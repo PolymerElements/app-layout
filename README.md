@@ -21,7 +21,7 @@ A set of layout elements for your app. It includes:
 
 - [app-header-layout](/app-header-layout) - A wrapper element that positions an app-header and other content.
 
-- [app-scrollpos-control](/app-scrollpos-control) - A manager for saving and restoring the scroll position when multiple pages are sharing the same document scroller.
+- [app-scroll-position](/app-scroll-position) - A manager for saving and restoring the scroll position when multiple pages are sharing the same document scroller.
 
 - [app-toolbar](/app-toolbar) - A horizontal toolbar containing items that can be used for label, navigation, search and actions.
 
