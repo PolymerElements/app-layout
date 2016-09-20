@@ -77,7 +77,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         z-index: 0;
       }
 
-      #headerContent::content > * {
+      ::content > [slot=header] {
         @apply --layout-fixed-top;
         z-index: 1;
       }
@@ -91,7 +91,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         height: 100%;
       }
 
-      :host([has-scrolling-region]) > #headerContent::content > * {
+      :host([has-scrolling-region]) ::content > [slot=header] {
         position: absolute;
       }
 
