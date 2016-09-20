@@ -82,7 +82,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         z-index: 1;
       }
 
-      #headerSlot::slotted(*) {
+      :host ::slotted([slot=header]) {
         @apply --layout-fixed-top;
         z-index: 1;
       }
@@ -95,7 +95,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         position: absolute;
       }
 
-      :host([has-scrolling-region]) > #headerSlot::slotted(*) {
+      :host([has-scrolling-region]) ::slotted([slot=header]) {
         position: absolute;
       }
 
