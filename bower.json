@@ -14,7 +14,7 @@
   "main": "app-layout.html",
   "dependencies": {
     "iron-flex-layout": "PolymerElements/iron-flex-layout#2.0-preview",
-    "iron-media-query": "PolymerElements/iron-media-query#^1.0.0",
+    "iron-media-query": "PolymerElements/iron-media-query#2.0-preview",
     "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#2.0-preview",
     "iron-scroll-target-behavior": "PolymerElements/iron-scroll-target-behavior#2.0-preview",
     "polymer": "Polymer/polymer#2.0-preview"
@@ -35,25 +35,32 @@
     "paper-progress": "PolymerElements/paper-progress#~1.0.2",
     "paper-spinner": "PolymerElements/paper-spinner#^1.0.0",
     "paper-styles": "PolymerElements/paper-styles#2.0-preview",
-    "paper-tabs": "PolymerElements/paper-tabs#^1.0.0",
+    "paper-tabs": "PolymerElements/paper-tabs#2.0-preview",
     "test-fixture": "PolymerElements/test-fixture#custom-elements-v1",
     "web-component-tester": "^4.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#v1"
   },
+  "ignore": [],
+  "private": true,
   "resolutions": {
-    "iron-flex-layout": "2.0-preview",
-    "iron-icon": "2.0-preview",
-    "iron-icons": "2.0-preview",
-    "iron-iconset-svg": "2.0-preview",
-    "iron-meta": "2.0-preview",
-    "iron-resizable-behavior": "2.0-preview",
-    "iron-selector": "2.0-preview",
     "paper-styles": "2.0-preview",
     "polymer": "2.0-preview",
+    "iron-flex-layout": "2.0-preview",
+    "iron-icons": "2.0-preview",
+    "iron-scroll-target-behavior": "2.0-preview",
+    "iron-resizable-behavior": "2.0-preview",
+    "iron-icon": "2.0-preview",
+    "iron-selector": "2.0-preview",
     "test-fixture": "custom-elements-v1",
     "webcomponentsjs": "v1",
-    "iron-scroll-target-behavior": "2.0-preview"
-  },
-  "ignore": [],
-  "private": true
+    "iron-iconset-svg": "2.0-preview",
+    "iron-a11y-keys-behavior": "2.0-preview",
+    "paper-behaviors": "2.0-preview",
+    "iron-behaviors": "2.0-preview",
+    "iron-menu-behavior": "2.0-preview",
+    "iron-meta": "2.0-preview",
+    "iron-checked-element-behavior": "2.0-preview",
+    "paper-ripple": "2.0-preview",
+    "iron-validatable-behavior": "2.0-preview"
+  }
 }
