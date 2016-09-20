@@ -20,7 +20,7 @@ rate than the foreground.
 
 ```html
 <app-box style="height: 100px;" effects="parallax-background">
-  <img background src="picture.png" style="width: 100%; height: 600px;">
+  <img slot="background" src="picture.png" style="width: 100%; height: 600px;">
 </app-box>
 ```
 
@@ -97,7 +97,7 @@ Mixin | Description | Default
       }
 
       #background {
-        @apply(--layout-fit);
+        @apply --layout-fit;
         overflow: hidden;
         height: 100%;
       }
@@ -106,7 +106,7 @@ Mixin | Description | Default
         min-height: 100%;
         pointer-events: none;
         background-size: cover;
-        @apply(--app-box-background-front-layer);
+        @apply --app-box-background-front-layer;
       }
 
       #contentContainer {
@@ -123,11 +123,13 @@ Mixin | Description | Default
 
     <div id="background">
       <div id="backgroundFrontLayer">
-        <content select="[background]"></content>
+        <content select="[slot=background]"></content>
+        <slot name="background"></slot>
       </div>
     </div>
     <div id="contentContainer">
-      <content id="content"></content>
+      <content select=":not([slot])"></content>
+      <slot></slot>
     </div>
   </template>
 
@@ -177,7 +179,7 @@ Mixin | Description | Default
           this._setUpEffect();
           this._updateScrollState(scrollTop);
           this.disabled = savedDisabled;
-        }, 1);
+        });
       },
 
       _getElementTop: function() {
