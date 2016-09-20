@@ -408,11 +408,11 @@ Mixin | Description | Default
       _stickyElTop: 0,
 
       /**
-       * The element that remains visible when the header condenses.
+       * A reference to the element that remains visible when the header condenses.
        *
        * @type {HTMLElement}
        */
-      _stickyEl: null,
+      _stickyElRef: null,
 
       /**
        * The header's top value used for the `transformY`
@@ -452,8 +452,9 @@ Mixin | Description | Default
         if (this._stickyElRef != null) {
           return this._stickyElRef;
         }
-        /** @type {HTMLElement} */
-        var nodes = Polymer.Element ? Polymer.dom(this.$.slot).assignedNodes({ flatten : true }) :
+
+        var assignedNodes = Polymer.dom(this.$.slot).assignedNodes({ flatten : true });
+        var nodes = assignedNodes.length > 0 ? assignedNodes : 
             Polymer.dom(this.$.content).getDistributedNodes();
 
         for (var i = 0, node; node = nodes[i]; i++) {

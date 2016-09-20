@@ -168,8 +168,9 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
        * @property header
        */
       get header() {
-        return Polymer.Element ?
-            Polymer.dom(this.$.headerSlot).assignedNodes({ flatten : true })[0] :
+        var assignedNodes = Polymer.dom(this.$.headerSlot).assignedNodes({ flatten : true });
+
+        return assignedNodes.length < 0 ? assignedNodes[0] :
             Polymer.dom(this.$.headerContent).getDistributedNodes()[0];
       },
 
