@@ -51,7 +51,8 @@
     "paper-styles": "2.0-preview",
     "polymer": "2.0-preview",
     "test-fixture": "custom-elements-v1",
-    "webcomponentsjs": "v1"
+    "webcomponentsjs": "v1",
+    "iron-scroll-target-behavior": "2.0-preview"
   },
   "ignore": [],
   "private": true

@@ -157,13 +157,24 @@ Mixin | Description | Default
         this.resetLayout();
       },
 
+      _debounceRaf: function(fn) {
+        var self = this;
+        if (this._raf) {
+          window.cancelAnimationFrame(this._raf);
+        }
+        this._raf = window.requestAnimationFrame(function() {
+          self._raf = null;
+          fn.call(self);
+        });
+      },
+
       /**
        * Resets the layout. This method is automatically called when the element is attached to the DOM.
        *
        * @method resetLayout
        */
       resetLayout: function() {
-        this.debounce('_resetLayout', function() {
+        this._debounceRaf(function() {
           // noop if the box isn't in the rendered tree
           if (this.offsetWidth === 0 && this.offsetHeight === 0) {
             return;

@@ -176,9 +176,9 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
       _debounceRaf: function(fn) {
         var self = this;
         if (this._raf) {
-          cancelAnimationFrame(this._raf);
+          window.cancelAnimationFrame(this._raf);
         }
-        this._raf = requestAnimationFrame(function() {
+        this._raf = window.requestAnimationFrame(function() {
           self._raf = null;
           fn.call(self);
         });
