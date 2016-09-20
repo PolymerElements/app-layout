@@ -12,13 +12,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../iron-scroll-target-behavior/iron-scroll-target-behavior.html">
 
 <!--
-app-scrollpos-control is a manager for saving and restoring the scroll position when multiple
+app-scroll-position is a manager for saving and restoring the scroll position when multiple
 pages are sharing the same document scroller.
 
 Example:
 
 ```html
-<app-scrollpos-control selected="{{page}}"></app-scrollpos-control>
+<app-scroll-position selected="{{page}}"></app-scroll-position>
 
 <app-drawer-layout>
 
@@ -47,14 +47,14 @@ Example:
 ```
 
 @group App Elements
-@element app-scrollpos-control
-@demo app-scrollpos-control/demo/index.html
+@element app-scroll-position
+@demo app-scroll-position/demo/index.html
 -->
 
-<dom-module id="app-scrollpos-control">
+<dom-module id="app-scroll-position">
   <script>
     Polymer({
-      is: 'app-scrollpos-control',
+      is: 'app-scroll-position',
 
       behaviors: [
         Polymer.IronScrollTargetBehavior
@@ -82,19 +82,16 @@ Example:
         '_updateScrollPos(selected, reset)'
       ],
 
-      created: function() {
-        this._scrollposMap = {};
-      },
-
       _selectedChanged: function(selected, old) {
         if (old != null) {
-          this._scrollposMap[old] = {x: this._scrollLeft, y: this._scrollTop};
+          this._scrollposMap = this._scrollposMap || {};
+          this._scrollposMap[old] = { x: this._scrollLeft, y: this._scrollTop };
         }
       },
 
       _updateScrollPos: function(selected, reset) {
         this.debounce('_updateScrollPos', function() {
-          var pos = this._scrollposMap[this.selected];
+          var pos = this._scrollposMap ? this._scrollposMap[this.selected] : null;
           if (pos != null && !this.reset) {
             this.scroll(pos.x, pos.y);
           } else {

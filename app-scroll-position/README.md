@@ -1,12 +1,12 @@
-##&lt;app-scrollpos-control&gt;
+##&lt;app-scroll-position&gt;
 
-app-scrollpos-control is a manager for saving and restoring the scroll position when multiple
+app-scroll-position is a manager for saving and restoring the scroll position when multiple
 pages are sharing the same document scroller.
 
 Example:
 
 ```html
-<app-scrollpos-control selected="{{page}}"></app-scrollpos-control>
+<app-scroll-position selected="{{page}}"></app-scroll-position>
 
 <app-drawer-layout>
 
