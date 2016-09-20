@@ -81,6 +81,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       setup(function() {
         drawerLayout = fixture('testDrawerLayout');
         drawer = drawerLayout.querySelector('app-drawer');
+        Polymer.dom.flush();
       });
 
       test('default values', function() {
@@ -208,8 +209,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.doesNotThrow(function() {
           drawerLayout = document.body.appendChild(document.createElement('app-drawer-layout'));
         });
-        assert.isUndefined(drawerLayout.drawer);
         Polymer.dom.flush();
+
+        assert.isUndefined(drawerLayout.drawer);
         assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
         assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
 
