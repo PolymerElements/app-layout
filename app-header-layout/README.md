@@ -7,7 +7,7 @@ Using the document scroll:
 
 ```html
 <app-header-layout>
-  <app-header fixed condenses effects="waterfall">
+  <app-header slot="header" fixed condenses effects="waterfall">
     <app-toolbar>
       <div main-title>App name</div>
     </app-toolbar>
@@ -22,7 +22,7 @@ Using an own scrolling region:
 
 ```html
 <app-header-layout has-scrolling-region style="width: 300px; height: 400px;">
-  <app-header fixed condenses effects="waterfall">
+  <app-header slot="header" fixed condenses effects="waterfall">
     <app-toolbar>
       <div main-title>App name</div>
     </app-toolbar>

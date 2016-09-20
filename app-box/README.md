@@ -6,7 +6,7 @@ rate than the foreground.
 
 ```html
 <app-box style="height: 100px;" effects="parallax-background">
-  <img background src="picture.png" style="width: 100%; height: 600px;">
+  <img slot="background" src="picture.png" style="width: 100%; height: 600px;">
 </app-box>
 ```
 

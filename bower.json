@@ -16,7 +16,7 @@
     "iron-flex-layout": "PolymerElements/iron-flex-layout#2.0-preview",
     "iron-media-query": "PolymerElements/iron-media-query#^1.0.0",
     "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#2.0-preview",
-    "iron-scroll-target-behavior": "PolymerElements/iron-scroll-target-behavior#^1.0.0",
+    "iron-scroll-target-behavior": "PolymerElements/iron-scroll-target-behavior#2.0-preview",
     "polymer": "Polymer/polymer#2.0-preview"
   },
   "devDependencies": {
@@ -51,7 +51,8 @@
     "paper-styles": "2.0-preview",
     "polymer": "2.0-preview",
     "test-fixture": "custom-elements-v1",
-    "webcomponentsjs": "v1"
+    "webcomponentsjs": "v1",
+    "iron-scroll-target-behavior": "2.0-preview"
   },
   "ignore": [],
   "private": true

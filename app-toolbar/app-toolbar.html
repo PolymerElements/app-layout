@@ -72,74 +72,74 @@ Custom property              | Description                  | Default
         font-size: var(--app-toolbar-font-size, 20px);
       }
 
-      ::content > * {
+      :host ::content > * {
         pointer-events: auto;
       }
 
-      ::slotted(*) {
+      :host ::slotted(*) {
         pointer-events: auto;
       }
 
-      ::content > paper-icon-button {
+      :host ::content > paper-icon-button {
         /* paper-icon-button/issues/33 */
         font-size: 0;
       }
 
-      ::slotted(paper-icon-button) {
+      :host ::slotted(paper-icon-button) {
         /* paper-icon-button/issues/33 */
         font-size: 0;
       }
 
-      ::content > [main-title],
-      ::content > [condensed-title] {
+      :host ::content > [main-title],
+      :host ::content > [condensed-title] {
         pointer-events: none;
         @apply --layout-flex;
       }
 
-      ::slotted([main-title]),
-      ::slotted([condensed-title]) {
+      :host ::slotted([main-title]),
+      :host ::slotted([condensed-title]) {
         pointer-events: none;
         @apply --layout-flex;
       }
 
-      ::content > [bottom-item] {
+      :host ::content > [bottom-item] {
         position: absolute;
         right: 0;
         bottom: 0;
         left: 0;
       }
 
-      ::slotted([bottom-item]) {
+      :host ::slotted([bottom-item]) {
         position: absolute;
         right: 0;
         bottom: 0;
         left: 0;
       }
 
-      ::content > [top-item] {
+      :host ::content > [top-item] {
         position: absolute;
         top: 0;
         right: 0;
         left: 0;
       }
 
-      ::slotted([top-item]) {
+      :host ::slotted([top-item]) {
         position: absolute;
         top: 0;
         right: 0;
         left: 0;
       }
 
-      ::content > [spacer] {
+      :host ::content > [spacer] {
         margin-left: 64px;
       }
 
-      ::slotted([spacer]) {
+      :host ::slotted([spacer]) {
         margin-left: 64px;
       }
     </style>
 
-    <content></content>
+    <content select=":not([slot])"></content>
     <slot></slot>
   </template>
 
