@@ -487,13 +487,13 @@ Mixin | Description | Default
        * @method resetLayout
        */
       resetLayout: function() {
-        this.fire('app-header-reset-layout');
-
         this._debounceRaf(function() {
           // noop if the header isn't visible
           if (this.offsetWidth === 0 && this.offsetHeight === 0) {
             return;
           }
+
+          this.fire('app-header-reset-layout');
 
           var scrollTop = this._clampedScrollTop;
           var firstSetup = this._height === 0 || scrollTop === 0;

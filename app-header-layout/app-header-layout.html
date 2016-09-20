@@ -155,7 +155,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
 
       listeners: {
         'iron-resize': '_resizeHandler',
-        'app-header-reset-layout': 'resetLayout'
+        'app-header-reset-layout': '_appHeaderResetLayout'
       },
 
       observers: [
@@ -229,15 +229,18 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
 
       _updateScroller: function() {
         var header = this.header;
-        if (!header) {
-          return;
-        }
-        header.scrollTarget = this.hasScrollingRegion ?
+        if (header) {
+          header.scrollTarget = this.hasScrollingRegion ?
             this.$.contentContainer : this.ownerDocument.documentElement;
+        }
       },
 
       _resizeHandler: function() {
         this.resetLayout();
+      },
+
+      _appHeaderResetLayout: function() {
+        this._updateContentPosition();
       }
     });
   </script>
