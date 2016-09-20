@@ -65,7 +65,7 @@ With an app-header-layout:
 </app-drawer-layout>
 ```
 
-Add the `drawer-toggle` attribute to elements inside `app-drawer-layout` that toggle the drawer on tap events:
+Add the `drawer-toggle` attribute to elements inside `app-drawer-layout` that toggle the drawer on click events:
 
 ```html
 <app-drawer-layout>
@@ -136,8 +136,8 @@ Custom property                          | Description                          
       <slot></slot>
     </div>
 
-    <content select="[slot=drawer]"></content>
-    <slot name="drawer"></slot>
+    <content id="drawerContent" select="[slot=drawer]"></content>
+    <slot id="drawerSlot" name="drawer"></slot>
 
     <iron-media-query
         query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]"
@@ -190,7 +190,7 @@ Custom property                          | Description                          
       },
 
       listeners: {
-        'tap': '_tapHandler',
+        'click': '_clickHandler',
         'app-drawer-attached': '_resetDrawerState',
         'app-drawer-reset-layout': 'resetLayout',
         'iron-resize': 'resetLayout'
@@ -207,10 +207,12 @@ Custom property                          | Description                          
        * @property drawer
        */
       get drawer() {
-        return Polymer.dom(this).querySelector('[slot=drawer]');
+        return Polymer.Element ?
+            Polymer.dom(this.$.drawerSlot).assignedNodes({ flatten: true })[0] :
+            Polymer.dom(this.$.drawerContent).getDistributedNodes()[0];
       },
 
-      _tapHandler: function(e) {
+      _clickHandler: function(e) {
         var target = Polymer.dom(e).localTarget;
         if (target && target.hasAttribute('drawer-toggle')) {
           var drawer = this.drawer;

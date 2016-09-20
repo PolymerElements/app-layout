@@ -723,9 +723,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(window.getComputedStyle(scrim)['visibility'], 'hidden');
       });
 
-      test('tap on scrim closes drawer', function() {
+      test('click on scrim closes drawer', function() {
         drawer.opened = true;
-        drawer.fire('tap', null /* detail */, { node: scrim });
+        drawer.fire('click', null /* detail */, { node: scrim });
 
         assert.isFalse(drawer.opened);
       });

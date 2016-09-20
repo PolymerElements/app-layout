@@ -129,18 +129,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         assert.isFalse(drawer.opened);
 
-        Polymer.Base.fire('tap', null /* detail */, { node: drawerLayout.querySelector('p') });
+        Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('p') });
 
         assert.isFalse(drawer.opened);
 
-        Polymer.Base.fire('tap', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
+        Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
 
         assert.isTrue(drawer.opened);
 
         drawerLayout.responsiveWidth = '0px';
 
         window.setTimeout(function() {
-          Polymer.Base.fire('tap', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
+          Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
 
           assert.isTrue(drawer.opened);
 
@@ -208,7 +208,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.doesNotThrow(function() {
           drawerLayout = document.body.appendChild(document.createElement('app-drawer-layout'));
         });
-        assert.isNull(drawerLayout.drawer);
+        assert.isUndefined(drawerLayout.drawer);
         Polymer.dom.flush();
         assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
         assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
