@@ -20,7 +20,7 @@ Using the document scroll:
 
 ```html
 <app-header-layout>
-  <app-header fixed condenses effects="waterfall">
+  <app-header slot="header" fixed condenses effects="waterfall">
     <app-toolbar>
       <div main-title>App name</div>
     </app-toolbar>
@@ -35,7 +35,7 @@ Using an own scrolling region:
 
 ```html
 <app-header-layout has-scrolling-region style="width: 300px; height: 400px;">
-  <app-header fixed condenses effects="waterfall">
+  <app-header slot="header" fixed condenses effects="waterfall">
     <app-toolbar>
       <div main-title>App name</div>
     </app-toolbar>
@@ -77,8 +77,13 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         z-index: 0;
       }
 
-      :host > ::content > app-header {
-        @apply(--layout-fixed-top);
+      #headerContent::content > * {
+        @apply --layout-fixed-top;
+        z-index: 1;
+      }
+
+      #headerSlot::slotted(*) {
+        @apply --layout-fixed-top;
         z-index: 1;
       }
 
@@ -86,24 +91,28 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         height: 100%;
       }
 
-      :host([has-scrolling-region]) > ::content > app-header {
+      :host([has-scrolling-region]) > #headerContent::content > * {
+        position: absolute;
+      }
+
+      :host([has-scrolling-region]) > #headerSlot::slotted(*) {
         position: absolute;
       }
 
       :host([has-scrolling-region]) > #contentContainer {
-        @apply(--layout-fit);
+        @apply --layout-fit;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
 
       :host([fullbleed]) {
-        @apply(--layout-vertical);
-        @apply(--layout-fit);
+        @apply --layout-vertical;
+        @apply --layout-fit;
       }
 
       :host([fullbleed]) > #contentContainer {
-        @apply(--layout-vertical);
-        @apply(--layout-flex);
+        @apply --layout-vertical;
+        @apply --layout-flex;
       }
 
       #contentContainer {
@@ -114,10 +123,12 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
 
     </style>
 
-    <content id="header" select="app-header"></content>
+    <content id="headerContent" select="[slot=header]"></content>
+    <slot id="headerSlot" name="header"></slot>
 
     <div id="contentContainer">
-      <content></content>
+      <content select=":not([slot])"></content>
+      <slot></slot>
     </div>
 
   </template>
@@ -157,7 +168,20 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
        * @property header
        */
       get header() {
-        return Polymer.dom(this.$.header).getDistributedNodes()[0];
+        return Polymer.Element ?
+            Polymer.dom(this.$.headerSlot).assignedNodes({ flatten : true })[0] :
+            Polymer.dom(this.$.headerContent).getDistributedNodes()[0];
+      },
+
+      _debounceRaf: function(fn) {
+        var self = this;
+        if (this._raf) {
+          cancelAnimationFrame(this._raf);
+        }
+        this._raf = requestAnimationFrame(function() {
+          self._raf = null;
+          fn.call(self);
+        });
       },
 
       /**
@@ -167,8 +191,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
        * @method resetLayout
        */
       resetLayout: function() {
-        this._updateScroller();
-        this.debounce('_resetLayout', this._updateContentPosition);
+        this._debounceRaf(this._updateContentPosition);
       },
 
       _updateContentPosition: function() {
@@ -176,6 +199,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         if (!this.isAttached || !header) {
           return;
         }
+        this._updateScroller();
         // Get header height here so that style reads are batched together before style writes
         // (i.e. getBoundingClientRect() below).
         var headerHeight = header.offsetHeight;
@@ -204,14 +228,12 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
       },
 
       _updateScroller: function() {
-        if (!this.isAttached) {
+        var header = this.header;
+        if (!header) {
           return;
         }
-        var header = this.header;
-        if (header) {
-          header.scrollTarget = this.hasScrollingRegion ?
-              this.$.contentContainer : this.ownerDocument.documentElement;
-        }
+        header.scrollTarget = this.hasScrollingRegion ?
+            this.$.contentContainer : this.ownerDocument.documentElement;
       },
 
       _resizeHandler: function() {

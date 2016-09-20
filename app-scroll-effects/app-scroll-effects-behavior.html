@@ -277,7 +277,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if ((effectDef = Polymer.AppLayout._scrollEffects[effectName])) {
             this._effects.push(this._boundEffect(effectDef, effectsConfig[effectName]));
           } else {
-            this._warn(this._logf('_effectsChanged', this._getUndefinedMsg(effectName)));
+            console.warn(this._getUndefinedMsg(effectName));
           }
         }
       }, this);
@@ -379,7 +379,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * @param {string} id The id for the node.
      */
     _getDOMRef: function(id) {
-      this._warn(this._logf('_getDOMRef', '`'+ id +'` is undefined'));
+      console.warn('_getDOMRef', '`'+ id +'` is undefined');
     },
 
     _getUndefinedMsg: function(effectName) {
