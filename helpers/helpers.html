@@ -35,6 +35,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
 
+  /* TODO(blasten): rethink this approach. This might be slow */
   Polymer.AppLayout.queryAllRoot = function(selector, root) {
     var queue = [root];
     var matches = [];
