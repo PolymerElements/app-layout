@@ -82,19 +82,16 @@ Example:
         '_updateScrollPos(selected, reset)'
       ],
 
-      created: function() {
-        this._scrollposMap = {};
-      },
-
       _selectedChanged: function(selected, old) {
         if (old != null) {
-          this._scrollposMap[old] = {x: this._scrollLeft, y: this._scrollTop};
+          this._scrollposMap = this._scrollposMap || {};
+          this._scrollposMap[old] = { x: this._scrollLeft, y: this._scrollTop };
         }
       },
 
       _updateScrollPos: function(selected, reset) {
         this.debounce('_updateScrollPos', function() {
-          var pos = this._scrollposMap[this.selected];
+          var pos = this._scrollposMap ? this._scrollposMap[this.selected] : null;
           if (pos != null && !this.reset) {
             this.scroll(pos.x, pos.y);
           } else {
