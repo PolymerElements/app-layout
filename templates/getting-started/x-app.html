@@ -9,17 +9,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="bower_components/polymer/polymer.html">
-
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
-
 <link rel="import" href="bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="bower_components/app-layout/app-toolbar/app-toolbar.html">
-
 <link rel="import" href="bower_components/app-layout/demo/sample-content.html">
 
 <dom-module id="x-app">
@@ -33,23 +30,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: #fff;
       }
 
-      app-header paper-icon-button {
+      paper-icon-button {
         --paper-icon-button-ink-color: white;
+      }
+
+      [hidden] {
+        display: none;
       }
 
     </style>
 
-    <app-drawer-layout>
+    <app-drawer-layout narrow="{{narrow}}">
 
-      <app-drawer>
+      <app-drawer slot="drawer">
         <app-toolbar>Getting Started</app-toolbar>
       </app-drawer>
 
       <app-header-layout>
 
-        <app-header reveals effects="waterfall">
+        <app-header slot="header" reveals effects="waterfall">
           <app-toolbar>
-            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <paper-icon-button icon="menu" drawer-toggle  hidden$="[[!narrow]]"></paper-icon-button>
             <div main-title>Title</div>
           </app-toolbar>
         </app-header>
@@ -66,7 +67,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     Polymer({
 
-      is: 'x-app'
+      is: 'x-app',
+
+      properties: {
+        narrow: Boolean
+      }
 
     });
 
