@@ -176,6 +176,7 @@ Custom property                          | Description                          
          */
         narrow: {
           type: Boolean,
+          reflectToAttribute: true,
           readOnly: true,
           notify: true
         },
@@ -224,24 +225,22 @@ Custom property                          | Description                          
 
       resetLayout: function() {
         this.debounce('_resetLayout', function() {
-          Polymer.RenderStatus.afterNextRender(this, function() {
-            var drawer = this.drawer;
-            var contentContainer = this.$.contentContainer;
+          var drawer = this.drawer;
+          var contentContainer = this.$.contentContainer;
 
-            if (this.narrow || !drawer) {
+          if (this.narrow || !drawer) {
+            contentContainer.style.marginLeft = '';
+            contentContainer.style.marginRight = '';
+          } else {
+            var drawerWidth = drawer.getWidth();
+            if (drawer.position == 'right') {
               contentContainer.style.marginLeft = '';
-              contentContainer.style.marginRight = '';
+              contentContainer.style.marginRight = drawerWidth + 'px';
             } else {
-              var drawerWidth = drawer.getWidth();
-              if (drawer.position == 'right') {
-                contentContainer.style.marginLeft = '';
-                contentContainer.style.marginRight = drawerWidth + 'px';
-              } else {
-                contentContainer.style.marginLeft = drawerWidth + 'px';
-                contentContainer.style.marginRight = '';
-              }
+              contentContainer.style.marginLeft = drawerWidth + 'px';
+              contentContainer.style.marginRight = '';
             }
-          });
+          }
         });
       },
 
