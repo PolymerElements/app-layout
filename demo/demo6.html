@@ -20,7 +20,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <link rel="import" href="../../font-roboto/roboto.html">
   <link rel="import" href="../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../paper-item/paper-icon-item.html">
+  <!-- <link rel="import" href="../../paper-item/paper-icon-item.html"> -->
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../app-drawer-layout/app-drawer-layout.html">
   <link rel="import" href="../app-drawer/app-drawer.html">
@@ -30,7 +30,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../app-toolbar/app-toolbar.html">
   <link rel="import" href="../demo/sample-content.html">
 
-  <style is="custom-style">
+  <custom-style>
+    <style is="custom-style">
 
     body {
       margin: 0;
@@ -63,14 +64,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       overflow: auto;
     }
 
-  </style>
+    </style>
+  </custom-style>
 
 </head>
 <body unresolved>
 
   <app-header-layout>
 
-    <app-header fixed effects="waterfall">
+    <app-header fixed effects="waterfall" slot="header">
       <app-toolbar>
         <paper-icon-button id="toggle" icon="menu"></paper-icon-button>
         <div main-title>Inbox</div>
@@ -79,7 +81,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <app-drawer-layout id="drawerLayout">
 
-      <app-drawer>
+      <app-drawer slot="drawer">
         <div class="drawer-content">
           <paper-icon-item>
             <iron-icon icon="inbox" item-icon></iron-icon> <span>Inbox</span>
@@ -113,7 +115,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script>
     var drawerLayout = document.getElementById('drawerLayout');
-    document.getElementById('toggle').addEventListener('click', function() {
+    toggle.addEventListener('click', function() {
       if (drawerLayout.forceNarrow || !drawerLayout.narrow) {
         drawerLayout.forceNarrow = !drawerLayout.forceNarrow;
       } else {

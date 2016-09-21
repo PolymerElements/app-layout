@@ -29,7 +29,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../app-toolbar/app-toolbar.html">
   <link rel="import" href="../demo/sample-content.html">
 
-  <style is="custom-style">
+  <custom-style>
+    <style is="custom-style">
 
     body {
       margin: 0;
@@ -46,20 +47,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       --paper-icon-button-ink-color: white;
     }
 
-  </style>
+    app-drawer-layout:not([narrow]) [drawer-toggle] {
+      display: none;
+    }
+
+    </style>
+  </custom-style>
 
 </head>
 <body unresolved>
 
   <app-drawer-layout fullbleed>
 
-    <app-drawer>
+    <app-drawer slot="drawer">
       <app-toolbar>App name</app-toolbar>
     </app-drawer>
 
     <app-header-layout has-scrolling-region>
 
-      <app-header condenses reveals effects="waterfall">
+      <app-header condenses reveals effects="waterfall" slot="header">
         <app-toolbar>
           <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
         </app-toolbar>
