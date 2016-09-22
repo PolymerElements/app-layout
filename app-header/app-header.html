@@ -10,8 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
+<link rel="import" href="../app-layout-behavior/app-layout-behavior.html">
 
 <!--
 app-header is container element for app-toolbars at the top of the screen that can have scroll
@@ -314,7 +314,7 @@ Mixin | Description | Default
 
       behaviors: [
         Polymer.AppScrollEffectsBehavior,
-        Polymer.IronResizableBehavior
+        Polymer.AppLayoutBehavior
       ],
 
       properties: {
@@ -379,12 +379,8 @@ Mixin | Description | Default
       },
 
       observers: [
-        'resetLayout(isAttached, condenses, fixed)'
+        '_propChanged(isAttached, condenses, fixed)'
       ],
-
-      listeners: {
-        'iron-resize': '_resizeHandler'
-      },
 
       /**
        * A cached offsetHeight of the current element.
@@ -470,63 +466,46 @@ Mixin | Description | Default
         return this._stickyElRef;
       },
 
-      _debounceRaf: function(fn) {
-        var self = this;
-        if (this._raf) {
-          window.cancelAnimationFrame(this._raf);
-        }
-        this._raf = window.requestAnimationFrame(function() {
-          self._raf = null;
-          fn.call(self);
-        });
+      _propChanged: function() {
+        this.resetLayout();
+        this._notifyLayoutChanged();
       },
-      /**
-       * Resets the layout. If you changed the size of app-header via CSS
-       * you can notify the changes by either firing the `iron-resize` event
-       * or calling `resetLayout` directly.
-       *
-       * @method resetLayout
-       */
-      resetLayout: function() {
-        this._debounceRaf(function() {
-          // noop if the header isn't visible
-          if (this.offsetWidth === 0 && this.offsetHeight === 0) {
-            return;
-          }
 
-          this.fire('app-header-reset-layout');
+      _updateLayoutStates: function() {
+        if (this.offsetWidth === 0 && this.offsetHeight === 0) {
+          return;
+        }
 
-          var scrollTop = this._clampedScrollTop;
-          var firstSetup = this._height === 0 || scrollTop === 0;
-          var currentDisabled = this.disabled;
+        var scrollTop = this._clampedScrollTop;
+        var firstSetup = this._height === 0 || scrollTop === 0;
+        var currentDisabled = this.disabled;
 
-          this._height = this.offsetHeight;
-          this._stickyElRef = null;
-          this.disabled = true;
+        this._height = this.offsetHeight;
+        this._stickyElRef = null;
+        this.disabled = true;
 
-          // prepare for measurement
-          if  (!firstSetup) {
-            this._updateScrollState(0, true);
-          }
+        // prepare for measurement
+        if  (!firstSetup) {
+          this._updateScrollState(0, true);
+        }
 
-          if (this._mayMove()) {
-            this._dHeight = this._stickyEl ? this._height - this._stickyEl.offsetHeight : 0;
-          } else {
-            this._dHeight = 0;
-          }
+        if (this._mayMove()) {
+          this._dHeight = this._stickyEl ? this._height - this._stickyEl.offsetHeight : 0;
+        } else {
+          this._dHeight = 0;
+        }
 
-          this._stickyElTop = this._stickyEl ? this._stickyEl.offsetTop : 0;
-          this._setUpEffect();
+        this._stickyElTop = this._stickyEl ? this._stickyEl.offsetTop : 0;
+        this._setUpEffect();
 
-          if (firstSetup) {
-            this._updateScrollState(scrollTop, true);
-          } else {
-            this._updateScrollState(this._lastScrollTop, true);
-            this._layoutIfDirty();
-          }
-          // restore no transition
-          this.disabled = currentDisabled;
-        });
+        if (firstSetup) {
+          this._updateScrollState(scrollTop, true);
+        } else {
+          this._updateScrollState(this._lastScrollTop, true);
+          this._layoutIfDirty();
+        }
+        // restore no transition
+        this.disabled = currentDisabled;
       },
 
       /**
@@ -658,10 +637,6 @@ Mixin | Description | Default
         }
       },
 
-      _resizeHandler: function() {
-        this.resetLayout();
-      },
-
       _clamp: function(v, min, max) {
         return Math.min(max, Math.max(min, v));
       },
@@ -712,12 +687,6 @@ Mixin | Description | Default
       getScrollState: function() {
         return { progress: this._progress, top: this._top };
       }
-
-      /**
-       * Fires when the layout of `app-header` changed.
-       *
-       * @event app-header-reset-layout
-       */
     });
   </script>
 </dom-module>
