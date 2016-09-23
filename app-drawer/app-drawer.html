@@ -281,7 +281,7 @@ Custom property                  | Description                            | Defa
           this.setScrollDirection('y');
         });
 
-        this.fire('app-request-reset-layout');
+        this.fire('app-reset-layout');
       },
 
       detached: function() {
@@ -571,7 +571,7 @@ Custom property                  | Description                            | Defa
        * @method resetLayout
        */
       resetLayout: function() {
-        this.fire('app-request-reset-layout');
+        this.fire('app-reset-layout');
       },
 
       _setKeyboardFocusTrap: function() {
@@ -658,6 +658,12 @@ Custom property                  | Description                            | Defa
         TRACKING: 4,
         FLINGING: 5
       }
+
+      /**
+       * Fired when the layout of app-drawer has changed.
+       *
+       * @event app-reset-layout
+       */
 
       /**
        * Fired when app-drawer has finished transitioning.

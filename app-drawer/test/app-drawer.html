@@ -52,7 +52,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       function fireKeydownEvent(target, keyCode, shiftKey) {
         var e = new CustomEvent('keydown', {
           bubbles: true,
-          cancelable: true          
+          cancelable: true
         });
         e.keyCode = keyCode;
         e.shiftKey = !!shiftKey;
@@ -223,9 +223,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(drawer.getWidth(), contentContainer.offsetWidth);
       });
 
-      test('app-drawer-reset-layout', function() {
+      test('app-reset-layout', function() {
         var listenerSpy = sinon.spy();
-        drawer.addEventListener('app-drawer-reset-layout', listenerSpy);
+        drawer.addEventListener('app-reset-layout', listenerSpy);
         drawer.align = 'right';
 
         assert.isTrue(listenerSpy.called);
@@ -268,7 +268,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   assert.isFalse(drawer.opened);
                   assert.equal(listenerSpy.callCount, 4,
                     'should fire after swiping even if opened state unchanged');
-                  
+
                   drawer.fire('track', { state: 'start' });
                   drawer.fire('track', { state: 'track', dx: 200, ddx: 200 });
                   drawer.fire('track', { state: 'end', dx: 200, ddx: 0 });
@@ -320,7 +320,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           assert.isFalse(drawer.opened);
           assert.equal(listenerSpy.callCount, 3, 'should fire after flinging');
-            
+
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 200, ddx: 200 });
           drawer.fire('track', { state: 'end', dx: 200, ddx: 0 });
@@ -686,7 +686,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('no focus trap', function(done) {
         var input = Polymer.dom(drawer).querySelector('input');
         var inputFocusSpy = sinon.spy(input, 'focus');
-  
+
         Polymer.RenderStatus.afterNextRender(drawer, function() {
           drawer.transitionDuration = 0;
           drawer.noFocusTrap = true;

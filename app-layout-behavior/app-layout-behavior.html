@@ -20,15 +20,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer.IronResizableBehavior, {
 
     listeners: {
-      'app-request-reset-layout': '_appRequestResetLayoutHandler',
+      'app-reset-layout': '_appResetLayoutHandler',
       'iron-resize': 'resetLayout'
     },
 
     attached: function() {
-      this.fire('app-request-reset-layout');
+      this.fire('app-reset-layout');
     },
 
-    _appRequestResetLayoutHandler: function(e) {
+    _appResetLayoutHandler: function(e) {
       if (e.path[0] === this) {
         return;
       }
@@ -55,7 +55,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     _notifyLayoutChanged: function() {
       var self = this;
       requestAnimationFrame(function() {
-        self.fire('app-request-reset-layout');
+        self.fire('app-reset-layout');
       });
     },
 

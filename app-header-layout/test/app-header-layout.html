@@ -75,7 +75,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('scrolling region', function(done) {
         headerLayout.hasScrollingRegion = true;
         requestAnimationFrame(function() {
-          setTimeout(function() {
+          requestAnimationFrame(function() {
             assert.isTrue(header.scrollTarget !== document.documentElement, 'scroller should not point to the document element');
             done();
           });
@@ -86,19 +86,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         headerLayout.hasScrollingRegion = false;
 
         requestAnimationFrame(function() {
-          assert.equal(headerLayout.offsetWidth, header.offsetWidth,
-              'should have the same width of app-header-layout');
-          headerLayout.style.width = '200px';
-          headerLayout.resetLayout();
-
           requestAnimationFrame(function() {
             assert.equal(headerLayout.offsetWidth, header.offsetWidth,
-              'should have the same width of app-header-layout even after setting a width');
-            done();
+                'should have the same width of app-header-layout');
+            headerLayout.style.width = '200px';
+            headerLayout.resetLayout();
+
+            requestAnimationFrame(function() {
+              assert.equal(headerLayout.offsetWidth, header.offsetWidth,
+                'should have the same width of app-header-layout even after setting a width');
+              done();
+            });
           });
-
         });
-
       });
 
       test('fullbleed', function(done) {
