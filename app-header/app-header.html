@@ -448,11 +448,9 @@ Mixin | Description | Default
         if (this._stickyElRef != null) {
           return this._stickyElRef;
         }
-
-        var assignedNodes = Polymer.dom(this.$.slot).assignedNodes({ flatten : true });
-        var nodes = assignedNodes.length > 0 ? assignedNodes : 
+        var nodes = Polymer.Element ? Polymer.dom(this.$.slot).assignedNodes({ flatten : true }) :
             Polymer.dom(this.$.content).getDistributedNodes();
-
+        // Get the element with the sticky attribute on it or the first element in the light DOM.
         for (var i = 0, node; node = nodes[i]; i++) {
           if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.hasAttribute('sticky')) {
@@ -475,29 +473,23 @@ Mixin | Description | Default
         if (this.offsetWidth === 0 && this.offsetHeight === 0) {
           return;
         }
-
         var scrollTop = this._clampedScrollTop;
         var firstSetup = this._height === 0 || scrollTop === 0;
         var currentDisabled = this.disabled;
-
         this._height = this.offsetHeight;
         this._stickyElRef = null;
         this.disabled = true;
-
         // prepare for measurement
         if  (!firstSetup) {
           this._updateScrollState(0, true);
         }
-
         if (this._mayMove()) {
           this._dHeight = this._stickyEl ? this._height - this._stickyEl.offsetHeight : 0;
         } else {
           this._dHeight = 0;
         }
-
         this._stickyElTop = this._stickyEl ? this._stickyEl.offsetTop : 0;
         this._setUpEffect();
-
         if (firstSetup) {
           this._updateScrollState(scrollTop, true);
         } else {
@@ -518,7 +510,6 @@ Mixin | Description | Default
         if (this._height === 0) {
           return;
         }
-
         var progress = 0;
         var top = 0;
         var lastTop = this._top;
@@ -532,19 +523,16 @@ Mixin | Description | Default
         if (this._mayMove()) {
           top = this._clamp(this.reveals ? lastTop + dScrollTop : scrollTop, 0, maxHeaderTop);
         }
-
         if (scrollTop >= this._dHeight) {
           top = this.condenses && !this.fixed ? Math.max(this._dHeight, top) : top;
           this.style.transitionDuration = '0ms';
         }
-
         if (this.reveals && !this.disabled && absDScrollTop < 100) {
           // set the initial scroll position
           if (now - this._initTimestamp > 300 || this._wasScrollingDown !== isScrollingDown) {
             this._initScrollTop = scrollTop;
             this._initTimestamp = now;
           }
-
           if (scrollTop >= maxHeaderTop) {
             // check if the header is allowed to snap
             if (Math.abs(this._initScrollTop - scrollTop) > 30 || absDScrollTop > 10) {
@@ -560,20 +548,17 @@ Mixin | Description | Default
             }
           }
         }
-
         if (this._dHeight === 0) {
           progress = scrollTop > 0 ? 1 : 0;
         } else {
           progress = top / this._dHeight;
         }
-
         if (!forceUpdate) {
           this._lastScrollTop = scrollTop;
           this._top = top;
           this._wasScrollingDown = isScrollingDown;
           this._lastTimestamp = now;
         }
-
         if (forceUpdate || progress !== this._progress || lastTop !== top || scrollTop === 0) {
           this._progress = progress;
           this._runEffects(progress, top);
@@ -618,10 +603,8 @@ Mixin | Description | Default
        * @return {boolean}
        */
       isContentBelow: function() {
-        if (this._top === 0) {
-          return this._clampedScrollTop > 0;
-        }
-        return this._clampedScrollTop - this._maxHeaderTop >= 0;
+        return this._top === 0 ? this._clampedScrollTop > 0 :
+            this._clampedScrollTop - this._maxHeaderTop >= 0;
       },
 
       /**
@@ -645,15 +628,12 @@ Mixin | Description | Default
         if (!this._bgContainer) {
           this._bgContainer = document.createElement('div');
           this._bgContainer.id = 'background';
-
           this._bgRear = document.createElement('div');
           this._bgRear.id = 'backgroundRearLayer';
           this._bgContainer.appendChild(this._bgRear);
-
           this._bgFront = document.createElement('div');
           this._bgFront.id = 'backgroundFrontLayer';
           this._bgContainer.appendChild(this._bgFront);
-
           Polymer.dom(this.root).insertBefore(this._bgContainer, this.$.contentContainer);
         }
       },

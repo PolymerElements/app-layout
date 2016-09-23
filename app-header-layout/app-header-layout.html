@@ -163,9 +163,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
        * @property header
        */
       get header() {
-        var assignedNodes = Polymer.dom(this.$.headerSlot).assignedNodes({ flatten : true });
-
-        return assignedNodes.length > 0 ? assignedNodes[0] :
+        return Polymer.Element ? Polymer.dom(this.$.headerSlot).assignedNodes({ flatten : true })[0] :
             Polymer.dom(this.$.headerContent).getDistributedNodes()[0];
       },
 
@@ -174,7 +172,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         if (!this.isAttached || !header) {
           return;
         }
-        // Update scroll target
+        // Update scroll target.
         header.scrollTarget = this.hasScrollingRegion ?
             this.$.contentContainer : this.ownerDocument.documentElement;
         // Get header height here so that style reads are batched together before style writes
