@@ -19,7 +19,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
   <link rel="import" href="../../../iron-resizable-behavior/iron-resizable-behavior.html">
   <link rel="import" href="../../../test-fixture/test-fixture.html">
+  <link rel="import" href="../../app-drawer/app-drawer.html">
   <link rel="import" href="../app-drawer-layout.html">
+
 
   <style is="custom-style">
     body {
@@ -127,7 +129,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('drawer-toggle', function(done) {
         drawerLayout.responsiveWidth = '10000px';
-
+       
         assert.isFalse(drawer.opened);
 
         Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('p') });
@@ -142,11 +144,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         window.setTimeout(function() {
           Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
-
           assert.isTrue(drawer.opened);
-
           done();
         }, 50);
+       
       });
 
       test('content layout', function(done) {

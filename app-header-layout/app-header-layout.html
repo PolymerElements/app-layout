@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../app-layout-behavior/app-layout-behavior.html">
 
 <!--
 app-header-layout is a wrapper element that positions an app-header and other content. This
@@ -138,7 +138,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
       is: 'app-header-layout',
 
       behaviors: [
-        Polymer.IronResizableBehavior
+        Polymer.AppLayoutBehavior
       ],
 
       properties: {
@@ -153,11 +153,6 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         }
       },
 
-      listeners: {
-        'iron-resize': '_resizeHandler',
-        'app-header-reset-layout': '_appHeaderResetLayout'
-      },
-
       observers: [
         'resetLayout(isAttached, hasScrollingRegion)'
       ],
@@ -168,39 +163,18 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
        * @property header
        */
       get header() {
-        var assignedNodes = Polymer.dom(this.$.headerSlot).assignedNodes({ flatten : true });
-
-        return assignedNodes.length > 0 ? assignedNodes[0] :
+        return Polymer.Element ? Polymer.dom(this.$.headerSlot).assignedNodes({ flatten : true })[0] :
             Polymer.dom(this.$.headerContent).getDistributedNodes()[0];
       },
 
-      _debounceRaf: function(fn) {
-        var self = this;
-        if (this._raf) {
-          window.cancelAnimationFrame(this._raf);
-        }
-        this._raf = window.requestAnimationFrame(function() {
-          self._raf = null;
-          fn.call(self);
-        });
-      },
-
-      /**
-       * Resets the layout. This method is automatically called when the element is attached
-       * to the DOM.
-       *
-       * @method resetLayout
-       */
-      resetLayout: function() {
-        this._debounceRaf(this._updateContentPosition);
-      },
-
-      _updateContentPosition: function() {
+      _updateLayoutStates: function() {
         var header = this.header;
         if (!this.isAttached || !header) {
           return;
         }
-        this._updateScroller();
+        // Update scroll target.
+        header.scrollTarget = this.hasScrollingRegion ?
+            this.$.contentContainer : this.ownerDocument.documentElement;
         // Get header height here so that style reads are batched together before style writes
         // (i.e. getBoundingClientRect() below).
         var headerHeight = header.offsetHeight;
@@ -226,23 +200,8 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
           containerStyle.paddingTop = headerHeight + 'px';
           containerStyle.marginTop = '';
         }
-      },
-
-      _updateScroller: function() {
-        var header = this.header;
-        if (header) {
-          header.scrollTarget = this.hasScrollingRegion ?
-            this.$.contentContainer : this.ownerDocument.documentElement;
-        }
-      },
-
-      _resizeHandler: function() {
-        this.resetLayout();
-      },
-
-      _appHeaderResetLayout: function() {
-        this._updateContentPosition();
       }
+
     });
   </script>
 </dom-module>

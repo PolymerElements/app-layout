@@ -281,7 +281,7 @@ Custom property                  | Description                            | Defa
           this.setScrollDirection('y');
         });
 
-        this.fire('app-drawer-attached');
+        this.fire('app-reset-layout');
       },
 
       detached: function() {
@@ -316,16 +316,6 @@ Custom property                  | Description                            | Defa
        */
       getWidth: function() {
         return this.$.contentContainer.offsetWidth;
-      },
-
-      /**
-       * Resets the layout. The event fired is used by app-drawer-layout to position the
-       * content.
-       *
-       * @method resetLayout
-       */
-      resetLayout: function() {
-        this.fire('app-drawer-reset-layout');
       },
 
       _isRTL: function() {
@@ -516,7 +506,6 @@ Custom property                  | Description                            | Defa
           this._styleTransitionTimingFunction('');
           this.style.visibility = '';
         }
-
         this._resetDrawerState();
       },
 
@@ -574,6 +563,15 @@ Custom property                  | Description                            | Defa
             this.fire('app-drawer-transitioned');
           }
         }
+      },
+
+      /**
+       * Resets the layout.
+       *
+       * @method resetLayout
+       */
+      resetLayout: function() {
+        this.fire('app-reset-layout');
       },
 
       _setKeyboardFocusTrap: function() {
@@ -662,15 +660,9 @@ Custom property                  | Description                            | Defa
       }
 
       /**
-       * Fired when the layout of app-drawer is attached.
-       *
-       * @event app-drawer-attached
-       */
-
-      /**
        * Fired when the layout of app-drawer has changed.
        *
-       * @event app-drawer-reset-layout
+       * @event app-reset-layout
        */
 
       /**

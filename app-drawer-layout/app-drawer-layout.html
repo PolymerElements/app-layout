@@ -10,8 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-media-query/iron-media-query.html">
-<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="../app-drawer/app-drawer.html">
+<link rel="import" href="../app-layout-behavior/app-layout-behavior.html">
 
 <!--
 app-drawer-layout is a wrapper element that positions an app-drawer and other content. When
@@ -124,9 +123,7 @@ Custom property                          | Description                          
 
       #contentContainer {
         position: relative;
-
         height: 100%;
-
         transition: var(--app-drawer-layout-content-transition, none);
       }
     </style>
@@ -149,7 +146,7 @@ Custom property                          | Description                          
       is: 'app-drawer-layout',
 
       behaviors: [
-        Polymer.IronResizableBehavior
+        Polymer.AppLayoutBehavior
       ],
 
       properties: {
@@ -191,15 +188,11 @@ Custom property                          | Description                          
       },
 
       listeners: {
-        'click': '_clickHandler',
-        'app-drawer-attached': '_resetDrawerState',
-        'app-drawer-reset-layout': 'resetLayout',
-        'iron-resize': 'resetLayout'
+        'click': '_clickHandler'
       },
 
       observers: [
-        'resetLayout(narrow, isAttached)',
-        '_narrowChanged(narrow, isAttached)'
+        '_configChanged(narrow, isAttached)'
       ],
 
       /**
@@ -223,46 +216,37 @@ Custom property                          | Description                          
         }
       },
 
-      resetLayout: function() {
-        this.debounce('_resetLayout', function() {
-          var drawer = this.drawer;
-          var contentContainer = this.$.contentContainer;
+      _updateLayoutStates: function() {
+        var drawer = this.drawer;
+        var contentContainer = this.$.contentContainer;
 
-          if (this.narrow || !drawer) {
+        if (this.narrow || !drawer || !drawer.getWidth) {
+          contentContainer.style.marginLeft = '';
+          contentContainer.style.marginRight = '';
+        } else {
+          var drawerWidth = drawer.getWidth();
+          if (drawer.position == 'right') {
             contentContainer.style.marginLeft = '';
-            contentContainer.style.marginRight = '';
+            contentContainer.style.marginRight = drawerWidth + 'px';
           } else {
-            var drawerWidth = drawer.getWidth();
-            if (drawer.position == 'right') {
-              contentContainer.style.marginLeft = '';
-              contentContainer.style.marginRight = drawerWidth + 'px';
-            } else {
-              contentContainer.style.marginLeft = drawerWidth + 'px';
-              contentContainer.style.marginRight = '';
-            }
+            contentContainer.style.marginLeft = drawerWidth + 'px';
+            contentContainer.style.marginRight = '';
           }
-        });
-      },
-
-      _resetDrawerState: function() {
-        this.debounce('_resetDrawerState', function() {
-          var drawer = this.drawer;
-          if (!drawer) {
-            return;
-          }
-
+        }
+        if (drawer && this._drawerNeedsReset) {
           if (this.narrow) {
             drawer.opened = this.openedWhenNarrow;
             drawer.persistent = false;
           } else {
             drawer.opened = drawer.persistent = true;
           }
-        });
+          this._drawerNeedsReset = false;
+        }
       },
 
-      _narrowChanged: function(narrow) {
-        this._resetDrawerState();
-        this.notifyResize();
+      _configChanged: function() {
+        this._drawerNeedsReset = true;
+        this.resetLayout();
       },
 
       _onQueryMatchesChanged: function(event) {
