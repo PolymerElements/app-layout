@@ -29,7 +29,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _appResetLayoutHandler: function(e) {
-      if (e.path[0] === this) {
+      if (Polymer.dom(e).path[0] === this) {
         return;
       }
       this.resetLayout();
