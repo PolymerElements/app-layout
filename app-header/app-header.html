@@ -379,7 +379,7 @@ Mixin | Description | Default
       },
 
       observers: [
-        '_propChanged(isAttached, condenses, fixed)'
+        '_configChanged(isAttached, condenses, fixed)'
       ],
 
       /**
@@ -464,7 +464,7 @@ Mixin | Description | Default
         return this._stickyElRef;
       },
 
-      _propChanged: function() {
+      _configChanged: function() {
         this.resetLayout();
         this._notifyLayoutChanged();
       },

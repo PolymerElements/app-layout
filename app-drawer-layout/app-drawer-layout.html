@@ -192,7 +192,7 @@ Custom property                          | Description                          
       },
 
       observers: [
-        'resetLayout(narrow, isAttached)'
+        '_configChanged(narrow, isAttached)'
       ],
 
       /**
@@ -233,14 +233,20 @@ Custom property                          | Description                          
             contentContainer.style.marginRight = '';
           }
         }
-        if (drawer) {
+        if (drawer && this._drawerNeedsReset) {
           if (this.narrow) {
             drawer.opened = this.openedWhenNarrow;
             drawer.persistent = false;
           } else {
             drawer.opened = drawer.persistent = true;
           }
+          this._drawerNeedsReset = false;
         }
+      },
+
+      _configChanged: function() {
+        this._drawerNeedsReset = true;
+        this.resetLayout();
       },
 
       _onQueryMatchesChanged: function(event) {
