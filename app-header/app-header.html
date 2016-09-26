@@ -303,7 +303,6 @@ Mixin | Description | Default
 
     </style>
     <div id="contentContainer">
-      <content id="content" select=":not([slot])"></content>
       <slot id="slot"></slot>
     </div>
   </template>
@@ -448,8 +447,7 @@ Mixin | Description | Default
         if (this._stickyElRef != null) {
           return this._stickyElRef;
         }
-        var nodes = Polymer.Element ? Polymer.dom(this.$.slot).assignedNodes({ flatten : true }) :
-            Polymer.dom(this.$.content).getDistributedNodes();
+        var nodes = Polymer.dom(this.$.slot).getDistributedNodes();
         // Get the element with the sticky attribute on it or the first element in the light DOM.
         for (var i = 0, node; node = nodes[i]; i++) {
           if (node.nodeType === Node.ELEMENT_NODE) {
