@@ -62,6 +62,7 @@ Custom property              | Description                  | Default
 <dom-module id="app-toolbar">
   <template>
     <style>
+
       :host {
         @apply --layout-horizontal;
         @apply --layout-center;
@@ -72,28 +73,13 @@ Custom property              | Description                  | Default
         font-size: var(--app-toolbar-font-size, 20px);
       }
 
-      :host ::content > * {
-        pointer-events: auto;
-      }
-
       :host ::slotted(*) {
         pointer-events: auto;
-      }
-
-      :host ::content > paper-icon-button {
-        /* paper-icon-button/issues/33 */
-        font-size: 0;
       }
 
       :host ::slotted(paper-icon-button) {
         /* paper-icon-button/issues/33 */
         font-size: 0;
-      }
-
-      :host ::content > [main-title],
-      :host ::content > [condensed-title] {
-        pointer-events: none;
-        @apply --layout-flex;
       }
 
       :host ::slotted([main-title]),
@@ -102,24 +88,10 @@ Custom property              | Description                  | Default
         @apply --layout-flex;
       }
 
-      :host ::content > [bottom-item] {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        left: 0;
-      }
-
       :host ::slotted([bottom-item]) {
         position: absolute;
         right: 0;
         bottom: 0;
-        left: 0;
-      }
-
-      :host ::content > [top-item] {
-        position: absolute;
-        top: 0;
-        right: 0;
         left: 0;
       }
 
@@ -130,17 +102,13 @@ Custom property              | Description                  | Default
         left: 0;
       }
 
-      :host ::content > [spacer] {
-        margin-left: 64px;
-      }
-
       :host ::slotted([spacer]) {
         margin-left: 64px;
       }
     </style>
 
-    <content select=":not([slot])"></content>
     <slot></slot>
+
   </template>
 
   <script>
