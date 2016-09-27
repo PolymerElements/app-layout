@@ -55,42 +55,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <dom-bind>
-    <template is="dom-bind">
+  <app-toolbar>
+    <div main-title></div>
+    <paper-icon-button icon="menu" onclick="drawer.toggle()"></paper-icon-button>
+  </app-toolbar>
 
-      <app-toolbar>
-        <div main-title></div>
-        <paper-icon-button icon="menu" on-click="toggleDrawer"></paper-icon-button>
-      </app-toolbar>
+  <sample-content size="100"></sample-content>
 
-      <sample-content size="100"></sample-content>
-
-      <app-drawer id="drawer" align="right" swipe-open>
-        <div class="drawer-contents">
-          <template is="dom-repeat" id="menu" items="[[items]]">
-            <paper-icon-item>
-              <iron-icon class="grayIcon" icon="[[item]]" item-icon></iron-icon>
-              <span>[[item]]</span>
-            </paper-icon-item>
-          </template>
-        </div>
-      </app-drawer>
-
-    </template>
-  </dom-bind>
-
-  <script>
-    (function(scope) {
-
-      scope.toggleDrawer = function() {
-        scope.$.drawer.toggle();
-      };
-
-      var icons = ['inbox', 'favorite', 'polymer', 'question-answer', 'send', 'archive', 'backup', 'dashboard'];
-      scope.items = icons.concat(icons).concat(icons);
-
-    })(document.querySelector('dom-bind'));
-  </script>
+  <app-drawer id="drawer" align="right" swipe-open>
+    <div class="drawer-contents">
+      <paper-icon-item>
+        <iron-icon icon="inbox" item-icon></iron-icon>
+        <span>inbox</span>
+      </paper-icon-item>
+      <paper-icon-item>
+        <iron-icon icon="favorite" item-icon></iron-icon>
+        <span>favorite</span>
+      </paper-icon-item>
+      <paper-icon-item>
+        <iron-icon icon="polymer" item-icon></iron-icon>
+        <span>polymer</span>
+      </paper-icon-item>
+      <paper-icon-item>
+        <iron-icon icon="question-answer" item-icon></iron-icon>
+        <span>question-answer</span>
+      </paper-icon-item>
+      <paper-icon-item>
+        <iron-icon icon="send" item-icon></iron-icon>
+        <span>send</span>
+      </paper-icon-item>
+      <paper-icon-item>
+        <iron-icon icon="archive" item-icon></iron-icon>
+        <span>archive</span>
+      </paper-icon-item>
+      <paper-icon-item>
+        <iron-icon icon="backup" item-icon></iron-icon>
+        <span>backup</span>
+      </paper-icon-item>
+      <paper-icon-item>
+        <iron-icon icon="dashboard" item-icon></iron-icon>
+        <span>dashboard</span>
+      </paper-icon-item>
+    </div>
+  </app-drawer>
 
 </body>
 </html>
