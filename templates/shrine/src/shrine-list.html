@@ -25,9 +25,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .grid {
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-        @apply(--layout-wrap);
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
+        @apply --layout-wrap;
         margin-top: 10px;
       }
 
@@ -86,11 +86,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <shrine-featured-item item="[[featuredItem]]"></shrine-featured-item>
 
     <div class="grid">
-      <template is="dom-repeat" items="[[items]]" sort="_sortItems" initial-count="1">
-        <a href$="#[[section]]/[[item.id]]" class="item">
-          <shrine-item item="[[item]]"></shrine-item>
-        </a>
-      </template>
+      <dom-repeat items="[[items]]" sort="_sortItems" initial-count="1">
+        <template>
+          <a href$="#[[section]]/[[item.id]]" class="item">
+            <shrine-item item="[[item]]"></shrine-item>
+          </a>
+        </template>
+      </dom-repeat>
     </div>
 
   </template>

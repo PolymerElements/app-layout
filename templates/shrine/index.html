@@ -36,13 +36,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body unresolved>
 
-  <template is="dom-bind">
-
-    <iron-ajax url="data/items.json" auto last-response="{{items}}"></iron-ajax>
-    <iron-ajax url="data/featured.json" auto last-response="{{featuredItems}}"></iron-ajax>
-    <shrine-app items="[[items]]" featured-items="[[featuredItems]]"></shrine-app>
-
-  </template>
+  <dom-bind>
+    <template>
+      <iron-ajax url="data/items.json" auto last-response="{{items}}"></iron-ajax>
+      <iron-ajax url="data/featured.json" auto last-response="{{featuredItems}}"></iron-ajax>
+      <shrine-app items="[[items]]" featured-items="[[featuredItems]]"></shrine-app>
+    </template>
+  </dom-bind>
 
 </body>
 </html>
