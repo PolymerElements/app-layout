@@ -77,11 +77,6 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         z-index: 0;
       }
 
-      ::content > [slot=header] {
-        @apply --layout-fixed-top;
-        z-index: 1;
-      }
-
       :host ::slotted([slot=header]) {
         @apply --layout-fixed-top;
         z-index: 1;
@@ -89,10 +84,6 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
 
       :host([has-scrolling-region]) {
         height: 100%;
-      }
-
-      :host([has-scrolling-region]) ::content > [slot=header] {
-        position: absolute;
       }
 
       :host([has-scrolling-region]) ::slotted([slot=header]) {
@@ -123,11 +114,9 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
 
     </style>
 
-    <content id="headerContent" select="[slot=header]"></content>
     <slot id="headerSlot" name="header"></slot>
 
     <div id="contentContainer">
-      <content select=":not([slot])"></content>
       <slot></slot>
     </div>
 
@@ -163,8 +152,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
        * @property header
        */
       get header() {
-        return Polymer.Element ? Polymer.dom(this.$.headerSlot).assignedNodes({ flatten : true })[0] :
-            Polymer.dom(this.$.headerContent).getDistributedNodes()[0];
+        return Polymer.dom(this.$.headerSlot).getDistributedNodes()[0];
       },
 
       _updateLayoutStates: function() {
