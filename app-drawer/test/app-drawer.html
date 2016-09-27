@@ -103,7 +103,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('set scroll direction', function(done) {
         Polymer.RenderStatus.afterNextRender(drawer, function() {
-          assert.equal(drawer['__polymerGesturesTouchAction'], 'y');
+          assert.oneOf(drawer['__polymerGesturesTouchAction'], ['y', 'pan-y']);
           done();
         });
       });

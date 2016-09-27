@@ -123,12 +123,10 @@ Mixin | Description | Default
 
     <div id="background">
       <div id="backgroundFrontLayer">
-        <content select="[slot=background]"></content>
         <slot name="background"></slot>
       </div>
     </div>
     <div id="contentContainer">
-      <content select=":not([slot])"></content>
       <slot></slot>
     </div>
   </template>
