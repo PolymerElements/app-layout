@@ -27,7 +27,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../bower_components/app-layout/app-scrollpos-control/app-scrollpos-control.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-position/app-scroll-position.html">
 
 <link rel="import" href="article-headline.html">
 <link rel="import" href="article-detail.html">
@@ -84,10 +84,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .title-toolbar {
-        @apply(--layout-center-center);
+        @apply --layout-center-center;
         box-sizing: border-box;
       }
-      
+
       .nav-title-toolbar {
         color: #fff;
         width: 100vw;
@@ -102,14 +102,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         font-size: 60px;
         font-weight: 800;
       }
-      
+
       .category-page {
         min-height: 100vh;
       }
 
-      [is=article-headline] {
-        @apply(--shadow-transition);
-        @apply(--shadow-elevation-2dp);
+      article-headline {
+        @apply --shadow-transition;
+        @apply --shadow-elevation-2dp;
         cursor: pointer;
       }
 
@@ -117,7 +117,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         max-width: 736px;
         margin: 64px auto;
         background-color: #fff;
-        @apply(--shadow-elevation-2dp);
+        @apply --shadow-elevation-2dp;
+      }
+
+      [hidden] {
+        display: none;
       }
 
       @media (max-width: 580px) {
@@ -164,13 +168,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         selected="[[categoryData.category]]/[[pageData.page]]"
         reset="[[_equal(pageData.page, 'detail')]]"></app-scrollpos-control>
 
-    <app-drawer-layout drawer-width="288px" responsive-width="1280px">
+    <app-drawer-layout drawer-width="288px" responsive-width="1280px" narrow="{{narrow}}">
 
       <!-- nav panel -->
-      <app-drawer id="drawer">
+      <app-drawer id="drawer" slot="drawer">
         <app-header-layout has-scrolling-region>
 
-          <app-header fixed>
+          <app-header fixed slot="header">
 
             <!-- top toolbar -->
             <app-toolbar></app-toolbar>
@@ -199,7 +203,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <!-- main panel -->
       <app-header-layout>
 
-        <app-header fixed effects="waterfall" class="main-header">
+        <app-header fixed effects="waterfall" class="main-header" slot="header">
 
           <!-- top toolbar -->
           <app-toolbar>
@@ -207,7 +211,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-icon-button
                 drawer-toggle
                 icon="app:menu"
-                hidden$="[[_equal(pageData.page, 'detail')]]"></paper-icon-button>
+                hidden$="[[_shouldHideMenuButton(pageData.page, narrow)]]"></paper-icon-button>
 
             <!-- back button -->
             <a
@@ -230,31 +234,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <!-- list page -->
           <iron-pages name="list" selected="[[categoryData.category]]" attr-for-selected="name">
 
-            <template is="dom-repeat" items="[[articles]]" as="category">
-              <!-- category page (lazy-loaded) -->
-              <template is="dom-if" if="[[_equal(category, [[categoryData.category.name]])]]">
-                <section class="category-page" name="[[category.name]]">
-  
-                  <!-- 2-columns grid -->
-                  <two-columns-grid column-width="396" gutter="4">
-                    <template is="dom-repeat" items="[[category.items]]" as="article">
-                      <a
-                          is="article-headline"
-                          href="#/[[category.name]]/detail/[[article.id]]"
-                          article="[[article]]"></a>
-                    </template>
-                  </two-columns-grid>
-                  
-                </section>
+            <dom-repeat items="[[articles]]" as="category">
+              <template>
+                <!-- category page (lazy-loaded) -->
+                <dom-if if="[[_equal(category, [[categoryData.category.name]])]]">
+                  <template>
+                    <section class="category-page" name="[[category.name]]">
+
+                      <!-- 2-columns grid -->
+                      <two-columns-grid column-width="396" gutter="4">
+                        <dom-repeat items="[[category.items]]" as="article">
+                          <template>
+                            <article-headline href="#/[[category.name]]/detail/[[article.id]]"
+                                article="[[article]]"></article-headline>
+                          </template>
+                        </dom-repeat>
+                      </two-columns-grid>
+
+                    </section>
+                  </template>
+                </dom-if>
               </template>
-            </template>
+            </dom-repeat>
 
           </iron-pages>
 
           <!-- detail page (lazy-loaded) -->
-          <template is="dom-if" if="[[_equal(pageData.page, 'detail')]]">
-            <article-detail name="detail" article="[[article]]"></article-detail>
-          </template>
+          <dom-if if="[[_equal(pageData.page, 'detail')]]">
+            <template>
+              <article-detail name="detail" article="[[article]]"></article-detail>
+            </template>
+          </dom-if>
 
         </iron-pages>
 
@@ -322,6 +332,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _drawerSelected: function() {
         if (!this.$.drawer.persistent) this.$.drawer.close();
+      },
+
+      _shouldHideMenuButton: function(page, narrow) {
+        return page === 'detail' || !narrow;
       }
 
     });
