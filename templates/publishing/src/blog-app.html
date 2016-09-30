@@ -318,6 +318,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _updateArticle: function(articles, category, id) {
+        if (!articles) {
+          return;
+        }
         for (var i=0, cat; cat=articles[i]; i++) {
           if (cat.name === category) {
             for (var j=0, article; article=cat.items[j]; j++) {
