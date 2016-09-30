@@ -38,12 +38,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body unresolved>
 
-  <template is="dom-bind">
+  <dom-bind>
+    <template>
 
-    <iron-ajax url="data/articles.json" auto last-response="{{articles}}"></iron-ajax>
-    <blog-app articles="[[articles]]"></blog-app>
+      <iron-ajax url="data/articles.json" auto last-response="{{articles}}"></iron-ajax>
+      <blog-app articles="[[articles]]"></blog-app>
 
-  </template>
+    </template>
+  </dom-bind>
 
 </body>
 </html>
