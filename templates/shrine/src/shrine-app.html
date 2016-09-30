@@ -355,7 +355,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       '_hashDidChange(route.path, items, featuredItems)'
     ],
 
-    ready: function() {
+    attached: function() {
       this.async(function() {
         if (!this.route.path) {
           this.set('route.path', 'feature');
@@ -381,7 +381,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _getDetailItem: function(items, id) {
-      return items[id];
+      if (items) {
+        return items[id];
+      }
     },
 
     _computePage: function(onDetailPage) {
