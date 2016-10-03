@@ -123,7 +123,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var headers = Polymer.AppLayout.queryAllRoot('app-header', document.body);
 
       headers.forEach(function(header) {
-        header.disabled = true;
+        header.setAttribute('silent-scroll', '');
       });
 
       // Browsers keep the scroll momentum even if the bottom of the scrolling content
@@ -136,7 +136,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       Polymer.AppLayout._scrollTimer = window.requestAnimationFrame(function() {
         headers.forEach(function(header) {
-          header.disabled = false;
+          header.removeAttribute('silent-scroll');
         });
         Polymer.AppLayout._scrollTimer = null;
       });
