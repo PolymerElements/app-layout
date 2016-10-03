@@ -83,7 +83,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     .ingredient-item {
       margin: 20px 0;
-      @apply(--layout-horizontal);
+      @apply --layout-horizontal;
     }
 
     .ingredient-amount {
@@ -95,7 +95,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .ingredient-name {
-      @apply(--layout-flex);
+      @apply --layout-flex;
     }
 
     @media (max-width: 720px) {
@@ -112,7 +112,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- main panel -->
     <app-header-layout>
 
-      <app-header id="header" effects="waterfall fade-background" reveals>
+      <app-header id="header" effects="waterfall fade-background" reveals slot="header">
 
         <!-- top toolbar -->
         <app-toolbar>
@@ -124,22 +124,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div main-title></div>
 
           <paper-menu-button horizontal-align="right">
-            <paper-icon-button icon="app:more-vert" class="dropdown-trigger" alt="menu"></paper-icon-button>
+            <paper-icon-button icon="app:more-vert" slot="dropdown-trigger" alt="menu"></paper-icon-button>
             <paper-listbox class="dropdown-content">
               <paper-icon-item>
-                <iron-icon icon="app:share" item-icon></iron-icon>
+                <iron-icon icon="app:share" slot="item-icon"></iron-icon>
                 Tweet recipe
               </paper-icon-item>
               <paper-icon-item>
-                <iron-icon icon="app:email" item-icon></iron-icon>
+                <iron-icon icon="app:email" slot="item-icon"></iron-icon>
                 Email recipe
               </paper-icon-item>
               <paper-icon-item>
-                <iron-icon icon="app:textsms" item-icon></iron-icon>
+                <iron-icon icon="app:textsms" slot="item-icon"></iron-icon>
                 Message recipe
               </paper-icon-item>
               <paper-icon-item>
-                <iron-icon icon="app:group" item-icon></iron-icon>
+                <iron-icon icon="app:group" slot="item-icon"></iron-icon>
                 Share on Facebook
               </paper-icon-item>
             </paper-listbox>
