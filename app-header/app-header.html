@@ -287,12 +287,20 @@ Mixin | Description | Default
       :host([disabled]),
       :host([disabled])::after,
       :host([disabled]) #backgroundFrontLayer,
-      :host([disabled]) #backgroundRearLayer {
+      :host([disabled]) #backgroundRearLayer,
+      /* Silent scrolling should not run CSS transitions */
+      :host([silent-scroll]),
+      :host([silent-scroll])::after,
+      :host([silent-scroll]) #backgroundFrontLayer,
+      :host([silent-scroll]) #backgroundRearLayer {
         transition: none !important;
       }
 
       :host([disabled]) ::slotted(app-toolbar:first-of-type),
-      :host([disabled]) ::slotted([sticky]) {
+      :host([disabled]) ::slotted([sticky]),
+      /* Silent scrolling should not run CSS transitions */
+      :host([silent-scroll]) ::slotted(app-toolbar:first-of-type),
+      :host([silent-scroll]) ::slotted([sticky]) {
         transition: none !important;
       }
 

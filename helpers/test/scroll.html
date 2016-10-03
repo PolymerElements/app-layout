@@ -81,9 +81,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         assert.isFalse(header.disabled);
         Polymer.AppLayout.scroll({left: 100, top: 200, behavior: 'silent'});
-        assert.isTrue(header.disabled);
+        assert.isTrue(header.hasAttribute('silent-scroll'));
         requestAnimationFrame(function() {
-          assert.isFalse(header.disabled);
+          assert.isFalse(header.hasAttribute('silent-scroll'));
           done();
         });
       });
