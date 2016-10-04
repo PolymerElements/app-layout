@@ -53,7 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <app-drawer-layout force-narrow>
 
-      <app-drawer id="drawer">
+      <app-drawer id="drawer" slot="drawer">
 
         <app-toolbar></app-toolbar>
 
@@ -67,7 +67,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </app-drawer>
 
       <app-header-layout>
-        <app-header class="main-header">
+        <app-header class="main-header" slot="header">
 
           <app-toolbar>
             <paper-icon-button class="menu-button" icon="menu" drawer-toggle hidden$="{{wideLayout}}"></paper-icon-button>
