@@ -82,7 +82,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       function scrollEventHandler() {
         var nextTest = tests.shift();
         if (nextTest) {
-          setTimeout(function() {
+          requestAnimationFrame(function() {
             nextTest.callback();
             if (tests.length > 0) triggerScrollEvent();
           });
@@ -100,6 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           else scroller.scrollTop = tests[0].y;
         }
       }
+
       if (tests.length > 0) {
         var scrollTarget = scroller === document.documentElement ? window : scroller;
         scrollTarget.addEventListener('scroll', scrollEventHandler);
