@@ -26,7 +26,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../bower_components/app-layout/app-scrollpos-control/app-scrollpos-control.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-position/app-scroll-position.html">
 
 <link rel="import" href="recipe-detail.html">
 <link rel="import" href="recipe-list.html">
@@ -37,6 +37,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
 
     <style>
+    :host {
+      --paper-font-common-base: {
+        font-family: Raleway, sans-serif;
+      };
+    }
+
+    app-drawer-layout:not([narrow]) [drawer-toggle] {
+      display: none;
+    }
+
     .avatar-container {
       position: relative;
       border: 2px solid #00AA8D;
@@ -71,7 +81,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     paper-item {
-      @apply(--layout-center-center);
+      @apply --layout-center-center;
       height: 54px;
     }
 
@@ -94,10 +104,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-drawer-layout responsive-width="1280px">
 
       <!-- nav panel -->
-      <app-drawer id="drawer" swipe-open>
+      <app-drawer id="drawer" swipe-open slot="drawer">
         <app-header-layout has-scrolling-region>
 
-          <app-header fixed>
+          <app-header fixed slot="header">
             <div class="avatar-container">
               <div class="image"></div>
             </div>
@@ -121,27 +131,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header-layout>
       </app-drawer>
 
-      <app-scrollpos-control
+      <app-scroll-position
           selected="[[_pageData.page]]"
-          reset="[[_isDetailPage(_pageData.page)]]"></app-scrollpos-control>
+          reset="[[_isDetailPage(_pageData.page)]]"></app-scroll-position>
 
       <!-- list/detail pages -->
       <iron-pages selected="[[_pageData.page]]" attr-for-selected="name">
 
         <recipe-list name="home" recipes="[[recipes]]">
-          <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
+          <paper-icon-button icon="app:menu" drawer-toggle slot="drawer-toggle"></paper-icon-button>
         </recipe-list>
 
         <recipe-list name="favorites">
-          <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
+          <paper-icon-button icon="app:menu" drawer-toggle slot="drawer-toggle"></paper-icon-button>
         </recipe-list>
 
         <recipe-list name="saved">
-          <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
+          <paper-icon-button icon="app:menu" drawer-toggle slot="drawer-toggle"></paper-icon-button>
         </recipe-list>
 
         <recipe-list name="trending">
-          <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
+          <paper-icon-button icon="app:menu" drawer-toggle slot="drawer-toggle"></paper-icon-button>
         </recipe-list>
 
         <recipe-detail
@@ -188,7 +198,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _getRecipe: function() {
-      if (this.recipes && this._idData.id) {
+      if (this.recipes && this._idData && this._idData.id) {
         for (var i = 0; i < this.recipes.length; ++i) {
           var r = this.recipes[i];
           if (r.id === this._idData.id) {
