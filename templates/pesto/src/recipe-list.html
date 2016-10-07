@@ -157,16 +157,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </app-header>
 
       <div class="content">
-        <template is="dom-repeat" items="{{recipes}}"><!-- No empty text node
-        --><a href="#/detail/{{item.id}}" class="card-container">
-            <paper-card image="{{item.imageUrl}}">
-              <div class="card-content">
-                <h2>{{item.name}}</h2>
-                <p>By <span>{{item.author}}</span></p>
-              </div>
-            </paper-card>
-          </a><!-- No empty text node
+        <dom-repeat items="{{recipes}}">
+          <template><!-- No empty text node
+          --><a href="#/detail/{{item.id}}" class="card-container">
+              <paper-card image="{{item.imageUrl}}">
+                <div class="card-content">
+                  <h2>{{item.name}}</h2>
+                  <p>By <span>{{item.author}}</span></p>
+                </div>
+              </paper-card>
+            </a><!-- No empty text node
         --></template>
+        </dom-repeat>
       </div>
 
     </app-header-layout>

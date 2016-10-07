@@ -157,21 +157,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             <h4>Ingredients</h4>
 
-            <template is="dom-repeat" items="{{recipe.ingredients}}">
-              <div class="ingredient-item">
-                <div class="ingredient-amount">{{item.amount}}</div>
-                <div class="ingredient-name">{{item.description}}</div>
-              </div>
-            </template>
+            <dom-repeat items="{{recipe.ingredients}}">
+              <template>
+                <div class="ingredient-item">
+                  <div class="ingredient-amount">{{item.amount}}</div>
+                  <div class="ingredient-name">{{item.description}}</div>
+                </div>
+              </template>
+            </dom-repeat>
 
             <h4>Steps</h4>
 
-            <template is="dom-repeat" items="{{recipe.steps}}">
-              <div class="ingredient-item">
-                <div class="ingredient-amount">{{item.duration}}</div>
-                <div class="ingredient-name">{{item.description}}</div>
-              </div>
-            </template>
+            <dom-repeat items="{{recipe.steps}}">
+              <template>
+                <div class="ingredient-item">
+                  <div class="ingredient-amount">{{item.duration}}</div>
+                  <div class="ingredient-name">{{item.description}}</div>
+                </div>
+              </template>
+            </dom-repeat>
 
           </div>
         </paper-card>
