@@ -165,6 +165,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         };
       }
 
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0,0,0,0);
+        border: 0;
+      }
+
       /**
        * Desktop small, tablet
        */
@@ -243,7 +254,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <h1>[[item.title]]</h1>
           <p>[[item.description]]</p>
           <div class="quantitySelector">
-            <select>
+            <label class="sr-only" for="quantity">Number of items:</label>
+            <select id="quantity">
               <option value="1">Quantity 1</option>
               <option value="2">Quantity 2</option>
               <option value="3">Quantity 3</option>
