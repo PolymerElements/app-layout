@@ -104,12 +104,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </style>
 
-    <div class="pic" style$="background-image: url([[item.imageUrl]]);"></div>
+    <img class="pic" src="[[item.imageUrl]]" alt="[[item.imageAlt]]">
     <div class="link">[[item.title]]</div>
     <span class="price">[[item.price]]</span>
 
     <div class="author">
-      <img src="[[item.storeAvatarUrl]]">
+      <img src="[[item.storeAvatarUrl]]" alt="[[item.storeAvatarAlt]]">
       [[item.storeName]]
     </div>
 
