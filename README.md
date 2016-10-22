@@ -1,7 +1,71 @@
-# App Layout [![Build Status](https://travis-ci.org/PolymerElements/app-layout.svg?branch=master)](https://travis-ci.org/PolymerElements/app-layout)
-
+# App Layout [![Build Status](https://travis-ci.org/PolymerElements/app-layout.svg?branch=master)](https://travis-ci.org/PolymerElements/app-layout) [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://beta.webcomponents.org/element/PolymerElements/app-layout)
 
 [<img src="https://app-layout-assets.appspot.com/assets/docs/app-layout.png" width="300" height="210">](https://polymerelements.github.io/app-layout/)
+
+<!---
+```
+<custom-element-demo>
+  <template>
+    <script src="../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="app-drawer/app-drawer.html">
+    <link rel="import" href="app-header/app-header.html">
+    <link rel="import" href="app-toolbar/app-toolbar.html">
+    <link rel="import" href="demo/sample-content.html">
+    <link rel="import" href="../iron-icons/iron-icons.html">
+    <link rel="import" href="../paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../paper-progress/paper-progress.html">
+    <style is="custom-style">
+      body {
+        margin: 0;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      app-toolbar {
+        background-color: #4285f4;
+        color: #fff;
+      }
+      paper-icon-button + [main-title] {
+        margin-left: 24px;
+      }
+      paper-progress {
+        display: block;
+        width: 100%;
+        --paper-progress-active-color: rgba(255, 255, 255, 0.5);
+        --paper-progress-container-color: transparent;
+      }
+      app-header {
+        @apply(--layout-fixed-top);
+        color: #fff;
+        --app-header-background-rear-layer: {
+          background-color: #ef6c00;
+        };
+      }
+      app-drawer {
+        --app-drawer-scrim-background: rgba(0, 0, 100, 0.8);
+        --app-drawer-content-container: {
+          background-color: #B0BEC5;
+        }
+      }
+    </style>
+    <next-code-block></next-code-block>
+  </template>
+</custom-element-demo>
+```
+-->
+```html
+<app-header reveals>
+  <app-toolbar>
+    <paper-icon-button icon="menu" onclick="drawer.toggle()"></paper-icon-button>
+    <div main-title>My app</div>
+    <paper-icon-button icon="delete"></paper-icon-button>
+    <paper-icon-button icon="search"></paper-icon-button>
+    <paper-icon-button icon="close"></paper-icon-button>
+    <paper-progress value="10" indeterminate bottom-item></paper-progress>
+  </app-toolbar>
+</app-header>
+<app-drawer id="drawer" swipe-open></app-drawer>
+<sample-content size="10"></sample-content>
+```
 
 https://polymerelements.github.io/app-layout/
 
