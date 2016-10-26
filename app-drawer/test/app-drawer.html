@@ -356,6 +356,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       });
 
+      test('disable swipe', function(done) {
+        Polymer.RenderStatus.afterNextRender(drawer, function() {
+          var drawerWidth = drawer.getWidth();
+          var halfWidth = drawerWidth / 2;
+          drawer.disableSwipe = true;
+          drawer.fire('track', { state: 'start' });
+          var ev = drawer.fire('track',
+              { state: 'track', dx: halfWidth, ddx: drawerWidth },
+              { cancelable: true });
+
+          assert.isFalse(ev.defaultPrevented);
+          assert.isFalse(transformSpy.called);
+          done();
+        });
+      });
+
       test('track events block user selection', function(done) {
         Polymer.RenderStatus.afterNextRender(drawer, function() {
           var ev = drawer.fire('track', null /* detail */, { cancelable: true });
