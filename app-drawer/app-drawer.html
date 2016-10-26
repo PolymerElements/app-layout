@@ -236,6 +236,14 @@ Custom property                  | Description                            | Defa
         noFocusTrap: {
           type: Boolean,
           value: false
+        },
+
+        /**
+         * Disables swiping on the drawer.
+         */
+        disableSwipe: {
+          type: Boolean,
+          value: false
         }
       },
 
@@ -353,7 +361,7 @@ Custom property                  | Description                            | Defa
       },
 
       _track: function(event) {
-        if (this.persistent) {
+        if (this.persistent || this.disableSwipe) {
           return;
         }
 
