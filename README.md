@@ -19,6 +19,7 @@
         margin: 0;
         font-family: 'Roboto', 'Noto', sans-serif;
         -webkit-font-smoothing: antialiased;
+        background: #f1f1f1;
       }
       app-toolbar {
         background-color: #4285f4;
@@ -45,6 +46,9 @@
         --app-drawer-content-container: {
           background-color: #B0BEC5;
         }
+      }
+      sample-content {
+        padding-top: 64px;
       }
     </style>
     <next-code-block></next-code-block>
