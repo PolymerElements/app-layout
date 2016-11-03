@@ -4,8 +4,10 @@
     "title": "Green comfort chair",
     "quote": "Leave the tunnel and the rain is fallin amazing things happen when you wait",
     "imageUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/chair.png",
+    "imageAlt": "foobar",
     "storeName": "Ali’s shop",
     "storeAvatarUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/ali-connors.png",
+    "storeAvatarAlt": "foobar",
     "price": "$300",
     "category": "Feature"
   },
@@ -14,8 +16,10 @@
     "title": "Beautiful little teapot",
     "quote": "Leave the tunnel and the rain is fallin amazing things happen when you wait",
     "imageUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/beachball.png",
+    "imageAlt": "foobar",
     "storeName": "Trevor’s shop",
     "storeAvatarUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/zach.jpg",
+    "storeAvatarAlt": "foobar",
     "price": "$300",
     "category": "Latest"
   },
@@ -24,8 +28,10 @@
     "title": "Original Sunnies For U",
     "quote": "Leave the tunnel and the rain is fallin amazing things happen when you wait",
     "imageUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/chucks.png",
+    "imageAlt": "foobar",
     "storeName": "Sandra’s shop",
     "storeAvatarUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/sandra-adams.jpg",
+    "storeAvatarAlt": "foobar",
     "price": "$300",
     "category": "Fashion"
   },
@@ -34,8 +40,10 @@
     "title": "Folding Chair",
     "quote": "Leave the tunnel and the rain is fallin amazing things happen when you wait",
     "imageUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/lawn_chair.png",
+    "imageAlt": "foobar",
     "storeName": "Stella’s shop",
     "storeAvatarUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/16c477b.jpg",
+    "storeAvatarAlt": "foobar",
     "price": "$300",
     "category": "Furniture"
   },
@@ -44,8 +52,10 @@
     "title": "Better wearing heels",
     "quote": "Leave the tunnel and the rain is fallin amazing things happen when you wait",
     "imageUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/heels.png",
+    "imageAlt": "foobar",
     "storeName": "Peter’s shop",
     "storeAvatarUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/peter-carlsson.png",
+    "storeAvatarAlt": "foobar",
     "price": "$300",
     "category": "Beauty"
   },
@@ -54,8 +64,10 @@
     "title": "Red Popsicle",
     "quote": "Leave the tunnel and the rain is fallin amazing things happen when you wait",
     "imageUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/popsicle.png",
+    "imageAlt": "foobar",
     "storeName": "Trevor’s shop",
     "storeAvatarUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/zach.jpg",
+    "storeAvatarAlt": "foobar",
     "price": "$300",
     "category": "Food"
   },
@@ -64,8 +76,10 @@
     "title": "Best gift for the traveler",
     "quote": "Leave the tunnel and the rain is fallin amazing things happen when you wait",
     "imageUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/backpack.png",
+    "imageAlt": "foobar",
     "storeName": "Sandra’s shop",
     "storeAvatarUrl": "https://www.gstatic.com/angular/material-adaptive/shrine/sandra-adams.jpg",
+    "storeAvatarAlt": "foobar",
     "price": "$300",
     "category": "Travel"
   }
