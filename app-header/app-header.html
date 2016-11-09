@@ -482,8 +482,6 @@ Mixin | Description | Default
        * @method resetLayout
        */
       resetLayout: function() {
-        this.fire('app-header-reset-layout');
-
         this.debounce('_resetLayout', function() {
           // noop if the header isn't visible
           if (this.offsetWidth === 0 && this.offsetHeight === 0) {
@@ -502,7 +500,6 @@ Mixin | Description | Default
           if  (!firstSetup) {
             this._updateScrollState(0, true);
           }
-
           if (this._mayMove()) {
             this._dHeight = this._stickyEl ? this._height - this._stickyEl.offsetHeight : 0;
           } else {
@@ -520,6 +517,7 @@ Mixin | Description | Default
           }
           // restore no transition
           this.disabled = currentDisabled;
+          this.fire('app-header-reset-layout');
         });
       },
 

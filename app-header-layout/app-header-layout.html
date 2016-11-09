@@ -144,7 +144,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
 
       listeners: {
         'iron-resize': '_resizeHandler',
-        'app-header-reset-layout': 'resetLayout'
+        'app-header-reset-layout': '_resetLayoutHandler'
       },
 
       observers: [
@@ -216,7 +216,13 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
 
       _resizeHandler: function() {
         this.resetLayout();
+      },
+
+      _resetLayoutHandler: function(e) {
+        this.resetLayout();
+        e.stopPropagation();
       }
+
     });
   </script>
 </dom-module>
