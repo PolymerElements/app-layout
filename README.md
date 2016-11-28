@@ -137,7 +137,7 @@ Sample code for various UI patterns:
 
 - **Transform navigation:**
 As more screen space is available, side navigation can transform into tabs.
-([Demo](https://polymerelements.github.io/app-layout/patterns/transform-navigation/x-app.html) - [Source](/patterns/transform-navigation/x-app.html))
+([Demo](https://polymerelements.github.io/app-layout/patterns/transform-navigation/index.html) - [Source](/patterns/transform-navigation/x-app.html))
 
 - **Expand Card:**
 Content cards may expand to take up more horizontal space.
