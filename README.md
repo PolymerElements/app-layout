@@ -89,7 +89,9 @@ $ bower install PolymerElements/app-layout --save
 <link rel="import" href="/bower_components/app-layout/app-layout.html">
 ```
 
-## Elements
+## What is inside
+
+### Elements
 
 - [app-box](/app-box) - A container element that can have scroll effects - visual effects based on scroll position.
 
@@ -107,30 +109,44 @@ $ bower install PolymerElements/app-layout --save
 
 - [app-toolbar](/app-toolbar) - A horizontal toolbar containing items that can be used for label, navigation, search and actions.
 
-## Templates
+### Templates
 
 The templates are a means to define, illustrate and share best practices in App Layout. Pick a template and customize it:
 
-- [Getting started](/templates/getting-started) 
-- [Landing page](/templates/landing-page)
-- [Publishing: Zuperkülblog](/templates/publishing)
-- [Shop: Shrine](/templates/shrine)
-- [Blog: Pesto](/templates/pesto)
-- [Scroll effects: Test drive](/templates/test-drive)
+- **Getting started**
+([Demo](https://polymerelements.github.io/app-layout/templates/getting-started) - [Source](/templates/getting-started))
 
-## Patterns
+- **Landing page**
+([Demo](https://polymerelements.github.io/app-layout/templates/landing-page) - [Source](/templates/landing-page))
+
+- **Publishing: Zuperkülblog**
+([Demo](https://polymerelements.github.io/app-layout/templates/publishing) - [Source](/templates/publishing))
+
+- **Shop: Shrine**
+([Demo](https://polymerelements.github.io/app-layout/templates/shrine) - [Source](/templates/shrine))
+
+- **Blog: Pesto**
+([Demo](https://polymerelements.github.io/app-layout/templates/pesto) - [Source](/templates/pesto))
+
+- **Scroll effects: Test drive**
+([Demo](https://polymerelements.github.io/app-layout/templates/test-drive) - [Source](/templates/test-drive))
+
+### Patterns
 
 Sample code for various UI patterns:
 
-- [Transform navigation](/patterns/transform-navigation/x-app.html)
+- **Transform navigation:**
 As more screen space is available, side navigation can transform into tabs.
+([Demo](https://polymerelements.github.io/app-layout/patterns/transform-navigation/x-app.html) - [Source](/patterns/transform-navigation/x-app.html))
 
-- [Expand Card](/patterns/expand-card/index.html)
+- **Expand Card:**
 Content cards may expand to take up more horizontal space.
+([Demo](https://polymerelements.github.io/app-layout/patterns/expand-card/index.html) - [Source](/patterns/expand-card/index.html))
 
 ## Users
 
 Here are some web apps built with App Layout:
+
 - [Google I/O 2016](https://events.google.com/io2016/)
 - [Polymer summit](https://www.polymer-project.org/summit)
 - [Pica](https://frankiefu.github.io/pica/)
