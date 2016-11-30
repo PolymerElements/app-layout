@@ -30,7 +30,7 @@
     "paper-card": "PolymerElements/paper-card#^1.0.0",
     "paper-fab": "PolymerElements/paper-fab#2.0-preview",
     "paper-icon-button": "PolymerElements/paper-icon-button#2.0-preview",
-    "paper-item": "PolymerElements/paper-item#^1.0.0",
+    "paper-item": "PolymerElements/paper-item#2.0-preview",
     "paper-menu": "PolymerElements/paper-menu#^1.0.0",
     "paper-progress": "PolymerElements/paper-progress#~1.0.2",
     "paper-spinner": "PolymerElements/paper-spinner#2.0-preview",
