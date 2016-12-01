@@ -22,7 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../../iron-pages/iron-pages.html">
   <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../../../paper-item/paper-item.html">
-  <link rel="import" href="../../../paper-menu/paper-menu.html">
+  <link rel="import" href="../../../paper-listbox/paper-listbox.html">
   <link rel="import" href="../../app-drawer/app-drawer.html">
   <link rel="import" href="../../app-drawer-layout/app-drawer-layout.html">
   <link rel="import" href="../../app-toolbar/app-toolbar.html">
@@ -55,12 +55,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-drawer-layout fullbleed>
 
         <app-drawer slot="drawer">
-          <paper-menu selected="{{page}}">
+          <paper-listbox selected="{{page}}">
             <paper-item>Home</paper-item>
             <paper-item>About</paper-item>
             <paper-item>Schedule</paper-item>
             <paper-item>Account</paper-item>
-          </paper-menu>
+          </paper-listbox>
         </app-drawer>
 
         <div>

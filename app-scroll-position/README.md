@@ -11,12 +11,12 @@ Example:
 <app-drawer-layout>
 
   <app-drawer>
-    <paper-menu selected="{{page}}">
+    <paper-listbox selected="{{page}}">
       <paper-item>Home</paper-item>
       <paper-item>About</paper-item>
       <paper-item>Schedule</paper-item>
       <paper-item>Account</paper-item>
-    </paper-menu>
+    </paper-listbox>
   </app-drawer>
 
   <div>
