@@ -73,26 +73,8 @@
   "ignore": [],
   "private": true,
   "resolutions": {
-    "iron-a11y-keys-behavior": "2.0-preview",
-    "iron-behaviors": "2.0-preview",
-    "iron-checked-element-behavior": "2.0-preview",
-    "iron-flex-layout": "2.0-preview",
-    "iron-icon": "2.0-preview",
-    "iron-icons": "2.0-preview",
-    "iron-iconset-svg": "2.0-preview",
-    "iron-menu-behavior": "2.0-preview",
-    "iron-meta": "2.0-preview",
-    "iron-resizable-behavior": "2.0-preview",
-    "iron-scroll-target-behavior": "2.0-preview",
-    "iron-selector": "2.0-preview",
-    "iron-validatable-behavior": "2.0-preview",
-    "paper-behaviors": "2.0-preview",
-    "paper-icon-button": "2.0-preview",
-    "paper-material": "2.0-preview",
-    "paper-ripple": "2.0-preview",
-    "paper-styles": "2.0-preview",
-    "polymer": "2.0-preview",
     "test-fixture": "custom-elements-v1",
+    "polymer": "2.0-preview",
     "webcomponentsjs": "v1"
   }
 }
