@@ -176,16 +176,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Girl is the second studio album by American recording artist and record producer Pharrell Williams. The album was released on March 3, 2014, through Williams' label i Am Other and Columbia Records.
       </summary>
 
-      <dom-repeat id="repeater">
-        <template>
-          <div class="song">
-            <div class="no">{{item.no}}</div>
-            <div class="name">{{item.name}}</div>
-            <div class="duration">{{item.duration}}</div>
-            <iron-icon icon="more-vert"></iron-icon>
-          </div>
-        </template>
-      </dom-repeat>
+      <template is="dom-repeat" id="repeater">
+        <div class="song">
+          <div class="no">{{item.no}}</div>
+          <div class="name">{{item.name}}</div>
+          <div class="duration">{{item.duration}}</div>
+          <iron-icon icon="more-vert"></iron-icon>
+        </div>
+      </template>
     </div>
 
     <paper-fab icon="av:play-arrow"></paper-fab>

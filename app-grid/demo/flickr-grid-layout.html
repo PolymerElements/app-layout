@@ -42,6 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 </head>
 <body>
+
   <dom-module id="x-grid">
     <template>
       <style include="app-grid-style">
@@ -130,11 +131,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header>
         <div class="centered-container">
           <ul class="app-grid">
-            <dom-repeat items="[[photos]]" as="photo">
-              <template>
-                <li class="item" style$="[[_getItemStyle(photo)]]"></li>
-              </template>
-            </dom-repeat>
+            <template is="dom-repeat" items="[[photos]]" as="photo">
+              <li class="item" style$="[[_getItemStyle(photo)]]"></li>
+            </template>
           </ul>
         </div>
       </app-header-layout>

@@ -222,13 +222,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <div class="items">
       <div class="itemsGrid">
-        <dom-repeat items="[[relatedItems]]">
-          <template>
-            <a href$="#[[section]]/[[item.id]]" title$="[[item.title]]" class="item">
-              <shrine-simple-item item="[[item]]"></shrine-simple-item>
-            </a>
-          </template>
-        </dom-repeat>
+        <template is="dom-repeat" items="[[relatedItems]]">
+          <a href$="#[[section]]/[[item.id]]" title$="[[item.title]]" class="item">
+            <shrine-simple-item item="[[item]]"></shrine-simple-item>
+          </a>
+        </template>
       </div>
     </div>
 

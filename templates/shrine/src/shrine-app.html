@@ -219,22 +219,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-drawer-layout drawer-width="288px" force-narrow>
       <!-- navigation drawer for small screen sizes -->
       <app-drawer slot="drawer" id="drawer" swipe-open>
-        <dom-if if="[[smallScreen]]">
-          <template>
-            <app-toolbar class="profileBar">
-              <img class="profilePic" src="//app-layout-assets.appspot.com/assets/shrine/profile_pic.jpg"  width="30" height="30">
-              <div class="profileName">Stella</div>
-              <paper-icon-button icon="settings"></paper-icon-button>
-            </app-toolbar>
-            <div class="list">
-              <dom-repeat items="[[sections]]" as="section" initial-count="1">
-                <template>
-                  <a href="#[[section]]" class$="[[_getSectionClass(index, selectedTab)]]">[[section]]</a>
-                </template>
-              </dom-repeat>
-            </div>
-          </template>
-        </dom-if>
+        <template is="dom-if" if="[[smallScreen]]">
+          <app-toolbar class="profileBar">
+            <img class="profilePic" src="//app-layout-assets.appspot.com/assets/shrine/profile_pic.jpg"  width="30" height="30">
+            <div class="profileName">Stella</div>
+            <paper-icon-button icon="settings"></paper-icon-button>
+          </app-toolbar>
+          <div class="list">
+            <template is="dom-repeat" items="[[sections]]" as="section" initial-count="1">
+              <a href="#[[section]]" class$="[[_getSectionClass(index, selectedTab)]]">[[section]]</a>
+            </template>
+          </div>
+        </template>
       </app-drawer>
 
       <app-header-layout id="headerLayout">
@@ -253,44 +249,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <paper-icon-button icon="more-vert"></paper-icon-button>
             </div>
           </app-toolbar>
-          <dom-if if="[[_shouldShowTabs(onDetailPage, smallScreen)]]">
-            <template>
-              <paper-tabs selected="[[selectedTab]]" scrollable sticky$="[[_shouldShowTabs(onDetailPage, smallScreen)]]">
-                <dom-repeat items="[[sections]]" as="section">
-                  <template>
-                    <paper-tab>
-                      <a href="#[[section]]">[[section]]</a>
-                    </paper-tab>
-                  </template>
-                </dom-repeat>
-              </paper-tabs>
-            </template>
-          </dom-if>
+          <template is="dom-if" if="[[_shouldShowTabs(onDetailPage, smallScreen)]]">
+            <paper-tabs selected="[[selectedTab]]" scrollable sticky$="[[_shouldShowTabs(onDetailPage, smallScreen)]]">
+              <template is="dom-repeat" items="[[sections]]" as="section">
+                <paper-tab>
+                  <a href="#[[section]]">[[section]]</a>
+                </paper-tab>
+              </template>
+            </paper-tabs>
+          </template>
         </app-header>
 
         <iron-pages selected="[[page]]" attr-for-selected="name">
           <!-- detail of item -->
-          <dom-if if="[[_equal(page, 'detail')]]">
-            <template>
-              <shrine-detail
-                  name="detail"
-                  section="[[sectionData.section]]"
-                  related-items="[[items]]"
-                  item="[[_getDetailItem(items, idData.id)]]">
-              </shrine-detail>
-            </template>
-          </dom-if>
+          <template is="dom-if" if="[[_equal(page, 'detail')]]">
+            <shrine-detail
+                name="detail"
+                section="[[sectionData.section]]"
+                related-items="[[items]]"
+                item="[[_getDetailItem(items, idData.id)]]">
+            </shrine-detail>
+          </template>
           <!-- list of items -->
-          <dom-if if="[[_equal(page, 'list')]]">
-            <template>
-              <shrine-list
-                  name="list"
-                  section="[[sectionData.section]]"
-                  items="[[_getItemsCopy(items, sectionData.section)]]"
-                  featured-item="[[_getFeaturedItem(featuredItems, sectionData.section)]]">
-              </shrine-list>
-            </template>
-          </dom-if>
+          <template is="dom-if" if="[[_equal(page, 'list')]]">
+            <shrine-list
+                name="list"
+                section="[[sectionData.section]]"
+                items="[[_getItemsCopy(items, sectionData.section)]]"
+                featured-item="[[_getFeaturedItem(featuredItems, sectionData.section)]]">
+            </shrine-list>
+          </template>
         </iron-pages>
 
       </app-header-layout>

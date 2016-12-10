@@ -86,13 +86,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <shrine-featured-item item="[[featuredItem]]"></shrine-featured-item>
 
     <div class="grid">
-      <dom-repeat items="[[items]]" sort="_sortItems" initial-count="1">
-        <template>
-          <a href$="#[[section]]/[[item.id]]" class="item">
-            <shrine-item item="[[item]]"></shrine-item>
-          </a>
-        </template>
-      </dom-repeat>
+      <template is="dom-repeat" items="[[items]]" sort="_sortItems" initial-count="1">
+        <a href$="#[[section]]/[[item.id]]" class="item">
+          <shrine-item item="[[item]]"></shrine-item>
+        </a>
+      </template>
     </div>
 
   </template>

@@ -234,37 +234,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <!-- list page -->
           <iron-pages name="list" selected="[[categoryData.category]]" attr-for-selected="name">
 
-            <dom-repeat items="[[articles]]" as="category">
-              <template>
-                <!-- category page (lazy-loaded) -->
-                <dom-if if="[[_equal(category, [[categoryData.category.name]])]]">
-                  <template>
-                    <section class="category-page" name="[[category.name]]">
+            <template is="dom-repeat" items="[[articles]]" as="category">
+              <!-- category page (lazy-loaded) -->
+              <template is="dom-if" if="[[_equal(category, [[categoryData.category.name]])]]">
+                <section class="category-page" name="[[category.name]]">
 
-                      <!-- 2-columns grid -->
-                      <two-columns-grid column-width="396" gutter="4">
-                        <dom-repeat items="[[category.items]]" as="article">
-                          <template>
-                            <article-headline href="#/[[category.name]]/detail/[[article.id]]"
-                                article="[[article]]"></article-headline>
-                          </template>
-                        </dom-repeat>
-                      </two-columns-grid>
+                  <!-- 2-columns grid -->
+                  <two-columns-grid column-width="396" gutter="4">
+                    <dom-repeat items="[[category.items]]" as="article">
+                      <template>
+                        <article-headline href="#/[[category.name]]/detail/[[article.id]]"
+                            article="[[article]]"></article-headline>
+                      </template>
+                    </dom-repeat>
+                  </two-columns-grid>
 
-                    </section>
-                  </template>
-                </dom-if>
+                </section>
               </template>
-            </dom-repeat>
+            </template>
 
           </iron-pages>
 
           <!-- detail page (lazy-loaded) -->
-          <dom-if if="[[_equal(pageData.page, 'detail')]]">
-            <template>
-              <article-detail name="detail" article="[[article]]"></article-detail>
-            </template>
-          </dom-if>
+          <template is="dom-if" if="[[_equal(pageData.page, 'detail')]]">
+            <article-detail name="detail" article="[[article]]"></article-detail>
+          </template>
 
         </iron-pages>
 
