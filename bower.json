@@ -46,7 +46,7 @@
         "iron-media-query": "PolymerElements/iron-media-query#2.0-preview",
         "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#2.0-preview",
         "iron-scroll-target-behavior": "PolymerElements/iron-scroll-target-behavior#2.0-preview",
-        "polymer": "Polymer/polymer#master"
+        "polymer": "Polymer/polymer#^1.0.0"
       },
       "devDependencies": {
         "font-roboto": "PolymerElements/font-roboto#^1.0.0",
@@ -70,7 +70,7 @@
       },
       "resolutions": {
         "test-fixture": "^1.0.0",
-        "polymer": "master",
+        "polymer": "^1.0.0",
         "webcomponentsjs": "^0.7.0"
       }
     }
