@@ -21,8 +21,18 @@
     "paper-menu-button": "PolymerElements/paper-menu-button#2.0-preview",
     "polymer": "polymer/polymer#2.0-preview"
   },
+  "variants": {
+    "1.x": {
+      "dependencies": {
+        "polymer": "polymer/polymer#^1.7.1"
+      },
+      "resolutions": {
+        "webcomponentsjs": "^0.7.0",
+        "polymer": "^1.7.1"
+      }
+    }
+  },
   "resolutions": {
-    "polymer": "2.0-preview",
-    "webcomponentsjs": "v1"
+    "polymer": "2.0-data-updates"
   }
 }
