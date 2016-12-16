@@ -235,7 +235,7 @@ Mixin | Description | Default
         transition-property: transform;
       }
 
-      :host::after {
+      :host::before {
         position: absolute;
         right: 0px;
         bottom: -5px;
@@ -251,7 +251,7 @@ Mixin | Description | Default
         @apply(--app-header-shadow);
       }
 
-      :host([shadow])::after {
+      :host([shadow])::before {
         opacity: 1;
       }
 
