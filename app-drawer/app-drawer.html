@@ -262,10 +262,6 @@ Custom property                  | Description                            | Defa
 
       _boundEscKeydownHandler: null,
 
-      _firstTabStop: null,
-
-      _lastTabStop: null,
-
       attached: function() {
         // Only transition the drawer after its first render (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
@@ -281,8 +277,6 @@ Custom property                  | Description                            | Defa
           this.$.scrim.addEventListener('transitionend', this._transitionend.bind(this));
           this.$.contentContainer.addEventListener('transitionend', this._transitionend.bind(this));
 
-          this.addEventListener('keydown', this._tabKeydownHandler.bind(this))
-
           // Only listen for horizontal track so you can vertically scroll inside the drawer.
           this.listen(this, 'track', '_track');
           this.setScrollDirection('y');
@@ -293,6 +287,9 @@ Custom property                  | Description                            | Defa
 
       detached: function() {
         document.removeEventListener('keydown', this._boundEscKeydownHandler);
+        if (document.$blockingElements) {
+          document.$blockingElements.remove(this);
+        }
       },
 
       /**
@@ -574,6 +571,9 @@ Custom property                  | Description                            | Defa
           } else {
             document.removeEventListener('keydown', this._boundEscKeydownHandler);
             document.body.style.overflow = '';
+            if (document.$blockingElements) {
+              document.$blockingElements.remove(this);
+            }
           }
 
           // Don't fire the event on initial load.
@@ -587,29 +587,8 @@ Custom property                  | Description                            | Defa
         if (this.noFocusTrap) {
           return;
         }
-
-        // NOTE: Unless we use /deep/ (which we shouldn't since it's deprecated), this will
-        // not select focusable elements inside shadow roots.
-        var focusableElementsSelector = [
-            'a[href]:not([tabindex="-1"])',
-            'area[href]:not([tabindex="-1"])',
-            'input:not([disabled]):not([tabindex="-1"])',
-            'select:not([disabled]):not([tabindex="-1"])',
-            'textarea:not([disabled]):not([tabindex="-1"])',
-            'button:not([disabled]):not([tabindex="-1"])',
-            'iframe:not([tabindex="-1"])',
-            '[tabindex]:not([tabindex="-1"])',
-            '[contentEditable=true]:not([tabindex="-1"])'
-          ].join(',');
-        var focusableElements = Polymer.dom(this).querySelectorAll(focusableElementsSelector);
-
-        if (focusableElements.length > 0) {
-          this._firstTabStop = focusableElements[0];
-          this._lastTabStop = focusableElements[focusableElements.length - 1];
-        } else {
-          // Reset saved tab stops when there are no focusable elements in the drawer.
-          this._firstTabStop = null;
-          this._lastTabStop = null;
+        if (document.$blockingElements) {
+          document.$blockingElements.push(this);
         }
 
         // Focus on app-drawer if it has non-zero tabindex. Otherwise, focus the first focusable
@@ -618,29 +597,22 @@ Custom property                  | Description                            | Defa
         var tabindex = this.getAttribute('tabindex');
         if (tabindex && parseInt(tabindex, 10) > -1) {
           this.focus();
-        } else if (this._firstTabStop) {
-          this._firstTabStop.focus();
-        }
-      },
-
-      _tabKeydownHandler: function(event) {
-        if (this.noFocusTrap) {
-          return;
-        }
-
-        var TAB_KEYCODE = 9;
-        if (this._drawerState === this._DRAWER_STATE.OPENED && event.keyCode === TAB_KEYCODE) {
-          if (event.shiftKey) {
-            if (this._firstTabStop && Polymer.dom(event).localTarget === this._firstTabStop) {
-              event.preventDefault();
-              this._lastTabStop.focus();
-            }
-          } else {
-            if (this._lastTabStop && Polymer.dom(event).localTarget === this._lastTabStop) {
-              event.preventDefault();
-              this._firstTabStop.focus();
-            }
-          }
+        } else {
+          // NOTE: Unless we use /deep/ (which we shouldn't since it's deprecated), this will
+          // not select focusable elements inside shadow roots.
+          var selector = [
+              'a[href]:not([tabindex="-1"])',
+              'area[href]:not([tabindex="-1"])',
+              'input:not([disabled]):not([tabindex="-1"])',
+              'select:not([disabled]):not([tabindex="-1"])',
+              'textarea:not([disabled]):not([tabindex="-1"])',
+              'button:not([disabled]):not([tabindex="-1"])',
+              'iframe:not([tabindex="-1"])',
+              '[tabindex]:not([tabindex="-1"])',
+              '[contentEditable=true]:not([tabindex="-1"])'
+            ].join(',');
+          var firstTabStop = Polymer.dom(this).querySelectorAll(selector)[0];
+          firstTabStop && firstTabStop.focus();
         }
       },
 

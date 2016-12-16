@@ -17,6 +17,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../../web-component-tester/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
+
+  <script src="../../../blockingElements/blocking-elements.js"></script>
+  <script src="../../../inert/inert.js"></script>
+
   <link rel="import" href="../../../polymer/polymer.html">
   <link rel="import" href="../../../test-fixture/test-fixture.html">
   <link rel="import" href="../app-drawer.html">
@@ -69,7 +73,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       function fireKeydownEvent(target, keyCode, shiftKey) {
         var e = new CustomEvent('keydown', {
           bubbles: true,
-          cancelable: true          
+          cancelable: true
         });
         e.keyCode = keyCode;
         e.shiftKey = !!shiftKey;
@@ -285,7 +289,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   assert.isFalse(drawer.opened);
                   assert.equal(listenerSpy.callCount, 4,
                     'should fire after swiping even if opened state unchanged');
-                  
+
                   drawer.fire('track', { state: 'start' });
                   drawer.fire('track', { state: 'track', dx: 200, ddx: 200 });
                   drawer.fire('track', { state: 'end', dx: 200, ddx: 0 });
@@ -337,7 +341,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           assert.isFalse(drawer.opened);
           assert.equal(listenerSpy.callCount, 3, 'should fire after flinging');
-            
+
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 200, ddx: 200 });
           drawer.fire('track', { state: 'end', dx: 200, ddx: 0 });
@@ -669,36 +673,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var root = Polymer.dom(focusDrawer.root);
         var drawer = root.querySelector('app-drawer');
         var input = Polymer.dom(drawer).querySelector('input');
-        var div = Polymer.dom(drawer).querySelector('div[tabindex]');
         var inputFocusSpy = sinon.spy(input, 'focus');
-        var divFocusSpy = sinon.spy(div, 'focus');
 
         Polymer.RenderStatus.afterNextRender(drawer, function() {
           drawer.transitionDuration = 0;
           drawer.opened = true;
 
           assert.isTrue(inputFocusSpy.called);
-
-          var e = fireKeydownEvent(input, 9);
-
-          assert.isFalse(e.defaultPrevented, 'should not prevent default');
-
-          input.focus();
-          inputFocusSpy.reset();
-          e = fireKeydownEvent(input, 9, true /* shiftKey */);
-
-          assert.isTrue(divFocusSpy.called);
-          assert.isTrue(e.defaultPrevented, 'should prevent default');
-
-          e = fireKeydownEvent(div, 9, true /* shiftKey */);
-
-          assert.isFalse(e.defaultPrevented, 'should not prevent default');
-
-          div.focus();
-          e = fireKeydownEvent(div, 9);
-
-          assert.isTrue(inputFocusSpy.called);
-          assert.isTrue(e.defaultPrevented, 'should prevent default');
+          assert.equal(document.$blockingElements.top, drawer, 'drawer is the top blocking element');
           done();
         });
       });
@@ -728,7 +710,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var drawer = root.querySelector('app-drawer');
         var input = Polymer.dom(drawer).querySelector('input');
         var inputFocusSpy = sinon.spy(input, 'focus');
-  
+
         Polymer.RenderStatus.afterNextRender(drawer, function() {
           drawer.transitionDuration = 0;
           drawer.noFocusTrap = true;
