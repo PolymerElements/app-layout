@@ -10,6 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
+<link rel="import" href="app-icons.html">
+
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 
@@ -235,31 +237,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <iron-pages name="list" selected="[[categoryData.category]]" attr-for-selected="name">
 
             <template is="dom-repeat" items="[[articles]]" as="category">
-              <!-- category page (lazy-loaded) -->
-              <template is="dom-if" if="[[_equal(category, [[categoryData.category.name]])]]">
-                <section class="category-page" name="[[category.name]]">
+              <section class="category-page" name="[[category.name]]">
 
-                  <!-- 2-columns grid -->
-                  <two-columns-grid column-width="396" gutter="4">
-                    <dom-repeat items="[[category.items]]" as="article">
-                      <template>
-                        <article-headline href="#/[[category.name]]/detail/[[article.id]]"
-                            article="[[article]]"></article-headline>
-                      </template>
-                    </dom-repeat>
-                  </two-columns-grid>
+                <!-- 2-columns grid -->
+                <two-columns-grid column-width="396" gutter="4">
+                  <template is="dom-repeat" items="[[category.items]]" as="article">
+                    <article-headline href="#/[[category.name]]/detail/[[article.id]]"
+                        article="[[article]]"></article-headline>
+                  </template>
+                </two-columns-grid>
 
-                </section>
-              </template>
+              </section>
             </template>
 
           </iron-pages>
 
-          <!-- detail page (lazy-loaded) -->
-          <template is="dom-if" if="[[_equal(pageData.page, 'detail')]]">
-            <article-detail name="detail" article="[[article]]"></article-detail>
-          </template>
-
+          <!-- detail page -->
+          <article-detail name="detail" article="[[article]]"></article-detail>
         </iron-pages>
 
       </app-header-layout>
