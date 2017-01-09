@@ -429,9 +429,9 @@ Custom property                  | Description                            | Defa
         }
 
         if (isInEndState) {
-          this._resetDrawerState();
+          this.debounce('_resetDrawerState', this._resetDrawerState);
         } else {
-          window.setTimeout(this._resetDrawerState.bind(this), this.transitionDuration);
+          this.debounce('_resetDrawerState', this._resetDrawerState, this.transitionDuration);
         }
 
         this._styleTransitionDuration(this.transitionDuration);
@@ -508,7 +508,7 @@ Custom property                  | Description                            | Defa
         this._styleTransitionTimingFunction(this._FLING_TIMING_FUNCTION);
 
         this._resetDrawerTranslate();
-        window.setTimeout(this._resetDrawerState.bind(this), t);
+        this.debounce('_resetDrawerState', this._resetDrawerState, t);
       },
 
       _styleTransitionDuration: function(duration) {
@@ -637,16 +637,9 @@ Custom property                  | Description                            | Defa
       },
 
       _openedPersistentChanged: function() {
-        // Don't reset drawer state if tracking or flinging, since _trackEnd and _flingDrawer will
-        // set its own timer.
-        if (this._drawerState === this._DRAWER_STATE.FLINGING ||
-            this._drawerState === this._DRAWER_STATE.TRACKING) {
-          return;
-        }
-
-        // Use setTimeout instead of transitionend since transitionend won't fire when app-drawer
-        // is display: none.
-        window.setTimeout(this._resetDrawerState.bind(this), this.transitionDuration);
+        // Use a debounce timer instead of transitionend since transitionend won't fire when
+        // app-drawer is display: none.
+        this.debounce('_resetDrawerState', this._resetDrawerState, this.transitionDuration);
       },
 
       _MIN_FLING_THRESHOLD: 0.2,

@@ -353,10 +353,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   drawer.fire('track', { state: 'track', dx: -1000, ddx: -1000 });
                   drawer.fire('track', { state: 'end', dx: -1000, ddx: 0 });
 
-                  assert.isFalse(drawer.opened);
-                  assert.equal(listenerSpy.callCount, 5,
-                    'should fire after swiping beyond end state');
-                  done();
+                  window.setTimeout(function() {
+                    assert.isFalse(drawer.opened);
+                    assert.equal(listenerSpy.callCount, 5,
+                      'should fire after swiping beyond end state');
+                    done();
+                  }, 50);
                 }, 50);
               }, 50);
             }, 50);
