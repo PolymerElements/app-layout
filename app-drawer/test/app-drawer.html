@@ -92,9 +92,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(scrim.style.transitionDuration, duration);
       }
 
-      function assertTransitionDurationAbove(d) {
-        assert.isAbove(parseFloat(contentContainer.style.transitionDuration), d);
-        assert.isAbove(parseFloat(scrim.style.transitionDuration), d);
+      function assertTransitionDurationBelow(d) {
+        assert.isBelow(parseFloat(contentContainer.style.transitionDuration), d);
+        assert.isBelow(parseFloat(scrim.style.transitionDuration), d);
       }
 
       function assertTransitionTimingFunction(timingFunction) {
@@ -570,10 +570,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           drawer.fire('track', { state: 'end', dx: 6, ddx: 6 });
 
           assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
-          assertTransitionDurationAbove(60);
+          assertTransitionDurationBelow(100);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
-          done();
+
+          window.setTimeout(function() {
+            assertTransitionDuration('200ms');
+            assertTransitionTimingFunction('');
+            done();
+          }, 100);
         });
       });
 
@@ -595,10 +600,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           drawer.fire('track', { state: 'end', dx: -6, ddx: -6 });
 
           assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
-          assertTransitionDurationAbove(60);
+          assertTransitionDurationBelow(100);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
-          done();
+
+          window.setTimeout(function() {
+            assertTransitionDuration('200ms');
+            assertTransitionTimingFunction('');
+            done();
+          }, 100);
         });
       });
 
@@ -619,10 +629,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           drawer.fire('track', { state: 'end', dx: -6, ddx: -6 });
 
           assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
-          assertTransitionDurationAbove(60);
+          assertTransitionDurationBelow(100);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
-          done();
+
+          window.setTimeout(function() {
+            assertTransitionDuration('200ms');
+            assertTransitionTimingFunction('');
+            done();
+          }, 100);
         });
       });
 
@@ -644,10 +659,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           drawer.fire('track', { state: 'end', dx: 6, ddx: 6 });
 
           assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
-          assertTransitionDurationAbove(60);
+          assertTransitionDurationBelow(100);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
-          done();
+
+          window.setTimeout(function() {
+            assertTransitionDuration('200ms');
+            assertTransitionTimingFunction('');
+            done();
+          }, 100);
         });
       });
 
