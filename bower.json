@@ -35,7 +35,7 @@
     "paper-spinner": "PolymerElements/paper-spinner#2.0-preview",
     "paper-styles": "PolymerElements/paper-styles#2.0-preview",
     "paper-tabs": "PolymerElements/paper-tabs#2.0-preview",
-    "test-fixture": "PolymerElements/test-fixture#custom-elements-v1",
+    "test-fixture": "PolymerElements/test-fixture#^2.0.0",
     "web-component-tester": "^4.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#v1"
   },
@@ -58,7 +58,7 @@
   "ignore": [],
   "private": true,
   "resolutions": {
-    "test-fixture": "custom-elements-v1",
+    "test-fixture": "^2.0.0",
     "polymer": "2.0-preview",
     "webcomponentsjs": "v1"
   }
