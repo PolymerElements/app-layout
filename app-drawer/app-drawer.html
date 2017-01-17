@@ -273,14 +273,6 @@ Custom property                  | Description                            | Defa
         Polymer.RenderStatus.afterNextRender(this, function() {
           this._styleTransitionDuration(this.transitionDuration);
           this._boundEscKeydownHandler = this._escKeydownHandler.bind(this);
-          this._resetDrawerState();
-
-          // contentContainer will transition on opened state changed, and scrim will
-          // transition on persistent state changed when opened - these are the
-          // transitions we are interested in.
-          this.$.scrim.addEventListener('transitionend', this._transitionend.bind(this));
-          this.$.contentContainer.addEventListener('transitionend', this._transitionend.bind(this));
-
           this.addEventListener('keydown', this._tabKeydownHandler.bind(this))
 
           // Only listen for horizontal track so you can vertically scroll inside the drawer.
@@ -437,8 +429,9 @@ Custom property                  | Description                            | Defa
         }
 
         if (isInEndState) {
-          // Reset drawer state now since there will be no transitionend event.
-          this._resetDrawerState();
+          this.debounce('_resetDrawerState', this._resetDrawerState);
+        } else {
+          this.debounce('_resetDrawerState', this._resetDrawerState, this.transitionDuration);
         }
 
         this._styleTransitionDuration(this.transitionDuration);
@@ -510,21 +503,12 @@ Custom property                  | Description                            | Defa
 
         // Calculate the amount of time needed to finish the transition based on the
         // initial slope of the timing function.
-        this._styleTransitionDuration(this._FLING_INITIAL_SLOPE * dx / velocity);
+        var t = this._FLING_INITIAL_SLOPE * dx / velocity
+        this._styleTransitionDuration(t);
         this._styleTransitionTimingFunction(this._FLING_TIMING_FUNCTION);
 
         this._resetDrawerTranslate();
-      },
-
-      _transitionend: function() {
-        // If the drawer was flinging, we need to reset the style attributes.
-        if (this._drawerState === this._DRAWER_STATE.FLINGING) {
-          this._styleTransitionDuration(this.transitionDuration);
-          this._styleTransitionTimingFunction('');
-          this.style.visibility = '';
-        }
-
-        this._resetDrawerState();
+        this.debounce('_resetDrawerState', this._resetDrawerState, t);
       },
 
       _styleTransitionDuration: function(duration) {
@@ -559,6 +543,14 @@ Custom property                  | Description                            | Defa
 
       _resetDrawerState: function() {
         var oldState = this._drawerState;
+
+        // If the drawer was flinging, we need to reset the style attributes.
+        if (oldState === this._DRAWER_STATE.FLINGING) {
+          this._styleTransitionDuration(this.transitionDuration);
+          this._styleTransitionTimingFunction('');
+          this.style.visibility = '';
+        }
+
         if (this.opened) {
           this._drawerState = this.persistent ?
             this._DRAWER_STATE.OPENED_PERSISTENT : this._DRAWER_STATE.OPENED;
@@ -645,10 +637,9 @@ Custom property                  | Description                            | Defa
       },
 
       _openedPersistentChanged: function() {
-        if (this.transitionDuration === 0) {
-          // Reset drawer state now since there will be no transitionend event.
-          this._resetDrawerState();
-        }
+        // Use a debounce timer instead of transitionend since transitionend won't fire when
+        // app-drawer is display: none.
+        this.debounce('_resetDrawerState', this._resetDrawerState, this.transitionDuration);
       },
 
       _MIN_FLING_THRESHOLD: 0.2,
