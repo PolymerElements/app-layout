@@ -540,7 +540,7 @@ Mixin | Description | Default
         var dScrollTop = scrollTop - this._lastScrollTop;
         var absDScrollTop = Math.abs(dScrollTop);
         var isScrollingDown = scrollTop > this._lastScrollTop;
-        var now = Date.now();
+        var now = performance.now();
 
         if (this._mayMove()) {
           top = this._clamp(this.reveals ? lastTop + dScrollTop : scrollTop, 0, maxHeaderTop);
