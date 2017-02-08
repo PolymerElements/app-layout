@@ -99,7 +99,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('forceNarrow', function() {
         drawerLayout.responsiveWidth = '0px';
         drawerLayout.forceNarrow = true;
-
         assert.isTrue(drawerLayout.narrow);
       });
 
@@ -113,7 +112,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.isFalse(drawerLayout.narrow);
           assert.isTrue(drawer.opened);
           assert.isTrue(notifyResizeSpy.called);
-
           notifyResizeSpy.reset();
           drawerLayout.responsiveWidth = '10000px';
 
@@ -121,7 +119,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.isTrue(drawerLayout.narrow);
             assert.isFalse(drawer.opened);
             assert.isTrue(notifyResizeSpy.called);
-
             done();
           }, 50);
         }, 50);
@@ -147,7 +144,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.isTrue(drawer.opened);
           done();
         }, 50);
-       
       });
 
       test('content layout', function(done) {

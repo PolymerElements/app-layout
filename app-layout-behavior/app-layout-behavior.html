@@ -48,25 +48,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * @method resetLayout
      */
     resetLayout: function() {
-      this._debounceRaf(this._updateLayoutStates);
+      if (!this._willResetLayout) {
+        var self = this;
+        this._willResetLayout = true;
+        window.requestAnimationFrame(function() {
+          self._willResetLayout = false;
+          self._updateLayoutStates();
+        });
+      }
       this._notifyDescendantResize();
     },
 
     _notifyLayoutChanged: function() {
       var self = this;
-      requestAnimationFrame(function() {
+      window.requestAnimationFrame(function() {
         self.fire('app-reset-layout');
-      });
-    },
-
-    _debounceRaf: function(fn) {
-      var self = this;
-      if (this._raf) {
-        window.cancelAnimationFrame(this._raf);
-      }
-      this._raf = window.requestAnimationFrame(function() {
-        self._raf = null;
-        fn.call(self);
       });
     },
 
