@@ -262,7 +262,7 @@ Custom property                  | Description                            | Defa
         // Only transition the drawer after its first render (e.g. app-drawer-layout
         // may need to set the initial opened state which should not be transitioned).
         this._styleTransitionDuration(0);
-        Polymer.RenderStatus.afterNextRender(() => {
+        Polymer.RenderStatus.afterNextRender(function() {
           this._styleTransitionDuration(this.transitionDuration);
           this._boundEscKeydownHandler = this._escKeydownHandler.bind(this);
           this._resetDrawerState();
@@ -278,7 +278,7 @@ Custom property                  | Description                            | Defa
           // Only listen for horizontal track so you can vertically scroll inside the drawer.
           this.listen(this, 'track', '_track');
           this.setScrollDirection('y');
-        });
+        }.bind(this));
 
         this.fire('app-reset-layout');
       },
