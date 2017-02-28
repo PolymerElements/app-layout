@@ -123,8 +123,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.isTrue(notifyResizeSpy.called);
 
             done();
-          }, 50);
-        }, 50);
+          }, 100);
+        }, 100);
       });
 
       test('drawer-toggle', function(done) {
@@ -146,7 +146,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
           assert.isTrue(drawer.opened);
           done();
-        }, 50);
+        }, 100);
        
       });
 
@@ -170,9 +170,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               assert.equal(drawerLayout.$.contentContainer.style.marginRight, '256px');
 
               done();
-            }, 50);
-          }, 50);
-        }, 50);
+            }, 100);
+          }, 100);
+        }, 100);
       });
 
       test('iron-resize triggers content layout', function() {
@@ -202,8 +202,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.isTrue(drawer.opened);
 
             done();
-          }, 50);
-        }, 50);
+          }, 100);
+        }, 100);
       });
 
       test('app-drawer appended later', function(done) {
@@ -228,7 +228,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
 
           done();
-        }, 50);
+        }, 100);
       });
     });
 
