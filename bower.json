@@ -58,7 +58,7 @@
   "ignore": [],
   "private": true,
   "resolutions": {
-    "test-fixture": "^2.0.0",
+    "test-fixture": "^3.0.0-rc.1",
     "polymer": "2.0-preview",
     "webcomponentsjs": "v1"
   }
