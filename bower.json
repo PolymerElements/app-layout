@@ -36,7 +36,7 @@
     "paper-styles": "PolymerElements/paper-styles#2.0-preview",
     "paper-tabs": "PolymerElements/paper-tabs#2.0-preview",
     "test-fixture": "PolymerElements/test-fixture#^3.0.0-rc.1",
-    "web-component-tester": "v6.0.0-prerelease.5",
+    "web-component-tester": "^6.0.0-prerelease.6",
     "webcomponentsjs": "webcomponents/webcomponentsjs#v1"
   },
   "variants": {
@@ -46,6 +46,7 @@
       },
       "devDependencies": {
         "test-fixture": "PolymerElements/test-fixture#^1.0.0",
+        "web-component-tester": "^4.0.0",
         "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
       },
       "resolutions": {
