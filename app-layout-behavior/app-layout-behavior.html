@@ -48,26 +48,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * @method resetLayout
      */
     resetLayout: function() {
-      this._debounceRaf(this._updateLayoutStates);
-      this._notifyDescendantResize();
+      // Polymer v2.x
+      var cb = this._updateLayoutStates.bind(this);
+      if (Polymer.Async && Polymer.Async.animationFrame) {
+        this._layoutDebouncer = Polymer.Debouncer.debounce(
+            this._layoutDebouncer,
+            Polymer.Async.animationFrame,
+            cb);
+        Polymer.enqueueDebouncer(this._layoutDebouncer);
+      } 
+      // Polymer v1.x
+      else {
+        window.cancelAnimationFrame(this._layoutDebouncer);
+        this._layoutDebouncer = window.requestAnimationFrame(cb);
+        Polymer.dom.addDebouncer({
+          complete: (function() {
+            window.cancelAnimationFrame(this._layoutDebouncer);
+            cb();
+          }).bind(this)
+        });
+      }
     },
 
     _notifyLayoutChanged: function() {
-      var self = this;
-      requestAnimationFrame(function() {
-        self.fire('app-reset-layout');
-      });
-    },
-
-    _debounceRaf: function(fn) {
-      var self = this;
-      if (this._raf) {
-        window.cancelAnimationFrame(this._raf);
-      }
-      this._raf = window.requestAnimationFrame(function() {
-        self._raf = null;
-        fn.call(self);
-      });
+      this.fire('app-reset-layout');
     },
 
     _notifyDescendantResize: function() {
