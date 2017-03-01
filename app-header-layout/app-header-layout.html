@@ -178,7 +178,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         }
         // Update the content container position.
         var containerStyle = this.$.contentContainer.style;
-        if (header.fixed && !header.willCondense() && this.hasScrollingRegion) {
+        if (header.fixed && !header.condenses && this.hasScrollingRegion) {
           // If the header size does not change and we're using a scrolling region, exclude
           // the header area from the scrolling region so that the header doesn't overlap
           // the scrollbar.

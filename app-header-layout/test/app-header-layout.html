@@ -56,6 +56,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
+  <test-fixture id="trivialFixedHeader">
+    <template>
+      <app-header-layout has-scrolling-region>
+        <div class="content"></div>
+      </app-header-layout>
+    </template>
+  </test-fixture>
+
   <script>
 
     suite('basic features', function() {
@@ -110,6 +118,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       });
 
+    });
+
+    suite('Scrolling region and fixed header', function() {
+      var headerLayout;
+
+      setup(function() {
+        headerLayout = fixture('trivialFixedHeader');
+      });
+
+      test('Issue #406', function(done) {
+        var header = document.createElement('app-header');
+        header.innerHTML = '<app-toolbar></app-toolbar>'
+        header.slot = 'header';
+        header.fixed = true;
+        headerLayout.appendChild(header);
+
+        Polymer.dom.flush();
+
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            assert.equal(headerLayout.$.contentContainer.style.marginTop,
+                header.offsetHeight + 'px');
+            done();
+          });
+        });
+      });
     });
 
   </script>
