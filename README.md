@@ -21,8 +21,6 @@ A set of layout elements for your app. It includes:
 
 - [app-header-layout](/app-header-layout) - A wrapper element that positions an app-header and other content.
 
-- [app-scroll-position](/app-scroll-position) - A manager for saving and restoring the scroll position when multiple pages are sharing the same document scroller.
-
 - [app-toolbar](/app-toolbar) - A horizontal toolbar containing items that can be used for label, navigation, search and actions.
 
 ### Install
@@ -36,3 +34,7 @@ $ bower install PolymerElements/app-layout --save
 ```html
 <link rel="import" href="/bower_components/app-layout/app-layout.html">
 ```
+
+### Changes in App Layout 2.0
+
+- `app-scrollpos-control` has been removed from App Layout in favor of using multiple scrolling regions to preserve the scroll position. In terms of UX, [`document.rootScroller`](https://github.com/bokand/NonDocumentRootScroller) is a new web platform API that will allow non-document scroll to hide the address bar on mobile.

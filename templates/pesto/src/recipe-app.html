@@ -26,7 +26,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../bower_components/app-layout/app-scroll-position/app-scroll-position.html">
 
 <link rel="import" href="recipe-detail.html">
 <link rel="import" href="recipe-list.html">
@@ -131,9 +130,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header-layout>
       </app-drawer>
 
-      <app-scroll-position
-          selected="[[_pageData.page]]"
-          reset="[[_isDetailPage(_pageData.page)]]"></app-scroll-position>
 
       <!-- list/detail pages -->
       <iron-pages selected="[[_pageData.page]]" attr-for-selected="name">
@@ -191,10 +187,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.set('_route.path', '/home');
         }
       });
-    },
-
-    _isDetailPage: function(page) {
-      return page === 'detail';
     },
 
     _getRecipe: function() {
