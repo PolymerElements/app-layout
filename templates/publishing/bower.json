@@ -30,9 +30,5 @@
         "webcomponentsjs": "^0.7.0"
       }
     }
-  },
-  "resolutions": {
-    "webcomponentsjs": "v1",
-    "polymer": "2.0-preview"
   }
 }

@@ -31,8 +31,5 @@
         "polymer": "^1.7.1"
       }
     }
-  },
-  "resolutions": {
-    "polymer": "2.0-data-updates"
   }
 }
