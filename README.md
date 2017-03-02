@@ -1,4 +1,4 @@
-# App Layout [![Build Status](https://travis-ci.org/PolymerElements/app-layout.svg?branch=master)](https://travis-ci.org/PolymerElements/app-layout) [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://beta.webcomponents.org/element/PolymerElements/app-layout)
+# App Layout [![Build Status](https://travis-ci.org/PolymerElements/app-layout.svg?branch=2.0-preview)](https://travis-ci.org/PolymerElements/app-layout) [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://beta.webcomponents.org/element/PolymerElements/app-layout)
 
 [<img src="https://app-layout-assets.appspot.com/assets/docs/app-layout.png" width="300" height="210">](https://polymerelements.github.io/app-layout/)
 
@@ -35,7 +35,7 @@
         --paper-progress-container-color: transparent;
       }
       app-header {
-        @apply(--layout-fixed-top);
+        @apply --layout-fixed-top;
         color: #fff;
         --app-header-background-rear-layer: {
           background-color: #ef6c00;
