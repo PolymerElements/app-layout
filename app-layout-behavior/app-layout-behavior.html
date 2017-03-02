@@ -25,10 +25,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     attached: function() {
-      var self = this;
-      requestAnimationFrame(function() {
-        self.fire('app-reset-layout');
-      });
+      this.fire('app-reset-layout');
     },
 
     _appResetLayoutHandler: function(e) {
