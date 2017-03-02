@@ -48,25 +48,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * @method resetLayout
      */
     resetLayout: function() {
-      this._debounceRaf(this._updateLayoutStates);
+      // Polymer v2.x
+      var self = this;
+      var cb = this._updateLayoutStates.bind(this);
+      if (Polymer.Async && Polymer.Async.animationFrame) {
+        this._layoutDebouncer = Polymer.Debouncer.debounce(
+            this._layoutDebouncer,
+            Polymer.Async.animationFrame,
+            cb);
+        Polymer.enqueueDebouncer(this._layoutDebouncer);
+      }
+      // Polymer v1.x
+      else {
+        window.cancelAnimationFrame(this._layoutDebouncer);
+        this._layoutDebouncer = window.requestAnimationFrame(cb);
+        Polymer.dom.addDebouncer({
+          complete: function() {
+            window.cancelAnimationFrame(self._layoutDebouncer);
+            cb();
+          }
+        });
+      }
       this._notifyDescendantResize();
     },
 
     _notifyLayoutChanged: function() {
       var self = this;
+      // TODO: the event `app-reset-layout` can be fired synchronously
+      // as long as `_updateLayoutStates` waits for all the microtasks after rAF.
+      // E.g. requestAnimationFrame(setTimeOut())
       requestAnimationFrame(function() {
         self.fire('app-reset-layout');
-      });
-    },
-
-    _debounceRaf: function(fn) {
-      var self = this;
-      if (this._raf) {
-        window.cancelAnimationFrame(this._raf);
-      }
-      this._raf = window.requestAnimationFrame(function() {
-        self._raf = null;
-        fn.call(self);
       });
     },
 
