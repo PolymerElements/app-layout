@@ -25,7 +25,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     attached: function() {
-      this.fire('app-reset-layout');
+      var self = this;
+      requestAnimationFrame(function() {
+        self.fire('app-reset-layout');
+      });
     },
 
     _appResetLayoutHandler: function(e) {
@@ -49,6 +52,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      */
     resetLayout: function() {
       // Polymer v2.x
+      var self = this;
       var cb = this._updateLayoutStates.bind(this);
       if (Polymer.Async && Polymer.Async.animationFrame) {
         this._layoutDebouncer = Polymer.Debouncer.debounce(
@@ -62,16 +66,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         window.cancelAnimationFrame(this._layoutDebouncer);
         this._layoutDebouncer = window.requestAnimationFrame(cb);
         Polymer.dom.addDebouncer({
-          complete: (function() {
-            window.cancelAnimationFrame(this._layoutDebouncer);
+          complete: function() {
+            window.cancelAnimationFrame(self._layoutDebouncer);
             cb();
-          }).bind(this)
+          }
         });
       }
+      this._notifyDescendantResize();
     },
 
     _notifyLayoutChanged: function() {
-      this.fire('app-reset-layout');
+      var self = this;
+      requestAnimationFrame(function() {
+        self.fire('app-reset-layout');
+      });
     },
 
     _notifyDescendantResize: function() {
