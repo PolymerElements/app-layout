@@ -57,7 +57,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             Polymer.Async.animationFrame,
             cb);
         Polymer.enqueueDebouncer(this._layoutDebouncer);
-      } 
+      }
       // Polymer v1.x
       else {
         window.cancelAnimationFrame(this._layoutDebouncer);
@@ -74,6 +74,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     _notifyLayoutChanged: function() {
       var self = this;
+      // TODO: the event `app-reset-layout` can be fired synchronously
+      // as long as `_updateLayoutStates` waits for all the microtasks after rAF.
+      // E.g. requestAnimationFrame(setTimeOut())
       requestAnimationFrame(function() {
         self.fire('app-reset-layout');
       });
