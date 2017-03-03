@@ -73,6 +73,16 @@ Add the `drawer-toggle` attribute to elements inside `app-drawer-layout` that to
 </app-drawer-layout>
 ```
 
+**NOTE:** With app-layout 2.0, the `drawer-toggle` element will not be automatically hidden
+when app-drawer-layout is not in narrow layout. To add this, add the following CSS rule where
+app-drawer-layout is used:
+
+```css
+app-drawer-layout:not([narrow]) [drawer-toggle] {
+  display: none;
+}
+```
+
 Add the `fullbleed` attribute to app-drawer-layout to make it fit the size of its container:
 
 ```html
