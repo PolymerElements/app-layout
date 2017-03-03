@@ -40,7 +40,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: #fff;
       }
 
-      [hidden] {
+      app-drawer-layout:not([narrow]) [drawer-toggle] {
         display: none;
       }
 
@@ -57,23 +57,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <dom-bind>
-    <template is="dom-bind">
+  <app-drawer-layout>
 
-      <app-drawer-layout narrow="{{narrow}}">
+    <app-drawer slot="drawer"></app-drawer>
 
-        <app-drawer slot="drawer"></app-drawer>
+    <app-toolbar>
+      <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+    </app-toolbar>
 
-        <app-toolbar>
-          <paper-icon-button icon="menu" drawer-toggle hidden$="[[!narrow]]"></paper-icon-button>
-        </app-toolbar>
+    <sample-content size="100"></sample-content>
 
-        <sample-content size="100"></sample-content>
-
-      </app-drawer-layout>
-
-    </template>
-  </dom-bind>
+  </app-drawer-layout>
 
 </body>
 </html>
