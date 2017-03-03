@@ -237,7 +237,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           drawer.transitionDuration = 1;
           drawer.addEventListener('app-drawer-transitioned', listenerSpy);
           drawer.persistent = true;
-          drawer.transitionDuration = 100;
 
           assert.isFalse(listenerSpy.called,
             'should not fire after toggling persistent when closed');
@@ -245,7 +244,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           drawer.opened = true;
 
           window.setTimeout(function() {
-
             assert.equal(listenerSpy.callCount, 1, 'should fire after toggling opened state');
 
             drawer.persistent = false;
@@ -294,7 +292,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               }, 150);
             }, 150);
           }, 150);
-        }, 100);
+        }, 300);
       });
 
       test('app-drawer-transitioned when transitionDuration is 0', function(done) {
@@ -347,7 +345,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               }, 50);
             }, 50);
           }, 50);
-        }, 100);
+        }, 300);
       });
 
       test('disable swipe', function(done) {
