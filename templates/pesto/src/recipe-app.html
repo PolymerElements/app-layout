@@ -243,9 +243,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       this._selectedPage = pageData.page;
       if (map[pageData.page] != null) {
-        window.scrollTo(0, map[pageData.page]);
+        Polymer.AppLayout.scroll({ top: map[pageData.page], behavior: 'silent' });
       } else if (this.isAttached) {
-        window.scrollTo(0, 0);
+        Polymer.AppLayout.scroll({ top: 0, behavior: 'silent' });
       }
     }
 

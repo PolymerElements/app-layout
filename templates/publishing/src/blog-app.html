@@ -345,9 +345,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         }
         if (map[subroute.prefix] != null) {
-          window.scrollTo(0, map[subroute.prefix]);
+          Polymer.AppLayout.scroll({ top: map[subroute.prefix], behavior: 'silent' });
         } else if (this.isAttached) {
-          window.scrollTo(0, 0);
+          Polymer.AppLayout.scroll({ top: 0, behavior: 'silent' });
         }
       }
 
