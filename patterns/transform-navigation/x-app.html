@@ -61,7 +61,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <!-- Nav on mobile: side nav menu -->
         <paper-menu selected="{{selected}}" attr-for-selected="name">
           <template is="dom-repeat" items="{{items}}">
-            <paper-item name="{{item}}">{{item}}</paper-item>
+            <paper-item name$="{{item}}">{{item}}</paper-item>
           </template>
         </paper-menu>
 
@@ -78,7 +78,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <!-- Nav on desktop: tabs -->
             <paper-tabs selected="{{selected}}" attr-for-selected="name">
               <template is="dom-repeat" items="{{items}}">
-                <paper-tab name="{{item}}">{{item}}</paper-tab>
+                <paper-tab name$="{{item}}">{{item}}</paper-tab>
               </template>
             </paper-tabs>
           </app-toolbar>
