@@ -549,10 +549,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: 6, ddx: 6 });
+          drawer.fire('track', { state: 'end', dx: 50, ddx: 50 });
 
           assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
-          assertTransitionDurationBelow(100);
+          assertTransitionDurationBelow(150);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
 
@@ -579,10 +579,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: -6, ddx: -6 });
+          drawer.fire('track', { state: 'end', dx: -50, ddx: -50 });
 
           assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
-          assertTransitionDurationBelow(100);
+          assertTransitionDurationBelow(150);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
 
@@ -608,10 +608,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: -6, ddx: -6 });
+          drawer.fire('track', { state: 'end', dx: -50, ddx: -50 });
 
           assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
-          assertTransitionDurationBelow(100);
+          assertTransitionDurationBelow(150);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
 
@@ -638,10 +638,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: 6, ddx: 6 });
+          drawer.fire('track', { state: 'end', dx: 50, ddx: 50 });
 
           assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
-          assertTransitionDurationBelow(100);
+          assertTransitionDurationBelow(150);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
 
