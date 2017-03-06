@@ -26,11 +26,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var fx = {};
 
       if (!condensedTitle) {
-        this._warn(this._logf('effects[resize-snapped-title]', 'undefined `condensed-title`'));
+        console.warn('Scroll effect `resize-snapped-title`: undefined `condensed-title`');
         return false;
       }
       if (!title) {
-        this._warn(this._logf('effects[resize-snapped-title]', 'undefined `main-title`'));
+        console.warn('Scroll effect `resize-snapped-title`: undefined `main-title`');
         return false;
       }
 

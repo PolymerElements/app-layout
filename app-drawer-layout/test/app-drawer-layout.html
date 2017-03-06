@@ -123,8 +123,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.isTrue(notifyResizeSpy.called);
 
             done();
-          }, 100);
-        }, 100);
+          }, 150);
+        }, 150);
       });
 
       test('drawer-toggle', function(done) {
@@ -146,7 +146,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
           assert.isTrue(drawer.opened);
           done();
-        }, 100);
+        }, 150);
        
       });
 

@@ -117,17 +117,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('Issue #406', function() {
-        flush(function() {
-          var header = document.createElement('app-header');
-          header.innerHTML = '<app-toolbar></app-toolbar>'
-          header.slot = 'header';
-          header.fixed = true;
-          Polymer.dom(headerLayout).appendChild(header);
-          Polymer.dom.flush();
-          assert.equal(headerLayout.$.contentContainer.style.marginTop,
-              header.offsetHeight + 'px');
-           });
-        });
+        Polymer.dom.flush();
+        assert.isTrue(headerLayout.isAttached, 'app-header-layout is attached');
+        var header = document.createElement('app-header');
+        Polymer.dom(header).innerHTML = '<app-toolbar></app-toolbar>';
+        header.setAttribute('slot', 'header');
+        header.fixed = true;
+        Polymer.dom(headerLayout).appendChild(header);
+        Polymer.dom.flush();
+        header.fire('app-reset-layout');
+        Polymer.dom.flush();
+        assert.equal(headerLayout.$.contentContainer.style.marginTop,
+            header.offsetHeight + 'px');
+      });
     });
 
   </script>
