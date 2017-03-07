@@ -235,7 +235,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="image">
           <img id="img">
           <div class="info">
-            <paper-icon-button icon="info-outline"></paper-icon-button>
+            <paper-icon-button icon="info-outline" aria-label="More information about the item"></paper-icon-button>
           </div>
         </div>
     
@@ -243,7 +243,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <h1>[[item.title]]</h1>
           <p>[[item.description]]</p>
           <div class="quantitySelector">
-            <select>
+            <select aria-label="Change number of items">
               <option value="1">Quantity 1</option>
               <option value="2">Quantity 2</option>
               <option value="3">Quantity 3</option>
@@ -251,7 +251,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <option value="5">Quantity 5</option>
             </select>
           </div>
-          <paper-fab mini icon="add-shopping-cart"></paper-fab>
+          <paper-fab mini icon="add-shopping-cart" aria-label="add to the shopping cart"></paper-fab>
           <div class="store">
             <h3>[[item.storeName]]</h3>
             <p>[[item.storeDescription]]</p>

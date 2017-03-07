@@ -4,7 +4,7 @@ dist: trusty
 node_js: stable
 addons:
   sauce_connect: true
-  firefox: '46.0'
+  firefox: latest
   apt:
     sources:
       - google-chrome
