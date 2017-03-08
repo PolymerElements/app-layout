@@ -57,10 +57,5 @@
     }
   },
   "ignore": [],
-  "private": true,
-  "resolutions": {
-    "test-fixture": "^3.0.0-rc.1",
-    "polymer": "2.0-preview",
-    "webcomponentsjs": "^1.0.0-rc.1"
-  }
+  "private": true
 }
