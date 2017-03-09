@@ -125,6 +125,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </app-header>
 
           <!-- nav menu -->
+          <!-- Two way binding to the selected property has been removed due to polymer/issues/4405 -->
           <paper-listbox
               selected="[[_pageData.page]]"
               attr-for-selected="name"
@@ -144,7 +145,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </paper-listbox>
         </app-header-layout>
       </app-drawer>
-
 
       <!-- list/detail pages -->
       <iron-pages selected="[[_selectedPage]]" attr-for-selected="name">
