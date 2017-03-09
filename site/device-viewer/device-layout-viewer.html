@@ -167,8 +167,13 @@ Displays a page on different device layouts.
           type: String,
           value: 'all',
           observer: '_deviceChanged'
-        }
+        },
 
+        /**
+         * The currently selected view.
+         * @type {DeviceViewElement}
+         */
+        selectedView: Object
       },
 
       _defaultLandscapes: {
