@@ -29,7 +29,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../bower_components/app-layout/app-scroll-position/app-scroll-position.html">
 
 <link rel="import" href="article-headline.html">
 <link rel="import" href="article-detail.html">
@@ -165,11 +164,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         pattern="/:id"
         data="{{idData}}"></app-route>
 
-    <!-- manages page's scroll position -->
-    <app-scrollpos-control
-        selected="[[categoryData.category]]/[[pageData.page]]"
-        reset="[[_equal(pageData.page, 'detail')]]"></app-scrollpos-control>
-
     <app-drawer-layout drawer-width="288px" responsive-width="1280px" narrow="{{narrow}}">
 
       <!-- nav panel -->
@@ -238,7 +232,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             <template is="dom-repeat" items="[[articles]]" as="category">
               <section class="category-page" name="[[category.name]]">
-
                 <!-- 2-columns grid -->
                 <two-columns-grid column-width="396" gutter="4">
                   <template is="dom-repeat" items="[[category.items]]" as="article">
@@ -246,7 +239,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         article="[[article]]"></article-headline>
                   </template>
                 </two-columns-grid>
-
               </section>
             </template>
 
@@ -279,13 +271,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         subRoute: Object,
 
-        subsubRoute: Object,
+        subsubRoute: {
+          type: Object,
+          observer: '_subsubrouteChanged'
+        },
 
         categoryData: Object,
 
         pageData: Object,
 
-        idData: Object
+        idData: Object,
+
+
+        _scrollPositionMap: {
+          type: Object,
+          value: function() {
+            return {};
+          }
+        }
 
       },
 
@@ -327,6 +330,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _shouldHideMenuButton: function(page, narrow) {
         return page === 'detail' || !narrow;
+      },
+
+      /**
+       * Preserves the document scroll position, so
+       * it can be restored when returning to a page.
+       */
+      _subsubrouteChanged: function(subroute, oldSubroute) {
+        var map = this._scrollPositionMap;
+        if (oldSubroute != null && oldSubroute.prefix != null) {
+          // Don't reset the scroll position in the detail page.
+          if (oldSubroute.prefix.indexOf('detail') == -1) {
+            map[oldSubroute.prefix] = window.pageYOffset;
+          }
+        }
+        if (map[subroute.prefix] != null) {
+          Polymer.AppLayout.scroll({ top: map[subroute.prefix], behavior: 'silent' });
+        } else if (this.isAttached) {
+          Polymer.AppLayout.scroll({ top: 0, behavior: 'silent' });
+        }
       }
 
     });
