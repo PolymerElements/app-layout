@@ -9,7 +9,7 @@ addons:
     sources:
       - google-chrome
     packages:
-      - google-chrome-beta
+      - google-chrome-canary
 before_script:
   - npm install -g bower polymer-cli@next
   - polymer install --variants
