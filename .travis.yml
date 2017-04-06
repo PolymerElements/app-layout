@@ -9,12 +9,12 @@ addons:
     sources:
       - google-chrome
     packages:
-      - google-chrome-unstable
+      - google-chrome-beta
 before_script:
   - npm install -g bower polymer-cli@next
   - polymer install --variants
 script:
-  - ls /usr/bin | grep google;xvfb-run polymer test -l chrome,firefox
+  - mv /usr/bin/google-chrome /usr/bin/google-chrome-old;mv /usr/bin/google-chrome-beta /usr/bin/google-chrome;xvfb-run polymer test -l chrome,firefox
   - >-
     if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then polymer test -s 'default';
     fi
