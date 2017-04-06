@@ -13,8 +13,12 @@ addons:
 before_script:
   - npm install -g bower polymer-cli@next
   - polymer install --variants
+  - mv /usr/bin/google-chrome /usr/bin/google-chrome-old
+  - mv /usr/bin/google-chrome-beta /usr/bin/google-chrome
+  - which google-chrome
+  - which google-chrome-old
 script:
-  - mv /usr/bin/google-chrome /usr/bin/google-chrome-old;mv /usr/bin/google-chrome-beta /usr/bin/google-chrome;xvfb-run polymer test -l chrome,firefox
+  - xvfb-run polymer test
   - >-
     if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then polymer test -s 'default';
     fi
