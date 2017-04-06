@@ -9,6 +9,7 @@ addons:
       - google-chrome
     packages:
       - google-chrome-stable
+      - google-chrome-beta
 before_script:
   - npm install -g bower polylint web-component-tester
   - bower install
