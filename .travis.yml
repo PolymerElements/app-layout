@@ -13,8 +13,8 @@ addons:
 before_script:
   - npm install -g bower polymer-cli@next
   - polymer install --variants
-  - mv /usr/bin/google-chrome /usr/bin/google-chrome-old
-  - mv /usr/bin/google-chrome-beta /usr/bin/google-chrome
+  - sudo mv /usr/bin/google-chrome /usr/bin/google-chrome-old
+  - sudo mv /usr/bin/google-chrome-beta /usr/bin/google-chrome
   - which google-chrome
   - which google-chrome-old
 script:
