@@ -14,7 +14,7 @@ before_script:
   - npm install -g bower polymer-cli@next
   - polymer install --variants
 script:
-  - xvfb-run polymer test -l canary,firefox
+  - xvfb-run polymer test -l chrome,firefox;which google-chrome
   - >-
     if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then polymer test -s 'default';
     fi
