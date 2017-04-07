@@ -216,7 +216,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <app-drawer-layout drawer-width="288px" force-narrow>
       <!-- navigation drawer for small screen sizes -->
-      <app-drawer slot="drawer" id="drawer" swipe-open>
+      <app-drawer slot="drawer" id="drawer" swipe-open="[[smallScreen]]">
         <template is="dom-if" if="[[smallScreen]]">
           <app-toolbar class="profileBar">
             <img class="profilePic" src="//app-layout-assets.appspot.com/assets/shrine/profile_pic.jpg"  width="30" height="30">
