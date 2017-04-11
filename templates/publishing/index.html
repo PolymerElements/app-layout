@@ -21,6 +21,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
+  <!-- Promise polyfill needed for 1.0-hybrid mode since neither iron-request 2.x nor
+    webcomponentsjs 0.x include the Promise polyfill. -->
+  <link rel="import" href="bower_components/promise-polyfill/promise-polyfill-lite.html">
   <link rel="import" href="bower_components/font-roboto/roboto.html">
   <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
   <link rel="import" href="src/blog-app.html">

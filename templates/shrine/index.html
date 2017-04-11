@@ -21,6 +21,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Abril+Fatface' type="text/css">
   <link rel="manifest" href="manifest.json">
+
+  <!-- Promise polyfill needed for 1.0-hybrid mode since neither iron-request 2.x nor
+    webcomponentsjs 0.x include the Promise polyfill. -->
+  <link rel="import" href="bower_components/promise-polyfill/promise-polyfill-lite.html">
   <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
   <link rel="import" href="src/shrine-app.html">
 
@@ -37,7 +41,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body unresolved>
 
   <dom-bind>
-    <template>
+    <template is="dom-bind">
       <iron-ajax url="data/items.json" auto last-response="{{items}}"></iron-ajax>
       <iron-ajax url="data/featured.json" auto last-response="{{featuredItems}}"></iron-ajax>
       <shrine-app items="[[items]]" featured-items="[[featuredItems]]"></shrine-app>

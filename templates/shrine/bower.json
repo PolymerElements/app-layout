@@ -16,47 +16,18 @@
     "paper-fab": "PolymerElements/paper-fab#2.0-preview",
     "paper-icon-button": "PolymerElements/paper-icon-button#2.0-preview",
     "paper-tabs": "PolymerElements/paper-tabs#2.0-preview",
-    "polymer": "Polymer/polymer#2.0-preview",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#v1"
+    "polymer": "Polymer/polymer#^2.0.0-rc.3",
+    "promise-polyfill": "polymerlabs/promise-polyfill#2.0-preview"
   },
   "variants": {
     "1.x": {
       "dependencies": {
-        "app-layout": "PolymerElements/app-layout#2.0-preview",
-        "app-route": "PolymerElements/app-route#^0.9.1",
-        "iron-ajax": "PolymerElements/iron-ajax#^1.0.0",
-        "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
-        "iron-pages": "PolymerElements/iron-pages#^1.0.0",
-        "iron-icon": "PolymerElements/iron-icon#^1.0.0",
-        "iron-icons": "PolymerElements/iron-icons#^1.0.0",
-        "iron-media-query": "PolymerElements/iron-media-query#^1.0.0",
-        "paper-fab": "PolymerElements/paper-fab#^1.0.0",
-        "paper-icon-button": "PolymerElements/paper-icon-button#^1.0.0",
-        "paper-tabs": "PolymerElements/paper-tabs#^1.0.0",
-        "polymer": "Polymer/polymer#^1.4.0"
+        "polymer": "polymer/polymer#^1.7.1"
+      },
+      "resolutions": {
+        "webcomponentsjs": "^0.7.0",
+        "polymer": "^1.7.1"
       }
     }
-  },
-  "resolutions": {
-    "iron-flex-layout": "2.0-preview",
-    "webcomponentsjs": "v1",
-    "iron-media-query": "2.0-preview",
-    "iron-resizable-behavior": "2.0-preview",
-    "iron-scroll-target-behavior": "2.0-preview",
-    "iron-location": "2.0-preview",
-    "iron-selector": "2.0-preview",
-    "iron-meta": "2.0-preview",
-    "iron-icon": "2.0-preview",
-    "iron-iconset-svg": "2.0-preview",
-    "paper-behaviors": "2.0-preview",
-    "iron-behaviors": "2.0-preview",
-    "iron-a11y-keys-behavior": "2.0-preview",
-    "iron-checked-element-behavior": "2.0-preview",
-    "iron-validatable-behavior": "2.0-preview",
-    "paper-ripple": "2.0-preview",
-    "paper-material": "2.0-preview",
-    "paper-styles": "2.0-preview",
-    "iron-menu-behavior": "2.0-preview",
-    "polymer": "^1.4.0"
   }
 }

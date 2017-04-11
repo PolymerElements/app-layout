@@ -34,13 +34,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --paper-icon-button-ink-color: white;
       }
 
-      [hidden] {
+      app-drawer-layout:not([narrow]) [drawer-toggle] {
         display: none;
       }
 
     </style>
 
-    <app-drawer-layout narrow="{{narrow}}">
+    <app-drawer-layout>
 
       <app-drawer slot="drawer">
         <app-toolbar>Getting Started</app-toolbar>
@@ -50,7 +50,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <app-header slot="header" reveals effects="waterfall">
           <app-toolbar>
-            <paper-icon-button icon="menu" drawer-toggle  hidden$="[[!narrow]]"></paper-icon-button>
+            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
             <div main-title>Title</div>
           </app-toolbar>
         </app-header>
@@ -67,11 +67,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     Polymer({
 
-      is: 'x-app',
-
-      properties: {
-        narrow: Boolean
-      }
+      is: 'x-app'
 
     });
 

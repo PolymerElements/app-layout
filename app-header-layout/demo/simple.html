@@ -52,26 +52,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <dom-module id="simple-layout">
     <template>
-        <style>
-              app-header {
-                background-color: #4285f4;
-                color: #fff;
-              }
-        </style>
-        <app-header-layout fullbleed has-scrolling-region>
-            <app-header slot="header" fixed condenses>
-                <app-toolbar style="height:128px;"></app-toolbar>
-                <app-toolbar sticky>
-                    <div spacer main-title>My Drive</div>
-                </app-toolbar>
-            </app-header>
-            <sample-content size="100"></sample-content>
-        </app-header-layout>
+      <style>
+        app-header {
+          background-color: #4285f4;
+          color: #fff;
+        }
+      </style>
+      <app-header-layout fullbleed has-scrolling-region>
+        <app-header slot="header" fixed condenses>
+          <app-toolbar style="height:128px;"></app-toolbar>
+          <app-toolbar sticky>
+            <div spacer main-title>My Drive</div>
+          </app-toolbar>
+        </app-header>
+        <sample-content size="100"></sample-content>
+      </app-header-layout>
     </template>
     <script>
-        Polymer({
-            is: 'simple-layout'
-        });
+      Polymer({
+        is: 'simple-layout'
+      });
     </script>
   </dom-module>
 

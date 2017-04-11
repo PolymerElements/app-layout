@@ -17,7 +17,7 @@
     "iron-media-query": "PolymerElements/iron-media-query#2.0-preview",
     "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#2.0-preview",
     "iron-scroll-target-behavior": "PolymerElements/iron-scroll-target-behavior#2.0-preview",
-    "polymer": "Polymer/polymer#^2.0.0-rc.1"
+    "polymer": "Polymer/polymer#^2.0.0-rc.3"
   },
   "devDependencies": {
     "font-roboto": "PolymerElements/font-roboto#^1.0.0",
@@ -35,6 +35,7 @@
     "paper-spinner": "PolymerElements/paper-spinner#2.0-preview",
     "paper-styles": "PolymerElements/paper-styles#2.0-preview",
     "paper-tabs": "PolymerElements/paper-tabs#2.0-preview",
+    "promise-polyfill": "polymerlabs/promise-polyfill#2.0-preview",
     "test-fixture": "PolymerElements/test-fixture#^3.0.0-rc.1",
     "web-component-tester": "^6.0.0-prerelease.6",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.1"

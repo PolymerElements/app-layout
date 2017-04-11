@@ -447,7 +447,7 @@ Mixin | Description | Default
        * @return {HTMLElement}?
        */
       get _stickyEl() {
-        if (this._stickyElRef != null) {
+        if (this._stickyElRef) {
           return this._stickyElRef;
         }
         var nodes = Polymer.dom(this.$.slot).getDistributedNodes();

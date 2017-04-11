@@ -35,29 +35,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
 
-  /* TODO(blasten): rethink this approach. This might be slow */
   Polymer.AppLayout.queryAllRoot = function(selector, root) {
     var queue = [root];
     var matches = [];
 
     while (queue.length > 0) {
-      node = queue.shift();
-      var nodes = node.querySelectorAll(selector);
-      var nodesArray;
-
-      // IE workaround
-      if (!Array.from) {
-        nodesArray = [];
-        var i = 0;
-
-        for (var node = nodes[i]; i < nodes.length; i++) {
-          nodesArray.push(node);
-        }
-      } else {
-        nodesArray = Array.from(nodes);
-      }
-
-      matches.push.apply(matches, nodesArray);
+      var node = queue.shift();
+      matches.push.apply(matches, node.querySelectorAll(selector));
       for (i = 0; node.children[i]; i++) {
         if (node.children[i].shadowRoot) {
           queue.push(node.children[i].shadowRoot);

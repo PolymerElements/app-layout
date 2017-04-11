@@ -19,7 +19,8 @@
     "paper-item": "PolymerElements/paper-item#2.0-preview",
     "paper-listbox": "PolymerElements/paper-listbox#2.0-preview",
     "paper-menu-button": "PolymerElements/paper-menu-button#2.0-preview",
-    "polymer": "polymer/polymer#2.0-preview"
+    "polymer": "Polymer/polymer#^2.0.0-rc.3",
+    "promise-polyfill": "polymerlabs/promise-polyfill#2.0-preview"
   },
   "variants": {
     "1.x": {

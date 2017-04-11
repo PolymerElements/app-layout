@@ -18,6 +18,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
+  <!-- Promise polyfill needed for 1.0-hybrid mode since neither iron-request 2.x nor
+    webcomponentsjs 0.x include the Promise polyfill. -->
+  <link rel="import" href="../../../promise-polyfill/promise-polyfill-lite.html">
   <link rel="import" href="../../../polymer/polymer.html">
   <link rel="import" href="../../../iron-scroll-threshold/iron-scroll-threshold.html">
   <link rel="import" href="../../../iron-ajax/iron-ajax.html">
