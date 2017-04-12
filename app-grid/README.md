@@ -68,7 +68,7 @@ you can specify the number of columns the item should expand to by setting the c
 
     /* Only the first item should expand */
     .item:first-child {
-      @apply(--app-grid-expandible-item);
+      @apply --app-grid-expandible-item;
     }
   </style>
 </template>
