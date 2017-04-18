@@ -107,6 +107,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.deepEqual(headerLayout.getBoundingClientRect(),
             headerLayout.offsetParent.getBoundingClientRect());
       });
+
+      test('initial static position header and content', function() {
+        assert.isTrue(headerLayout.$.wrapper.classList.contains('initializing'));
+        Polymer.dom.flush();
+        assert.isFalse(headerLayout.$.wrapper.classList.contains('initializing'));
+      });
     });
 
     suite('Scrolling region and fixed header', function() {
