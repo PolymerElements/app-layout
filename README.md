@@ -114,15 +114,6 @@ The templates are a means to define, illustrate and share best practices in App 
 - **Getting started**
 ([Demo](https://polymerelements.github.io/app-layout/templates/getting-started) - [Source](/templates/getting-started))
 
-
-```html
-<link rel="import" href="/bower_components/app-layout/app-layout.html">
-```
-
-### Changes in App Layout 2.0
-
-- `app-scrollpos-control` has been removed from App Layout in favor of using multiple scrolling regions to preserve the scroll position. In terms of UX, [`document.rootScroller`](https://github.com/bokand/NonDocumentRootScroller) is a new web platform API that will allow non-document scroll to hide the address bar on mobile.
-
 - **Landing page**
 ([Demo](https://polymerelements.github.io/app-layout/templates/landing-page) - [Source](/templates/landing-page))
 
@@ -155,11 +146,44 @@ Content cards may expand to take up more horizontal space.
 Here are some web apps built with App Layout:
 
 - [Google I/O 2016](https://events.google.com/io2016/)
+- [Polymer project site](https://www.polymer-project.org/summit)
 - [Polymer summit](https://www.polymer-project.org/summit)
-- [Pica](https://frankiefu.github.io/pica/)
+- [Shop](https://shop.polymer-project.org)
+- [News](https://news.polymer-project.org)
+- [webcomponents.org](https://www.webcomponents.org/)
 
 ## Tools and References
 
-- [Responsive App Layout](https://www.polymer-project.org/1.0/toolbox/app-layout)
-- [Polymer App Toolbox](https://www.polymer-project.org/1.0/toolbox/)
+- [Polymer App Toolbox](https://www.polymer-project.org/2.0/toolbox/)
 - [Material Design Adaptive UI Pattern](https://www.google.com/design/spec/layout/adaptive-ui.html#adaptive-ui-patterns)
+
+## Changes in App Layout 2.0
+
+- Distribution is now done with slots, so things have changed because of that,
+
+  **1.x**
+  ```
+  <app-drawer-layout>
+    <app-drawer>...</app-drawer>
+    <div>content</content>
+  </app-drawer-layout>
+  ```
+  **2.0**
+  ```
+  <app-drawer-layout>
+    <app-drawer slot="drawer">...</app-drawer>
+    <div>content</content>
+  </app-drawer-layout>
+  ```
+
+  same for `app-header-layout` and `app-box`.
+- In `app-drawer-layout`, the `drawer-toggle` element will not be automatically hidden
+when `app-drawer-layout` is not in narrow layout. To add this, add the following CSS rule where
+`app-drawer-layout` is used:
+
+  ```css
+  app-drawer-layout:not([narrow]) [drawer-toggle] {
+    display: none;
+  }
+  ```
+- `app-scrollpos-control` has been removed from App Layout in favor of using multiple scrolling regions to preserve the scroll position. In terms of UX, [`document.rootScroller`](https://github.com/bokand/NonDocumentRootScroller) is a new web platform API that will allow non-document scroll to hide the address bar on mobile.
