@@ -11,7 +11,19 @@
     "type": "git",
     "url": "git://github.com/PolymerElements/app-layout"
   },
-  "main": "app-layout.html",
+  "main": [
+    "app-layout.html",
+    "helpers/helpers.html",
+    "app-drawer/app-drawer.html",
+    "app-drawer-layout/app-drawer-layout.html",
+    "app-grid/app-grid-style.html",
+    "app-header/app-header.html",
+    "app-header-layout/app-header-layout.html",
+    "app-scroll-effects/app-scroll-effects-behavior.html",
+    "app-scrollpos-control/app-scrollpos-control.html",
+    "app-toolbar/app-toolbar.html",
+    "app-box/app-box.html"
+  ],
   "dependencies": {
     "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
     "iron-media-query": "PolymerElements/iron-media-query#^1.0.0",
