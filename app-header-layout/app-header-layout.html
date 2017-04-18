@@ -98,7 +98,7 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         position: relative;
       }
 
-      :host([has-scrolling-region]) #contentContainer {
+      :host([has-scrolling-region]) #wrapper #contentContainer {
         @apply --layout-fit;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
@@ -113,7 +113,8 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         @apply --layout-fit;
       }
 
-      :host([fullbleed]) #contentContainer {
+      :host([fullbleed]) #wrapper,
+      :host([fullbleed]) #wrapper #contentContainer {
         @apply --layout-vertical;
         @apply --layout-flex;
       }
