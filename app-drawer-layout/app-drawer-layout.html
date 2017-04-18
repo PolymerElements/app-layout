@@ -224,6 +224,15 @@ Custom property                          | Description                          
         return Polymer.dom(this.$.drawerSlot).getDistributedNodes()[0];
       },
 
+      attached: function() {
+        // Disable drawer transitions until after app-drawer-layout sets the initial opened state.
+        var drawer = this.drawer;
+        if (drawer) {
+          this._savedDrawerTransitionDuration = drawer.transitionDuration;
+          drawer.transitionDuration = 0;
+        }
+      },
+
       _clickHandler: function(e) {
         var target = Polymer.dom(e).localTarget;
         if (target && target.hasAttribute('drawer-toggle')) {
@@ -257,6 +266,13 @@ Custom property                          | Description                          
             drawer.persistent = false;
           } else {
             drawer.opened = drawer.persistent = true;
+          }
+          if (this._savedDrawerTransitionDuration) {
+            // Enable drawer transitions after app-drawer-layout sets the initial opened state.
+            Polymer.RenderStatus.afterNextRender(this, function() {
+              drawer.transitionDuration = this._savedDrawerTransitionDuration;
+              this._savedDrawerTransitionDuration = 0;
+            });
           }
           this._drawerNeedsReset = false;
         }

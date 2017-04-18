@@ -39,7 +39,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       --app-drawer-layout-drawer: {
         background-color: blue;
       };
-      --app-drawer-duration: 0s;
     }
 
     [content] {
@@ -147,7 +146,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.isTrue(drawer.opened);
           done();
         }, 150);
-       
+      });
+
+      test('disable initial drawer transition', function(done) {
+        assert.equal(drawer.transitionDuration, 0);
+        Polymer.dom.flush();
+
+        window.setTimeout(function() {
+          assert.equal(drawer.transitionDuration, 200);
+          done();
+        }, 150);
       });
 
       test('content layout', function(done) {

@@ -119,15 +119,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       });
 
-      test('transitions are enabled after attached', function(done) {
-        assertTransitionDuration('0ms');
-
-        Polymer.RenderStatus.afterNextRender(drawer, function() {
-          assertTransitionDuration('200ms');
-          done();
-        });
-      });
-
       test('computed position', function() {
         rtlDrawer.align = 'start';
 
@@ -167,6 +158,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('left drawer opens and closes', function() {
         drawer.align = 'left';
+        drawer.transitionDuration = 0;
 
         var contentContainerClientRect = contentContainer.getBoundingClientRect();
         assert.isTrue(contentContainerClientRect.right <= 0);
@@ -184,6 +176,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('right drawer opens and closes', function() {
         drawer.align = 'right';
+        drawer.transitionDuration = 0;
 
         var contentContainerClientRect = contentContainer.getBoundingClientRect();
         assert.isTrue(contentContainerClientRect.left >= window.innerWidth);
