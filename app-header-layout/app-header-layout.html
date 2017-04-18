@@ -185,10 +185,12 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         var headerHeight = header.offsetHeight;
         // Update the header position.
         if (!this.hasScrollingRegion) {
-          var rect = this.getBoundingClientRect();
-          var rightOffset = document.documentElement.clientWidth - rect.right;
-          header.style.left = rect.left + 'px';
-          header.style.right = rightOffset + 'px';
+          requestAnimationFrame(function() {
+            var rect = this.getBoundingClientRect();
+            var rightOffset = document.documentElement.clientWidth - rect.right;
+            header.style.left = rect.left + 'px';
+            header.style.right = rightOffset + 'px';
+          }.bind(this));
         } else {
           header.style.left = '';
           header.style.right = '';

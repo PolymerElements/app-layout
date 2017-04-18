@@ -86,19 +86,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(header.scrollTarget !== document.documentElement, 'scroller should not point to the document element');
       });
 
-      test('header box size', function() {
+      test('header box size', function(done) {
         headerLayout.hasScrollingRegion = false;
-
         Polymer.dom.flush();
-        assert.equal(headerLayout.offsetWidth, header.offsetWidth,
-            'should have the same width of app-header-layout');
-        headerLayout.style.width = '200px';
-        headerLayout.resetLayout();
 
-        Polymer.dom.flush();
-        assert.equal(headerLayout.offsetWidth, header.offsetWidth,
-          'should have the same width of app-header-layout even after setting a width');
-  
+        requestAnimationFrame(function() {
+          assert.equal(headerLayout.offsetWidth, header.offsetWidth,
+              'should have the same width of app-header-layout');
+          headerLayout.style.width = '200px';
+          headerLayout.resetLayout();
+          Polymer.dom.flush();
+
+          requestAnimationFrame(function() {
+            assert.equal(headerLayout.offsetWidth, header.offsetWidth,
+              'should have the same width of app-header-layout even after setting a width');
+            done();
+          });
+        });
       });
 
       test('fullbleed', function() {
