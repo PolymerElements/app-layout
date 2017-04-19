@@ -59,9 +59,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       </style>
       <app-header-layout fullbleed>
-        <app-header slot="header" fixed condenses>
-          <app-toolbar style="height:128px;"></app-toolbar>
-          <app-toolbar sticky>
+        <app-header slot="header" effects="waterfall" condenses reveals>
+          <app-toolbar>
+            <paper-icon-button icon="menu"></paper-icon-button>
+            <div main-title></div>
+            <paper-icon-button icon="search"></paper-icon-button>
+          </app-toolbar>
+          <app-toolbar></app-toolbar>
+          <app-toolbar>
             <div spacer main-title>My Drive</div>
           </app-toolbar>
         </app-header>
@@ -69,8 +74,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </app-header-layout>
     </template>
     <script>
-      Polymer({
-        is: 'simple-layout'
+      document.addEventListener('WebComponentsReady', function() {
+        Polymer({
+          is: 'simple-layout'
+        });
       });
     </script>
   </dom-module>
