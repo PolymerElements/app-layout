@@ -11,6 +11,7 @@ A collection of elements, along with guidelines and templates that can be used t
     <link rel="import" href="app-header/app-header.html">
     <link rel="import" href="app-toolbar/app-toolbar.html">
     <link rel="import" href="demo/sample-content.html">
+    <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
     <link rel="import" href="../iron-icons/iron-icons.html">
     <link rel="import" href="../paper-icon-button/paper-icon-button.html">
     <link rel="import" href="../paper-progress/paper-progress.html">
