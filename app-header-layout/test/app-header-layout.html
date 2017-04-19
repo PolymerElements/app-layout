@@ -80,25 +80,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(header.scrollTarget, document.documentElement);
       });
 
-      test('scrolling region', function() {
+      test('scrolling region', function(done) {
         headerLayout.hasScrollingRegion = true;
-        Polymer.dom.flush();
-        assert.isTrue(header.scrollTarget !== document.documentElement, 'scroller should not point to the document element');
+
+        flush(function() {
+          assert.isTrue(header.scrollTarget !== document.documentElement, 'scroller should not point to the document element');
+          done();
+        });
       });
 
-      test('header box size', function() {
+      test('header box size', function(done) {
         headerLayout.hasScrollingRegion = false;
-
         Polymer.dom.flush();
-        assert.equal(headerLayout.offsetWidth, header.offsetWidth,
-            'should have the same width of app-header-layout');
-        headerLayout.style.width = '200px';
-        headerLayout.resetLayout();
 
-        Polymer.dom.flush();
-        assert.equal(headerLayout.offsetWidth, header.offsetWidth,
-          'should have the same width of app-header-layout even after setting a width');
-  
+        flush(function() {
+          requestAnimationFrame(function() {
+            assert.equal(headerLayout.offsetWidth, header.offsetWidth,
+                'should have the same width of app-header-layout');
+
+            headerLayout.style.width = '200px';
+            headerLayout.resetLayout();
+
+            flush(function() {
+              requestAnimationFrame(function() {
+                assert.equal(headerLayout.offsetWidth, header.offsetWidth,
+                  'should have the same width of app-header-layout even after setting a width');
+                done();
+              });
+            });
+          });
+        });
       });
 
       test('fullbleed', function() {
@@ -106,6 +117,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.dom.flush();
         assert.deepEqual(headerLayout.getBoundingClientRect(),
             headerLayout.offsetParent.getBoundingClientRect());
+      });
+
+      test('initial static position header and content', function(done) {
+        assert.isTrue(headerLayout.$.wrapper.classList.contains('initializing'));
+        flush(function() {
+          assert.isFalse(headerLayout.$.wrapper.classList.contains('initializing'));
+          done();
+        });
       });
     });
 
@@ -116,7 +135,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         headerLayout = fixture('trivialFixedHeader');
       });
 
-      test('Issue #406', function() {
+      test('Issue #406', function(done) {
         Polymer.dom.flush();
         assert.isTrue(headerLayout.isAttached, 'app-header-layout is attached');
         var header = document.createElement('app-header');
@@ -126,9 +145,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.dom(headerLayout).appendChild(header);
         Polymer.dom.flush();
         header.fire('app-reset-layout');
-        Polymer.dom.flush();
-        assert.equal(headerLayout.$.contentContainer.style.marginTop,
-            header.offsetHeight + 'px');
+        flush(function() {
+          assert.equal(headerLayout.$.contentContainer.style.marginTop,
+              header.offsetHeight + 'px');
+          done();
+        });
       });
     });
 

@@ -60,14 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       // Polymer v1.x
       else {
-        window.cancelAnimationFrame(this._layoutDebouncer);
-        this._layoutDebouncer = window.requestAnimationFrame(cb);
-        Polymer.dom.addDebouncer({
-          complete: function() {
-            window.cancelAnimationFrame(self._layoutDebouncer);
-            cb();
-          }
-        });
+        this.debounce('resetLayout', cb);
       }
       this._notifyDescendantResize();
     },

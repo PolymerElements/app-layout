@@ -77,23 +77,35 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         z-index: 0;
       }
 
-      :host ::slotted([slot=header]) {
+      #wrapper ::slotted([slot=header]) {
         @apply --layout-fixed-top;
         z-index: 1;
+      }
+
+      #wrapper.initializing ::slotted([slot=header]) {
+        position: relative;
       }
 
       :host([has-scrolling-region]) {
         height: 100%;
       }
 
-      :host([has-scrolling-region]) ::slotted([slot=header]) {
+      :host([has-scrolling-region]) #wrapper ::slotted([slot=header]) {
         position: absolute;
       }
 
-      :host([has-scrolling-region]) > #contentContainer {
+      :host([has-scrolling-region]) #wrapper.initializing ::slotted([slot=header]) {
+        position: relative;
+      }
+
+      :host([has-scrolling-region]) #wrapper #contentContainer {
         @apply --layout-fit;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+      }
+
+      :host([has-scrolling-region]) #wrapper.initializing #contentContainer {
+        position: relative;
       }
 
       :host([fullbleed]) {
@@ -101,7 +113,8 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         @apply --layout-fit;
       }
 
-      :host([fullbleed]) > #contentContainer {
+      :host([fullbleed]) #wrapper,
+      :host([fullbleed]) #wrapper #contentContainer {
         @apply --layout-vertical;
         @apply --layout-flex;
       }
@@ -114,10 +127,12 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
 
     </style>
 
-    <slot id="headerSlot" name="header"></slot>
+    <div id="wrapper" class="initializing">
+      <slot id="headerSlot" name="header"></slot>
 
-    <div id="contentContainer">
-      <slot></slot>
+      <div id="contentContainer">
+        <slot></slot>
+      </div>
     </div>
 
   </template>
@@ -160,6 +175,9 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         if (!this.isAttached || !header) {
           return;
         }
+        // Remove the initializing class, which staticly positions the header and the content
+        // until the height of the header can be read.
+        this.$.wrapper.classList.remove('initializing');
         // Update scroll target.
         header.scrollTarget = this.hasScrollingRegion ?
             this.$.contentContainer : this.ownerDocument.documentElement;
@@ -168,10 +186,12 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         var headerHeight = header.offsetHeight;
         // Update the header position.
         if (!this.hasScrollingRegion) {
-          var rect = this.getBoundingClientRect();
-          var rightOffset = document.documentElement.clientWidth - rect.right;
-          header.style.left = rect.left + 'px';
-          header.style.right = rightOffset + 'px';
+          requestAnimationFrame(function() {
+            var rect = this.getBoundingClientRect();
+            var rightOffset = document.documentElement.clientWidth - rect.right;
+            header.style.left = rect.left + 'px';
+            header.style.right = rightOffset + 'px';
+          }.bind(this));
         } else {
           header.style.left = '';
           header.style.right = '';
