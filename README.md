@@ -11,52 +11,55 @@ A collection of elements, along with guidelines and templates that can be used t
     <link rel="import" href="app-header/app-header.html">
     <link rel="import" href="app-toolbar/app-toolbar.html">
     <link rel="import" href="demo/sample-content.html">
+    <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
     <link rel="import" href="../iron-icons/iron-icons.html">
     <link rel="import" href="../paper-icon-button/paper-icon-button.html">
     <link rel="import" href="../paper-progress/paper-progress.html">
-    <style is="custom-style">
-      html, body {
-        margin: 0;
-        font-family: 'Roboto', 'Noto', sans-serif;
-        -webkit-font-smoothing: antialiased;
-        background: #f1f1f1;
-        max-height: 368px;
-      }
-      app-toolbar {
-        background-color: #4285f4;
-        color: #fff;
-      }
-
-      paper-icon-button {
-        --paper-icon-button-ink-color: white;
-      }
-
-      paper-icon-button + [main-title] {
-        margin-left: 24px;
-      }
-      paper-progress {
-        display: block;
-        width: 100%;
-        --paper-progress-active-color: rgba(255, 255, 255, 0.5);
-        --paper-progress-container-color: transparent;
-      }
-      app-header {
-        @apply --layout-fixed-top;
-        color: #fff;
-        --app-header-background-rear-layer: {
-          background-color: #ef6c00;
-        };
-      }
-      app-drawer {
-        --app-drawer-scrim-background: rgba(0, 0, 100, 0.8);
-        --app-drawer-content-container: {
-          background-color: #B0BEC5;
+    <custom-style>
+      <style is="custom-style">
+        html, body {
+          margin: 0;
+          font-family: 'Roboto', 'Noto', sans-serif;
+          -webkit-font-smoothing: antialiased;
+          background: #f1f1f1;
+          max-height: 368px;
         }
-      }
-      sample-content {
-        padding-top: 64px;
-      }
-    </style>
+        app-toolbar {
+          background-color: #4285f4;
+          color: #fff;
+        }
+
+        paper-icon-button {
+          --paper-icon-button-ink-color: white;
+        }
+
+        paper-icon-button + [main-title] {
+          margin-left: 24px;
+        }
+        paper-progress {
+          display: block;
+          width: 100%;
+          --paper-progress-active-color: rgba(255, 255, 255, 0.5);
+          --paper-progress-container-color: transparent;
+        }
+        app-header {
+          @apply --layout-fixed-top;
+          color: #fff;
+          --app-header-background-rear-layer: {
+            background-color: #ef6c00;
+          };
+        }
+        app-drawer {
+          --app-drawer-scrim-background: rgba(0, 0, 100, 0.8);
+          --app-drawer-content-container: {
+            background-color: #B0BEC5;
+          }
+        }
+        sample-content {
+          padding-top: 64px;
+        }
+      </style>
+    </custom-style>
     <next-code-block></next-code-block>
   </template>
 </custom-element-demo>
