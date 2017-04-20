@@ -138,11 +138,15 @@ Sample code for various UI patterns:
 
 - **Transform navigation:**
 As more screen space is available, side navigation can transform into tabs.
-([Demo](https://polymerelements.github.io/app-layout/patterns/transform-navigation/index.html) - [Source](/patterns/transform-navigation/x-app.html))
+([Demo](https://www.webcomponents.org/element/PolymerElements/app-layout/demo/patterns/transform-navigation/index.html) - [Source](/patterns/transform-navigation/x-app.html))
 
 - **Expand Card:**
 Content cards may expand to take up more horizontal space.
-([Demo](https://polymerelements.github.io/app-layout/patterns/expand-card/index.html) - [Source](/patterns/expand-card/index.html))
+([Demo](https://www.webcomponents.org/element/PolymerElements/app-layout/demo/patterns/expand-card/index.html) - [Source](/patterns/expand-card/index.html))
+
+- **Material Design Responsive Toolbar:**
+Toolbar changes its height and padding to adapt mobile screen size.
+([Demo](https://www.webcomponents.org/element/PolymerElements/app-layout/demo/patterns/md-responsive-toolbar/index.html) - [Source](/patterns/md-responsive-toolbar/index.html))
 
 ## Users
 
@@ -154,6 +158,9 @@ Here are some web apps built with App Layout:
 - [Shop](https://shop.polymer-project.org)
 - [News](https://news.polymer-project.org)
 - [webcomponents.org](https://www.webcomponents.org/)
+- [Chrome Status](https://www.chromestatus.com/)
+- [Project Fi](https://fi.google.com/about/)
+- [NASA Open Source Software](https://code.nasa.gov/)
 
 ## Tools and References
 
