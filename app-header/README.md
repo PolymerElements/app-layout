@@ -1,7 +1,6 @@
-##&lt;app-header&gt;
+## &lt;app-header&gt;
 
-![app-header]
-(http://app-layout-assets.appspot.com/assets/docs/app-header/header.gif)
+![app-header](http://app-layout-assets.appspot.com/assets/docs/app-header/header.gif)
 
 app-header is container element for app-toolbars at the top of the screen that can have scroll
 effects. By default, an app-header moves away from the viewport when scrolling down and

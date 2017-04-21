@@ -1,4 +1,4 @@
-##&lt;app-drawer-layout&gt;
+## &lt;app-drawer-layout&gt;
 
 app-drawer-layout is a wrapper element that positions an app-drawer and other content. When
 the viewport width is smaller than `responsiveWidth`, this element changes to narrow layout.

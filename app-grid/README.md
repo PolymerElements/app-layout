@@ -1,4 +1,4 @@
-##&lt;app-grid&gt;
+## &lt;app-grid&gt;
 
 app-grid is a helper class useful for creating responsive, fluid grid layouts using custom properties.
 Because custom properties can be defined inside a `@media` rule, you can customize the grid layout
