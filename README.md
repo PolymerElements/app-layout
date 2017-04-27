@@ -175,14 +175,14 @@ Here are some web apps built with App Layout:
   ```
   <app-drawer-layout>
     <app-drawer>...</app-drawer>
-    <div>content</content>
+    <div>content</div>
   </app-drawer-layout>
   ```
   **2.0**
   ```
   <app-drawer-layout>
     <app-drawer slot="drawer">...</app-drawer>
-    <div>content</content>
+    <div>content</div>
   </app-drawer-layout>
   ```
 
