@@ -152,6 +152,7 @@ Toolbar changes its height and padding to adapt mobile screen size.
 
 Here are some web apps built with App Layout:
 
+- [Youtube Web](https://www.youtube.com/new)
 - [Google I/O 2016](https://events.google.com/io2016/)
 - [Polymer project site](https://www.polymer-project.org/summit)
 - [Polymer summit](https://www.polymer-project.org/summit)
