@@ -112,7 +112,19 @@ Add the `fullbleed` attribute to app-drawer-layout to make it fit the size of it
 
 Custom property                          | Description                          | Default
 -----------------------------------------|--------------------------------------|---------
+`--app-drawer-width`                     | Width of the drawer                  | 256px
 `--app-drawer-layout-content-transition` | Transition for the content container | none
+
+**NOTE:** If you use <app-drawer> with <app-drawer-layout> and specify a value for
+`--app-drawer-width`, that value must be accessible by both elements. This can be done by
+defining the value on the `:host` that contains <app-drawer-layout> (or `html` if outside
+a shadow root):
+
+```css
+:host {
+  --app-drawer-width: 300px;
+}
+```
 
 @group App Elements
 @element app-drawer-layout
@@ -148,11 +160,19 @@ Custom property                          | Description                          
         height: 100%;
         transition: var(--app-drawer-layout-content-transition, none);
       }
+
+      #contentContainer[drawer-position=left] {
+        margin-left: var(--app-drawer-width, 256px);
+      }
+
+      #contentContainer[drawer-position=right] {
+        margin-right: var(--app-drawer-width, 256px);
+      }
     </style>
 
     <slot id="drawerSlot" name="drawer"></slot>
 
-    <div id="contentContainer">
+    <div id="contentContainer" drawer-position$="[[_drawerPosition]]">
       <slot></slot>
     </div>
 
@@ -204,6 +224,10 @@ Custom property                          | Description                          
         openedWhenNarrow: {
           type: Boolean,
           value: false
+        },
+
+        _drawerPosition: {
+          type: String
         }
       },
 
@@ -212,7 +236,7 @@ Custom property                          | Description                          
       },
 
       observers: [
-        '_configChanged(narrow, isAttached)'
+        '_narrowChanged(narrow)'
       ],
 
       /**
@@ -245,22 +269,12 @@ Custom property                          | Description                          
 
       _updateLayoutStates: function() {
         var drawer = this.drawer;
-        var contentContainer = this.$.contentContainer;
-
-        if (this.narrow || !drawer || !drawer.getWidth) {
-          contentContainer.style.marginLeft = '';
-          contentContainer.style.marginRight = '';
-        } else {
-          var drawerWidth = drawer.getWidth();
-          if (drawer.position == 'right') {
-            contentContainer.style.marginLeft = '';
-            contentContainer.style.marginRight = drawerWidth + 'px';
-          } else {
-            contentContainer.style.marginLeft = drawerWidth + 'px';
-            contentContainer.style.marginRight = '';
-          }
+        if (!drawer) {
+          return;
         }
-        if (drawer && this._drawerNeedsReset) {
+
+        this._drawerPosition = this.narrow ? null : drawer.position;
+        if (this._drawerNeedsReset) {
           if (this.narrow) {
             drawer.opened = this.openedWhenNarrow;
             drawer.persistent = false;
@@ -278,7 +292,7 @@ Custom property                          | Description                          
         }
       },
 
-      _configChanged: function() {
+      _narrowChanged: function() {
         this._drawerNeedsReset = true;
         this.resetLayout();
       },

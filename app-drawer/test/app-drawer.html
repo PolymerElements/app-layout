@@ -773,7 +773,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         drawer.persistent = true;
 
-        assert.equal(window.getComputedStyle(scrim)['visibility'], 'hidden');
+        assert.equal(window.getComputedStyle(scrim)['opacity'], 0);
       });
 
       test('click on scrim closes drawer', function() {

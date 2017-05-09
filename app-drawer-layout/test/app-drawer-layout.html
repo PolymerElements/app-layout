@@ -23,34 +23,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../app-drawer-layout.html">
 
 
-  <style is="custom-style">
-    body {
-      margin: 0;
-      padding: 0;
-    }
+  <custom-style>
+    <style is="custom-style">
+      body {
+        margin: 0;
+        padding: 0;
+      }
 
-    app-drawer-layout {
-      width: 100px;
-      height: 300px;
-      background: green;
-      position: absolute;
-      overflow: hidden !important;
-      z-index: 0;
-      --app-drawer-layout-drawer: {
-        background-color: blue;
-      };
-    }
-
-    [content] {
-      width: 1px;
-      height: 3000px;
-      background-color: red;
-    }
-
-    [drawer] {
-      width: 100%;
-    }
-  </style>
+      app-drawer-layout {
+        width: 1000px;
+        --app-drawer-content-container: {
+          background-color: cyan;
+        };
+      }
+    </style>
+  </custom-style>
 
 </head>
 <body>
@@ -105,7 +92,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('responsiveWidth', function(done) {
         var xResizeable = drawerLayout.querySelector('x-resizeable');
         var notifyResizeSpy = sinon.spy(xResizeable, 'notifyResize');
-        var drawerToggle = drawerLayout.querySelector('[drawer-toggle]');
         drawerLayout.responsiveWidth = '0px';
 
         window.setTimeout(function() {
@@ -162,20 +148,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         drawerLayout.responsiveWidth = '10000px';
 
         window.setTimeout(function() {
-          assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
-          assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+          var contentContainer = drawerLayout.$.contentContainer;
+          var computedStyle = window.getComputedStyle(contentContainer);
+          assert.equal(computedStyle.marginLeft, '0px');
+          assert.equal(computedStyle.marginRight, '0px');
 
           drawerLayout.responsiveWidth = '0px';
 
           window.setTimeout(function() {
-            assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '256px');
-            assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+            computedStyle = window.getComputedStyle(contentContainer);
+            assert.equal(computedStyle.marginLeft, '256px');
+            assert.equal(computedStyle.marginRight, '0px');
 
-            drawer.align = 'end';
+            drawer.align = 'right';
 
             window.setTimeout(function() {
-              assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
-              assert.equal(drawerLayout.$.contentContainer.style.marginRight, '256px');
+              computedStyle = window.getComputedStyle(contentContainer);
+              assert.equal(computedStyle.marginLeft, '0px');
+              assert.equal(computedStyle.marginRight, '256px');
 
               done();
             }, 100);
@@ -220,9 +210,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
         Polymer.dom.flush();
 
+        var contentContainer = drawerLayout.$.contentContainer;
+        var computedStyle = window.getComputedStyle(contentContainer);
         assert.isUndefined(drawerLayout.drawer);
-        assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '');
-        assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+        assert.equal(computedStyle.marginLeft, '0px');
+        assert.equal(computedStyle.marginRight, '0px');
 
         drawerLayout.responsiveWidth = '0px';
         drawer = document.createElement('app-drawer');
@@ -231,9 +223,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.dom.flush();
 
         window.setTimeout(function() {
+          computedStyle = window.getComputedStyle(contentContainer);
           assert.isTrue(drawerLayout.drawer.opened);
-          assert.equal(drawerLayout.$.contentContainer.style.marginLeft, '256px');
-          assert.equal(drawerLayout.$.contentContainer.style.marginRight, '');
+          assert.equal(computedStyle.marginLeft, '256px');
+          assert.equal(computedStyle.marginRight, '0px');
 
           done();
         }, 100);
