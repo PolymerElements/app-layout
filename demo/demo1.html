@@ -27,7 +27,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../app-toolbar/app-toolbar.html">
   <link rel="import" href="../demo/sample-content.html">
 
-  <style is="custom-style">
+  <custom-style>
+    <style is="custom-style">
 
     body {
       margin: 0;
@@ -64,46 +65,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       padding-top: 192px;
     }
 
-  </style>
+    </style>
+  </custom-style>
 
 </head>
 <body>
 
-  <template is="dom-bind" id="app">
+  <app-header condenses reveals effects="waterfall">
+    <app-toolbar>
+      <paper-icon-button icon="menu" onclick="startDrawer.toggle()"></paper-icon-button>
+      <div main-title></div>
+      <paper-icon-button icon="shopping-cart" onclick="endDrawer.toggle()"></paper-icon-button>
+    </app-toolbar>
+    <app-toolbar></app-toolbar>
+    <app-toolbar>
+      <div spacer main-title>My App</div>
+    </app-toolbar>
+  </app-header>
 
-    <app-header condenses reveals effects="waterfall">
-      <app-toolbar>
-        <paper-icon-button icon="menu" on-tap="toggleLeft"></paper-icon-button>
-        <div main-title></div>
-        <paper-icon-button icon="shopping-cart" on-tap="toggleRight"></paper-icon-button>
-      </app-toolbar>
-      <app-toolbar></app-toolbar>
-      <app-toolbar>
-        <div spacer main-title>My App</div>
-      </app-toolbar>
-    </app-header>
+  <app-drawer id="startDrawer" align="start"></app-drawer>
 
-    <app-drawer id="startDrawer" align="start"></app-drawer>
+  <app-drawer id="endDrawer" align="end"></app-drawer>
 
-    <app-drawer id="endDrawer" align="end"></app-drawer>
-
-    <sample-content size="100"></sample-content>
-
-  </template>
-
-  <script>
-
-  (function(scope) {
-    scope.toggleLeft = function() {
-      this.$.startDrawer.toggle();
-    };
-
-    scope.toggleRight = function() {
-      this.$.endDrawer.toggle();
-    };
-  })(document.querySelector('#app'));
-
-  </script>
+  <sample-content size="100"></sample-content>
 
 </body>
 </html>

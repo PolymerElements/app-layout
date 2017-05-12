@@ -26,70 +26,71 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../demo/sample-content.html">
   <link rel="import" href="../app-header.html">
 
-  <style is="custom-style">
+  <custom-style>
+    <style is="custom-style">
 
-    body {
-      margin: 0;
-      font-family: arial;
-      background-color: #eee;
-    }
+      body {
+        margin: 0;
+        font-family: arial;
+        background-color: #eee;
+      }
 
-    app-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 212px;
-      color: #fff;
-      --app-header-background-front-layer: {
-        background-color: red;
-      };
-      --app-header-background-rear-layer: {
-        background-color: blue;
-      };
-    }
+      app-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 212px;
+        color: #fff;
+        --app-header-background-front-layer: {
+          background-color: red;
+        };
+        --app-header-background-rear-layer: {
+          background-color: blue;
+        };
+      }
 
-    paper-icon-button {
-      --paper-icon-button-ink-color: white;
-    }
+      paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
 
-    app-toolbar.tall {
-      height: 148px;
-    }
+      app-toolbar.tall {
+        height: 148px;
+      }
 
-    sample-content {
-      padding-top: 212px;
-    }
+      sample-content {
+        padding-top: 212px;
+      }
 
-    [main-title] {
-      font-weight: lighter;
-      margin-left: 108px;
-    }
-
-    [condensed-title] {
-      font-weight: lighter;
-      margin-left: 30px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    [condensed-title] i {
-      font-weight: 100;
-      font-style: normal;
-    }
-
-    @media (max-width: 639px) {
       [main-title] {
-        margin-left: 50px;
-        font-size: 30px;
+        font-weight: lighter;
+        margin-left: 108px;
       }
+
       [condensed-title] {
-        font-size: 15px;
+        font-weight: lighter;
+        margin-left: 30px;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
-    }
 
-  </style>
+      [condensed-title] i {
+        font-weight: 100;
+        font-style: normal;
+      }
 
+      @media (max-width: 639px) {
+        [main-title] {
+          margin-left: 50px;
+          font-size: 30px;
+        }
+        [condensed-title] {
+          font-size: 15px;
+        }
+      }
+
+    </style>
+  </custom-style>
 </head>
 <body class="fullbleed" unresolved>
 

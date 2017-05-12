@@ -21,15 +21,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../font-roboto/roboto.html">
   <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../app-drawer-layout/app-drawer-layout.html">
   <link rel="import" href="../app-drawer/app-drawer.html">
   <link rel="import" href="../app-scroll-effects/app-scroll-effects.html">
-  <link rel="import" href="../app-header/app-header.html">
   <link rel="import" href="../app-header-layout/app-header-layout.html">
+  <link rel="import" href="../app-drawer-layout/app-drawer-layout.html">
+  <link rel="import" href="../app-header/app-header.html">
   <link rel="import" href="../app-toolbar/app-toolbar.html">
   <link rel="import" href="../demo/sample-content.html">
 
-  <style is="custom-style">
+  <custom-style>
+    <style is="custom-style">
 
     body {
       margin: 0;
@@ -46,23 +47,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       --paper-icon-button-ink-color: white;
     }
 
-  </style>
+    app-drawer-layout:not([narrow]) [drawer-toggle] {
+      display: none;
+    }
+
+    </style>
+  </custom-style>
 
 </head>
 <body unresolved>
 
   <app-drawer-layout>
 
-    <app-drawer>
+    <app-drawer slot="drawer">
       <app-toolbar>App name</app-toolbar>
     </app-drawer>
 
     <app-header-layout>
 
-      <app-header fixed effects="waterfall">
+      <app-header slot="header" fixed effects="waterfall">
         <app-toolbar>
           <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-          <div spacer main-title>My Drive</div>
+          <div main-title>My Drive</div>
         </app-toolbar>
       </app-header>
 

@@ -38,10 +38,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
 
         condensedTitle.style.willChange = 'opacity';
-        title.style.willChange = 'opacity';
         condensedTitle.style.webkitTransform = 'translateZ(0)';
-        title.style.webkitTransform = 'translateZ(0)';
         condensedTitle.style.transform = 'translateZ(0)';
+        condensedTitle.style.webkitTransformOrigin = 'left top';
+        condensedTitle.style.transformOrigin = 'left top';
+
+        title.style.willChange = 'opacity';
+        title.style.webkitTransformOrigin = 'left top';
+        title.style.transformOrigin = 'left top';
+        title.style.webkitTransform = 'translateZ(0)';
         title.style.transform = 'translateZ(0)';
 
         var titleClientRect = title.getBoundingClientRect();

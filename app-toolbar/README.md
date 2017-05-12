@@ -1,4 +1,4 @@
-##&lt;app-toolbar&gt;
+## &lt;app-toolbar&gt;
 
 app-toolbar is a horizontal toolbar containing items that can be used for
 label, navigation, search and actions.
@@ -28,7 +28,7 @@ to the top or bottom of the toolbar respectively.
 
 ### Content attributes
 
-Attribute            | Description 
+Attribute            | Description
 ---------------------|---------------------------------------------------------
 `main-title`         | The main title element.
 `condensed-title`    | The title element if used inside a condensed app-header.

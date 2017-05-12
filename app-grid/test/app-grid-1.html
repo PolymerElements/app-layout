@@ -56,13 +56,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
 
         .item:nth-child(4n + 1) {
-            @apply(--app-grid-expandible-item);
+            @apply --app-grid-expandible-item;
         }
 
       </style>
 
       <ul class="app-grid">
-        <template items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]" is="dom-repeat">
+        <template is="dom-repeat" items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]">
           <li class="item">[[item]]</li>
         </template>
       </ul>
@@ -140,7 +140,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }
 
-        done();
+          done();
 
         });
 

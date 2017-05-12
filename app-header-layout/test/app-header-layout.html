@@ -33,28 +33,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .content {
-      width: 100%;
+      width: 1px;
       height: 3000px;
       background-color: red;
     }
-
-    [has-scrolling-region] {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-
   </style>
 
 </head>
 <body>
 
-  <test-fixture id="trivialAppHeaderLayout">
+  <test-fixture id="trivialHeader">
     <template>
       <app-header-layout>
-        <app-header condenses>
+        <app-header slot="header" condenses>
           <app-toolbar></app-toolbar>
           <app-toolbar>
             <div main-title spacer>Title</div>
@@ -65,15 +56,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-  <test-fixture id="trivialOwnScrollingRegion">
+  <test-fixture id="trivialFixedHeader">
     <template>
       <app-header-layout has-scrolling-region>
-        <app-header fixed condenses>
-          <app-toolbar></app-toolbar>
-          <app-toolbar>
-            <div main-title spacer>Title</div>
-          </app-toolbar>
-        </app-header>
         <div class="content"></div>
       </app-header-layout>
     </template>
@@ -85,7 +70,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var headerLayout, header, toolbar;
 
       setup(function() {
-        headerLayout = fixture('trivialAppHeaderLayout');
+        headerLayout = fixture('trivialHeader');
         header = headerLayout.querySelector('app-header');
         toolbar = headerLayout.querySelector('app-toolbar');
       });
@@ -95,52 +80,74 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(header.scrollTarget, document.documentElement);
       });
 
-      test('scrolling region', function() {
+      test('scrolling region', function(done) {
         headerLayout.hasScrollingRegion = true;
-        assert.isTrue(header.scrollTarget !== document.documentElement, 'scroller should not point to the document element');
+
+        flush(function() {
+          assert.isTrue(header.scrollTarget !== document.documentElement, 'scroller should not point to the document element');
+          done();
+        });
       });
 
       test('header box size', function(done) {
         headerLayout.hasScrollingRegion = false;
+        Polymer.dom.flush();
 
         flush(function() {
-          assert.equal(headerLayout.offsetWidth, header.offsetWidth,
-              'should have the same width of app-header-layout');
-
-          headerLayout.style.width = '200px';
-          headerLayout.resetLayout();
-          flush(function() {
+          requestAnimationFrame(function() {
             assert.equal(headerLayout.offsetWidth, header.offsetWidth,
-              'should have the same width of app-header-layout even after setting a width');
-            done();
+                'should have the same width of app-header-layout');
+
+            headerLayout.style.width = '200px';
+            headerLayout.resetLayout();
+
+            flush(function() {
+              requestAnimationFrame(function() {
+                assert.equal(headerLayout.offsetWidth, header.offsetWidth,
+                  'should have the same width of app-header-layout even after setting a width');
+                done();
+              });
+            });
           });
         });
       });
 
-      test('fullbleed', function(done) {
+      test('fullbleed', function() {
         headerLayout.setAttribute('fullbleed', '');
+        Polymer.dom.flush();
+        assert.deepEqual(headerLayout.getBoundingClientRect(),
+            headerLayout.offsetParent.getBoundingClientRect());
+      });
+
+      test('initial static position header and content', function(done) {
+        assert.isTrue(headerLayout.$.wrapper.classList.contains('initializing'));
         flush(function() {
-          assert.deepEqual(headerLayout.getBoundingClientRect(),
-              headerLayout.offsetParent.getBoundingClientRect());
+          assert.isFalse(headerLayout.$.wrapper.classList.contains('initializing'));
           done();
         });
       });
     });
 
-    suite('Header layout with scrolling region', function() {
-      var headerLayout, header, toolbar;
+    suite('Scrolling region and fixed header', function() {
+      var headerLayout;
 
       setup(function() {
-        headerLayout = fixture('trivialOwnScrollingRegion');
-        header = headerLayout.querySelector('app-header');
-        toolbar = headerLayout.querySelector('app-toolbar');
+        headerLayout = fixture('trivialFixedHeader');
       });
 
-      test('layout', function(done) {
+      test('Issue #406', function(done) {
+        Polymer.dom.flush();
+        assert.isTrue(headerLayout.isAttached, 'app-header-layout is attached');
+        var header = document.createElement('app-header');
+        Polymer.dom(header).innerHTML = '<app-toolbar></app-toolbar>';
+        header.setAttribute('slot', 'header');
+        header.fixed = true;
+        Polymer.dom(headerLayout).appendChild(header);
+        Polymer.dom.flush();
+        header.fire('app-reset-layout');
         flush(function() {
-          assert.equal(parseInt(headerLayout.$.contentContainer.style.paddingTop, 10),
-              header.offsetHeight,
-              'should add padding to the content container');
+          assert.equal(headerLayout.$.contentContainer.style.marginTop,
+              header.offsetHeight + 'px');
           done();
         });
       });

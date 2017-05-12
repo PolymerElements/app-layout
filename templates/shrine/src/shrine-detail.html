@@ -22,7 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
 
       :host {
-        @apply(--layout-horizontal);
+        @apply --layout-horizontal;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       }
 
@@ -38,9 +38,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .itemsGrid {
-        @apply(--layout-horizontal);
-        @apply(--layout-wrap);
-        @apply(--layout-center-justified);
+        @apply --layout-horizontal;
+        @apply --layout-wrap;
+        @apply --layout-center-justified;
         margin-top: 10px;
       }
 
@@ -56,7 +56,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .detailSection {
-        @apply(--layout);
+        @apply --layout;
         width: 65%;
         -webkit-flex: 1 1 65%;
         flex: 1 1 65%;
@@ -65,9 +65,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .detailGrid {
         width: 100%;
         padding: 128px 0 64px;
-        @apply(--layout-horizontal);
-        @apply(--layout-wrap);
-        @apply(--layout-center-justified);
+        @apply --layout-horizontal;
+        @apply --layout-wrap;
+        @apply --layout-center-justified;
       }
 
       .image {
@@ -170,12 +170,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        */
       @media (max-width: 1200px) {
         :host {
-          @apply(--layout-center);
-          @apply(--layout-vertical-reverse);
+          @apply --layout-center;
+          @apply --layout-vertical-reverse;
         }
 
         .items {
-          @apply(--layout-flex-none);
+          @apply --layout-flex-none;
           width: 100vw;
         }
 
@@ -187,7 +187,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
 
         .detailSection {
-          @apply(--layout-flex-none);
+          @apply --layout-flex-none;
           width: 90vw;
           margin-left: 10px;
           margin-right: 10px;
@@ -199,7 +199,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        */
       @media (max-width: 400px) {
         .detailSection {
-          @apply(--layout-flex-none);
+          @apply --layout-flex-none;
         }
 
         .itemsGrid > .item {

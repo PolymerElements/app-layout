@@ -11,30 +11,66 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!doctype html>
 <html lang="en">
 <head>
-  <title>app-drawer-layout demos</title>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+  <title>app-drawer-layout demo</title>
 
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../../paper-styles/demo-pages.html">
+  <link rel="import" href="../../../font-roboto/roboto.html">
+  <link rel="import" href="../../../iron-icons/iron-icons.html">
+  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../../demo/sample-content.html">
+  <link rel="import" href="../../app-toolbar/app-toolbar.html">
+  <link rel="import" href="../../app-drawer/app-drawer.html">
+  <link rel="import" href="../app-drawer-layout.html">
+
+  <custom-style>
+    <style is="custom-style">
+
+      html {
+        --app-drawer-width: 350px;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        background-color: #eee;
+      }
+
+      app-toolbar {
+        background-color: #4285f4;
+        color: #fff;
+      }
+
+      app-drawer-layout:not([narrow]) [drawer-toggle] {
+        display: none;
+      }
+
+      app-drawer {
+        --app-drawer-content-container: {
+          background-color: #B0BEC5;
+        }
+      }
+
+    </style>
+  </custom-style>
+
 </head>
-<style>
-  a {
-    display: block;
-    margin-bottom: 10px;
-  }
-</style>
-<body unresolved>
-  <div class="horizontal-section-container">
-    <div>
-      <h4>app-drawer-layout demos</h4>
-      <div class="horizontal-section">
-        <a href="simple-drawer.html">Simple Demo</a>
-        <a href="two-drawers.html">Two drawers</a>
-      </div>
-    </div>
-  </div>
+<body>
+
+  <app-drawer-layout>
+
+    <app-drawer slot="drawer"></app-drawer>
+
+    <app-toolbar>
+      <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+    </app-toolbar>
+
+    <sample-content size="100"></sample-content>
+
+  </app-drawer-layout>
+
 </body>
 </html>

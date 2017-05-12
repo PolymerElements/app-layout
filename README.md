@@ -1,4 +1,4 @@
-# App Layout [![Build Status](https://travis-ci.org/PolymerElements/app-layout.svg?branch=master)](https://travis-ci.org/PolymerElements/app-layout) [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://beta.webcomponents.org/element/PolymerElements/app-layout)
+# App Layout [![Build Status](https://travis-ci.org/PolymerElements/app-layout.svg?branch=2.0-preview)](https://travis-ci.org/PolymerElements/app-layout) [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://beta.webcomponents.org/element/PolymerElements/app-layout)
 
 A collection of elements, along with guidelines and templates that can be used to structure your app’s layout.
 
@@ -11,52 +11,55 @@ A collection of elements, along with guidelines and templates that can be used t
     <link rel="import" href="app-header/app-header.html">
     <link rel="import" href="app-toolbar/app-toolbar.html">
     <link rel="import" href="demo/sample-content.html">
+    <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
     <link rel="import" href="../iron-icons/iron-icons.html">
     <link rel="import" href="../paper-icon-button/paper-icon-button.html">
     <link rel="import" href="../paper-progress/paper-progress.html">
-    <style is="custom-style">
-      html, body {
-        margin: 0;
-        font-family: 'Roboto', 'Noto', sans-serif;
-        -webkit-font-smoothing: antialiased;
-        background: #f1f1f1;
-        max-height: 368px;
-      }
-      app-toolbar {
-        background-color: #4285f4;
-        color: #fff;
-      }
-
-      paper-icon-button {
-        --paper-icon-button-ink-color: white;
-      }
-
-      paper-icon-button + [main-title] {
-        margin-left: 24px;
-      }
-      paper-progress {
-        display: block;
-        width: 100%;
-        --paper-progress-active-color: rgba(255, 255, 255, 0.5);
-        --paper-progress-container-color: transparent;
-      }
-      app-header {
-        @apply(--layout-fixed-top);
-        color: #fff;
-        --app-header-background-rear-layer: {
-          background-color: #ef6c00;
-        };
-      }
-      app-drawer {
-        --app-drawer-scrim-background: rgba(0, 0, 100, 0.8);
-        --app-drawer-content-container: {
-          background-color: #B0BEC5;
+    <custom-style>
+      <style is="custom-style">
+        html, body {
+          margin: 0;
+          font-family: 'Roboto', 'Noto', sans-serif;
+          -webkit-font-smoothing: antialiased;
+          background: #f1f1f1;
+          max-height: 368px;
         }
-      }
-      sample-content {
-        padding-top: 64px;
-      }
-    </style>
+        app-toolbar {
+          background-color: #4285f4;
+          color: #fff;
+        }
+
+        paper-icon-button {
+          --paper-icon-button-ink-color: white;
+        }
+
+        paper-icon-button + [main-title] {
+          margin-left: 24px;
+        }
+        paper-progress {
+          display: block;
+          width: 100%;
+          --paper-progress-active-color: rgba(255, 255, 255, 0.5);
+          --paper-progress-container-color: transparent;
+        }
+        app-header {
+          @apply --layout-fixed-top;
+          color: #fff;
+          --app-header-background-rear-layer: {
+            background-color: #ef6c00;
+          };
+        }
+        app-drawer {
+          --app-drawer-scrim-background: rgba(0, 0, 100, 0.8);
+          --app-drawer-content-container: {
+            background-color: #B0BEC5;
+          }
+        }
+        sample-content {
+          padding-top: 64px;
+        }
+      </style>
+    </custom-style>
     <next-code-block></next-code-block>
   </template>
 </custom-element-demo>
@@ -105,8 +108,6 @@ $ bower install PolymerElements/app-layout --save
 
 - [app-header-layout](/app-header-layout) - A wrapper element that positions an app-header and other content.
 
-- [app-scrollpos-control](/app-scrollpos-control) - A manager for saving and restoring the scroll position when multiple pages are sharing the same document scroller.
-
 - [app-toolbar](/app-toolbar) - A horizontal toolbar containing items that can be used for label, navigation, search and actions.
 
 ### Templates
@@ -137,22 +138,63 @@ Sample code for various UI patterns:
 
 - **Transform navigation:**
 As more screen space is available, side navigation can transform into tabs.
-([Demo](https://polymerelements.github.io/app-layout/patterns/transform-navigation/index.html) - [Source](/patterns/transform-navigation/x-app.html))
+([Demo](https://www.webcomponents.org/element/PolymerElements/app-layout/demo/patterns/transform-navigation/index.html) - [Source](/patterns/transform-navigation/x-app.html))
 
 - **Expand Card:**
 Content cards may expand to take up more horizontal space.
-([Demo](https://polymerelements.github.io/app-layout/patterns/expand-card/index.html) - [Source](/patterns/expand-card/index.html))
+([Demo](https://www.webcomponents.org/element/PolymerElements/app-layout/demo/patterns/expand-card/index.html) - [Source](/patterns/expand-card/index.html))
+
+- **Material Design Responsive Toolbar:**
+Toolbar changes its height and padding to adapt mobile screen size.
+([Demo](https://www.webcomponents.org/element/PolymerElements/app-layout/demo/patterns/md-responsive-toolbar/index.html) - [Source](/patterns/md-responsive-toolbar/index.html))
 
 ## Users
 
 Here are some web apps built with App Layout:
 
+- [Youtube Web](https://www.youtube.com/new)
 - [Google I/O 2016](https://events.google.com/io2016/)
+- [Polymer project site](https://www.polymer-project.org/summit)
 - [Polymer summit](https://www.polymer-project.org/summit)
-- [Pica](https://frankiefu.github.io/pica/)
+- [Shop](https://shop.polymer-project.org)
+- [News](https://news.polymer-project.org)
+- [webcomponents.org](https://www.webcomponents.org/)
+- [Chrome Status](https://www.chromestatus.com/)
+- [Project Fi](https://fi.google.com/about/)
+- [NASA Open Source Software](https://code.nasa.gov/)
 
 ## Tools and References
 
-- [Responsive App Layout](https://www.polymer-project.org/1.0/toolbox/app-layout)
-- [Polymer App Toolbox](https://www.polymer-project.org/1.0/toolbox/)
+- [Polymer App Toolbox](https://www.polymer-project.org/2.0/toolbox/)
 - [Material Design Adaptive UI Pattern](https://www.google.com/design/spec/layout/adaptive-ui.html#adaptive-ui-patterns)
+
+## Changes in App Layout 2.0
+
+- Distribution is now done with slots, so things have changed because of that,
+
+  **1.x**
+  ```
+  <app-drawer-layout>
+    <app-drawer>...</app-drawer>
+    <div>content</div>
+  </app-drawer-layout>
+  ```
+  **2.0**
+  ```
+  <app-drawer-layout>
+    <app-drawer slot="drawer">...</app-drawer>
+    <div>content</div>
+  </app-drawer-layout>
+  ```
+
+  same for `app-header-layout` and `app-box`.
+- In `app-drawer-layout`, the `drawer-toggle` element will not be automatically hidden
+when `app-drawer-layout` is not in narrow layout. To add this, add the following CSS rule where
+`app-drawer-layout` is used:
+
+  ```css
+  app-drawer-layout:not([narrow]) [drawer-toggle] {
+    display: none;
+  }
+  ```
+- `app-scrollpos-control` has been removed from App Layout in favor of using multiple scrolling regions to preserve the scroll position. In terms of UX, [`document.rootScroller`](https://github.com/bokand/NonDocumentRootScroller) is a new web platform API that will allow non-document scroll to hide the address bar on mobile.

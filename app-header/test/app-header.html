@@ -82,8 +82,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       function scrollEventHandler() {
         var nextTest = tests.shift();
         if (nextTest) {
-          nextTest.callback();
-          if (tests.length > 0) triggerScrollEvent();
+          requestAnimationFrame(function() {
+            Polymer.dom.flush();
+            nextTest.callback();
+            if (tests.length > 0) triggerScrollEvent();
+          });
         }
       }
 
@@ -98,6 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           else scroller.scrollTop = tests[0].y;
         }
       }
+
       if (tests.length > 0) {
         var scrollTarget = scroller === document.documentElement ? window : scroller;
         scrollTarget.addEventListener('scroll', scrollEventHandler);
@@ -106,7 +110,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     function assertHeaderIsFullSized(header) {
-      header._updateScrollState(header._scrollTop, true);
       var headerClientRect = header.getBoundingClientRect();
       assert.equal(headerClientRect.top, 0, 'full sized at ' + header._scrollTop);
       assert.equal(headerClientRect.bottom, headerClientRect.height,
@@ -114,14 +117,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     function assertHeaderIsCondensed(header) {
-      header._updateScrollState(header._scrollTop, true);
       var headerClientRect = header.getBoundingClientRect();
       assert.equal(headerClientRect.top + headerClientRect.height, header._stickyEl.offsetHeight,
           'condensed at ' + header._scrollTop);
     }
 
     function assertHeaderIsHidden(header) {
-      header._updateScrollState(header._scrollTop, true);
       var headerClientRect = header.getBoundingClientRect();
       assert.isBelow(headerClientRect.bottom, 0,
           'hidden at ' + header._scrollTop);
@@ -476,7 +477,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('sticky element reference', function() {
-        assert.equal(header._getStickyEl(), header.querySelector('[sticky]'));
+        Polymer.dom.flush();
+        assert.equal(header._stickyEl, header.querySelector('[sticky]'));
       });
 
       test('should reveal the entire header', function(done) {

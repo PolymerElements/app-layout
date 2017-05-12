@@ -30,7 +30,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../app-toolbar/app-toolbar.html">
   <link rel="import" href="../demo/sample-content.html">
 
-  <style is="custom-style">
+  <custom-style>
+    <style is="custom-style">
 
     body {
       margin: 0;
@@ -56,71 +57,83 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       color: #666;
     }
 
-  </style>
+    app-drawer-layout:not([narrow]) [drawer-toggle] {
+      display: none;
+    }
+
+    </style>
+  </custom-style>
 
 </head>
 <body unresolved>
 
-  <template is="dom-bind">
-    <app-drawer-layout>
+  <app-drawer-layout>
 
-      <app-drawer swipe-open>
-        <app-header-layout has-scrolling-region>
+    <app-drawer swipe-open slot="drawer">
+      <app-header-layout has-scrolling-region>
 
-          <app-header class="whiteHeader" waterfall fixed>
-            <app-toolbar>
-              <div main-title>Inbox</div>
-            </app-toolbar>
-          </app-header>
-
-          <template is="dom-repeat" id="menu" items="[[items]]">
-            <paper-icon-item class="iconItem">
-              <iron-icon class="grayIcon" icon="[[_randomIcon()]]" item-icon></iron-icon> <span>[[item]]</span>
-            </paper-icon-item>
-          </template>
-
-        </app-header-layout>
-      </app-drawer>
-
-      <app-header-layout>
-
-        <app-header class="blueHeader" condenses reveals effects="waterfall">
+        <app-header class="whiteHeader" waterfall fixed slot="header">
           <app-toolbar>
-            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <div main-title></div>
-            <paper-icon-button icon="search"></paper-icon-button>
-            <paper-icon-button icon="more-vert"></paper-icon-button>
-          </app-toolbar>
-          <app-toolbar></app-toolbar>
-          <app-toolbar>
-            <div spacer main-title>My Drive</div>
+            <div main-title>Inbox</div>
           </app-toolbar>
         </app-header>
 
-        <sample-content size="100"></sample-content>
+        <paper-icon-item class="iconItem">
+          <iron-icon class="grayIcon" icon="inbox" slot="item-icon"></iron-icon>
+          <span>Option Name</span>
+        </paper-icon-item>
+        <paper-icon-item class="iconItem">
+          <iron-icon class="grayIcon" icon="favorite" slot="item-icon"></iron-icon>
+          <span>Option Name</span>
+        </paper-icon-item>
+        <paper-icon-item class="iconItem">
+          <iron-icon class="grayIcon" icon="polymer" slot="item-icon"></iron-icon>
+          <span>Option Name</span>
+        </paper-icon-item>
+        <paper-icon-item class="iconItem">
+          <iron-icon class="grayIcon" icon="question-answer" slot="item-icon"></iron-icon>
+          <span>Option Name</span>
+        </paper-icon-item>
+        <paper-icon-item class="iconItem">
+          <iron-icon class="grayIcon" icon="send" slot="item-icon"></iron-icon>
+          <span>Option Name</span>
+        </paper-icon-item>
+        <paper-icon-item class="iconItem">
+          <iron-icon class="grayIcon" icon="archive" slot="item-icon"></iron-icon>
+          <span>Option Name</span>
+        </paper-icon-item>
+        <paper-icon-item class="iconItem">
+          <iron-icon class="grayIcon" icon="backup" slot="item-icon"></iron-icon>
+          <span>Option Name</span>
+        </paper-icon-item>
+        <paper-icon-item class="iconItem">
+          <iron-icon class="grayIcon" icon="dashboard" slot="item-icon"></iron-icon>
+          <span>Option Name</span>
+        </paper-icon-item>
 
       </app-header-layout>
+    </app-drawer>
 
-    </app-drawer-layout>
-  </template>
+    <app-header-layout>
 
-  <script>
-    (function(scope) {
-      var items = [];
-      var icons = ['inbox', 'favorite', 'polymer', 'question-answer', 'send', 'archive', 'backup', 'dashboard'];
+      <app-header class="blueHeader" condenses reveals effects="waterfall" slot="header">
+        <app-toolbar>
+          <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+          <div main-title></div>
+          <paper-icon-button icon="search"></paper-icon-button>
+          <paper-icon-button icon="more-vert"></paper-icon-button>
+        </app-toolbar>
+        <app-toolbar></app-toolbar>
+        <app-toolbar>
+          <div spacer main-title>My Drive</div>
+        </app-toolbar>
+      </app-header>
 
-      while (items.length < 10) {
-        items.push('Option Name');
-      }
+      <sample-content size="100"></sample-content>
 
-      scope._randomIcon = function() {
-        return icons[parseInt(icons.length * Math.random())];
-      };
+    </app-header-layout>
 
-      scope.items = items;
-
-    })(document.querySelector('template[is=dom-bind]'));
-  </script>
+  </app-drawer-layout>
 
 </body>
 </html>

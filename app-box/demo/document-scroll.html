@@ -24,129 +24,131 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../app-scroll-effects/effects/parallax-background.html">
   <link rel="import" href="../app-box.html">
 
-  <style is="custom-style">
+  <custom-style>
+    <style is="custom-style">
 
-    body {
-      margin: 0;
-      font-family: 'Roboto', 'Noto', sans-serif;
-      background-color: #eee;
-      scroll-behavior: smooth;
-    }
+      body {
+        margin: 0;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        background-color: #eee;
+        scroll-behavior: smooth;
+      }
 
-    header {
-      background-color: white;
-      height: 128px;
-    }
+      header {
+        background-color: white;
+        height: 128px;
+      }
 
-    app-toolbar {
-      font-size: 18px;
-      font-weight: 400;
-      letter-spacing: 5px;
-      text-align: center;
-      color: #1a237e;
-    }
+      app-toolbar {
+        font-size: 18px;
+        font-weight: 400;
+        letter-spacing: 5px;
+        text-align: center;
+        color: #1a237e;
+      }
 
-    .nav {
-      height: 64px;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      background-color: rgba(255, 255, 255, 0.8);
-    }
+      .nav {
+        height: 64px;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.8);
+      }
 
-    .nav li {
-      display: inline-block;
-      list-style: none;
-    }
+      .nav li {
+        display: inline-block;
+        list-style: none;
+      }
 
-    .nav a {
-      display: inline-block;
-      font-weight: 12px;
-      line-height: 64px;
-      text-decoration: none;
-      color: black;
-      font-weight: 300;
-      margin: 0 10px;
-    }
+      .nav a {
+        display: inline-block;
+        font-weight: 12px;
+        line-height: 64px;
+        text-decoration: none;
+        color: black;
+        font-weight: 300;
+        margin: 0 10px;
+      }
 
-    .nav a:hover {
-      color: #444;
-      border-bottom: 1px solid #999;
-    }
+      .nav a:hover {
+        color: #444;
+        border-bottom: 1px solid #999;
+      }
 
-    [threshold-triggered] {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1;
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      backdrop-filter: saturate(180%) blur(20px);
-    }
+      [threshold-triggered] {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        -webkit-backdrop-filter: saturate(180%) blur(20px);
+        backdrop-filter: saturate(180%) blur(20px);
+      }
 
-    .first, .second, .third, .fourth {
-      height: 640px;
-    }
+      .first, .second, .third, .fourth {
+        height: 640px;
+      }
 
-    .second {
-      --app-box-background-front-layer: {
-        background-image: url(//app-layout-assets.appspot.com/assets/bg2.jpg);
-        background-position: bottom;
-        padding-bottom: 120px;
-        margin-top: -20px;
-        height: 100%;
-      };
-    }
+      .second {
+        --app-box-background-front-layer: {
+          background-image: url(https://app-layout-assets.appspot.com/assets/bg2.jpg);
+          background-position: bottom;
+          padding-bottom: 120px;
+          margin-top: -20px;
+          height: 100%;
+        };
+      }
 
-    .third {
-      --app-box-background-front-layer: {
-        background-image: url(//app-layout-assets.appspot.com/assets/bg3.jpg);
-        background-position: bottom;
-        padding-bottom: 120px;
-        margin-top: -20px;
-        height: 100%;
-      };
-    }
+      .third {
+        --app-box-background-front-layer: {
+          background-image: url(https://app-layout-assets.appspot.com/assets/bg3.jpg);
+          background-position: bottom;
+          padding-bottom: 120px;
+          margin-top: -20px;
+          height: 100%;
+        };
+      }
 
-    .fourth {
-      --app-box-background-front-layer: {
-        background-image: url(//app-layout-assets.appspot.com/assets/bg4.jpg);
-        background-position: bottom;
-        padding-bottom: 120px;
-        margin-top: -20px;
-        height: 100%;
-      };
-    }
+      .fourth {
+        --app-box-background-front-layer: {
+          background-image: url(https://app-layout-assets.appspot.com/assets/bg4.jpg);
+          background-position: bottom;
+          padding-bottom: 120px;
+          margin-top: -20px;
+          height: 100%;
+        };
+      }
 
-    section {
-      padding-top: 100px;
-    }
+      section {
+        padding-top: 100px;
+      }
 
-    article {
-      font-weight: 100;
-      max-width: 500px;
-      text-align: center;
-      margin: 0 auto 100px auto;
-    }
-    article h2 {
-      font-weight: 100;
-      font-size: 50px;
-      margin: 5px;
-    }
-    article p {
-      font-size: 18px;
-      line-height: 30px;
-    }
+      article {
+        font-weight: 100;
+        max-width: 500px;
+        text-align: center;
+        margin: 0 auto 100px auto;
+      }
+      article h2 {
+        font-weight: 100;
+        font-size: 50px;
+        margin: 5px;
+      }
+      article p {
+        font-size: 18px;
+        line-height: 30px;
+      }
 
-    article hr {
-      width: 100px;
-      height: 1px;
-      border: none;
-      margin: 20px auto;
-      background-color: black;
-    }
+      article hr {
+        width: 100px;
+        height: 1px;
+        border: none;
+        margin: 20px auto;
+        background-color: black;
+      }
 
-  </style>
+    </style>
+  </custom-style>
 </head>
 <body class="fullbleed" unresolved>
 
@@ -177,7 +179,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           In this case, we create a custom background by adding the attribute `background` to the `img` in
           the light DOM.
         -->
-        <img background src="//app-layout-assets.appspot.com/assets/bg1.jpg" style="width:100%; height: 900px" />
+        <img slot="background" src="//app-layout-assets.appspot.com/assets/bg1.jpg" style="width:100%; height: 900px" />
       </app-box>
     </section>
 

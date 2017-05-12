@@ -1,4 +1,4 @@
-##&lt;app-grid&gt;
+## &lt;app-grid&gt;
 
 app-grid is a helper class useful for creating responsive, fluid grid layouts using custom properties.
 Because custom properties can be defined inside a `@media` rule, you can customize the grid layout
@@ -68,7 +68,7 @@ you can specify the number of columns the item should expand to by setting the c
 
     /* Only the first item should expand */
     .item:first-child {
-      @apply(--app-grid-expandible-item);
+      @apply --app-grid-expandible-item;
     }
   </style>
 </template>
@@ -122,3 +122,7 @@ Custom property                               | Description                     
 `--app-grid-gutter`                           | The space between two items.                               | 0px
 `--app-grid-item-height`                      | The height of the items.                                   | auto
 `--app-grid-expandible-item-columns`          | The number of columns an expandible item should expand to. | 1
+
+### CSS grid layout
+
+[CSS grid layout](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout) is a new layout system for CSS that lets you create complex grids. It's richer than app-grid in many cases, but it's only supported in a [few browsers](http://caniuse.com/#search=css%20grid%20layout).

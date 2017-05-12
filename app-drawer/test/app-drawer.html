@@ -30,7 +30,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <test-fixture id="testDrawer">
     <template>
-      <app-drawer></app-drawer>
+      <app-drawer>
+        <input type="text">
+        <div tabindex="0">Div</div>
+        <span>Not focusable</span>
+      </app-drawer>
     </template>
   </test-fixture>
 
@@ -40,27 +44,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-  <test-fixture id="focusDrawer">
-    <template>
-      <focus-drawer></focus-drawer>
-    </template>
-  </test-fixture>
-
-  <dom-module id="focus-drawer">
-    <template>
-      <app-drawer>
-        <input type="text">
-        <div tabindex="0">Div</div>
-        <span>Not focusable</span>
-      </app-drawer>
-    </template>
-    <script>
-    HTMLImports.whenReady(function() {
-      Polymer({ is: 'focus-drawer' });
-    });
-    </script>
-  </dom-module>
-
   <script>
 
     suite('basic features', function() {
@@ -69,7 +52,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       function fireKeydownEvent(target, keyCode, shiftKey) {
         var e = new CustomEvent('keydown', {
           bubbles: true,
-          cancelable: true          
+          cancelable: true
         });
         e.keyCode = keyCode;
         e.shiftKey = !!shiftKey;
@@ -120,7 +103,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('set scroll direction', function(done) {
         Polymer.RenderStatus.afterNextRender(drawer, function() {
-          assert.equal(drawer['__polymerGesturesTouchAction'], 'pan-y');
+          assert.oneOf(drawer['__polymerGesturesTouchAction'], ['y', 'pan-y']);
           done();
         });
       });
@@ -132,15 +115,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           drawer.transitionDuration = 10;
 
           assertTransitionDuration('10ms');
-          done();
-        });
-      });
-
-      test('transitions are enabled after attached', function(done) {
-        assertTransitionDuration('0ms');
-
-        Polymer.RenderStatus.afterNextRender(drawer, function() {
-          assertTransitionDuration('200ms');
           done();
         });
       });
@@ -184,6 +158,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('left drawer opens and closes', function() {
         drawer.align = 'left';
+        drawer.transitionDuration = 0;
 
         var contentContainerClientRect = contentContainer.getBoundingClientRect();
         assert.isTrue(contentContainerClientRect.right <= 0);
@@ -201,6 +176,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('right drawer opens and closes', function() {
         drawer.align = 'right';
+        drawer.transitionDuration = 0;
 
         var contentContainerClientRect = contentContainer.getBoundingClientRect();
         assert.isTrue(contentContainerClientRect.left >= window.innerWidth);
@@ -240,9 +216,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(drawer.getWidth(), contentContainer.offsetWidth);
       });
 
-      test('app-drawer-reset-layout', function() {
+      test('app-reset-layout', function() {
         var listenerSpy = sinon.spy();
-        drawer.addEventListener('app-drawer-reset-layout', listenerSpy);
+        drawer.addEventListener('app-reset-layout', listenerSpy);
         drawer.align = 'right';
 
         assert.isTrue(listenerSpy.called);
@@ -285,7 +261,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   assert.isFalse(drawer.opened);
                   assert.equal(listenerSpy.callCount, 4,
                     'should fire after swiping even if opened state unchanged');
-                  
+
                   drawer.fire('track', { state: 'start' });
                   drawer.fire('track', { state: 'track', dx: 200, ddx: 200 });
                   drawer.fire('track', { state: 'end', dx: 200, ddx: 0 });
@@ -309,7 +285,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               }, 150);
             }, 150);
           }, 150);
-        }, 100);
+        }, 300);
       });
 
       test('app-drawer-transitioned when transitionDuration is 0', function(done) {
@@ -344,7 +320,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 drawer.fire('track', { state: 'start' });
                 drawer.fire('track', { state: 'track', dx: 200, ddx: 200 });
                 drawer.fire('track', { state: 'end', dx: 200, ddx: 0 });
-
                 window.setTimeout(function() {
                   assert.isTrue(drawer.opened);
                   assert.equal(listenerSpy.callCount, 4, 'should fire after swiping');
@@ -363,7 +338,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               }, 50);
             }, 50);
           }, 50);
-        }, 100);
+        }, 300);
       });
 
       test('disable swipe', function(done) {
@@ -567,10 +542,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: 6, ddx: 6 });
+          drawer.fire('track', { state: 'end', dx: 50, ddx: 50 });
 
           assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
-          assertTransitionDurationBelow(100);
+          assertTransitionDurationBelow(150);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
 
@@ -597,10 +572,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: -6, ddx: -6 });
+          drawer.fire('track', { state: 'end', dx: -50, ddx: -50 });
 
           assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
-          assertTransitionDurationBelow(100);
+          assertTransitionDurationBelow(150);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
 
@@ -626,10 +601,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: -6, ddx: -6 });
+          drawer.fire('track', { state: 'end', dx: -50, ddx: -50 });
 
           assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
-          assertTransitionDurationBelow(100);
+          assertTransitionDurationBelow(150);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
 
@@ -656,10 +631,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: 6, ddx: 6 });
+          drawer.fire('track', { state: 'end', dx: 50, ddx: 50 });
 
           assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
-          assertTransitionDurationBelow(100);
+          assertTransitionDurationBelow(150);
           assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
           assertDrawerStylesReset();
 
@@ -704,9 +679,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('focus trap', function(done) {
-        var focusDrawer = fixture('focusDrawer');
-        var root = Polymer.dom(focusDrawer.root);
-        var drawer = root.querySelector('app-drawer');
         var input = Polymer.dom(drawer).querySelector('input');
         var div = Polymer.dom(drawer).querySelector('div[tabindex]');
         var inputFocusSpy = sinon.spy(input, 'focus');
@@ -745,9 +717,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('focus trap with app-drawer tabindex set', function(done) {
-        var focusDrawer = fixture('focusDrawer');
-        var root = Polymer.dom(focusDrawer.root);
-        var drawer = root.querySelector('app-drawer');
         var input = Polymer.dom(drawer).querySelector('input');
         var drawerFocusSpy = sinon.spy(drawer, 'focus');
         var inputFocusSpy = sinon.spy(input, 'focus');
@@ -766,12 +735,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('no focus trap', function(done) {
-        var focusDrawer = fixture('focusDrawer');
-        var root = Polymer.dom(focusDrawer.root);
-        var drawer = root.querySelector('app-drawer');
         var input = Polymer.dom(drawer).querySelector('input');
         var inputFocusSpy = sinon.spy(input, 'focus');
-  
+
         Polymer.RenderStatus.afterNextRender(drawer, function() {
           drawer.transitionDuration = 0;
           drawer.noFocusTrap = true;
@@ -807,12 +773,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         drawer.persistent = true;
 
-        assert.equal(window.getComputedStyle(scrim)['visibility'], 'hidden');
+        assert.equal(window.getComputedStyle(scrim)['opacity'], 0);
       });
 
-      test('tap on scrim closes drawer', function() {
+      test('click on scrim closes drawer', function() {
         drawer.opened = true;
-        drawer.fire('tap', null /* detail */, { node: scrim });
+        drawer.fire('click', null /* detail */, { node: scrim });
 
         assert.isFalse(drawer.opened);
       });

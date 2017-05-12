@@ -18,6 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../../web-component-tester/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
   <link rel="import" href="../../../test-fixture/test-fixture.html">
+  <link rel="import" href="../../app-header/app-header.html">
   <link rel="import" href="../helpers.html">
 
   <style>
@@ -35,7 +36,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body>
 
   <div id="region">
-    <div class="content"></div>
+    <div class="content">
+      <app-header></app-header>
+    </div>
   </div>
   <div class="content"></div>
 
@@ -73,10 +76,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       });
 
-      test('behavior: silent', function() {
-        Polymer.AppLayout.scroll({left: 100, top: 200, behavior: 'silent'});
+      test('behavior: silent', function(done) {
+        var header = document.querySelector('app-header');
 
-        assert.isTrue(document.documentElement.classList.contains('app-layout-silent-scroll'));
+        assert.isFalse(header.disabled);
+        Polymer.AppLayout.scroll({left: 100, top: 200, behavior: 'silent'});
+        assert.isTrue(header.hasAttribute('silent-scroll'));
+        requestAnimationFrame(function() {
+          assert.isFalse(header.hasAttribute('silent-scroll'));
+          done();
+        });
       });
 
       test('behavior: smooth', function(done) {

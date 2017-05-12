@@ -18,7 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../iron-media-query/iron-media-query.html">
 <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../paper-item/paper-item.html">
-<link rel="import" href="../../../paper-menu/paper-menu.html">
+<link rel="import" href="../../../paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../paper-tabs/paper-tabs.html">
 
 <dom-module id="x-app">
@@ -54,21 +54,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <app-drawer-layout force-narrow>
 
-      <app-drawer id="drawer">
+      <app-drawer id="drawer" slot="drawer">
 
         <app-toolbar></app-toolbar>
 
         <!-- Nav on mobile: side nav menu -->
-        <paper-menu selected="{{selected}}" attr-for-selected="name">
+        <paper-listbox selected="{{selected}}" attr-for-selected="name">
           <template is="dom-repeat" items="{{items}}">
             <paper-item name$="{{item}}">{{item}}</paper-item>
           </template>
-        </paper-menu>
+        </paper-listbox>
 
       </app-drawer>
 
       <app-header-layout>
-        <app-header class="main-header">
+        <app-header class="main-header" slot="header">
 
           <app-toolbar>
             <paper-icon-button class="menu-button" icon="menu" drawer-toggle hidden$="{{wideLayout}}"></paper-icon-button>

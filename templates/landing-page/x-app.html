@@ -35,26 +35,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .toolbar {
-        @apply(--layout-horizontal);
-        @apply(--layout-end-justified);
+        @apply --layout-horizontal;
+        @apply --layout-end-justified;
         background-color: rgba(255, 255, 255, 0.95);
       }
 
       .tabs {
         height: 100%;
-        @apply(--layout-horizontal);
+        @apply --layout-horizontal;
       }
 
       .tabs > a {
-        @apply(--layout-vertical);
-        @apply(--layout-center-center);
+        @apply --layout-vertical;
+        @apply --layout-center-center;
         margin: 12px 16px 12px;
         border-bottom: 1px solid #222;
       }
 
       header {
-        @apply(--layout-vertical);
-        @apply(--layout-center-center);
+        @apply --layout-vertical;
+        @apply --layout-center-center;
         height: calc(100vh - 64px);
         padding: 0 16px;
         background-image: url('//app-layout-assets.appspot.com/assets/landing-page/glass_explorer_food_2.png');
@@ -79,13 +79,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .container {
-        @apply(--layout-horizontal);
+        @apply --layout-horizontal;
         max-width: 800px;
         margin: 0 auto;
       }
 
       .container > * {
-        @apply(--layout-flex);
+        @apply --layout-flex;
       }
 
       .container img {
@@ -105,7 +105,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       @media (max-width: 600px) {
         .container {
-          @apply(--layout-vertical);
+          @apply --layout-vertical;
         }
       }
 
@@ -113,7 +113,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <app-header-layout>
 
-      <app-header reveals effects="waterfall">
+      <app-header reveals effects="waterfall" slot="header">
 
         <app-toolbar class="toolbar">
           <div class="tabs">

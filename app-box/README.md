@@ -1,4 +1,4 @@
-##&lt;app-box&gt;
+## &lt;app-box&gt;
 
 app-box is a container element that can have scroll effects - visual effects based on
 scroll position. For example, the parallax effect can be used to move an image at a slower
@@ -6,7 +6,7 @@ rate than the foreground.
 
 ```html
 <app-box style="height: 100px;" effects="parallax-background">
-  <img background src="picture.png" style="width: 100%; height: 600px;">
+  <img slot="background" src="picture.png" style="width: 100%; height: 600px;">
 </app-box>
 ```
 

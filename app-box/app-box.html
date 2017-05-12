@@ -20,7 +20,7 @@ rate than the foreground.
 
 ```html
 <app-box style="height: 100px;" effects="parallax-background">
-  <img background src="picture.png" style="width: 100%; height: 600px;">
+  <img slot="background" src="picture.png" style="width: 100%; height: 600px;">
 </app-box>
 ```
 
@@ -97,7 +97,7 @@ Mixin | Description | Default
       }
 
       #background {
-        @apply(--layout-fit);
+        @apply --layout-fit;
         overflow: hidden;
         height: 100%;
       }
@@ -106,7 +106,7 @@ Mixin | Description | Default
         min-height: 100%;
         pointer-events: none;
         background-size: cover;
-        @apply(--app-box-background-front-layer);
+        @apply --app-box-background-front-layer;
       }
 
       #contentContainer {
@@ -123,11 +123,11 @@ Mixin | Description | Default
 
     <div id="background">
       <div id="backgroundFrontLayer">
-        <content select="[background]"></content>
+        <slot name="background"></slot>
       </div>
     </div>
     <div id="contentContainer">
-      <content id="content"></content>
+      <slot></slot>
     </div>
   </template>
 
@@ -155,13 +155,24 @@ Mixin | Description | Default
         this.resetLayout();
       },
 
+      _debounceRaf: function(fn) {
+        var self = this;
+        if (this._raf) {
+          window.cancelAnimationFrame(this._raf);
+        }
+        this._raf = window.requestAnimationFrame(function() {
+          self._raf = null;
+          fn.call(self);
+        });
+      },
+
       /**
        * Resets the layout. This method is automatically called when the element is attached to the DOM.
        *
        * @method resetLayout
        */
       resetLayout: function() {
-        this.debounce('_resetLayout', function() {
+        this._debounceRaf(function() {
           // noop if the box isn't in the rendered tree
           if (this.offsetWidth === 0 && this.offsetHeight === 0) {
             return;
@@ -177,7 +188,7 @@ Mixin | Description | Default
           this._setUpEffect();
           this._updateScrollState(scrollTop);
           this.disabled = savedDisabled;
-        }, 1);
+        });
       },
 
       _getElementTop: function() {

@@ -61,15 +61,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .navItem {
-        @apply(--layout-self-start);
+        @apply --layout-self-start;
         margin-top: 13px;
         width: 88px;
       }
 
       .spacer {
-        @apply(--layout);
-        @apply(--layout-flex-auto);
-        @apply(--layout-center-center);
+        @apply --layout;
+        @apply --layout-flex-auto;
+        @apply --layout-center-center;
       }
 
       .logo {
@@ -111,14 +111,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       paper-tab {
-        @apply(--layout-flex-none);
+        @apply --layout-flex-none;
         padding: 0;
         --paper-tab-ink: #31f0ef;
       }
 
       paper-tab a {
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
         text-decoration: none;
         text-transform: uppercase;
         color: #7c7c7c;
@@ -154,7 +154,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .profileName {
-        @apply(--layout-flex);
+        @apply --layout-flex;
         margin-left: 20px;
         font-size: 14px;
         font-weight: 500;
@@ -216,7 +216,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <app-drawer-layout drawer-width="288px" force-narrow>
       <!-- navigation drawer for small screen sizes -->
-      <app-drawer id="drawer" swipe-open="[[smallScreen]]">
+      <app-drawer slot="drawer" id="drawer" swipe-open="[[smallScreen]]">
         <template is="dom-if" if="[[smallScreen]]">
           <app-toolbar class="profileBar">
             <img class="profilePic" src="//app-layout-assets.appspot.com/assets/shrine/profile_pic.jpg"  width="30" height="30">
@@ -231,9 +231,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </template>
       </app-drawer>
 
-      <app-header-layout>
+      <app-header-layout id="headerLayout">
         <!-- main header -->
-        <app-header id="header" effects="waterfall" fixed="[[smallScreen]]" condenses="[[!smallScreen]]" reveals="[[!smallScreen]]">
+        <app-header slot="header" effects="waterfall" fixed="[[smallScreen]]" condenses="[[!smallScreen]]" reveals="[[!smallScreen]]">
           <app-toolbar id="mainToolbar">
             <div class="navItem leftItem">
               <paper-icon-button icon="menu" drawer-toggle alt="Toogle navigation menu"></paper-icon-button>
@@ -341,7 +341,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       '_hashDidChange(route.path, items, featuredItems)'
     ],
 
-    ready: function() {
+    attached: function() {
       this.async(function() {
         if (!this.route.path) {
           this.set('route.path', 'feature');
@@ -354,17 +354,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _getItemsCopy: function(items) {
-      return items.slice();
+      return items ? items.slice() : [];
     },
 
     _getFeaturedItem: function(featuredItems, section) {
-      return featuredItems.filter(function(item) {
-        return item.category.toLowerCase() === section;
-      }).pop();
+      if (featuredItems && section) {
+        return featuredItems.filter(function(item) {
+          return item.category.toLowerCase() === section;
+        }).pop();
+      }
+      return '';
     },
 
     _getDetailItem: function(items, id) {
-      return items[id];
+      if (items) {
+        return items[id];
+      }
     },
 
     _computePage: function(onDetailPage) {
@@ -372,9 +377,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _hashDidChange: function() {
-      // TODO(blasten) Polymer.AppScrollEffects(0);
-      this.$.header._scrollTop = 0;
-      this.$.header.resetLayout();
+      Polymer.AppLayout.scroll({ top: 0, behavior: 'silent' });
+      this.$.headerLayout.resetLayout();
       this.$.drawer.close();
     },
 
