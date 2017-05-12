@@ -9,12 +9,10 @@ addons:
     sources:
       - google-chrome
     packages:
-      - google-chrome-beta
+      - google-chrome-stable
 before_script:
-  - npm install -g bower polymer-cli@next
+  - npm install -g polymer-cli
   - polymer install --variants
-  - sudo mv /usr/bin/google-chrome /usr/bin/google-chrome-old
-  - sudo mv /usr/bin/google-chrome-beta /usr/bin/google-chrome
 script:
   - xvfb-run polymer test
   - >-
