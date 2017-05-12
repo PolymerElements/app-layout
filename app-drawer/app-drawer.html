@@ -45,6 +45,17 @@ Custom property                  | Description                            | Defa
 `--app-drawer-content-container` | Mixin for the drawer content container | {}
 `--app-drawer-scrim-background`  | Background for the scrim               | rgba(0, 0, 0, 0.5)
 
+**NOTE:** If you use <app-drawer> with <app-drawer-layout> and specify a value for
+`--app-drawer-width`, that value must be accessible by both elements. This can be done by
+defining the value on the `:host` that contains <app-drawer-layout> (or `html` if outside
+a shadow root):
+
+```css
+:host {
+  --app-drawer-width: 300px;
+}
+```
+
 @group App Elements
 @element app-drawer
 @demo app-drawer/demo/left-drawer.html Simple Left Drawer
@@ -101,11 +112,11 @@ Custom property                  | Description                            | Defa
         @apply --app-drawer-content-container;
       }
 
-      :host([persistent]) > #contentContainer {
+      #contentContainer[persistent] {
         width: 100%;
       }
 
-      :host([position=right]) > #contentContainer {
+      #contentContainer[position=right] {
         right: 0;
         left: auto;
 
@@ -113,7 +124,7 @@ Custom property                  | Description                            | Defa
         transform: translate3d(100%, 0, 0);
       }
 
-      :host([swipe-open]) > #contentContainer::after {
+      #contentContainer[swipe-open]::after {
         position: fixed;
         top: 0;
         bottom: 0;
@@ -126,12 +137,12 @@ Custom property                  | Description                            | Defa
         content: '';
       }
 
-      :host([swipe-open][position=right]) > #contentContainer::after {
+      #contentContainer[swipe-open][position=right]::after {
         right: 100%;
         left: auto;
       }
 
-      :host([opened]) > #contentContainer {
+      #contentContainer[opened] {
         -webkit-transform: translate3d(0, 0, 0);
         transform: translate3d(0, 0, 0);
       }
@@ -151,24 +162,17 @@ Custom property                  | Description                            | Defa
         background: var(--app-drawer-scrim-background, rgba(0, 0, 0, 0.5));
       }
 
-      :host([opened]) > #scrim {
+      #scrim.visible {
         opacity: 1;
-      }
-
-      :host([opened][persistent]) > #scrim {
-        visibility: hidden;
-        /**
-         * NOTE(keanulee): Keep both opacity: 0 and visibility: hidden to prevent the
-         * scrim from showing when toggling between closed and opened/persistent.
-         */
-
-        opacity: 0;
       }
     </style>
 
     <div id="scrim" on-click="close"></div>
 
-    <div id="contentContainer">
+    <!-- HACK(keanulee): Bind attributes here (in addition to :host) for styling to workaround Safari
+    bug. https://bugs.webkit.org/show_bug.cgi?id=170762 -->
+    <div id="contentContainer" opened$="[[opened]]" persistent$="[[persistent]]"
+        position$="[[position]]" swipe-open$="[[swipeOpen]]">
       <slot></slot>
     </div>
   </template>
@@ -635,7 +639,9 @@ Custom property                  | Description                            | Defa
         }
       },
 
-      _openedPersistentChanged: function() {
+      _openedPersistentChanged: function(opened, persistent) {
+        this.toggleClass('visible', opened && !persistent, this.$.scrim);
+
         // Use a debounce timer instead of transitionend since transitionend won't fire when
         // app-drawer is display: none.
         this.debounce('_resetDrawerState', this._resetDrawerState, this.transitionDuration);
