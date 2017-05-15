@@ -252,8 +252,7 @@ a shadow root):
         // Disable drawer transitions until after app-drawer-layout sets the initial opened state.
         var drawer = this.drawer;
         if (drawer) {
-          this._savedDrawerTransitionDuration = drawer.transitionDuration;
-          drawer.transitionDuration = 0;
+          drawer.setAttribute('no-transition', '');
         }
       },
 
@@ -281,11 +280,10 @@ a shadow root):
           } else {
             drawer.opened = drawer.persistent = true;
           }
-          if (this._savedDrawerTransitionDuration) {
+          if (drawer.hasAttribute('no-transition')) {
             // Enable drawer transitions after app-drawer-layout sets the initial opened state.
             Polymer.RenderStatus.afterNextRender(this, function() {
-              drawer.transitionDuration = this._savedDrawerTransitionDuration;
-              this._savedDrawerTransitionDuration = 0;
+              drawer.removeAttribute('no-transition');
             });
           }
           this._drawerNeedsReset = false;

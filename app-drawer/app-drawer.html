@@ -165,6 +165,10 @@ a shadow root):
       #scrim.visible {
         opacity: 1;
       }
+
+      :host([no-transition]) #contentContainer {
+        transition-property: none;
+      }
     </style>
 
     <div id="scrim" on-click="close"></div>
