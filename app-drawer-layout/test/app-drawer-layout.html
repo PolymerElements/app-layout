@@ -135,11 +135,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('disable initial drawer transition', function(done) {
-        assert.equal(drawer.transitionDuration, 0);
+        assert.isTrue(drawer.hasAttribute('no-transition'));
         Polymer.dom.flush();
 
         window.setTimeout(function() {
-          assert.equal(drawer.transitionDuration, 200);
+          assert.isFalse(drawer.hasAttribute('no-transition'));
           done();
         }, 150);
       });
