@@ -100,4 +100,16 @@ Add the `fullbleed` attribute to app-drawer-layout to make it fit the size of it
 
 Custom property                          | Description                          | Default
 -----------------------------------------|--------------------------------------|---------
+`--app-drawer-width`                     | Width of the drawer                  | 256px
 `--app-drawer-layout-content-transition` | Transition for the content container | none
+
+**NOTE:** If you use <app-drawer> with <app-drawer-layout> and specify a value for
+`--app-drawer-width`, that value must be accessible by both elements. This can be done by
+defining the value on the `:host` that contains <app-drawer-layout> (or `html` if outside
+a shadow root):
+
+```css
+:host {
+  --app-drawer-width: 300px;
+}
+```

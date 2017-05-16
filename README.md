@@ -197,4 +197,13 @@ when `app-drawer-layout` is not in narrow layout. To add this, add the following
     display: none;
   }
   ```
+- In `app-drawer-layout`, if you specify a value for `--app-drawer-width`, that value must be
+accessible by both `app-drawer` and `app-drawer-layout`. This can be done by defining the value
+on the `:host` that contains <app-drawer-layout> (or `html` if outside a shadow root):
+
+  ```css
+  :host {
+    --app-drawer-width: 300px;
+  }
+  ```
 - `app-scrollpos-control` has been removed from App Layout in favor of using multiple scrolling regions to preserve the scroll position. In terms of UX, [`document.rootScroller`](https://github.com/bokand/NonDocumentRootScroller) is a new web platform API that will allow non-document scroll to hide the address bar on mobile.
