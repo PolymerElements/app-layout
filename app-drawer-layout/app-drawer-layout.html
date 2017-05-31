@@ -149,8 +149,11 @@ a shadow root):
         z-index: 1;
       }
 
-      :host([fullbleed]) {
-        @apply --layout-fit;
+
+      @media not print {
+        :host([fullbleed]) {
+          @apply --layout-fit;
+        }
       }
 
       #contentContainer {
