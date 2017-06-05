@@ -172,6 +172,7 @@ Here are some web apps built with App Layout:
 
 - Distribution is now done with slots, so things have changed because of that,
 
+  ##### app-drawer-layout
   **1.x**
   ```
   <app-drawer-layout>
@@ -187,7 +188,36 @@ Here are some web apps built with App Layout:
   </app-drawer-layout>
   ```
 
-  same for `app-header-layout` and `app-box`.
+  ##### app-header-layout
+  **1.x**
+  ```
+  <app-header-layout>
+    <app-header>...</app-header>
+    <div>content</div>
+  </app-header-layout>
+  ```
+  **2.0**
+  ```
+  <app-header-layout>
+    <app-header slot="header">...</app-header>
+    <div>content</div>
+  </app-header-layout>
+  ```
+
+  ##### app-box
+  **1.x**
+  ```
+  <app-box effects="...">
+    <img background ...>
+  </app-box>
+  ```
+  **2.0**
+  ```
+  <app-box effects="...">
+    <img slot="background" ...>
+  </app-box>
+  ```
+
 - In `app-drawer-layout`, the `drawer-toggle` element will not be automatically hidden
 when `app-drawer-layout` is not in narrow layout. To add this, add the following CSS rule where
 `app-drawer-layout` is used:
