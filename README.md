@@ -6,7 +6,7 @@ A collection of elements, along with guidelines and templates that can be used t
 ```
 <custom-element-demo height="368">
   <template>
-    <script src="../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="app-drawer/app-drawer.html">
     <link rel="import" href="app-header/app-header.html">
     <link rel="import" href="app-toolbar/app-toolbar.html">
