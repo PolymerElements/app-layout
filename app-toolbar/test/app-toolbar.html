@@ -70,7 +70,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('Items', function() {
         var barHeight = toolbar.offsetHeight;
         var topItem = document.elementFromPoint(0, 0);
-        var title = Polymer.dom(toolbar).querySelector('[main-title]');
+        var title = toolbar.querySelector('[main-title]');
         var titleRect = title.getBoundingClientRect();
         var barRect = toolbar.getBoundingClientRect();
         var bottomItem = document.elementFromPoint(0, barHeight-1);

@@ -8,8 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../polymer/polymer-element.html">
 
 <!--
 app-toolbar is a horizontal toolbar containing items that can be used for
@@ -61,11 +60,11 @@ Custom property              | Description                  | Default
 
 <dom-module id="app-toolbar">
   <template>
-    <style>
 
+    <style>
       :host {
-        @apply --layout-horizontal;
-        @apply --layout-center;
+        display: flex;
+        align-items: center;
         position: relative;
         height: 64px;
         padding: 0 16px;
@@ -85,7 +84,7 @@ Custom property              | Description                  | Default
       :host ::slotted([main-title]),
       :host ::slotted([condensed-title]) {
         pointer-events: none;
-        @apply --layout-flex;
+        display: flex;
       }
 
       :host ::slotted([bottom-item]) {
@@ -112,8 +111,14 @@ Custom property              | Description                  | Default
   </template>
 
   <script>
-    Polymer({
-      is: 'app-toolbar'
-    });
+
+    class AppToolbar extends Polymer.Element {
+      static get is() {
+        return "app-toolbar";
+      }
+    }
+
+    customElements.define(AppToolbar.is, AppToolbar);
+
   </script>
 </dom-module>
