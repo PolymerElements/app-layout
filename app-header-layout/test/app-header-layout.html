@@ -144,7 +144,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         header.fixed = true;
         Polymer.dom(headerLayout).appendChild(header);
         Polymer.dom.flush();
-        header.fire('app-reset-layout');
+        headerLayout.fire('app-reset-layout', null, { node: header });
         flush(function() {
           assert.equal(headerLayout.$.contentContainer.style.marginTop,
               header.offsetHeight + 'px');

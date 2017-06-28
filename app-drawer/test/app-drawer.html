@@ -17,7 +17,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../../web-component-tester/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
-  <link rel="import" href="../../../polymer/polymer.html">
   <link rel="import" href="../../../test-fixture/test-fixture.html">
   <link rel="import" href="../app-drawer.html">
   <style is="custom-style">
@@ -693,8 +692,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('focus trap', function(done) {
-        var input = Polymer.dom(drawer).querySelector('input');
-        var div = Polymer.dom(drawer).querySelector('div[tabindex]');
+        var input = drawer.querySelector('input');
+        var div = drawer.querySelector('div[tabindex]');
         var inputFocusSpy = sinon.spy(input, 'focus');
         var divFocusSpy = sinon.spy(div, 'focus');
 
@@ -731,7 +730,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('focus trap with app-drawer tabindex set', function(done) {
-        var input = Polymer.dom(drawer).querySelector('input');
+        var input = drawer.querySelector('input');
         var drawerFocusSpy = sinon.spy(drawer, 'focus');
         var inputFocusSpy = sinon.spy(input, 'focus');
 
@@ -749,7 +748,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('no focus trap', function(done) {
-        var input = Polymer.dom(drawer).querySelector('input');
+        var input = drawer.querySelector('input');
         var inputFocusSpy = sinon.spy(input, 'focus');
 
         Polymer.RenderStatus.afterNextRender(drawer, function() {

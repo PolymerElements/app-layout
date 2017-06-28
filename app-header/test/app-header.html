@@ -83,7 +83,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var nextTest = tests.shift();
         if (nextTest) {
           requestAnimationFrame(function() {
-            Polymer.dom.flush();
             nextTest.callback();
             if (tests.length > 0) triggerScrollEvent();
           });
@@ -477,7 +476,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('sticky element reference', function() {
-        Polymer.dom.flush();
         assert.equal(header._stickyEl, header.querySelector('[sticky]'));
       });
 

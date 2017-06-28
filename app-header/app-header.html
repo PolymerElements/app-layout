@@ -8,10 +8,9 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
-<link rel="import" href="../app-layout-behavior/app-layout-behavior.html">
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../app-scroll-effects/app-scroll-effects-mixin.html">
+<link rel="import" href="../app-layout-mixin/app-layout-mixin.html">
 
 <!--
 app-header is container element for app-toolbars at the top of the screen that can have scroll
@@ -257,13 +256,21 @@ Mixin | Description | Default
       }
 
       #background {
-        @apply --layout-fit;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
         overflow: hidden;
       }
 
       #backgroundFrontLayer,
       #backgroundRearLayer {
-        @apply --layout-fit;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
         height: 100%;
         pointer-events: none;
         background-size: cover;
@@ -311,15 +318,18 @@ Mixin | Description | Default
   </template>
 
   <script>
-    Polymer({
-      is: 'app-header',
+    class AppHeader extends Polymer.AppLayoutMixin(Polymer.AppScrollEffectsMixin(Polymer.Element)) {
 
-      behaviors: [
-        Polymer.AppScrollEffectsBehavior,
-        Polymer.AppLayoutBehavior
-      ],
+      static get is() {
+        return 'app-header';
+      }
 
-      properties: {
+      // static get behaviors() { return [
+      //   Polymer.AppScrollEffectsBehavior,
+      //   Polymer.AppLayoutBehavior
+      // ]}
+
+      static get properties() { return {
         /**
          * If true, the header will automatically collapse when scrolling down.
          * That is, the `sticky` element remains visible when the header is fully condensed
@@ -378,59 +388,63 @@ Mixin | Description | Default
           reflectToAttribute: true,
           value: false
         }
-      },
+      }}
 
-      observers: [
+      static get observers() { return [
         '_configChanged(isAttached, condenses, fixed)'
-      ],
+      ]}
 
-      /**
-       * A cached offsetHeight of the current element.
-       *
-       * @type {number}
-       */
-      _height: 0,
+      constructor() {
+        super();
 
-      /**
-       * The distance in pixels the header will be translated to when scrolling.
-       *
-       * @type {number}
-       */
-      _dHeight: 0,
+        /**
+         * A cached offsetHeight of the current element.
+         *
+         * @type {number}
+         */
+        this._height = 0;
 
-      /**
-       * The offsetTop of `_stickyEl`
-       *
-       * @type {number}
-       */
-      _stickyElTop: 0,
+        /**
+         * The distance in pixels the header will be translated to when scrolling.
+         *
+         * @type {number}
+         */
+        this._dHeight = 0;
 
-      /**
-       * A reference to the element that remains visible when the header condenses.
-       *
-       * @type {HTMLElement}
-       */
-      _stickyElRef: null,
+        /**
+         * The offsetTop of `_stickyEl`
+         *
+         * @type {number}
+         */
+        this._stickyElTop = 0;
 
-      /**
-       * The header's top value used for the `transformY`
-       *
-       * @type {number}
-       */
-      _top: 0,
+        /**
+         * A reference to the element that remains visible when the header condenses.
+         *
+         * @type {HTMLElement}
+         */
+        this._stickyElRef = null;
 
-      /**
-       * The current scroll progress.
-       *
-       * @type {number}
-       */
-      _progress: 0,
+        /**
+         * The header's top value used for the `transformY`
+         *
+         * @type {number}
+         */
+        this._top = 0;
 
-      _wasScrollingDown: false,
-      _initScrollTop: 0,
-      _initTimestamp: 0,
-      _lastTimestamp: 0,
-      _lastScrollTop: 0,
+        /**
+         * The current scroll progress.
+         *
+         * @type {number}
+         */
+        this._progress = 0;
+
+        this._wasScrollingDown = false;
+        this._initScrollTop = 0;
+        this._initTimestamp = 0;
+        this._lastTimestamp = 0;
+        this._lastScrollTop = 0;
+      }
 
       /**
        * The distance the header is allowed to move away.
@@ -439,7 +453,7 @@ Mixin | Description | Default
        */
       get _maxHeaderTop() {
         return this.fixed ? this._dHeight : this._height + 5;
-      },
+      }
 
       /**
        * Returns a reference to the sticky element.
@@ -450,7 +464,7 @@ Mixin | Description | Default
         if (this._stickyElRef) {
           return this._stickyElRef;
         }
-        var nodes = Polymer.dom(this.$.slot).getDistributedNodes();
+        var nodes = this.$.slot.assignedNodes();
         // Get the element with the sticky attribute on it or the first element in the light DOM.
         for (var i = 0, node; node = nodes[i]; i++) {
           if (node.nodeType === Node.ELEMENT_NODE) {
@@ -463,14 +477,14 @@ Mixin | Description | Default
           }
         }
         return this._stickyElRef;
-      },
+      }
 
-      _configChanged: function() {
+      _configChanged() {
         this.resetLayout();
         this._notifyLayoutChanged();
-      },
+      }
 
-      _updateLayoutStates: function() {
+      _updateLayoutStates() {
         if (this.offsetWidth === 0 && this.offsetHeight === 0) {
           return;
         }
@@ -499,7 +513,7 @@ Mixin | Description | Default
         }
         // restore no transition
         this.disabled = currentDisabled;
-      },
+      }
 
       /**
        * Updates the scroll state.
@@ -507,7 +521,7 @@ Mixin | Description | Default
        * @param {number} scrollTop
        * @param {boolean=} forceUpdate (default: false)
        */
-      _updateScrollState: function(scrollTop, forceUpdate) {
+      _updateScrollState(scrollTop, forceUpdate) {
         if (this._height === 0) {
           return;
         }
@@ -565,16 +579,16 @@ Mixin | Description | Default
           this._runEffects(progress, top);
           this._transformHeader(top);
         }
-      },
+      }
 
       /**
        * Returns true if the current header is allowed to move as the user scrolls.
        *
        * @return {boolean}
        */
-      _mayMove: function() {
+      _mayMove() {
         return this.condenses || !this.fixed;
-      },
+      }
 
       /**
        * Returns true if the current header will condense based on the size of the header
@@ -582,9 +596,9 @@ Mixin | Description | Default
        *
        * @return {boolean}
        */
-      willCondense: function() {
+      willCondense() {
         return this._dHeight > 0 && this.condenses;
-      },
+      }
 
       /**
        * Returns true if the current element is on the screen.
@@ -593,9 +607,9 @@ Mixin | Description | Default
        * @method isOnScreen
        * @return {boolean}
        */
-      isOnScreen: function() {
+      isOnScreen() {
         return this._height !== 0 && this._top < this._height;
-      },
+      }
 
       /**
        * Returns true if there's content below the current element.
@@ -603,29 +617,29 @@ Mixin | Description | Default
        * @method isContentBelow
        * @return {boolean}
        */
-      isContentBelow: function() {
+      isContentBelow() {
         return this._top === 0 ? this._clampedScrollTop > 0 :
             this._clampedScrollTop - this._maxHeaderTop >= 0;
-      },
+      }
 
       /**
        * Transforms the header.
        *
        * @param {number} y
        */
-      _transformHeader: function(y) {
-        this.translate3d(0, (-y) + 'px', 0);
+      _transformHeader(y) {
+        this._transform('translate3d(0,' + (-y) + 'px,0)');
         if (this._stickyEl) {
-          this.translate3d(0, this.condenses && y >= this._stickyElTop ?
-              (Math.min(y, this._dHeight) - this._stickyElTop) + 'px' : 0,  0, this._stickyEl);
+          this._transform('translate3d(0,' + (this.condenses && y >= this._stickyElTop ?
+                        (Math.min(y, this._dHeight) - this._stickyElTop) : 0)  + 'px,0)', this._stickyEl);
         }
-      },
+      }
 
-      _clamp: function(v, min, max) {
+      _clamp(v, min, max) {
         return Math.min(max, Math.max(min, v));
-      },
+      }
 
-      _ensureBgContainers: function() {
+      _ensureBgContainers() {
         if (!this._bgContainer) {
           this._bgContainer = document.createElement('div');
           this._bgContainer.id = 'background';
@@ -635,11 +649,11 @@ Mixin | Description | Default
           this._bgFront = document.createElement('div');
           this._bgFront.id = 'backgroundFrontLayer';
           this._bgContainer.appendChild(this._bgFront);
-          Polymer.dom(this.root).insertBefore(this._bgContainer, this.$.contentContainer);
+          this.root.insertBefore(this._bgContainer, this.$.contentContainer);
         }
-      },
+      }
 
-      _getDOMRef: function(id) {
+      _getDOMRef(id) {
         switch (id) {
           case 'backgroundFrontLayer':
             this._ensureBgContainers();
@@ -651,12 +665,12 @@ Mixin | Description | Default
             this._ensureBgContainers();
             return this._bgContainer;
           case 'mainTitle':
-            return Polymer.dom(this).querySelector('[main-title]');
+            return this.querySelector('[main-title]');
           case 'condensedTitle':
-            return Polymer.dom(this).querySelector('[condensed-title]');
+            return this.querySelector('[condensed-title]');
         }
         return null;
-      },
+      }
 
       /**
        * Returns an object containing the progress value of the scroll effects
@@ -665,9 +679,16 @@ Mixin | Description | Default
        * @method getScrollState
        * @return {Object}
        */
-      getScrollState: function() {
+      getScrollState() {
         return { progress: this._progress, top: this._top };
       }
-    });
+
+      _transform(transform, node) {
+        (node || this).style.transform = transform;
+      }
+    }
+
+    customElements.define(AppHeader.is, AppHeader);
+
   </script>
 </dom-module>

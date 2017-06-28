@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../app-scroll-effects-behavior.html">
+<link rel="import" href="../../helpers/helpers.html">
 
 <script>
   /**
@@ -42,9 +42,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /** @this Polymer.AppLayout.ElementWithBackground */
     run: function run(p, y) {
       var fx = this._fxParallaxBackground;
-      this.transform('translate3d(0px, ' + (fx.deltaBg * Math.min(1, p)) + 'px, 0px)', fx.backgroundFrontLayer);
+      fx.backgroundFrontLayer.style.transform = 'translate3d(0px, ' + (fx.deltaBg * Math.min(1, p)) + 'px, 0px)';
       if (fx.backgroundRearLayer) {
-        this.transform('translate3d(0px, ' + (fx.deltaBg * Math.min(1, p)) + 'px, 0px)', fx.backgroundRearLayer);
+        fx.backgroundRearLayer.style.transform = 'translate3d(0px, ' + (fx.deltaBg * Math.min(1, p)) + 'px, 0px)';
       }
     },
     /** @this Polymer.AppLayout.ElementWithBackground */
