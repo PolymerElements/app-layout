@@ -53,7 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         Polymer.AppLayout.scroll({left: x, top: y});
 
-        Polymer.Base.async(function() {
+        window.setTimeout(function() {
           assert.equal(window.pageXOffset, x, 'document scrollLeft');
           assert.equal(window.pageYOffset, y, 'document scrollTop');
           done();
@@ -68,7 +68,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         Polymer.AppLayout.scroll({left: x, top: y, target: region});
 
-        Polymer.Base.async(function() {
+        window.setTimeout(function() {
           assert.equal(region.scrollLeft, x, 'region scrollLeft');
           assert.equal(region.scrollTop, y, 'region scrollTop');
           done();
