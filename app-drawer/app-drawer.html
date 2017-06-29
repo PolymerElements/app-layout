@@ -9,8 +9,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../polymer/lib/utils/debounce.html">
-<link rel="import" href="../../polymer/lib/utils/gestures.html">
-<link rel="import" href="../../polymer/lib/utils/render-status.html">
 <link rel="import" href="../../polymer/polymer-element.html">
 
 <!--
@@ -298,14 +296,13 @@ a shadow root):
 
       ready() {
         super.ready();
-        Polymer.RenderStatus.afterNextRender(this, () => {
+        requestAnimationFrame(() => setTimeout(() => {
           this._boundEscKeydownHandler = this._escKeydownHandler.bind(this);
           this.addEventListener('keydown', this._tabKeydownHandler)
-
-          // Only listen for horizontal track so you can vertically scroll inside the drawer.
-          Polymer.Gestures.addListener(this, 'track', this._track);
-          Polymer.Gestures.setTouchAction(this, 'pan-y');
-        });
+          this.addEventListener('touchstart', this._touchstart.bind(this));
+          this.addEventListener('touchmove', this._touchmove.bind(this));
+          this.addEventListener('touchend', this._touchend.bind(this));
+        }));
 
         this.dispatchEvent(new CustomEvent('app-reset-layout', {
           bubbles: true, composed: true}));
@@ -366,35 +363,19 @@ a shadow root):
         }
       }
 
-      _track(event) {
+      _touchstart(event) {
         if (this.persistent || this.disableSwipe) {
           return;
         }
 
-        // Disable user selection on desktop.
-        event.preventDefault();
-
-        switch (event.detail.state) {
-          case 'start':
-            this._trackStart(event);
-            break;
-          case 'track':
-            this._trackMove(event);
-            break;
-          case 'end':
-            this._trackEnd(event);
-            break;
-        }
-      }
-
-      _trackStart(event) {
         this._drawerState = this._DRAWER_STATE.TRACKING;
+        this._touchstartX = event.changedTouches[0].clientX;
 
         // Disable transitions since style attributes will reflect user track events.
         this._styleTransitionDuration(0);
         this.style.visibility = 'visible';
 
-        let rect = this.$.contentContainer.getBoundingClientRect();
+        const rect = this.$.contentContainer.getBoundingClientRect();
         if (this.position === 'left') {
           this._translateOffset = rect.left;
         } else {
@@ -404,30 +385,40 @@ a shadow root):
         this._trackDetails = [];
       }
 
-      _trackMove(event) {
-        this._translateDrawer(event.detail.dx + this._translateOffset);
+      _touchmove(event) {
+        if (this.persistent || this.disableSwipe) {
+          return;
+        }
+
+        const dx = event.changedTouches[0].clientX - this._touchstartX;
+        this._translateDrawer(dx + this._translateOffset);
 
         // Use Date.now() since event.timeStamp is inconsistent across browsers (e.g. most
         // browsers use milliseconds but FF 44 uses microseconds).
         this._trackDetails.push({
-          dx: event.detail.dx,
+          dx: dx,
           timeStamp: Date.now()
         });
       }
 
-      _trackEnd(event) {
-        let x = event.detail.dx + this._translateOffset;
-        let drawerWidth = this.getWidth();
-        let isPositionLeft = this.position === 'left';
-        let isInEndState = isPositionLeft ? (x >= 0 || x <= -drawerWidth) :
+      _touchend(event) {
+        if (this.persistent || this.disableSwipe) {
+          return;
+        }
+
+        const dx = event.changedTouches[0].clientX - this._touchstartX;
+        const x = dx + this._translateOffset;
+        const drawerWidth = this.getWidth();
+        const isPositionLeft = this.position === 'left';
+        const isInEndState = isPositionLeft ? (x >= 0 || x <= -drawerWidth) :
           (x <= 0 || x >= drawerWidth);
 
         if (!isInEndState) {
           // No longer need the track events after this method returns - allow them to be GC'd.
-          let trackDetails = this._trackDetails;
+          const trackDetails = this._trackDetails;
           this._trackDetails = null;
 
-          this._flingDrawer(event, trackDetails);
+          this._flingDrawer(dx, trackDetails);
           if (this._drawerState === this._DRAWER_STATE.FLINGING) {
             return;
           }
@@ -435,10 +426,10 @@ a shadow root):
 
         // If the drawer is not flinging, toggle the opened state based on the position of
         // the drawer.
-        let halfWidth = drawerWidth / 2;
-        if (event.detail.dx < -halfWidth) {
+        const halfWidth = drawerWidth / 2;
+        if (dx < -halfWidth) {
           this.opened = this.position === 'right';
-        } else if (event.detail.dx > halfWidth) {
+        } else if (dx > halfWidth) {
           this.opened = this.position === 'left';
         }
 
@@ -453,18 +444,18 @@ a shadow root):
         this.style.visibility = '';
       }
 
-      _calculateVelocity(event, trackDetails) {
+      _calculateVelocity(dx, trackDetails) {
         // Find the oldest track event that is within 100ms using binary search.
-        let now = Date.now();
-        let timeLowerBound = now - 100;
+        const now = Date.now();
+        const timeLowerBound = now - 100;
         let trackDetail;
         let min = 0;
         let max = trackDetails.length - 1;
 
         while (min <= max) {
           // Floor of average of min and max.
-          let mid = (min + max) >> 1;
-          let d = trackDetails[mid];
+          const mid = (min + max) >> 1;
+          const d = trackDetails[mid];
           if (d.timeStamp >= timeLowerBound) {
             trackDetail = d;
             max = mid - 1;
@@ -474,15 +465,15 @@ a shadow root):
         }
 
         if (trackDetail) {
-          let dx = event.detail.dx - trackDetail.dx;
-          let dt = (now - trackDetail.timeStamp) || 1;
-          return dx / dt;
+          const distance = dx - trackDetail.dx;
+          const time = (now - trackDetail.timeStamp) || 1;
+          return distance / time;
         }
         return 0;
       }
 
-      _flingDrawer(event, trackDetails) {
-        let velocity = this._calculateVelocity(event, trackDetails);
+      _flingDrawer(dx, trackDetails) {
+        let velocity = this._calculateVelocity(dx, trackDetails);
 
         // Do not fling if velocity is not above a threshold.
         if (Math.abs(velocity) < this._MIN_FLING_THRESHOLD) {
@@ -491,19 +482,19 @@ a shadow root):
 
         this._drawerState = this._DRAWER_STATE.FLINGING;
 
-        let x = event.detail.dx + this._translateOffset;
-        let drawerWidth = this.getWidth();
-        let isPositionLeft = this.position === 'left';
-        let isVelocityPositive = velocity > 0;
-        let isClosingLeft = !isVelocityPositive && isPositionLeft;
-        let isClosingRight = isVelocityPositive && !isPositionLeft;
-        let dx;
+        const x = dx + this._translateOffset;
+        const drawerWidth = this.getWidth();
+        const isPositionLeft = this.position === 'left';
+        const isVelocityPositive = velocity > 0;
+        const isClosingLeft = !isVelocityPositive && isPositionLeft;
+        const isClosingRight = isVelocityPositive && !isPositionLeft;
+        let distance;
         if (isClosingLeft) {
-          dx = -(x + drawerWidth);
+          distance = -(x + drawerWidth);
         } else if (isClosingRight) {
-          dx = (drawerWidth - x);
+          distance = (drawerWidth - x);
         } else {
-          dx = -x;
+          distance = -x;
         }
 
         // Enforce a minimum transition velocity to make the drawer feel snappy.
@@ -517,12 +508,12 @@ a shadow root):
 
         // Calculate the amount of time needed to finish the transition based on the
         // initial slope of the timing function.
-        let t = this._FLING_INITIAL_SLOPE * dx / velocity
-        this._styleTransitionDuration(t);
+        const time = this._FLING_INITIAL_SLOPE * distance / velocity
+        this._styleTransitionDuration(time);
         this._styleTransitionTimingFunction(this._FLING_TIMING_FUNCTION);
 
         this._resetDrawerTranslate();
-        this._debounce('_resetDrawerState', this._resetDrawerState, t);
+        this._debounce('_resetDrawerState', this._resetDrawerState, time);
       }
 
       _styleTransitionDuration(duration) {
@@ -537,7 +528,7 @@ a shadow root):
       }
 
       _translateDrawer(x) {
-        let drawerWidth = this.getWidth();
+        const drawerWidth = this.getWidth();
 
         if (this.position === 'left') {
           x = Math.max(-drawerWidth, Math.min(x, 0));
@@ -556,7 +547,7 @@ a shadow root):
       }
 
       _resetDrawerState() {
-        let oldState = this._drawerState;
+        const oldState = this._drawerState;
 
         // If the drawer was flinging, we need to reset the style attributes.
         if (oldState === this._DRAWER_STATE.FLINGING) {
@@ -607,7 +598,7 @@ a shadow root):
 
         // NOTE: Unless we use /deep/ (which we shouldn't since it's deprecated), this will
         // not select focusable elements inside shadow roots.
-        let focusableElementsSelector = [
+        const focusableElementsSelector = [
             'a[href]:not([tabindex="-1"])',
             'area[href]:not([tabindex="-1"])',
             'input:not([disabled]):not([tabindex="-1"])',
@@ -618,7 +609,7 @@ a shadow root):
             '[tabindex]:not([tabindex="-1"])',
             '[contentEditable=true]:not([tabindex="-1"])'
           ].join(',');
-        let focusableElements = this.querySelectorAll(focusableElementsSelector);
+        const focusableElements = this.querySelectorAll(focusableElementsSelector);
 
         if (focusableElements.length > 0) {
           this._firstTabStop = focusableElements[0];
@@ -632,7 +623,7 @@ a shadow root):
         // Focus on app-drawer if it has non-zero tabindex. Otherwise, focus the first focusable
         // element in the drawer, if it exists. Use the tabindex attribute since the this.tabIndex
         // property in IE/Edge returns 0 (instead of -1) when the attribute is not set.
-        let tabindex = this.getAttribute('tabindex');
+        const tabindex = this.getAttribute('tabindex');
         if (tabindex && parseInt(tabindex, 10) > -1) {
           this.focus();
         } else if (this._firstTabStop) {
