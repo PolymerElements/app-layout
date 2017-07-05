@@ -401,10 +401,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('left drawer swiping', function(done) {
+        drawer.align = 'left';
         Polymer.RenderStatus.afterNextRender(drawer, function() {
           var drawerWidth = drawer.getWidth();
           var halfWidth = drawerWidth / 2;
-          drawer.align = 'left';
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: -halfWidth, ddx: -halfWidth });
 
@@ -446,10 +446,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('right drawer swiping', function(done) {
+        drawer.align = 'right';
         Polymer.RenderStatus.afterNextRender(drawer, function() {
           var drawerWidth = drawer.getWidth();
           var halfWidth = drawerWidth / 2;
-          drawer.align = 'right';
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: halfWidth, ddx: halfWidth });
 
@@ -529,8 +529,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('left drawer flinging open', function(done) {
+        drawer.align = 'left';
         Polymer.RenderStatus.afterNextRender(drawer, function() {
-          drawer.align = 'left';
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
           drawer.fire('track', { state: 'end', dx: 0.1, ddx: 0.1 });
@@ -558,9 +558,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('left drawer flinging close', function(done) {
+        drawer.align = 'left';
+        drawer.opened = true;
         Polymer.RenderStatus.afterNextRender(drawer, function() {
-          drawer.align = 'left';
-          drawer.opened = true;
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
           drawer.fire('track', { state: 'end', dx: -0.1, ddx: -0.1 });
@@ -588,8 +588,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('right drawer flinging open', function(done) {
+        drawer.align = 'right';
         Polymer.RenderStatus.afterNextRender(drawer, function() {
-          drawer.align = 'right';
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
           drawer.fire('track', { state: 'end', dx: -0.1, ddx: -0.1 });
@@ -617,9 +617,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('right drawer flinging close', function(done) {
+        drawer.align = 'right';
+        drawer.opened = true;
         Polymer.RenderStatus.afterNextRender(drawer, function() {
-          drawer.align = 'right';
-          drawer.opened = true;
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
           drawer.fire('track', { state: 'end', dx: 0.1, ddx: 0.1 });
