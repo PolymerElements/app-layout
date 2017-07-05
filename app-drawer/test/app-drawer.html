@@ -279,12 +279,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                       assert.equal(listenerSpy.callCount, 6,
                         'should fire after swiping beyond end state');
                       done();
-                    }, 150);
-                  }, 150);
-                }, 150);
-              }, 150);
-            }, 150);
-          }, 150);
+                    }, 50);
+                  }, 50);
+                }, 50);
+              }, 50);
+            }, 50);
+          }, 50);
         }, 300);
       });
 
@@ -401,10 +401,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('left drawer swiping', function(done) {
+        drawer.transitionDuration = 10;
+        drawer.align = 'left';
         Polymer.RenderStatus.afterNextRender(drawer, function() {
           var drawerWidth = drawer.getWidth();
           var halfWidth = drawerWidth / 2;
-          drawer.align = 'left';
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: -halfWidth, ddx: -halfWidth });
 
@@ -446,48 +447,51 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('right drawer swiping', function(done) {
-        Polymer.RenderStatus.afterNextRender(drawer, function() {
-          var drawerWidth = drawer.getWidth();
-          var halfWidth = drawerWidth / 2;
-          drawer.align = 'right';
-          drawer.fire('track', { state: 'start' });
-          drawer.fire('track', { state: 'track', dx: halfWidth, ddx: halfWidth });
+        drawer.transitionDuration = 10;
+        drawer.align = 'right';
+        window.setTimeout(function() {
+          Polymer.RenderStatus.afterNextRender(drawer, function() {
+            var drawerWidth = drawer.getWidth();
+            var halfWidth = drawerWidth / 2;
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: halfWidth, ddx: halfWidth });
 
-          assertDrawerStyles(drawerWidth, 0, 'styles are lower bounded');
+            assertDrawerStyles(drawerWidth, 0, 'styles are lower bounded');
 
-          drawer.fire('track', { state: 'track', dx: -halfWidth, ddx: -drawerWidth });
+            drawer.fire('track', { state: 'track', dx: -halfWidth, ddx: -drawerWidth });
 
-          assertDrawerStyles(halfWidth, 0.5, 'style by track distance');
+            assertDrawerStyles(halfWidth, 0.5, 'style by track distance');
 
-          drawer.fire('track', { state: 'track', dx: -halfWidth - drawerWidth, ddx: -drawerWidth });
+            drawer.fire('track', { state: 'track', dx: -halfWidth - drawerWidth, ddx: -drawerWidth });
 
-          assertDrawerStyles(0, 1, 'styles are upper bounded');
+            assertDrawerStyles(0, 1, 'styles are upper bounded');
 
-          // Simulate break of track events.
-          drawer._trackDetails = [];
-          drawer.fire('track', { state: 'end', dx: -halfWidth, ddx: drawerWidth });
+            // Simulate break of track events.
+            drawer._trackDetails = [];
+            drawer.fire('track', { state: 'end', dx: -halfWidth, ddx: drawerWidth });
 
-          assert.isFalse(drawer.opened, 'drawer stays closed when track distance is small');
+            assert.isFalse(drawer.opened, 'drawer stays closed when track distance is small');
 
-          drawer.fire('track', { state: 'start' });
-          drawer.fire('track', { state: 'track', dx: -halfWidth - 1, ddx: -halfWidth - 1 });
-          drawer.fire('track', { state: 'end', dx: -halfWidth - 1, ddx: 0});
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: -halfWidth - 1, ddx: -halfWidth - 1 });
+            drawer.fire('track', { state: 'end', dx: -halfWidth - 1, ddx: 0});
 
-          assert.isTrue(drawer.opened, 'drawer opens when track distance is large');
+            assert.isTrue(drawer.opened, 'drawer opens when track distance is large');
 
-          drawer.fire('track', { state: 'start' });
-          drawer.fire('track', { state: 'track', dx: halfWidth, ddx: halfWidth });
-          drawer.fire('track', { state: 'end', dx: halfWidth, ddx: 0 });
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: halfWidth, ddx: halfWidth });
+            drawer.fire('track', { state: 'end', dx: halfWidth, ddx: 0 });
 
-          assert.isTrue(drawer.opened, 'drawer stays opened when track distance is small');
+            assert.isTrue(drawer.opened, 'drawer stays opened when track distance is small');
 
-          drawer.fire('track', { state: 'start' });
-          drawer.fire('track', { state: 'track', dx: halfWidth + 1, ddx: halfWidth + 1 });
-          drawer.fire('track', { state: 'end', dx: halfWidth + 1, ddx: 0 });
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: halfWidth + 1, ddx: halfWidth + 1 });
+            drawer.fire('track', { state: 'end', dx: halfWidth + 1, ddx: 0 });
 
-          assert.isFalse(drawer.opened, 'drawer closes when track distance is large');
-          done();
-        });
+            assert.isFalse(drawer.opened, 'drawer closes when track distance is large');
+            done();
+          });
+        }, 100);
       });
 
       test('styles reset after flinging', function(done) {
@@ -506,7 +510,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assertTransitionTimingFunction('');
             assertDrawerStylesReset();
             done();
-          }, 150);
+          }, 100);
         });
       });
 
@@ -529,14 +533,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('left drawer flinging open', function(done) {
+        drawer.transitionDuration = 10;
+        drawer.align = 'left';
         Polymer.RenderStatus.afterNextRender(drawer, function() {
-          drawer.align = 'left';
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
           drawer.fire('track', { state: 'end', dx: 0.1, ddx: 0.1 });
 
           assert.isFalse(drawer.opened, 'drawer stays closed when velocity is small');
-          assertTransitionDuration('200ms');
+          assertTransitionDuration('10ms');
           assertTransitionTimingFunction('');
           assertDrawerStylesReset();
 
@@ -550,7 +555,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assertDrawerStylesReset();
 
           window.setTimeout(function() {
-            assertTransitionDuration('200ms');
+            assertTransitionDuration('10ms');
             assertTransitionTimingFunction('');
             done();
           }, 100);
@@ -558,15 +563,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('left drawer flinging close', function(done) {
+        drawer.transitionDuration = 10;
+        drawer.align = 'left';
+        drawer.opened = true;
         Polymer.RenderStatus.afterNextRender(drawer, function() {
-          drawer.align = 'left';
-          drawer.opened = true;
           drawer.fire('track', { state: 'start' });
           drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
           drawer.fire('track', { state: 'end', dx: -0.1, ddx: -0.1 });
 
           assert.isTrue(drawer.opened, 'drawer stays opened when velocity is small');
-          assertTransitionDuration('200ms');
+          assertTransitionDuration('10ms');
           assertTransitionTimingFunction('');
           assertDrawerStylesReset();
 
@@ -580,7 +586,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assertDrawerStylesReset();
 
           window.setTimeout(function() {
-            assertTransitionDuration('200ms');
+            assertTransitionDuration('10ms');
             assertTransitionTimingFunction('');
             done();
           }, 100);
@@ -588,62 +594,68 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('right drawer flinging open', function(done) {
-        Polymer.RenderStatus.afterNextRender(drawer, function() {
-          drawer.align = 'right';
-          drawer.fire('track', { state: 'start' });
-          drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: -0.1, ddx: -0.1 });
+        drawer.transitionDuration = 10;
+        drawer.align = 'right';
+        window.setTimeout(function() {
+          Polymer.RenderStatus.afterNextRender(drawer, function() {
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            drawer.fire('track', { state: 'end', dx: -0.1, ddx: -0.1 });
 
-          assert.isFalse(drawer.opened, 'drawer stays closed when velocity is small');
-          assertTransitionDuration('200ms');
-          assertTransitionTimingFunction('');
-          assertDrawerStylesReset();
-
-          drawer.fire('track', { state: 'start' });
-          drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: -50, ddx: -50 });
-
-          assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
-          assertTransitionDurationBelow(150);
-          assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
-          assertDrawerStylesReset();
-
-          window.setTimeout(function() {
-            assertTransitionDuration('200ms');
+            assert.isFalse(drawer.opened, 'drawer stays closed when velocity is small');
+            assertTransitionDuration('10ms');
             assertTransitionTimingFunction('');
-            done();
-          }, 100);
-        });
+            assertDrawerStylesReset();
+
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            drawer.fire('track', { state: 'end', dx: -50, ddx: -50 });
+
+            assert.isTrue(drawer.opened, 'drawer opens when velocity is large');
+            assertTransitionDurationBelow(150);
+            assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
+            assertDrawerStylesReset();
+
+            window.setTimeout(function() {
+              assertTransitionDuration('10ms');
+              assertTransitionTimingFunction('');
+              done();
+            }, 100);
+          });
+        }, 100);
       });
 
       test('right drawer flinging close', function(done) {
-        Polymer.RenderStatus.afterNextRender(drawer, function() {
-          drawer.align = 'right';
-          drawer.opened = true;
-          drawer.fire('track', { state: 'start' });
-          drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: 0.1, ddx: 0.1 });
+        drawer.transitionDuration = 10;
+        drawer.align = 'right';
+        drawer.opened = true;
+        window.setTimeout(function() {
+          Polymer.RenderStatus.afterNextRender(drawer, function() {
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            drawer.fire('track', { state: 'end', dx: 0.1, ddx: 0.1 });
 
-          assert.isTrue(drawer.opened, 'drawer stays opened when velocity is small');
-          assertTransitionDuration('200ms');
-          assertTransitionTimingFunction('');
-          assertDrawerStylesReset();
-
-          drawer.fire('track', { state: 'start' });
-          drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
-          drawer.fire('track', { state: 'end', dx: 50, ddx: 50 });
-
-          assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
-          assertTransitionDurationBelow(150);
-          assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
-          assertDrawerStylesReset();
-
-          window.setTimeout(function() {
-            assertTransitionDuration('200ms');
+            assert.isTrue(drawer.opened, 'drawer stays opened when velocity is small');
+            assertTransitionDuration('10ms');
             assertTransitionTimingFunction('');
-            done();
-          }, 100);
-        });
+            assertDrawerStylesReset();
+
+            drawer.fire('track', { state: 'start' });
+            drawer.fire('track', { state: 'track', dx: 0, ddx: 0 });
+            drawer.fire('track', { state: 'end', dx: 50, ddx: 50 });
+
+            assert.isFalse(drawer.opened, 'drawer closes when velocity is large');
+            assertTransitionDurationBelow(150);
+            assertTransitionTimingFunction(drawer._FLING_TIMING_FUNCTION);
+            assertDrawerStylesReset();
+
+            window.setTimeout(function() {
+              assertTransitionDuration('10ms');
+              assertTransitionTimingFunction('');
+              done();
+            }, 100);
+          });
+        }, 100);
       });
 
       test('doc scroll', function(done) {
