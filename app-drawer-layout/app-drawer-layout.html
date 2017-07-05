@@ -267,7 +267,7 @@ a shadow root):
 
       _updateLayoutStates: function() {
         var drawer = this.drawer;
-        if (!drawer) {
+        if (!this.isAttached || !drawer) {
           return;
         }
 
