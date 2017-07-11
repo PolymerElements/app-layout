@@ -298,9 +298,24 @@ a shadow root):
         super.ready();
         requestAnimationFrame(() => setTimeout(() => {
           this._boundEscKeydownHandler = this._escKeydownHandler.bind(this);
-          this.addEventListener('keydown', this._tabKeydownHandler)
-          this.addEventListener('touchstart', this._touchstart.bind(this));
-          this.addEventListener('touchmove', this._touchmove.bind(this));
+          this.addEventListener('keydown', this._tabKeydownHandler);
+
+          // Test via a getter in the options object to see if the passive property is accessed
+          let supportsPassive = false;
+          try {
+            var opts = Object.defineProperty({}, 'passive', {
+              get: function() {
+                supportsPassive = true;
+              }
+            });
+            window.addEventListener('test', null, opts);
+          } catch (e) {}
+
+          // Use our detect's results. passive applied if supported, capture will be false either way.
+          const thirdArg = supportsPassive ? { passive: true } : false;
+
+          this.addEventListener('touchstart', this._touchstart.bind(this), thirdArg);
+          this.addEventListener('touchmove', this._touchmove.bind(this), thirdArg);
           this.addEventListener('touchend', this._touchend.bind(this));
         }));
 
