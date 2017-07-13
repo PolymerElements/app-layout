@@ -40,7 +40,7 @@
     "paper-styles": "PolymerElements/paper-styles#1 - 2",
     "paper-tabs": "PolymerElements/paper-tabs#1 - 2",
     "test-fixture": "PolymerElements/test-fixture#^3.0.0-rc.1",
-    "web-component-tester": "^6.0.0",
+    "web-component-tester": "^4.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
   },
   "variants": {
