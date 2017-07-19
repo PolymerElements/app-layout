@@ -763,7 +763,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('click on scrim closes drawer', function() {
         drawer.opened = true;
-        scrim.click();
+        scrim.dispatchEvent(new Event('click'));
 
         assert.isFalse(drawer.opened);
       });

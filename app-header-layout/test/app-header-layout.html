@@ -18,6 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../../web-component-tester/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
   <link rel="import" href="../../../test-fixture/test-fixture.html">
+  <link rel="import" href="../../../polymer/lib/utils/flush.html">
   <link rel="import" href="../../app-toolbar/app-toolbar.html">
   <link rel="import" href="../../app-header/app-header.html">
   <link rel="import" href="../app-header-layout.html">
@@ -82,7 +83,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('scrolling region', function(done) {
         headerLayout.hasScrollingRegion = true;
-
         flush(function() {
           assert.isTrue(header.scrollTarget !== document.documentElement, 'scroller should not point to the document element');
           done();
@@ -91,7 +91,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('header box size', function(done) {
         headerLayout.hasScrollingRegion = false;
-        Polymer.dom.flush();
+        Polymer.flush();
 
         flush(function() {
           requestAnimationFrame(function() {
@@ -114,7 +114,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('fullbleed', function() {
         headerLayout.setAttribute('fullbleed', '');
-        Polymer.dom.flush();
+        Polymer.flush();
         assert.deepEqual(headerLayout.getBoundingClientRect(),
             headerLayout.offsetParent.getBoundingClientRect());
       });
@@ -136,15 +136,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('Issue #406', function(done) {
-        Polymer.dom.flush();
+        Polymer.flush();
         assert.isTrue(headerLayout.isAttached, 'app-header-layout is attached');
         var header = document.createElement('app-header');
-        Polymer.dom(header).innerHTML = '<app-toolbar></app-toolbar>';
+        header.innerHTML = '<app-toolbar></app-toolbar>';
         header.setAttribute('slot', 'header');
         header.fixed = true;
-        Polymer.dom(headerLayout).appendChild(header);
-        Polymer.dom.flush();
-        headerLayout.fire('app-reset-layout', null, { node: header });
+        headerLayout.appendChild(header);
+        Polymer.flush();
+        header.dispatchEvent(new Event('app-reset-layout', {bubbles: true, composed: true}));
         flush(function() {
           assert.equal(headerLayout.$.contentContainer.style.marginTop,
               header.offsetHeight + 'px');

@@ -183,6 +183,7 @@ a shadow root):
   </template>
 
   <script>
+  (function() {
 
     class AppDrawer extends Polymer.Element {
 
@@ -668,8 +669,7 @@ a shadow root):
       }
 
       _openedPersistentChanged(opened, persistent) {
-        // TODO(ffu): doesn't work in IE11
-        this.$.scrim.classList.toggle('visible', opened && !persistent);
+        this.$.scrim.classList[opened && !persistent ? 'add' : 'remove']('visible');
 
         // Use a debounce timer instead of transitionend since transitionend won't fire when
         // app-drawer is display: none.
@@ -704,5 +704,6 @@ a shadow root):
 
     customElements.define(AppDrawer.is, AppDrawer);
 
+  })();
   </script>
 </dom-module>

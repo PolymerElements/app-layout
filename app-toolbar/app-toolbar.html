@@ -111,6 +111,7 @@ Custom property              | Description                  | Default
   </template>
 
   <script>
+  (function() {
 
     class AppToolbar extends Polymer.Element {
       static get is() {
@@ -120,5 +121,6 @@ Custom property              | Description                  | Default
 
     customElements.define(AppToolbar.is, AppToolbar);
 
+  })();
   </script>
 </dom-module>

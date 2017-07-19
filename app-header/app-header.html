@@ -318,16 +318,13 @@ Mixin | Description | Default
   </template>
 
   <script>
+  (function() {
+
     class AppHeader extends Polymer.AppLayoutMixin(Polymer.AppScrollEffectsMixin(Polymer.Element)) {
 
       static get is() {
         return 'app-header';
       }
-
-      // static get behaviors() { return [
-      //   Polymer.AppScrollEffectsBehavior,
-      //   Polymer.AppLayoutBehavior
-      // ]}
 
       static get properties() { return {
         /**
@@ -690,5 +687,6 @@ Mixin | Description | Default
 
     customElements.define(AppHeader.is, AppHeader);
 
+  })();
   </script>
 </dom-module>

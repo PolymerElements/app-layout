@@ -8,10 +8,9 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="../app-scroll-effects/app-scroll-effects-behavior.html">
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../app-resizable-mixin/app-resizable-mixin.html">
+<link rel="import" href="../app-scroll-effects/app-scroll-effects-mixin.html">
 
 <!--
 app-box is a container element that can have scroll effects - visual effects based on
@@ -97,7 +96,11 @@ Mixin | Description | Default
       }
 
       #background {
-        @apply --layout-fit;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
         overflow: hidden;
         height: 100%;
       }
@@ -132,31 +135,36 @@ Mixin | Description | Default
   </template>
 
   <script>
-    Polymer({
-      is: 'app-box',
+  (function() {
 
-      behaviors: [
-        Polymer.AppScrollEffectsBehavior,
-        Polymer.IronResizableBehavior
-      ],
+    class AppBox extends Polymer.AppResizableMixin(Polymer.AppScrollEffectsMixin(Polymer.Element)) {
 
-      listeners: {
-        'iron-resize': '_resizeHandler'
-      },
+      static get is() {
+        return 'app-box';
+      }
 
-      /**
-       * The current scroll progress.
-       *
-       * @type {number}
-       */
-      _progress: 0,
+      constructor() {
+        super();
+        /**
+         * The current scroll progress.
+         *
+         * @type {number}
+         */
+        this._progress = 0;
+      }
 
-      attached: function() {
+      ready() {
+        this.addEventListener('iron-resize', e => this._resizeHandler(e));
+        super.ready();
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
         this.resetLayout();
-      },
+      }
 
-      _debounceRaf: function(fn) {
-        var self = this;
+      _debounceRaf(fn) {
+        let self = this;
         if (this._raf) {
           window.cancelAnimationFrame(this._raf);
         }
@@ -164,22 +172,22 @@ Mixin | Description | Default
           self._raf = null;
           fn.call(self);
         });
-      },
+      }
 
       /**
        * Resets the layout. This method is automatically called when the element is attached to the DOM.
        *
        * @method resetLayout
        */
-      resetLayout: function() {
+      resetLayout() {
         this._debounceRaf(function() {
           // noop if the box isn't in the rendered tree
           if (this.offsetWidth === 0 && this.offsetHeight === 0) {
             return;
           }
 
-          var scrollTop = this._clampedScrollTop;
-          var savedDisabled = this.disabled;
+          let scrollTop = this._clampedScrollTop;
+          let savedDisabled = this.disabled;
 
           this.disabled = true;
           this._elementTop = this._getElementTop();
@@ -189,26 +197,26 @@ Mixin | Description | Default
           this._updateScrollState(scrollTop);
           this.disabled = savedDisabled;
         });
-      },
+      }
 
-      _getElementTop: function() {
-        var currentNode = this;
-        var top = 0;
+      _getElementTop() {
+        let currentNode = this;
+        let top = 0;
 
         while (currentNode && currentNode !== this.scrollTarget) {
           top += currentNode.offsetTop;
           currentNode = currentNode.offsetParent;
         }
         return top;
-      },
+      }
 
-      _updateScrollState: function(scrollTop) {
+      _updateScrollState(scrollTop) {
         if (this.isOnScreen()) {
-          var viewportTop = this._elementTop - scrollTop;
+          let viewportTop = this._elementTop - scrollTop;
           this._progress = 1 - (viewportTop + this._elementHeight) / this._cachedScrollTargetHeight;
           this._runEffects(this._progress, scrollTop);
         }
-      },
+      }
 
       /**
        * Returns true if this app-box is on the screen.
@@ -217,23 +225,23 @@ Mixin | Description | Default
        * @method isOnScreen
        * @return {boolean}
        */
-      isOnScreen: function() {
+      isOnScreen() {
         return this._elementTop < this._scrollTop + this._cachedScrollTargetHeight
             && this._elementTop + this._elementHeight > this._scrollTop;
-      },
+      }
 
-      _resizeHandler: function() {
+      _resizeHandler() {
         this.resetLayout();
-      },
+      }
 
-      _getDOMRef: function(id) {
+      _getDOMRef(id) {
         if (id === 'background') {
           return this.$.background;
         }
         if (id === 'backgroundFrontLayer') {
           return this.$.backgroundFrontLayer;
         }
-      },
+      }
 
       /**
        * Returns an object containing the progress value of the scroll effects.
@@ -241,9 +249,13 @@ Mixin | Description | Default
        * @method getScrollState
        * @return {Object}
        */
-      getScrollState: function() {
+      getScrollState() {
         return { progress: this._progress };
       }
-    });
+    }
+
+    customElements.define(AppBox.is, AppBox);
+
+  })();
   </script>
 </dom-module>

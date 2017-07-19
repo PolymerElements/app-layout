@@ -17,7 +17,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../../web-component-tester/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
-  <link rel="import" href="../../../iron-resizable-behavior/iron-resizable-behavior.html">
+  <link rel="import" href="../../app-resizable-mixin/app-resizable-mixin.html">
+  <link rel="import" href="../../../polymer/lib/utils/flush.html">
   <link rel="import" href="../../../test-fixture/test-fixture.html">
   <link rel="import" href="../../app-drawer/app-drawer.html">
   <link rel="import" href="../app-drawer-layout.html">
@@ -55,21 +56,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script>
     HTMLImports.whenReady(function() {
-      Polymer({
-        is: 'x-resizeable',
-        behaviors: [
-          Polymer.IronResizableBehavior
-        ]
-      });
+      class XResizeable extends Polymer.AppResizableMixin(Polymer.Element) {
+        static get is() {
+          return 'x-resizeable';
+        }
+      }
+      customElements.define(XResizeable.is, XResizeable);
     });
 
     suite('basic features', function() {
       var drawerLayout, drawer;
 
+      function fireClickEvent(node) {
+        node.dispatchEvent(new Event('click', {bubbles: true, composed: true}));
+      }
+
       setup(function() {
         drawerLayout = fixture('testDrawerLayout');
         drawer = drawerLayout.querySelector('app-drawer');
-        Polymer.dom.flush();
+        Polymer.flush();
       });
 
       test('default values', function() {
@@ -114,21 +119,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('drawer-toggle', function(done) {
         drawerLayout.responsiveWidth = '10000px';
-       
-        assert.isFalse(drawer.opened);
-
-        Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('p') });
 
         assert.isFalse(drawer.opened);
 
-        Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
+        fireClickEvent(drawerLayout.querySelector('p'));
+
+        assert.isFalse(drawer.opened);
+
+        fireClickEvent(drawerLayout.querySelector('[drawer-toggle]'));
 
         assert.isTrue(drawer.opened);
 
         drawerLayout.responsiveWidth = '0px';
 
         window.setTimeout(function() {
-          Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
+          fireClickEvent(drawerLayout.querySelector('[drawer-toggle]'));
           assert.isTrue(drawer.opened);
           done();
         }, 150);
@@ -136,7 +141,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('disable initial drawer transition', function(done) {
         assert.isTrue(drawer.hasAttribute('no-transition'));
-        Polymer.dom.flush();
+        Polymer.flush();
 
         window.setTimeout(function() {
           assert.isFalse(drawer.hasAttribute('no-transition'));
@@ -208,7 +213,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.doesNotThrow(function() {
           drawerLayout = document.body.appendChild(document.createElement('app-drawer-layout'));
         });
-        Polymer.dom.flush();
+        Polymer.flush();
 
         var contentContainer = drawerLayout.$.contentContainer;
         var computedStyle = window.getComputedStyle(contentContainer);
@@ -219,8 +224,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         drawerLayout.responsiveWidth = '0px';
         drawer = document.createElement('app-drawer');
         drawer.setAttribute('slot', 'drawer');
-        Polymer.dom(drawerLayout).appendChild(drawer);
-        Polymer.dom.flush();
+        drawerLayout.appendChild(drawer);
+        Polymer.flush();
 
         window.setTimeout(function() {
           computedStyle = window.getComputedStyle(contentContainer);

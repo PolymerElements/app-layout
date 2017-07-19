@@ -9,7 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../../polymer/polymer.html">
-<link rel="import" href="../app-scroll-effects-behavior.html">
+<link rel="import" href="../app-scroll-effects-mixin.html">
 
 <dom-module id="x-container">
   <template>
@@ -63,38 +63,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
+  (function() {
 
-    Polymer({
+    class XContainer extends Polymer.AppScrollEffectsMixin(Polymer.Element) {
 
-      is: 'x-container',
+      static get is() {
+        return 'x-container';
+      }
 
-      behaviors: [
-        Polymer.AppScrollEffectsBehavior
-      ],
-
-      properties: {
+      static get properties() { return {
         shadow: {
           type: Boolean,
           reflectToAttribute: true
         }
-      },
+      }}
 
-      observers: [
+      static get observers() { return [
         '_xScrollEffectChanged(effects)'
-      ],
+      ]}
 
-      _getDOMRef: function(id) {
+      _getDOMRef(id) {
         return this.$[id] || null;
-      },
+      }
 
-      _updateScrollState: function(scrollTop) {
+      _updateScrollState(scrollTop) {
         this._runEffects(scrollTop / this.offsetHeight, scrollTop);
-      },
+      }
 
-      _xScrollEffectChanged: function() {
+      _xScrollEffectChanged() {
         this._updateScrollState(this._scrollTop);
       }
-    });
+    }
 
+    customElements.define(XContainer.is, XContainer);
+
+  })();
   </script>
 </dom-module>

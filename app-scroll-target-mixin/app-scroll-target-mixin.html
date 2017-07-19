@@ -13,10 +13,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <script>
 
   /**
-   * `Polymer.IronScrollTargetBehavior` allows an element to respond to scroll events from a
+   * `Polymer.AppScrollTargetMixin` allows an element to respond to scroll events from a
    * designated scroll target.
    *
-   * Elements that consume this behavior can override the `_scrollHandler`
+   * Elements that consume this mixin can override the `_scrollHandler`
    * method to add logic on the scroll event.
    *
    * @demo demo/scrolling-region.html Scrolling Region
@@ -91,7 +91,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     _scrollTargetChanged(scrollTarget) {
-      var eventTarget;
+      let eventTarget;
 
       if (this._oldScrollTarget) {
         this._toggleScrollListener(false, this._oldScrollTarget);
@@ -104,10 +104,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       } else if (typeof scrollTarget === 'string') {
 
-        var domHost = this.domHost;
+          let rootNode = this.getRootNode();
 
-        this.scrollTarget = domHost && domHost.$ ? domHost.$[scrollTarget] :
-            Polymer.dom(this.ownerDocument).querySelector('#' + scrollTarget);
+          this.scrollTarget = rootNode && rootNode.host ? rootNode.host.$[scrollTarget] :
+              this.ownerDocument.querySelector('#' + scrollTarget);
 
       } else if (this._isValidScrollTarget()) {
 
@@ -118,14 +118,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     /**
-     * Runs on every scroll event. Consumer of this behavior may override this method.
+     * Runs on every scroll event. Consumer of this mixin may override this method.
      *
      * @protected
      */
     _scrollHandler() {}
 
     /**
-     * The default scroll target. Consumers of this behavior may want to customize
+     * The default scroll target. Consumers of this mixin may want to customize
      * the default scroll target.
      *
      * @type {Element}
@@ -243,7 +243,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     _toggleScrollListener(yes, scrollTarget) {
-      var eventTarget = scrollTarget === this._doc ? window : scrollTarget;
+      let eventTarget = scrollTarget === this._doc ? window : scrollTarget;
       if (yes) {
         if (!this._boundScrollHandler) {
           this._boundScrollHandler = this._scrollHandler.bind(this);

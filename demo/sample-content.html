@@ -8,16 +8,20 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../polymer/polymer-element.html">
 
 <dom-module id="sample-content">
 
   <script>
+  (function() {
 
-    Polymer({
-      is: 'sample-content',
+    class SampleContent extends Polymer.Element {
 
-      properties: {
+      static get is() {
+        return "sample-content";
+      }
+
+      static get properties() { return {
 
         size: {
           type: Number,
@@ -40,34 +44,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: '0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)'
         }
 
-      },
+      }}
 
-      observers: [
+      static get observers() { return [
         '_render(size, label, padding, margin, boxShadow)'
-      ],
+      ]}
 
-      _lorem_ipsum_strings: [
-        'Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.',
-        'Ut labores minimum atomorum pro. Laudem tibique ut has.',
-        'Fugit adolescens vis et, ei graeci forensibus sed.',
-        'Convenire definiebas scriptorem eu cum. Sit dolor dicunt consectetuer no.',
-        'Ea duis bonorum nec, falli paulo aliquid ei eum.',
-        'Usu eu novum principes, vel quodsi aliquip ea.',
-        'Has at minim mucius aliquam, est id tempor laoreet.',
-        'Pro saepe pertinax ei, ad pri animal labores suscipiantur.',
-        'Detracto suavitate repudiandae no eum. Id adhuc minim soluta nam.',
-        'Iisque perfecto dissentiet cum et, sit ut quot mandamus, ut vim tibique splendide instructior.',
-        'Id nam odio natum malorum, tibique copiosae expetenda mel ea.',
-        'Cu mei vide viris gloriatur, at populo eripuit sit.',
-        'Modus commodo minimum eum te, vero utinam assueverit per eu.',
-        'No nam ipsum lorem aliquip, accumsan quaerendum ei usu.'
-      ],
+      constructor() {
+        super();
+        this._lorem_ipsum_strings = [
+          'Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.',
+          'Ut labores minimum atomorum pro. Laudem tibique ut has.',
+          'Fugit adolescens vis et, ei graeci forensibus sed.',
+          'Convenire definiebas scriptorem eu cum. Sit dolor dicunt consectetuer no.',
+          'Ea duis bonorum nec, falli paulo aliquid ei eum.',
+          'Usu eu novum principes, vel quodsi aliquip ea.',
+          'Has at minim mucius aliquam, est id tempor laoreet.',
+          'Pro saepe pertinax ei, ad pri animal labores suscipiantur.',
+          'Detracto suavitate repudiandae no eum. Id adhuc minim soluta nam.',
+          'Iisque perfecto dissentiet cum et, sit ut quot mandamus, ut vim tibique splendide instructior.',
+          'Id nam odio natum malorum, tibique copiosae expetenda mel ea.',
+          'Cu mei vide viris gloriatur, at populo eripuit sit.',
+          'Modus commodo minimum eum te, vero utinam assueverit per eu.',
+          'No nam ipsum lorem aliquip, accumsan quaerendum ei usu.'
+        ];
+      }
 
-      ready: function() {
+      ready() {
+        super.ready();
         this.style.display = 'block';
-      },
+      }
 
-      _randomString: function(size) {
+      _randomString(size) {
         var ls = this._lorem_ipsum_strings;
         var s  = '';
         do {
@@ -75,13 +83,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           size--;
         } while (size > 0);
         return s;
-      },
+      }
 
-      _randomLetter: function() {
+      _randomLetter() {
         return String.fromCharCode(65 + Math.floor(Math.random() * 26));
-      },
+      }
 
-      _render: function(size, label, padding, margin, boxShadow) {
+      _render(size, label, padding, margin, boxShadow) {
         var html = '';
         for (var i = 0; i < size; i++) {
           html +=
@@ -95,8 +103,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
 
-    });
+    }
 
+    customElements.define(SampleContent.is, SampleContent);
+
+  })();
   </script>
 
 </dom-module>

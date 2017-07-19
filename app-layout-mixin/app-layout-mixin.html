@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../polymer/lib/utils/debounce.html">
+<link rel="import" href="../../polymer/lib/utils/flush.html">
 <link rel="import" href="../../polymer/lib/utils/mixin.html">
 <link rel="import" href="../app-resizable-mixin/app-resizable-mixin.html">
 
@@ -25,10 +26,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      */
     return class AppLayoutMixin extends Polymer.AppResizableMixin(base) {
 
-    static get listeners() { return {
-      'app-reset-layout': '_appResetLayoutHandler',
-      'iron-resize': 'resetLayout'
-    }}
+    ready() {
+      this.addEventListener('app-reset-layout', e => this._appResetLayoutHandler(e));
+      this.addEventListener('iron-resize', e => this.resetLayout(e));
+      super.ready();
+    }
 
     connectedCallback() {
       super.connectedCallback();
@@ -38,7 +40,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     _appResetLayoutHandler(e) {
-      if (Polymer.dom(e).path[0] === this) {
+      if (e.composedPath()[0] === this) {
         return;
       }
       this.resetLayout();
@@ -61,6 +63,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this._layoutDebouncer,
           Polymer.Async.animationFrame,
           this._updateLayoutStates.bind(this));
+      Polymer.enqueueDebouncer(this._layoutDebouncer);
       this._notifyDescendantResize();
     }
 
