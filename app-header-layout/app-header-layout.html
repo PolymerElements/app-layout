@@ -125,6 +125,12 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         z-index: 0;
       }
 
+      @media print {
+        :host([has-scrolling-region]) #wrapper #contentContainer {
+          overflow-y: visible;
+        }
+      }
+
     </style>
 
     <div id="wrapper" class="initializing">
