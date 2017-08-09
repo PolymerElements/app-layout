@@ -218,7 +218,7 @@ Here are some web apps built with App Layout:
   </app-box>
   ```
 
-- In `app-drawer-layout`, the `drawer-toggle` element will not be automatically hidden
+- In `app-drawer-layout`, the `drawer-toggle` element needs to be manually hidden
 when `app-drawer-layout` is not in narrow layout. To add this, add the following CSS rule where
 `app-drawer-layout` is used:
 
