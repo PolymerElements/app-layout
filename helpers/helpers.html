@@ -11,9 +11,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer-element.html">
 
 <script>
+  /** @namespace */
   Polymer.AppLayout = Polymer.AppLayout || {};
 
-  Polymer.AppLayout._scrollEffects = Polymer.AppLayout._scrollEffects || {};
+  Polymer.AppLayout._scrollEffects = {};
 
   Polymer.AppLayout.scrollTimingFunction = function easeOutQuad(t, b, c, d) {
     t /= d;
