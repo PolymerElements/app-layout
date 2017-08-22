@@ -19,16 +19,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
 
-  <link rel="import" href="../../../polymer/polymer.html">
-  <link rel="import" href="../../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../../paper-styles/shadow.html">
-  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+  <script type="module" src="../../../polymer/polymer.js"></script>
+  <script type="module" src="../../../iron-icons/iron-icons.js"></script>
+  <script type="module" src="../../../paper-styles/shadow.js"></script>
+  <script type="module" src="../../../paper-icon-button/paper-icon-button.js"></script>
 
-  <link rel="import" href="../../app-header-layout/app-header-layout.html">
-  <link rel="import" href="../../app-scroll-effects/effects/waterfall.html">
-  <link rel="import" href="../../app-header/app-header.html">
-  <link rel="import" href="../../app-toolbar/app-toolbar.html">
-  <link rel="import" href="../app-grid-style.html">
+  <script type="module" src="../../app-header-layout/app-header-layout.js"></script>
+  <script type="module" src="../../app-scroll-effects/effects/waterfall.js"></script>
+  <script type="module" src="../../app-header/app-header.js"></script>
+  <script type="module" src="../../app-toolbar/app-toolbar.js"></script>
+  <script type="module" src="../app-grid-style.js"></script>
 
   <style>
 
@@ -129,28 +129,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </template>
 
-    <script>
+    <script type="module">
+import '../../../polymer/polymer.js';
+import '../../../iron-icons/iron-icons.js';
+import '../../../paper-styles/shadow.js';
+import '../../../paper-icon-button/paper-icon-button.js';
+import '../../app-header-layout/app-header-layout.js';
+import '../../app-scroll-effects/effects/waterfall.js';
+import '../../app-header/app-header.js';
+import '../../app-toolbar/app-toolbar.js';
+import '../app-grid-style.js';
+import { Polymer } from '../../../polymer/lib/legacy/polymer-fn.js';
 
-      HTMLImports.whenReady(function() {
+Polymer({
+  is: 'x-grid',
 
-        Polymer({
-          is: 'x-grid',
+  attached: function() {
+    this._updateGridStyles = this._updateGridStyles || function() {
+      this.updateStyles();
+    }.bind(this);
+    window.addEventListener('resize', this._updateGridStyles);
+  },
 
-          attached: function() {
-            this._updateGridStyles = this._updateGridStyles || function() {
-              this.updateStyles();
-            }.bind(this);
-            window.addEventListener('resize', this._updateGridStyles);
-          },
-
-          detached: function() {
-            window.removeEventListener('resize', this._updateGridStyles);
-          }
-        });
-
-      });
-
-    </script>
+  detached: function() {
+    window.removeEventListener('resize', this._updateGridStyles);
+  }
+});
+</script>
   </dom-module>
 
   <x-grid></x-grid>

@@ -17,14 +17,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../../iron-icon/iron-icon.html">
-  <link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
-  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../../../paper-fab/paper-fab.html">
-  <link rel="import" href="../../app-toolbar/app-toolbar.html">
-  <link rel="import" href="../../app-scroll-effects/app-scroll-effects.html">
-  <link rel="import" href="../app-header.html">
+  <script type="module" src="../../../iron-icons/iron-icons.js"></script>
+  <script type="module" src="../../../iron-icon/iron-icon.js"></script>
+  <script type="module" src="../../../iron-flex-layout/iron-flex-layout.js"></script>
+  <script type="module" src="../../../paper-icon-button/paper-icon-button.js"></script>
+  <script type="module" src="../../../paper-fab/paper-fab.js"></script>
+  <script type="module" src="../../app-toolbar/app-toolbar.js"></script>
+  <script type="module" src="../../app-scroll-effects/app-scroll-effects.js"></script>
+  <script type="module" src="../app-header.js"></script>
 
   <custom-style>
     <style is="custom-style">
@@ -144,32 +144,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </app-toolbar>
   </app-header>
 
-  <script>
+  <script type="module">
+import '../../../iron-icons/iron-icons.js';
+import '../../../iron-icon/iron-icon.js';
+import '../../../iron-flex-layout/iron-flex-layout.js';
+import '../../../paper-icon-button/paper-icon-button.js';
+import '../../../paper-fab/paper-fab.js';
+import '../../app-toolbar/app-toolbar.js';
+import '../../app-scroll-effects/app-scroll-effects.js';
+import '../app-header.js';
 
-    addEventListener('WebComponentsReady', function() {
+var appHeader = document.querySelector('app-header');
+var bgHeader = document.querySelector('.bg-header');
+var appHeaderHeight = appHeader.offsetHeight;
+var bgHeaderHeight = bgHeader.offsetHeight;
 
-      var appHeader = document.querySelector('app-header');
-      var bgHeader = document.querySelector('.bg-header');
-      var appHeaderHeight = appHeader.offsetHeight;
-      var bgHeaderHeight = bgHeader.offsetHeight;
+var transformBgHeader = function() {
+  var y = window.scrollY;
+  if (y <= bgHeaderHeight) {
+    y = 1.5 * y;
+  }
+  var s = bgHeader.style;
+  s.transform = s.webkitTransform = 'translate3d(0,' + -y + 'px,0)';
+  appHeader.shadow = y > bgHeaderHeight - appHeaderHeight;
+}
 
-      var transformBgHeader = function() {
-        var y = window.scrollY;
-        if (y <= bgHeaderHeight) {
-          y = 1.5 * y;
-        }
-        var s = bgHeader.style;
-        s.transform = s.webkitTransform = 'translate3d(0,' + -y + 'px,0)';
-        appHeader.shadow = y > bgHeaderHeight - appHeaderHeight;
-      }
+transformBgHeader();
 
-      transformBgHeader();
-
-      addEventListener('scroll', transformBgHeader);
-
-    });
-
-  </script>
+addEventListener('scroll', transformBgHeader);
+</script>
 
 </body>
 </html>

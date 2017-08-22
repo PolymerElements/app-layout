@@ -17,10 +17,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../../web-component-tester/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
-  <link rel="import" href="../../../test-fixture/test-fixture.html">
-  <link rel="import" href="../app-scroll-effects.html">
-  <link rel="import" href="x-container.html">
-  <link rel="import" href="utils.html">
+  <script type="module" src="../../../test-fixture/test-fixture.js"></script>
+  <script type="module" src="../app-scroll-effects.js"></script>
+  <script type="module" src="./x-container.js"></script>
+  <script type="module" src="./utils.js"></script>
 
   <style>
     body {
@@ -47,53 +47,56 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-  <script>
+  <script type="module">
+import '../../../test-fixture/test-fixture.js';
+import '../app-scroll-effects.js';
+import './x-container.js';
+import './utils.js';
 
-    suite('basic features', function() {
-      var container;
+suite('basic features', function() {
+  var container;
 
-      setup(function() {
-        container = fixture('testHeader');
-      });
+  setup(function() {
+    container = fixture('testHeader');
+  });
 
-      test('effect outputs', function(done) {
-        flush(function() {
-          container._updateScrollState(0);
+  test('effect outputs', function(done) {
+    flush(function() {
+      container._updateScrollState(0);
 
-          assert.isTrue(sameCSS(container.$.backgroundFrontLayer,
-              'will-change: opacity; transition-property: opacity; ' +
-              'transition-duration: 0.5s;'),
-              'backgroundFrontLayer when progress = 0');
+      assert.isTrue(sameCSS(container.$.backgroundFrontLayer,
+          'will-change: opacity; transition-property: opacity; ' +
+          'transition-duration: 0.5s;'),
+          'backgroundFrontLayer when progress = 0');
 
-          assert.isTrue(sameCSS(container.$.backgroundRearLayer,
-              'will-change: opacity; transition-property: opacity;' +
-              'transition-duration: 0.5s;'),
-              'backgroundRearLayer when progress = 0');
+      assert.isTrue(sameCSS(container.$.backgroundRearLayer,
+          'will-change: opacity; transition-property: opacity;' +
+          'transition-duration: 0.5s;'),
+          'backgroundRearLayer when progress = 0');
 
-          container.$.backgroundFrontLayer.style.transition = 'none';
-          container.$.backgroundRearLayer.style.transition = 'none';
+      container.$.backgroundFrontLayer.style.transition = 'none';
+      container.$.backgroundRearLayer.style.transition = 'none';
 
-          assert.isTrue(sameCSS(container.$.backgroundFrontLayer, 'opacity: 1'),
-              'backgroundFrontLayer when progress = 0');
+      assert.isTrue(sameCSS(container.$.backgroundFrontLayer, 'opacity: 1'),
+          'backgroundFrontLayer when progress = 0');
 
-          assert.isTrue(sameCSS(container.$.backgroundRearLayer, 'opacity: 0'),
-              'backgroundRearLayer when progress = 0');
+      assert.isTrue(sameCSS(container.$.backgroundRearLayer, 'opacity: 0'),
+          'backgroundRearLayer when progress = 0');
 
-          container._updateScrollState(container.offsetHeight);
+      container._updateScrollState(container.offsetHeight);
 
-          assert.isTrue(sameCSS(container.$.backgroundFrontLayer, 'opacity: 0'),
-              'backgroundFrontLayer when progress = 1');
+      assert.isTrue(sameCSS(container.$.backgroundFrontLayer, 'opacity: 0'),
+          'backgroundFrontLayer when progress = 1');
 
-          assert.isTrue(sameCSS(container.$.backgroundRearLayer, 'opacity: 1'),
-              'backgroundRearLayer when progress = 1');
+      assert.isTrue(sameCSS(container.$.backgroundRearLayer, 'opacity: 1'),
+          'backgroundRearLayer when progress = 1');
 
-          done();
-        });
-      });
-
+      done();
     });
+  });
 
-  </script>
+});
+</script>
 
 </body>
 </html>
