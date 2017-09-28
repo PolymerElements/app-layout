@@ -44,7 +44,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     while (queue.length > 0) {
       var node = queue.shift();
       matches.push.apply(matches, node.querySelectorAll(selector));
-      for (i = 0; node.children[i]; i++) {
+      for (var i = 0; node.children[i]; i++) {
         if (node.children[i].shadowRoot) {
           queue.push(node.children[i].shadowRoot);
         }
