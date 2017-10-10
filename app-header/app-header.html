@@ -452,7 +452,7 @@ Mixin | Description | Default
         }
         var nodes = Polymer.dom(this.$.slot).getDistributedNodes();
         // Get the element with the sticky attribute on it or the first element in the light DOM.
-        for (var i = 0, node; node = nodes[i]; i++) {
+        for (var i = 0, node; node = /** @type {!HTMLElement} */ (nodes[i]); i++) {
           if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.hasAttribute('sticky')) {
               this._stickyElRef = node;
