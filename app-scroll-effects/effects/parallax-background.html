@@ -30,7 +30,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (isNaN(scalar)) {
           scalar = 0.8;
         }
-        fx.deltaBg = this._dHeight * scalar;
+        fx.deltaBg = (this._dHeight || 0) * scalar;
       } else {
         if (isNaN(scalar)) {
           scalar = 1;
