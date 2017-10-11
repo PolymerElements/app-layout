@@ -133,7 +133,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       // This seems to only apply when using document scrolling.
       // Therefore, when should we remove the class from the document element?
 
-      window.cancelAnimationFrame(Polymer.AppLayout._scrollTimer);
+      if (Polymer.AppLayout._scrollTimer) {
+        window.cancelAnimationFrame(Polymer.AppLayout._scrollTimer);
+      }
 
       Polymer.AppLayout._scrollTimer = window.requestAnimationFrame(function() {
         headers.forEach(function(header) {
