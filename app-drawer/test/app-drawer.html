@@ -810,6 +810,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(drawer.getBoundingClientRect().right, window.innerWidth);
       });
     });
+    
+    suite('a11y', function() {
+      a11ySuite('testDrawer', []);
+      a11ySuite('rtlDrawer', []);
+    });
 
   </script>
 
