@@ -47,9 +47,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <test-fixture id="openDrawer">
     <template>
       <app-drawer opened>
-        <input type="text">
-        <div tabindex="0">Div</div>
-        <span>Not focusable</span>
+        <button>button</button>
       </app-drawer>
     </template>
   </test-fixture>
@@ -58,12 +56,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template>
       <div>
         <app-drawer>
-          <input type="text">
-          <div tabindex="0">Div</div>
-          <span>Not focusable</span>
+          <button id="internalButton">button</button>
         </app-drawer>
-        <button>button</button>
-
+        <button id="externalButton">button</button>
       </div>
     </template>
   </test-fixture>
