@@ -44,6 +44,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
+  <test-fixture id="openDrawer">
+    <template>
+      <app-drawer opened>
+        <input type="text">
+        <div tabindex="0">Div</div>
+        <span>Not focusable</span>
+      </app-drawer>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="composed">
+    <template>
+      <div>
+        <app-drawer>
+          <input type="text">
+          <div tabindex="0">Div</div>
+          <span>Not focusable</span>
+        </app-drawer>
+        <button>button</button>
+        <input type="text"> 
+      </div>
+    </template>
+  </test-fixture>
+
   <script>
 
     suite('basic features', function() {
@@ -813,7 +837,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     
     suite('a11y', function() {
       a11ySuite('testDrawer', []);
-      a11ySuite('rtlDrawer', []);
+      a11ySuite('openDrawer', []);
+      a11ySuite('composed', []);
     });
 
   </script>
