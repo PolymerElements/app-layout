@@ -20,7 +20,7 @@ export const queryAllRoot = function(selector, root) {
   while (queue.length > 0) {
     var node = queue.shift();
     matches.push.apply(matches, node.querySelectorAll(selector));
-    for (i = 0; node.children[i]; i++) {
+    for (let i = 0; node.children[i]; i++) {
       if (node.children[i].shadowRoot) {
         queue.push(node.children[i].shadowRoot);
       }
