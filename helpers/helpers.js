@@ -1,4 +1,5 @@
 import '../../polymer/polymer.js';
+import { Polymer } from '../../polymer/lib/legacy/polymer-fn.js';
 export const _scrollEffects = {};
 
 export const scrollTimingFunction = function easeOutQuad(t, b, c, d) {
