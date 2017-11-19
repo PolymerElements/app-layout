@@ -91,7 +91,9 @@ export const scroll = function scroll(options) {
     // This seems to only apply when using document scrolling.
     // Therefore, when should we remove the class from the document element?
 
-    window.cancelAnimationFrame(Polymer.AppLayout._scrollTimer);
+    if (Polymer.AppLayout._scrollTimer) {
+      window.cancelAnimationFrame(Polymer.AppLayout._scrollTimer);
+    }
 
     Polymer.AppLayout._scrollTimer = window.requestAnimationFrame(function() {
       headers.forEach(function(header) {
