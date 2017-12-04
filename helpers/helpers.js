@@ -1,5 +1,8 @@
 import '../../polymer/polymer.js';
+import { Polymer } from '../../polymer/lib/legacy/polymer-fn.js';
 export const _scrollEffects = {};
+
+Polymer.AppLayout = Polymer.AppLayout || {};
 
 export const scrollTimingFunction = function easeOutQuad(t, b, c, d) {
   t /= d;
@@ -20,7 +23,7 @@ export const queryAllRoot = function(selector, root) {
   while (queue.length > 0) {
     var node = queue.shift();
     matches.push.apply(matches, node.querySelectorAll(selector));
-    for (i = 0; node.children[i]; i++) {
+    for (let i = 0; node.children[i]; i++) {
       if (node.children[i].shadowRoot) {
         queue.push(node.children[i].shadowRoot);
       }
@@ -88,7 +91,9 @@ export const scroll = function scroll(options) {
     // This seems to only apply when using document scrolling.
     // Therefore, when should we remove the class from the document element?
 
-    window.cancelAnimationFrame(Polymer.AppLayout._scrollTimer);
+    if (Polymer.AppLayout._scrollTimer) {
+      window.cancelAnimationFrame(Polymer.AppLayout._scrollTimer);
+    }
 
     Polymer.AppLayout._scrollTimer = window.requestAnimationFrame(function() {
       headers.forEach(function(header) {
