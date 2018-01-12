@@ -15,15 +15,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>Contacts Demo</title>
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../../../paper-fab/paper-fab.html">
-  <link rel="import" href="../../app-toolbar/app-toolbar.html">
-  <link rel="import" href="../../app-scroll-effects/app-scroll-effects.html">
-  <link rel="import" href="../../demo/sample-content.html">
-  <link rel="import" href="../app-header.html">
+  <script type="module" src="../../../iron-icons/iron-icons.js"></script>
+  <script type="module" src="../../../paper-icon-button/paper-icon-button.js"></script>
+  <script type="module" src="../../../paper-fab/paper-fab.js"></script>
+  <script type="module" src="../../app-toolbar/app-toolbar.js"></script>
+  <script type="module" src="../../app-scroll-effects/app-scroll-effects.js"></script>
+  <script type="module" src="../../demo/sample-content.js"></script>
+  <script type="module" src="../app-header.js"></script>
 
   <custom-style>
     <style is="custom-style">
@@ -109,17 +109,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <sample-content size="100"></sample-content>
 
-  <script>
+  <script type="module">
+import '../../../iron-icons/iron-icons.js';
+import '../../../paper-icon-button/paper-icon-button.js';
+import '../../../paper-fab/paper-fab.js';
+import '../../app-toolbar/app-toolbar.js';
+import '../../app-scroll-effects/app-scroll-effects.js';
+import '../../demo/sample-content.js';
+import '../app-header.js';
 
-    var fab = document.querySelector('paper-fab');
-    var header = document.querySelector('app-header');
+var fab = document.querySelector('paper-fab');
+var header = document.querySelector('app-header');
 
-    window.addEventListener('scroll', function() {
-      var progress = header.getScrollState().progress;
-      fab.toggleClass('shrink-to-hidden', progress > 0.5);
-    });
-
-  </script>
+window.addEventListener('scroll', function() {
+  var progress = header.getScrollState().progress;
+  fab.toggleClass('shrink-to-hidden', progress > 0.5);
+});
+</script>
 
 </body>
 </html>

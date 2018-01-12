@@ -14,13 +14,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <title>test for the blend-background effect</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../../web-component-tester/browser.js"></script>
+  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../../wct-browser-legacy/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
-  <link rel="import" href="../../../test-fixture/test-fixture.html">
-  <link rel="import" href="../app-scroll-effects.html">
-  <link rel="import" href="x-container.html">
-  <link rel="import" href="utils.html">
+  <script type="module" src="../../../test-fixture/test-fixture.js"></script>
+  <script type="module" src="../app-scroll-effects.js"></script>
+  <script type="module" src="./x-container.js"></script>
+  <script type="module" src="./utils.js"></script>
 
   <style>
     body {
@@ -47,44 +47,47 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-  <script>
+  <script type="module">
+import '../../../test-fixture/test-fixture.js';
+import '../app-scroll-effects.js';
+import './x-container.js';
+import './utils.js';
 
-    suite('basic features', function() {
-      var container;
+suite('basic features', function() {
+  var container;
 
-      setup(function() {
-        container = fixture('testHeader');
-      });
+  setup(function() {
+    container = fixture('testHeader');
+  });
 
-      test('effect outputs', function(done) {
-        flush(function() {
-          container._updateScrollState(0);
+  test('effect outputs', function(done) {
+    flush(function() {
+      container._updateScrollState(0);
 
-          assert.isTrue(sameCSS(container.$.backgroundFrontLayer,
-              'will-change: opacity; transform: translateZ(0px); opacity: 1;'),
-              'backgroundFrontLayer when progress = 0');
+      assert.isTrue(sameCSS(container.$.backgroundFrontLayer,
+          'will-change: opacity; transform: translateZ(0px); opacity: 1;'),
+          'backgroundFrontLayer when progress = 0');
 
-          assert.isTrue(sameCSS(container.$.backgroundRearLayer,
-              'will-change: opacity; transform: translateZ(0px); opacity: 0;'),
-              'backgroundRearLayer when progress = 0');
+      assert.isTrue(sameCSS(container.$.backgroundRearLayer,
+          'will-change: opacity; transform: translateZ(0px); opacity: 0;'),
+          'backgroundRearLayer when progress = 0');
 
-          container._updateScrollState(container.offsetHeight);
+      container._updateScrollState(container.offsetHeight);
 
-          assert.isTrue(sameCSS(container.$.backgroundFrontLayer,
-              'will-change: opacity; transform: translateZ(0px); opacity: 0;'),
-              'backgroundFrontLayer when progress = 1');
+      assert.isTrue(sameCSS(container.$.backgroundFrontLayer,
+          'will-change: opacity; transform: translateZ(0px); opacity: 0;'),
+          'backgroundFrontLayer when progress = 1');
 
-          assert.isTrue(sameCSS(container.$.backgroundRearLayer,
-              'will-change: opacity; transform: translateZ(0px); opacity: 1;'),
-              'backgroundRearLayer when progress = 1');
+      assert.isTrue(sameCSS(container.$.backgroundRearLayer,
+          'will-change: opacity; transform: translateZ(0px); opacity: 1;'),
+          'backgroundRearLayer when progress = 1');
 
-          done();
-        });
-      });
-
+      done();
     });
+  });
 
-  </script>
+});
+</script>
 
 </body>
 </html>
