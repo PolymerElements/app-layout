@@ -71,7 +71,7 @@ a shadow root):
         right: 0;
         bottom: -120px;
         left: 0;
-
+        --app-drawer-wdith: 480px;
         visibility: hidden;
 
         transition-property: visibility;
@@ -82,7 +82,7 @@ a shadow root):
       }
 
       :host([persistent]) {
-        width: var(--app-drawer-width, 256px);
+        width: var(--app-drawer-width, calc(100% - 10px));
       }
 
       :host([persistent][position=left]) {
@@ -98,16 +98,14 @@ a shadow root):
         top: 0;
         bottom: 0;
         left: 0;
-
-        width: var(--app-drawer-width, 256px);
+        width: calc(100% - 15px);
         padding: 120px 0;
-
         transition-property: -webkit-transform;
         transition-property: transform;
         -webkit-transform: translate3d(-100%, 0, 0);
         transform: translate3d(-100%, 0, 0);
 
-        background-color: #FFF;
+        background-color: #3d332a;
 
         @apply --app-drawer-content-container;
       }
@@ -164,6 +162,10 @@ a shadow root):
 
       #scrim.visible {
         opacity: 1;
+      }
+
+      :host([no-transition]) #contentContainer {
+        transition-property: none;
       }
     </style>
 
