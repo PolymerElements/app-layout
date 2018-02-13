@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * @param {HTMLElement} el
    * @param {string} cssText
    */
-  function sameCSS(el, cssText) {
+  window.sameCSS = function (el, cssText) {
     var propName;
     var dummy = document.createElement('div');
 
