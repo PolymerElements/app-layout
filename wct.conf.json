@@ -4,8 +4,7 @@
       "browserOptions": {
         "chrome": [
           "headless",
-          "no-sandbox",
-          "disable-gpu"
+          "no-sandbox"
         ],
         "firefox": [
           "-headless"
