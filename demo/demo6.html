@@ -16,19 +16,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>demo6</title>
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../font-roboto/roboto.html">
-  <link rel="import" href="../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../paper-item/paper-icon-item.html">
-  <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../app-drawer-layout/app-drawer-layout.html">
-  <link rel="import" href="../app-drawer/app-drawer.html">
-  <link rel="import" href="../app-scroll-effects/app-scroll-effects.html">
-  <link rel="import" href="../app-header/app-header.html">
-  <link rel="import" href="../app-header-layout/app-header-layout.html">
-  <link rel="import" href="../app-toolbar/app-toolbar.html">
-  <link rel="import" href="../demo/sample-content.html">
+  <script type="module" src="../../font-roboto/roboto.js"></script>
+  <script type="module" src="../../iron-icons/iron-icons.js"></script>
+  <script type="module" src="../../paper-item/paper-icon-item.js"></script>
+  <script type="module" src="../../paper-icon-button/paper-icon-button.js"></script>
+  <script type="module" src="../app-drawer-layout/app-drawer-layout.js"></script>
+  <script type="module" src="../app-drawer/app-drawer.js"></script>
+  <script type="module" src="../app-scroll-effects/app-scroll-effects.js"></script>
+  <script type="module" src="../app-header/app-header.js"></script>
+  <script type="module" src="../app-header-layout/app-header-layout.js"></script>
+  <script type="module" src="../app-toolbar/app-toolbar.js"></script>
+  <script type="module" src="./sample-content.js"></script>
 
   <custom-style>
     <style is="custom-style">
@@ -113,16 +113,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   </app-header-layout>
 
-  <script>
-    var drawerLayout = document.getElementById('drawerLayout');
-    toggle.addEventListener('click', function() {
-      if (drawerLayout.forceNarrow || !drawerLayout.narrow) {
-        drawerLayout.forceNarrow = !drawerLayout.forceNarrow;
-      } else {
-        drawerLayout.drawer.toggle();
-      }
-    });
-  </script>
+  <script type="module">
+import '../../font-roboto/roboto.js';
+import '../../iron-icons/iron-icons.js';
+import '../../paper-item/paper-icon-item.js';
+import '../../paper-icon-button/paper-icon-button.js';
+import '../app-drawer-layout/app-drawer-layout.js';
+import '../app-drawer/app-drawer.js';
+import '../app-scroll-effects/app-scroll-effects.js';
+import '../app-header/app-header.js';
+import '../app-header-layout/app-header-layout.js';
+import '../app-toolbar/app-toolbar.js';
+import './sample-content.js';
+var drawerLayout = document.getElementById('drawerLayout');
+toggle.addEventListener('click', function() {
+  if (drawerLayout.forceNarrow || !drawerLayout.narrow) {
+    drawerLayout.forceNarrow = !drawerLayout.forceNarrow;
+  } else {
+    drawerLayout.drawer.toggle();
+  }
+});
+</script>
 
 </body>
 </html>

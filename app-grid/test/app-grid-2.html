@@ -14,11 +14,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <title>test for app-grid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../../web-component-tester/browser.js"></script>
+  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../../wct-browser-legacy/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
-  <link rel="import" href="../../../test-fixture/test-fixture.html">
-  <link rel="import" href="../app-grid-style.html">
+  <script type="module" src="../../../test-fixture/test-fixture.js"></script>
+  <script type="module" src="../app-grid-style.js"></script>
 
   <style>
     body {
@@ -72,17 +72,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </template>
 
-    <script>
+    <script type="module">
+import '../../../test-fixture/test-fixture.js';
+import '../app-grid-style.js';
+import { Polymer } from '../../../polymer/lib/legacy/polymer-fn.js';
 
-      HTMLImports.whenReady(function() {
-
-        Polymer({
-          is: 'x-grid'
-        });
-
-      });
-
-    </script>
+Polymer({
+  is: 'x-grid'
+});
+</script>
   </dom-module>
 
 
@@ -92,66 +90,68 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-  <script>
+  <script type="module">
+import '../../../test-fixture/test-fixture.js';
+import '../app-grid-style.js';
+import { dom } from '../../../polymer/lib/legacy/polymer.dom.js';
 
-    function valueAsInt(obj) {
-      var rtn = {top: 0, right: 0, bottom: 0, left: 0, width: 0};
-      for (var k in obj) {
-        if (rtn.hasOwnProperty(k)) {
-          rtn[k] = Math.round(obj[k]);
+function valueAsInt(obj) {
+  var rtn = {top: 0, right: 0, bottom: 0, left: 0, width: 0};
+  for (var k in obj) {
+    if (rtn.hasOwnProperty(k)) {
+      rtn[k] = Math.round(obj[k]);
+    }
+  }
+  return rtn;
+}
+
+suite('basic features', function() {
+  var grid;
+
+  setup(function() {
+    grid = fixture('trivialGrid');
+  });
+
+  test('bounding rectangle for each item', function(done) {
+
+    flush(function() {
+
+      var i, k, currentRect;
+      var gridItems = dom(grid.root).querySelectorAll('li');
+      var expectedBoundingRect = [
+        {top: 16, right: 116, bottom: 116, left: 16, width: 100},
+        {top: 16, right: 348, bottom: 116, left: 132, width: 216},
+        {top: 16, right: 464, bottom: 116, left: 364, width: 100},
+        {top: 132, right: 116, bottom: 232, left: 16, width: 100},
+        {top: 132, right: 348, bottom: 232, left: 132, width: 216},
+        {top: 132, right: 464, bottom: 232, left: 364, width: 100},
+        {top: 248, right: 116, bottom: 348, left: 16, width: 100},
+        {top: 248, right: 348, bottom: 348, left: 132, width: 216},
+        {top: 248, right: 464, bottom: 348, left: 364, width: 100},
+        {top: 364, right: 116, bottom: 464, left: 16, width: 100},
+        {top: 364, right: 348, bottom: 464, left: 132, width: 216},
+        {top: 364, right: 464, bottom: 464, left: 364, width: 100}
+      ];
+
+      for (i = 0; i < gridItems.length; i++) {
+        currentRect = valueAsInt(gridItems[i].getBoundingClientRect());
+
+        for (k in expectedBoundingRect[i]) {
+          if (expectedBoundingRect[i].hasOwnProperty(k)) {
+            assert.approximately(expectedBoundingRect[i][k],
+                currentRect[k], 4, ' ItemRect[' + i + '].' + k);
+          }
         }
       }
-      return rtn;
-    }
 
-    suite('basic features', function() {
-      var grid;
-
-      setup(function() {
-        grid = fixture('trivialGrid');
-      });
-
-      test('bounding rectangle for each item', function(done) {
-
-        flush(function() {
-
-          var i, k, currentRect;
-          var gridItems = Polymer.dom(grid.root).querySelectorAll('li');
-          var expectedBoundingRect = [
-            {top: 16, right: 116, bottom: 116, left: 16, width: 100},
-            {top: 16, right: 348, bottom: 116, left: 132, width: 216},
-            {top: 16, right: 464, bottom: 116, left: 364, width: 100},
-            {top: 132, right: 116, bottom: 232, left: 16, width: 100},
-            {top: 132, right: 348, bottom: 232, left: 132, width: 216},
-            {top: 132, right: 464, bottom: 232, left: 364, width: 100},
-            {top: 248, right: 116, bottom: 348, left: 16, width: 100},
-            {top: 248, right: 348, bottom: 348, left: 132, width: 216},
-            {top: 248, right: 464, bottom: 348, left: 364, width: 100},
-            {top: 364, right: 116, bottom: 464, left: 16, width: 100},
-            {top: 364, right: 348, bottom: 464, left: 132, width: 216},
-            {top: 364, right: 464, bottom: 464, left: 364, width: 100}
-          ];
-
-          for (i = 0; i < gridItems.length; i++) {
-            currentRect = valueAsInt(gridItems[i].getBoundingClientRect());
-
-            for (k in expectedBoundingRect[i]) {
-              if (expectedBoundingRect[i].hasOwnProperty(k)) {
-                assert.approximately(expectedBoundingRect[i][k],
-                    currentRect[k], 4, ' ItemRect[' + i + '].' + k);
-              }
-            }
-          }
-
-          done();
-
-        });
-
-      });
+      done();
 
     });
 
-  </script>
+  });
+
+});
+</script>
 
 </body>
 </html>
