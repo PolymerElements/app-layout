@@ -14,12 +14,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <title>scroll</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../../web-component-tester/browser.js"></script>
+  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../../wct-browser-legacy/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
-  <link rel="import" href="../../../test-fixture/test-fixture.html">
-  <link rel="import" href="../../app-header/app-header.html">
-  <link rel="import" href="../helpers.html">
+  <script type="module" src="../../../test-fixture/test-fixture.js"></script>
+  <script type="module" src="../../app-header/app-header.js"></script>
+  <script type="module" src="../helpers.js"></script>
 
   <style>
     #region {
@@ -42,82 +42,85 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </div>
   <div class="content"></div>
 
-  <script>
+  <script type="module">
+import '../../../test-fixture/test-fixture.js';
+import '../../app-header/app-header.js';
+import { scroll } from '../helpers.js';
+import { Base } from '../../../polymer/polymer.js';
 
-    suite('Polymer.AppLayout.scroll', function() {
+suite('Polymer.AppLayout.scroll', function() {
 
-      test('document scrolling', function(done) {
-        var x = 500;
-        var y = 500;
-        var region = document.querySelector('#region');
+  test('document scrolling', function(done) {
+    var x = 500;
+    var y = 500;
+    var region = document.querySelector('#region');
 
-        Polymer.AppLayout.scroll({left: x, top: y});
+    scroll({left: x, top: y});
 
-        Polymer.Base.async(function() {
-          assert.equal(window.pageXOffset, x, 'document scrollLeft');
-          assert.equal(window.pageYOffset, y, 'document scrollTop');
-          done();
-        }, 100);
+    Base.async(function() {
+      assert.equal(window.pageXOffset, x, 'document scrollLeft');
+      assert.equal(window.pageYOffset, y, 'document scrollTop');
+      done();
+    }, 100);
 
-      });
+  });
 
-      test('scrolling region', function(done) {
-        var x = 500;
-        var y = 500;
-        var region = document.querySelector('#region');
+  test('scrolling region', function(done) {
+    var x = 500;
+    var y = 500;
+    var region = document.querySelector('#region');
 
-        Polymer.AppLayout.scroll({left: x, top: y, target: region});
+    scroll({left: x, top: y, target: region});
 
-        Polymer.Base.async(function() {
-          assert.equal(region.scrollLeft, x, 'region scrollLeft');
-          assert.equal(region.scrollTop, y, 'region scrollTop');
-          done();
-        }, 100);
+    Base.async(function() {
+      assert.equal(region.scrollLeft, x, 'region scrollLeft');
+      assert.equal(region.scrollTop, y, 'region scrollTop');
+      done();
+    }, 100);
 
-      });
+  });
 
-      test('behavior: silent', function(done) {
-        var header = document.querySelector('app-header');
+  test('behavior: silent', function(done) {
+    var header = document.querySelector('app-header');
 
-        assert.isFalse(header.disabled);
-        Polymer.AppLayout.scroll({left: 100, top: 200, behavior: 'silent'});
-        assert.isTrue(header.hasAttribute('silent-scroll'));
-        requestAnimationFrame(function() {
-          assert.isFalse(header.hasAttribute('silent-scroll'));
-          done();
-        });
-      });
-
-      test('behavior: smooth', function(done) {
-        var scrollSpy = sinon.spy();
-        window.addEventListener('scroll', scrollSpy);
-        Polymer.AppLayout.scroll({top: 0});
-        Polymer.AppLayout.scroll({top: 500, behavior: 'smooth'});
-
-        window.setTimeout(function() {
-          assert.isAbove(scrollSpy.callCount, 1, 'scroll top should be fired multiple times');
-          done();
-        }, 300);
-      });
-
-      test('smooth scrolling to the top', function(done) {
-        Polymer.AppLayout.scroll({top: 1000});
-        Polymer.AppLayout.scroll({top: 0, behavior: 'smooth'});
-
-        var timer;
-
-        window.addEventListener('scroll', function() {
-          clearInterval(timer);
-          timer = setTimeout(function() {
-            assert.equal(window.pageYOffset, 0, 'document scrollTop');
-            done();
-          }, 200);
-        });
-      });
-
+    assert.isFalse(header.disabled);
+    scroll({left: 100, top: 200, behavior: 'silent'});
+    assert.isTrue(header.hasAttribute('silent-scroll'));
+    requestAnimationFrame(function() {
+      assert.isFalse(header.hasAttribute('silent-scroll'));
+      done();
     });
+  });
 
-  </script>
+  test('behavior: smooth', function(done) {
+    var scrollSpy = sinon.spy();
+    window.addEventListener('scroll', scrollSpy);
+    scroll({top: 0});
+    scroll({top: 500, behavior: 'smooth'});
+
+    window.setTimeout(function() {
+      assert.isAbove(scrollSpy.callCount, 1, 'scroll top should be fired multiple times');
+      done();
+    }, 300);
+  });
+
+  test('smooth scrolling to the top', function(done) {
+    scroll({top: 1000});
+    scroll({top: 0, behavior: 'smooth'});
+
+    var timer;
+
+    window.addEventListener('scroll', function() {
+      clearInterval(timer);
+      timer = setTimeout(function() {
+        assert.equal(window.pageYOffset, 0, 'document scrollTop');
+        done();
+      }, 200);
+    });
+  });
+
+});
+</script>
 
 </body>
 </html>
