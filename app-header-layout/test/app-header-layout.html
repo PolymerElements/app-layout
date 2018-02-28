@@ -82,6 +82,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('scrolling region', function(done) {
         headerLayout.hasScrollingRegion = true;
+        Polymer.dom.flush();
 
         flush(function() {
           assert.isTrue(header.scrollTarget !== document.documentElement, 'scroller should not point to the document element');
@@ -100,6 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             headerLayout.style.width = '200px';
             headerLayout.resetLayout();
+            Polymer.dom.flush();
 
             flush(function() {
               requestAnimationFrame(function() {
@@ -121,6 +123,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('initial static position header and content', function(done) {
         assert.isTrue(headerLayout.$.wrapper.classList.contains('initializing'));
+        Polymer.dom.flush();
         flush(function() {
           assert.isFalse(headerLayout.$.wrapper.classList.contains('initializing'));
           done();
