@@ -1,0 +1,10 @@
+{
+  "name": "@polymer/app-layout",
+  "private": true,
+  "description": "A set of layout elements for your app",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PolymerElements/app-layout"
+  },
+  "license": "BSD-3-Clause"
+}
