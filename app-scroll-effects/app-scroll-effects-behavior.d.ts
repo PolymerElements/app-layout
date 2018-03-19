@@ -169,7 +169,7 @@ declare namespace Polymer {
      * Updates the scroll state. This method should be overridden
      * by the consumer of this behavior.
      */
-    _updateScrollState(): void;
+    _updateScrollState(scrollTop: number): void;
 
     /**
      * Returns true if the current element is on the screen.
