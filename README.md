@@ -162,6 +162,7 @@ Here are some web apps built with App Layout:
 - [Chrome Status](https://www.chromestatus.com/)
 - [Project Fi](https://fi.google.com/about/)
 - [NASA Open Source Software](https://code.nasa.gov/)
+- [Predix Design System](https://www.predix-ui.com/)
 
 ## Tools and References
 
