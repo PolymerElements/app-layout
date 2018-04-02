@@ -23,7 +23,7 @@
     "polymer": "Polymer/polymer#1.9 - 2"
   },
   "devDependencies": {
-    "es6-promise": "stefanpenner/es6-promise#^4.0.0",
+    "es6-promise": "stefanpenner/es6-promise#4.1.1",
     "font-roboto": "PolymerElements/font-roboto#^1.0.0",
     "iron-component-page": "PolymerElements/iron-component-page#1 - 2",
     "iron-icon": "PolymerElements/iron-icon#1 - 2",
