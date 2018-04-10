@@ -175,16 +175,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
+    Polymer({
 
-  Polymer({
+      is: 'recipe-list',
 
-    is: 'recipe-list',
+      properties: {recipes: Object}
 
-    properties: {
-      recipes: Object
-    }
-
-  });
-
+    });
   </script>
 </dom-module>

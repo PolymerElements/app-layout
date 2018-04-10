@@ -25,7 +25,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       fx.background = this._getDOMRef('background');
       fx.backgroundFrontLayer = this._getDOMRef('backgroundFrontLayer');
       fx.backgroundRearLayer = this._getDOMRef('backgroundRearLayer');
-      fx.deltaBg = fx.backgroundFrontLayer.offsetHeight - fx.background.offsetHeight;
+      fx.deltaBg =
+          fx.backgroundFrontLayer.offsetHeight - fx.background.offsetHeight;
       if (fx.deltaBg === 0) {
         if (isNaN(scalar)) {
           scalar = 0.8;
@@ -42,9 +43,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /** @this Polymer.AppLayout.ElementWithBackground */
     run: function run(p, y) {
       var fx = this._fxParallaxBackground;
-      this.transform('translate3d(0px, ' + (fx.deltaBg * Math.min(1, p)) + 'px, 0px)', fx.backgroundFrontLayer);
+      this.transform(
+          'translate3d(0px, ' + (fx.deltaBg * Math.min(1, p)) + 'px, 0px)',
+          fx.backgroundFrontLayer);
       if (fx.backgroundRearLayer) {
-        this.transform('translate3d(0px, ' + (fx.deltaBg * Math.min(1, p)) + 'px, 0px)', fx.backgroundRearLayer);
+        this.transform(
+            'translate3d(0px, ' + (fx.deltaBg * Math.min(1, p)) + 'px, 0px)',
+            fx.backgroundRearLayer);
       }
     },
     /** @this Polymer.AppLayout.ElementWithBackground */

@@ -319,9 +319,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </app-header>
 
   <script>
-
     addEventListener('WebComponentsReady', function() {
-
       var appHeader = document.querySelector('app-header');
       var appBox = document.querySelector('app-box');
       var fadeBackgroundEffect = appHeader.createEffect('fade-background');
@@ -332,9 +330,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         fadeBackgroundEffect.run(isCondensed ? 1 : 0);
         appHeader.shadow = isCondensed;
       });
-
     });
-
   </script>
 
 </body>

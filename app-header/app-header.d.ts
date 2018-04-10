@@ -214,8 +214,9 @@ interface AppHeaderElement extends Polymer.Element, Polymer.AppScrollEffectsBeha
 
   /**
    * If true, the header will automatically collapse when scrolling down.
-   * That is, the `sticky` element remains visible when the header is fully condensed
-   * whereas the rest of the elements will collapse below `sticky` element.
+   * That is, the `sticky` element remains visible when the header is fully
+   * condensed whereas the rest of the elements will collapse below `sticky`
+   * element.
    *
    * By default, the `sticky` element is the first toolbar in the light DOM:
    *
@@ -227,9 +228,10 @@ interface AppHeaderElement extends Polymer.Element, Polymer.AppScrollEffectsBeha
    * </app-header>
    * ```
    *
-   * Additionally, you can specify which toolbar or element remains visible in condensed mode
-   * by adding the `sticky` attribute to that element. For example: if we want the last
-   * toolbar to remain visible, we can add the `sticky` attribute to it.
+   * Additionally, you can specify which toolbar or element remains visible in
+   * condensed mode by adding the `sticky` attribute to that element. For
+   * example: if we want the last toolbar to remain visible, we can add the
+   * `sticky` attribute to it.
    *
    * ```html
    * <app-header condenses>
@@ -330,8 +332,8 @@ interface AppHeaderElement extends Polymer.Element, Polymer.AppScrollEffectsBeha
   _mayMove(): boolean;
 
   /**
-   * Returns true if the current header will condense based on the size of the header
-   * and the `consenses` property.
+   * Returns true if the current header will condense based on the size of the
+   * header and the `consenses` property.
    */
   willCondense(): boolean;
 

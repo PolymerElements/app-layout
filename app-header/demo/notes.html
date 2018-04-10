@@ -145,15 +145,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </app-header>
 
   <script>
-
     addEventListener('WebComponentsReady', function() {
-
       var appHeader = document.querySelector('app-header');
       var bgHeader = document.querySelector('.bg-header');
       var appHeaderHeight = appHeader.offsetHeight;
       var bgHeaderHeight = bgHeader.offsetHeight;
 
-      var transformBgHeader = function() {
+      var transformBgHeader =
+          function() {
         var y = window.scrollY;
         if (y <= bgHeaderHeight) {
           y = 1.5 * y;
@@ -166,9 +165,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       transformBgHeader();
 
       addEventListener('scroll', transformBgHeader);
-
     });
-
   </script>
 
 </body>

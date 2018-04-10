@@ -255,7 +255,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
-
     Polymer({
 
       is: 'blog-app',
@@ -271,10 +270,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         subRoute: Object,
 
-        subsubRoute: {
-          type: Object,
-          observer: '_subsubrouteChanged'
-        },
+        subsubRoute: {type: Object, observer: '_subsubrouteChanged'},
 
         categoryData: Object,
 
@@ -291,9 +287,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       },
 
-      observers: [
-        '_updateArticle(articles, categoryData.category, idData.id)'
-      ],
+      observers: ['_updateArticle(articles, categoryData.category, idData.id)'],
 
       attached: function() {
         this.async(function() {
@@ -311,9 +305,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (!articles) {
           return;
         }
-        for (var i=0, cat; cat=articles[i]; i++) {
+        for (var i = 0, cat; cat = articles[i]; i++) {
           if (cat.name === category) {
-            for (var j=0, article; article=cat.items[j]; j++) {
+            for (var j = 0, article; article = cat.items[j]; j++) {
               if (article.id === id) {
                 this.article = article;
                 return;
@@ -324,7 +318,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _drawerSelected: function() {
-        if (!this.$.drawer.persistent) this.$.drawer.close();
+        if (!this.$.drawer.persistent)
+          this.$.drawer.close();
       },
 
       _shouldHideMenuButton: function(page, narrow) {
@@ -344,14 +339,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         }
         if (map[subroute.prefix] != null) {
-          Polymer.AppLayout.scroll({ top: map[subroute.prefix], behavior: 'silent' });
+          Polymer.AppLayout.scroll({top: map[subroute.prefix], behavior: 'silent'});
         } else if (this.isAttached) {
-          Polymer.AppLayout.scroll({ top: 0, behavior: 'silent' });
+          Polymer.AppLayout.scroll({top: 0, behavior: 'silent'});
         }
       }
 
     });
-
   </script>
 
 </dom-module>

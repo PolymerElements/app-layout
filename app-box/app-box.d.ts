@@ -100,7 +100,8 @@ interface AppBoxElement extends Polymer.Element, Polymer.AppScrollEffectsBehavio
   _debounceRaf(fn: any): void;
 
   /**
-   * Resets the layout. This method is automatically called when the element is attached to the DOM.
+   * Resets the layout. This method is automatically called when the element is
+   * attached to the DOM.
    */
   resetLayout(): void;
   _getElementTop(): any;

@@ -184,59 +184,38 @@ a shadow root):
     Polymer({
       is: 'app-drawer-layout',
 
-      behaviors: [
-        Polymer.AppLayoutBehavior
-      ],
+      behaviors: [Polymer.AppLayoutBehavior],
 
       properties: {
         /**
          * If true, ignore `responsiveWidth` setting and force the narrow layout.
          */
-        forceNarrow: {
-          type: Boolean,
-          value: false
-        },
+        forceNarrow: {type: Boolean, value: false},
 
         /**
-         * If the viewport's width is smaller than this value, the panel will change to narrow
-         * layout. In the mode the drawer will be closed.
+         * If the viewport's width is smaller than this value, the panel will change
+         * to narrow layout. In the mode the drawer will be closed.
          */
-        responsiveWidth: {
-          type: String,
-          value: '640px'
-        },
+        responsiveWidth: {type: String, value: '640px'},
 
         /**
-         * Returns true if it is in narrow layout. This is useful if you need to show/hide
-         * elements based on the layout.
+         * Returns true if it is in narrow layout. This is useful if you need to
+         * show/hide elements based on the layout.
          */
-        narrow: {
-          type: Boolean,
-          reflectToAttribute: true,
-          readOnly: true,
-          notify: true
-        },
+        narrow:
+            {type: Boolean, reflectToAttribute: true, readOnly: true, notify: true},
 
         /**
          * If true, the drawer will initially be opened when in narrow layout mode.
          */
-        openedWhenNarrow: {
-          type: Boolean,
-          value: false
-        },
+        openedWhenNarrow: {type: Boolean, value: false},
 
-        _drawerPosition: {
-          type: String
-        }
+        _drawerPosition: {type: String}
       },
 
-      listeners: {
-        'click': '_clickHandler'
-      },
+      listeners: {'click': '_clickHandler'},
 
-      observers: [
-        '_narrowChanged(narrow)'
-      ],
+      observers: ['_narrowChanged(narrow)'],
 
       /**
        * A reference to the app-drawer element.
@@ -248,7 +227,8 @@ a shadow root):
       },
 
       attached: function() {
-        // Disable drawer transitions until after app-drawer-layout sets the initial opened state.
+        // Disable drawer transitions until after app-drawer-layout sets the initial
+        // opened state.
         var drawer = this.drawer;
         if (drawer) {
           drawer.setAttribute('no-transition', '');
@@ -280,7 +260,8 @@ a shadow root):
             drawer.opened = drawer.persistent = true;
           }
           if (drawer.hasAttribute('no-transition')) {
-            // Enable drawer transitions after app-drawer-layout sets the initial opened state.
+            // Enable drawer transitions after app-drawer-layout sets the initial
+            // opened state.
             Polymer.RenderStatus.afterNextRender(this, function() {
               drawer.removeAttribute('no-transition');
             });
@@ -299,7 +280,8 @@ a shadow root):
       },
 
       _computeMediaQuery: function(forceNarrow, responsiveWidth) {
-        return forceNarrow ? '(min-width: 0px)' : '(max-width: ' + responsiveWidth + ')';
+        return forceNarrow ? '(min-width: 0px)' :
+                             '(max-width: ' + responsiveWidth + ')';
       }
     });
   </script>

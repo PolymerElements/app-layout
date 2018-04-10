@@ -15,22 +15,25 @@
 declare namespace Polymer {
 
   /**
-   * `Polymer.AppScrollEffectsBehavior` provides an interface that allows an element to use scrolls effects.
+   * `Polymer.AppScrollEffectsBehavior` provides an interface that allows an
+   * element to use scrolls effects.
    *
    * ### Importing the app-layout effects
    *
-   * app-layout provides a set of scroll effects that can be used by explicitly importing
-   * `app-scroll-effects.html`:
+   * app-layout provides a set of scroll effects that can be used by explicitly
+   * importing `app-scroll-effects.html`:
    *
    * ```html
-   * <link rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+   * <link rel="import"
+   * href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
    * ```
    *
    * The scroll effects can also be used by individually importing
    * `app-layout/app-scroll-effects/effects/[effectName].html`. For example:
    *
    * ```html
-   *  <link rel="import" href="/bower_components/app-layout/app-scroll-effects/effects/waterfall.html">
+   *  <link rel="import"
+   * href="/bower_components/app-layout/app-scroll-effects/effects/waterfall.html">
    * ```
    *
    * ### Consuming effects
@@ -43,13 +46,15 @@ declare namespace Polymer {
    *
    * ### Creating scroll effects
    *
-   * You may want to create a custom scroll effect if you need to modify the CSS of an element
-   * based on the scroll position.
+   * You may want to create a custom scroll effect if you need to modify the CSS
+   * of an element based on the scroll position.
    *
-   * A scroll effect definition is an object with `setUp()`, `tearDown()` and `run()` functions.
+   * A scroll effect definition is an object with `setUp()`, `tearDown()` and
+   * `run()` functions.
    *
-   * To register the effect, you can use `Polymer.AppLayout.registerEffect(effectName, effectDef)`
-   * For example, let's define an effect that resizes the header's logo:
+   * To register the effect, you can use
+   * `Polymer.AppLayout.registerEffect(effectName, effectDef)` For example, let's
+   * define an effect that resizes the header's logo:
    *
    * ```js
    * Polymer.AppLayout.registerEffect('resizable-logo', {
@@ -60,7 +65,8 @@ declare namespace Polymer {
    *
    *   run: function(progress) {
    *      // the progress of the effect
-   *      this.transform('scale3d(' + progress + ', '+ progress +', 1)',  this._fxResizeLogo.logo);
+   *      this.transform('scale3d(' + progress + ', '+ progress +', 1)',
+   * this._fxResizeLogo.logo);
    *   },
    *
    *   tearDown: function() {
@@ -87,8 +93,8 @@ declare namespace Polymer {
    *
    * ### Configuring effects
    *
-   * For effects installed via the `effects` property, their configuration can be set
-   * via the `effectsConfig` property. For example:
+   * For effects installed via the `effects` property, their configuration can be
+   * set via the `effectsConfig` property. For example:
    *
    * ```html
    * <app-header effects="waterfall"
@@ -96,19 +102,22 @@ declare namespace Polymer {
    * </app-header>
    * ```
    *
-   * All effects have a `startsAt` and `endsAt` config property. They specify at what
-   * point the effect should start and end. This value goes from 0 to 1 inclusive.
+   * All effects have a `startsAt` and `endsAt` config property. They specify at
+   * what point the effect should start and end. This value goes from 0 to 1
+   * inclusive.
    */
   interface AppScrollEffectsBehavior extends Polymer.IronScrollTargetBehavior {
 
     /**
-     * A space-separated list of the effects names that will be triggered when the user scrolls.
-     * e.g. `waterfall parallax-background` installs the `waterfall` and `parallax-background`.
+     * A space-separated list of the effects names that will be triggered when
+     * the user scrolls. e.g. `waterfall parallax-background` installs the
+     * `waterfall` and `parallax-background`.
      */
     effects: string|null|undefined;
 
     /**
-     * An object that configurates the effects installed via the `effects` property. e.g.
+     * An object that configurates the effects installed via the `effects`
+     * property. e.g.
      * ```js
      *  element.effectsConfig = {
      *   "blend-background": {
@@ -116,12 +125,13 @@ declare namespace Polymer {
      *   }
      * };
      * ```
-     * Every effect has at least two config properties: `startsAt` and `endsAt`.
-     * These properties indicate when the event should start and end respectively
-     * and relative to the overall element progress. So for example, if `blend-background`
-     * starts at `0.5`, the effect will only start once the current element reaches 0.5
-     * of its progress. In this context, the progress is a value in the range of `[0, 1]`
-     * that indicates where this element is on the screen relative to the viewport.
+     * Every effect has at least two config properties: `startsAt` and
+     * `endsAt`. These properties indicate when the event should start and end
+     * respectively and relative to the overall element progress. So for
+     * example, if `blend-background` starts at `0.5`, the effect will only
+     * start once the current element reaches 0.5 of its progress. In this
+     * context, the progress is a value in the range of `[0, 1]` that
+     * indicates where this element is on the screen relative to the viewport.
      */
     effectsConfig: object|null|undefined;
 
@@ -131,11 +141,12 @@ declare namespace Polymer {
     disabled: boolean|null|undefined;
 
     /**
-     * Allows to set a `scrollTop` threshold. When greater than 0, `thresholdTriggered`
-     * is true only when the scroll target's `scrollTop` has reached this value.
+     * Allows to set a `scrollTop` threshold. When greater than 0,
+     * `thresholdTriggered` is true only when the scroll target's `scrollTop`
+     * has reached this value.
      *
-     * For example, if `threshold = 100`, `thresholdTriggered` is true when the `scrollTop`
-     * is at least `100`.
+     * For example, if `threshold = 100`, `thresholdTriggered` is true when
+     * the `scrollTop` is at least `100`.
      */
     threshold: number|null|undefined;
 
@@ -194,9 +205,11 @@ declare namespace Polymer {
      * @returns An effect object with the following functions:
      *
      *  * `effect.setUp()`, Sets up the requirements for the effect.
-     *       This function is called automatically before the `effect` function returns.
+     *       This function is called automatically before the `effect` function
+     * returns.
      *  * `effect.run(progress, y)`, Runs the effect given a `progress`.
-     *  * `effect.tearDown()`, Cleans up any DOM nodes or element references used by the effect.
+     *  * `effect.tearDown()`, Cleans up any DOM nodes or element references
+     * used by the effect.
      *
      * Example:
      * ```js
