@@ -215,8 +215,8 @@ interface AppHeaderElement extends Polymer.Element, Polymer.AppScrollEffectsBeha
   /**
    * If true, the header will automatically collapse when scrolling down.
    * That is, the `sticky` element remains visible when the header is fully
-   * condensed whereas the rest of the elements will collapse below `sticky`
-   * element.
+   * condensed whereas the rest of the elements will collapse below
+   * `sticky`element.
    *
    * By default, the `sticky` element is the first toolbar in the light DOM:
    *

@@ -253,11 +253,11 @@ a shadow root):
       attached: function() {
         Polymer.RenderStatus.afterNextRender(this, function() {
           this._boundEscKeydownHandler = this._escKeydownHandler.bind(this);
-          this.addEventListener('keydown', this._tabKeydownHandler.bind(this))
+          this.addEventListener('keydown', this._tabKeydownHandler.bind(this));
 
-              // Only listen for horizontal track so you can vertically scroll
-              // inside the drawer.
-              this.listen(this, 'track', '_track');
+          // Only listen for horizontal track so you can vertically scroll
+          // inside the drawer.
+          this.listen(this, 'track', '_track');
           this.setScrollDirection('y');
         });
 
@@ -475,8 +475,8 @@ a shadow root):
 
         // Calculate the amount of time needed to finish the transition based on the
         // initial slope of the timing function.
-        var t = this._FLING_INITIAL_SLOPE * dx /
-            velocity this._styleTransitionDuration(t);
+        var t = this._FLING_INITIAL_SLOPE * dx / velocity;
+        this._styleTransitionDuration(t);
         this._styleTransitionTimingFunction(this._FLING_TIMING_FUNCTION);
 
         this._resetDrawerTranslate();
