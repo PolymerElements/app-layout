@@ -73,15 +73,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
 
     <script>
-
       HTMLImports.whenReady(function() {
-
-        Polymer({
-          is: 'x-grid'
-        });
-
+        Polymer({is: 'x-grid'});
       });
-
     </script>
   </dom-module>
 
@@ -93,7 +87,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </test-fixture>
 
   <script>
-
     function valueAsInt(obj) {
       var rtn = {top: 0, right: 0, bottom: 0, left: 0, width: 0};
       for (var k in obj) {
@@ -112,9 +105,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('bounding rectangle for each item', function(done) {
-
         flush(function() {
-
           var i, k, currentRect;
           var gridItems = Polymer.dom(grid.root).querySelectorAll('li');
           var expectedBoundingRect = [
@@ -137,20 +128,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             for (k in expectedBoundingRect[i]) {
               if (expectedBoundingRect[i].hasOwnProperty(k)) {
-                assert.approximately(expectedBoundingRect[i][k],
-                    currentRect[k], 4, ' ItemRect[' + i + '].' + k);
+                assert.approximately(
+                    expectedBoundingRect[i][k],
+                    currentRect[k],
+                    4,
+                    ' ItemRect[' + i + '].' + k);
               }
             }
           }
 
           done();
-
         });
-
       });
-
     });
-
   </script>
 
 </body>

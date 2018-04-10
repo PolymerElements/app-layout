@@ -174,15 +174,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
 
     <script>
-    HTMLImports.whenReady(function() {
-      Polymer({
-        is: 'x-demo',
+      HTMLImports.whenReady(function() {
+        Polymer({
+          is: 'x-demo',
 
-        iconForItem: function(item) {
-          return item ? (item.integer < 50 ? 'star-border' : 'star') : '';
-        }
+          iconForItem: function(item) {
+            return item ? (item.integer < 50 ? 'star-border' : 'star') : '';
+          }
+        });
       });
-    });
     </script>
   </dom-module>
 

@@ -177,80 +177,76 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
+    Polymer({
 
-  Polymer({
+      is: 'recipe-app',
 
-    is: 'recipe-app',
+      properties: {
 
-    properties: {
+        recipes: Object,
 
-      recipes: Object,
+        _route: Object,
 
-      _route: Object,
+        _subRoute: Object,
 
-      _subRoute: Object,
+        _pageData: {type: Object, observer: '_pageDataChanged'},
 
-      _pageData: {
-        type: Object,
-        observer: '_pageDataChanged'
-      },
+        _selectedPage: String,
 
-      _selectedPage: String,
+        _idData: Object,
 
-      _idData: Object,
-    
-      _scrollPositionMap: {
-        type: Object,
-        value: function() {
-          return {};
-        }
-      }
-    },
-
-    attached: function() {
-      this.async(function() {
-        if (!this._route.path) {
-          this.set('_route.path', '/home');
-        }
-      });
-    },
-
-    _getRecipe: function() {
-      if (this.recipes && this._idData && this._idData.id) {
-        for (var i = 0; i < this.recipes.length; ++i) {
-          var r = this.recipes[i];
-          if (r.id === this._idData.id) {
-            return r;
+        _scrollPositionMap: {
+          type: Object,
+          value: function() {
+            return {};
           }
         }
+      },
+
+      attached: function() {
+        this.async(function() {
+          if (!this._route.path) {
+            this.set('_route.path', '/home');
+          }
+        });
+      },
+
+      _getRecipe: function() {
+        if (this.recipes && this._idData && this._idData.id) {
+          for (var i = 0; i < this.recipes.length; ++i) {
+            var r = this.recipes[i];
+            if (r.id === this._idData.id) {
+              return r;
+            }
+          }
+        }
+        return null;
+      },
+
+      _drawerSelected: function() {
+        if (!this.$.drawer.persistent)
+          this.$.drawer.close();
+      },
+
+      /**
+       * Preserves the document scroll position, so
+       * it can be restored when returning to a page.
+       */
+      _pageDataChanged: function(pageData, oldPageData) {
+        var map = this._scrollPositionMap;
+
+        if (oldPageData != null && oldPageData.page != null) {
+          map[oldPageData.page] = window.pageYOffset;
+        }
+        this._selectedPage = pageData.page;
+        if (map[pageData.page] != null) {
+          Polymer.AppLayout.scroll({top: map[pageData.page], behavior: 'silent'});
+        } else if (this.isAttached) {
+          Polymer.AppLayout.scroll({top: 0, behavior: 'silent'});
+        }
       }
-      return null;
-    },
 
-    _drawerSelected: function() {
-      if (!this.$.drawer.persistent) this.$.drawer.close();
-    },
-
-    /**
-     * Preserves the document scroll position, so 
-     * it can be restored when returning to a page.
-     */
-    _pageDataChanged: function(pageData, oldPageData) {
-      var map = this._scrollPositionMap;
-     
-      if (oldPageData != null && oldPageData.page != null) {
-        map[oldPageData.page] = window.pageYOffset;
-      }
-      this._selectedPage = pageData.page;
-      if (map[pageData.page] != null) {
-        Polymer.AppLayout.scroll({ top: map[pageData.page], behavior: 'silent' });
-      } else if (this.isAttached) {
-        Polymer.AppLayout.scroll({ top: 0, behavior: 'silent' });
-      }
-    }
-
-  });
-
+    });
   </script>
 
 </dom-module>

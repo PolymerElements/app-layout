@@ -24,25 +24,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body>
 
   <script>
-
     suite('Polymer.AppLayout.registerEffect', function() {
-
       test('should register the effects', function() {
-
-        Polymer.AppLayout.registerEffect('test', {
-          setUp: Function(),
-          run: Function(),
-          tearDown: Function()
-        });
+        Polymer.AppLayout.registerEffect(
+            'test', {setUp: Function(), run: Function(), tearDown: Function()});
 
         assert.isFunction(Polymer.AppLayout._scrollEffects.test.setUp);
         assert.isFunction(Polymer.AppLayout._scrollEffects.test.run);
         assert.isFunction(Polymer.AppLayout._scrollEffects.test.tearDown);
-
       });
-
     });
-
   </script>
 
 </body>

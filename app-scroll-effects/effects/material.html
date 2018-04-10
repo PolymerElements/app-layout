@@ -16,14 +16,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
   /**
-   * Shorthand for the waterfall, resize-title, blend-background, and parallax-background effects.
+   * Shorthand for the waterfall, resize-title, blend-background, and
+   * parallax-background effects.
    */
   Polymer.AppLayout.registerEffect('material', {
     /**
      * @this Polymer.AppLayout.ElementWithBackground
      */
     setUp: function setUp() {
-      this.effects = 'waterfall resize-title blend-background parallax-background';
+      this.effects =
+          'waterfall resize-title blend-background parallax-background';
       return false;
     }
   });

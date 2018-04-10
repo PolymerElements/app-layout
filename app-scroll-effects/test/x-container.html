@@ -63,25 +63,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
-
     Polymer({
 
       is: 'x-container',
 
-      behaviors: [
-        Polymer.AppScrollEffectsBehavior
-      ],
+      behaviors: [Polymer.AppScrollEffectsBehavior],
 
-      properties: {
-        shadow: {
-          type: Boolean,
-          reflectToAttribute: true
-        }
-      },
+      properties: {shadow: {type: Boolean, reflectToAttribute: true}},
 
-      observers: [
-        '_xScrollEffectChanged(effects)'
-      ],
+      observers: ['_xScrollEffectChanged(effects)'],
 
       _getDOMRef: function(id) {
         return this.$[id] || null;
@@ -95,6 +85,5 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._updateScrollState(this._scrollTop);
       }
     });
-
   </script>
 </dom-module>

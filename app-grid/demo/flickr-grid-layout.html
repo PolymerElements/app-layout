@@ -158,18 +158,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
 
     <script>
-
       HTMLImports.whenReady(function() {
-
         Polymer({
           is: 'x-grid',
 
           properties: {
 
-            apiKey: {
-              type: String,
-              value: 'c304f1096a06486d3c1e7ab271bf7f3f'
-            },
+            apiKey: {type: String, value: 'c304f1096a06486d3c1e7ab271bf7f3f'},
 
             photos: {
               type: Array,
@@ -178,25 +173,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               }
             },
 
-            perPage: {
-              type: Number,
-              value: 36
-            },
+            perPage: {type: Number, value: 36},
 
-            page: {
-              type: Number,
-              value: 0
-            },
+            page: {type: Number, value: 0},
 
-            userId: {
-              type: String,
-              value: '142203852@N04'
-            },
+            userId: {type: String, value: '142203852@N04'},
 
-            totalPages: {
-              type: Number,
-              value: 1
-            },
+            totalPages: {type: Number, value: 1},
 
             loadingPhotos: Boolean
           },
@@ -214,16 +197,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _getAPIEndpoint: function(apiKey, userId, page) {
             return 'https://api.flickr.com/services/rest/?method=flickr.photos.search' +
-                '&api_key=' + apiKey +
-                '&safe_search=1&sort=interestingness-desc'+
-                '&user_id=' + userId +
-                '&page=' + page +
-                '&format=json' +
+                '&api_key=' + apiKey + '&safe_search=1&sort=interestingness-desc' +
+                '&user_id=' + userId + '&page=' + page + '&format=json' +
                 '&per_page=' + this.perPage;
           },
 
           _didReceiveResponse: function(e) {
-            var payload = JSON.parse(e.detail.response.match('jsonFlickrApi\\((.*)\\)')[1]);
+            var payload =
+                JSON.parse(e.detail.response.match('jsonFlickrApi\\((.*)\\)')[1]);
 
             if (!payload || !payload.photos || !payload.photos.photo) {
               return;
@@ -244,7 +225,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             if (this.page < this.totalPages) {
               this.page++;
-              this.$.ajax.url = this._getAPIEndpoint(this.apiKey, this.userId, this.page);
+              this.$.ajax.url =
+                  this._getAPIEndpoint(this.apiKey, this.userId, this.page);
               this.$.ajax.generateRequest();
             } else {
               this.$.scrollTheshold.clearTriggers();
@@ -253,13 +235,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _getItemStyle: function(photo) {
             return 'background-image: url(//farm' + photo.farm +
-                '.staticflickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '_b.jpg);';
+                '.staticflickr.com/' + photo.server + '/' + photo.id + '_' +
+                photo.secret + '_b.jpg);';
           }
 
         });
-
       });
-
     </script>
   </dom-module>
 

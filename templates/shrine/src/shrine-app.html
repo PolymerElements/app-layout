@@ -285,117 +285,111 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
+    Polymer({
 
-  Polymer({
+      is: 'shrine-app',
 
-    is: 'shrine-app',
+      properties: {
 
-    properties: {
+        sections: {
+          type: Array,
+          value: function() {
+            return [
+              'feature',
+              'latest',
+              'fashion',
+              'furniture',
+              'beauty',
+              'food',
+              'travel'
+            ];
+          }
+        },
 
-      sections: {
-        type: Array,
-        value: function() {
-          return [
-            'feature',
-            'latest',
-            'fashion',
-            'furniture',
-            'beauty',
-            'food',
-            'travel'
-          ];
+        selectedTab: {
+          type: Number,
+          computed: '_computeSelectedTab(sections, sectionData.section)'
+        },
+
+        items: {type: Array},
+
+        featuredItems: {type: Array},
+
+        page: {
+          type: String,
+          computed: '_computePage(onDetailPage)',
+          reflectToAttribute: true
+        },
+
+        route: Object,
+
+        subRoute: Object,
+
+        sectionData: Object,
+
+        idData: Object,
+
+        onDetailPage: Boolean
+      },
+
+      observers: ['_hashDidChange(route.path, items, featuredItems)'],
+
+      attached: function() {
+        this.async(function() {
+          if (!this.route.path) {
+            this.set('route.path', 'feature');
+          }
+        });
+      },
+
+      _computeSelectedTab: function(sections, section) {
+        return sections.indexOf(section);
+      },
+
+      _getItemsCopy: function(items) {
+        return items ? items.slice() : [];
+      },
+
+      _getFeaturedItem: function(featuredItems, section) {
+        if (featuredItems && section) {
+          return featuredItems
+              .filter(function(item) {
+                return item.category.toLowerCase() === section;
+              })
+              .pop();
+        }
+        return '';
+      },
+
+      _getDetailItem: function(items, id) {
+        if (items) {
+          return items[id];
         }
       },
 
-      selectedTab: {
-        type: Number,
-        computed: '_computeSelectedTab(sections, sectionData.section)'
+      _computePage: function(onDetailPage) {
+        return onDetailPage ? 'detail' : 'list';
       },
 
-      items: {
-        type: Array
+      _hashDidChange: function() {
+        Polymer.AppLayout.scroll({top: 0, behavior: 'silent'});
+        this.$.headerLayout.resetLayout();
+        this.$.drawer.close();
       },
 
-      featuredItems: {
-        type: Array
+      _equal: function(a, b) {
+        return a === b;
       },
 
-      page: {
-        type: String,
-        computed: '_computePage(onDetailPage)',
-        reflectToAttribute: true
+      _getSectionClass: function(index, selectedTab) {
+        return index === selectedTab ? 'active' : '';
       },
 
-      route: Object,
-
-      subRoute: Object,
-
-      sectionData: Object,
-
-      idData: Object,
-
-      onDetailPage: Boolean
-    },
-
-    observers: [
-      '_hashDidChange(route.path, items, featuredItems)'
-    ],
-
-    attached: function() {
-      this.async(function() {
-        if (!this.route.path) {
-          this.set('route.path', 'feature');
-        }
-      });
-    },
-
-    _computeSelectedTab: function(sections, section) {
-      return sections.indexOf(section);
-    },
-
-    _getItemsCopy: function(items) {
-      return items ? items.slice() : [];
-    },
-
-    _getFeaturedItem: function(featuredItems, section) {
-      if (featuredItems && section) {
-        return featuredItems.filter(function(item) {
-          return item.category.toLowerCase() === section;
-        }).pop();
+      _shouldShowTabs: function(onDetailPage, smallScreen) {
+        return !onDetailPage && !smallScreen;
       }
-      return '';
-    },
 
-    _getDetailItem: function(items, id) {
-      if (items) {
-        return items[id];
-      }
-    },
-
-    _computePage: function(onDetailPage) {
-      return onDetailPage ? 'detail' : 'list';
-    },
-
-    _hashDidChange: function() {
-      Polymer.AppLayout.scroll({ top: 0, behavior: 'silent' });
-      this.$.headerLayout.resetLayout();
-      this.$.drawer.close();
-    },
-
-    _equal: function(a, b) {
-      return a === b;
-    },
-
-    _getSectionClass: function(index, selectedTab) {
-      return index === selectedTab ? 'active' : '';
-    },
-
-    _shouldShowTabs: function(onDetailPage, smallScreen) {
-      return !onDetailPage && !smallScreen;
-    }
-
-  });
-
+    });
   </script>
 
 </dom-module>

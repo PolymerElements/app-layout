@@ -19,7 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   Polymer.AppLayout.scrollTimingFunction = function easeOutQuad(t, b, c, d) {
     t /= d;
-    return -c * t*(t-2) + b;
+    return -c * t * (t - 2) + b;
   };
 
   /**
@@ -29,9 +29,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * @param {string} effectName The effect name.
    * @param {Object} effectDef The effect definition.
    */
-  Polymer.AppLayout.registerEffect = function registerEffect(effectName, effectDef) {
+  Polymer.AppLayout.registerEffect = function registerEffect(
+      effectName, effectDef) {
     if (Polymer.AppLayout._scrollEffects[effectName] != null) {
-      throw new Error('effect `'+ effectName + '` is already registered.');
+      throw new Error('effect `' + effectName + '` is already registered.');
     }
     Polymer.AppLayout._scrollEffects[effectName] = effectDef;
   };
@@ -55,18 +56,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   /**
    * Scrolls to a particular set of coordinates in a scroll target.
-   * If the scroll target is not defined, then it would use the main document as the target.
+   * If the scroll target is not defined, then it would use the main document as
+   * the target.
    *
-   * To scroll in a smooth fashion, you can set the option `behavior: 'smooth'`. e.g.
+   * To scroll in a smooth fashion, you can set the option `behavior: 'smooth'`.
+   * e.g.
    *
    * ```js
    * Polymer.AppLayout.scroll({top: 0, behavior: 'smooth'});
    * ```
    *
-   * To scroll in a silent mode, without notifying scroll changes to any app-layout elements,
-   * you can set the option `behavior: 'silent'`. This is particularly useful we you are using
-   * `app-header` and you desire to scroll to the top of a scrolling region without running
-   * scroll effects. e.g.
+   * To scroll in a silent mode, without notifying scroll changes to any
+   * app-layout elements, you can set the option `behavior: 'silent'`. This is
+   * particularly useful we you are using `app-header` and you desire to scroll to
+   * the top of a scrolling region without running scroll effects. e.g.
    *
    * ```js
    * Polymer.AppLayout.scroll({top: 0, behavior: 'silent'});
@@ -79,43 +82,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     var docEl = document.documentElement;
     var target = options.target || docEl;
-    var hasNativeScrollBehavior = 'scrollBehavior' in target.style && target.scroll;
+    var hasNativeScrollBehavior =
+        'scrollBehavior' in target.style && target.scroll;
     var scrollClassName = 'app-layout-silent-scroll';
     var scrollTop = options.top || 0;
     var scrollLeft = options.left || 0;
     var scrollTo = target === docEl ? window.scrollTo :
-      function scrollTo(scrollLeft, scrollTop) {
-        target.scrollLeft = scrollLeft;
-        target.scrollTop = scrollTop;
-      };
+                                      function scrollTo(scrollLeft, scrollTop) {
+                                        target.scrollLeft = scrollLeft;
+                                        target.scrollTop = scrollTop;
+                                      };
 
     if (options.behavior === 'smooth') {
-
       if (hasNativeScrollBehavior) {
-
         target.scroll(options);
 
       } else {
-
         var timingFn = Polymer.AppLayout.scrollTimingFunction;
         var startTime = Date.now();
-        var currentScrollTop = target === docEl ? window.pageYOffset : target.scrollTop;
-        var currentScrollLeft = target === docEl ? window.pageXOffset : target.scrollLeft;
+        var currentScrollTop =
+            target === docEl ? window.pageYOffset : target.scrollTop;
+        var currentScrollLeft =
+            target === docEl ? window.pageXOffset : target.scrollLeft;
         var deltaScrollTop = scrollTop - currentScrollTop;
         var deltaScrollLeft = scrollLeft - currentScrollLeft;
         var duration = 300;
-        var updateFrame = (function updateFrame() {
-          var now = Date.now();
-          var elapsedTime = now - startTime;
+        var updateFrame =
+            (function updateFrame() {
+              var now = Date.now();
+              var elapsedTime = now - startTime;
 
-          if (elapsedTime < duration) {
-            scrollTo(timingFn(elapsedTime, currentScrollLeft, deltaScrollLeft, duration),
-                timingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration));
-            requestAnimationFrame(updateFrame);
-          } else {
-            scrollTo(scrollLeft, scrollTop);
-          }
-        }).bind(this);
+              if (elapsedTime < duration) {
+                scrollTo(
+                    timingFn(
+                        elapsedTime,
+                        currentScrollLeft,
+                        deltaScrollLeft,
+                        duration),
+                    timingFn(
+                        elapsedTime, currentScrollTop, deltaScrollTop, duration));
+                requestAnimationFrame(updateFrame);
+              } else {
+                scrollTo(scrollLeft, scrollTop);
+              }
+            }).bind(this);
 
         updateFrame();
       }
@@ -127,11 +137,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         header.setAttribute('silent-scroll', '');
       });
 
-      // Browsers keep the scroll momentum even if the bottom of the scrolling content
-      // was reached. This means that calling scroll({top: 0, behavior: 'silent'}) when
-      // the momentum is still going will result in more scroll events and thus scroll effects.
-      // This seems to only apply when using document scrolling.
-      // Therefore, when should we remove the class from the document element?
+      // Browsers keep the scroll momentum even if the bottom of the scrolling
+      // content was reached. This means that calling scroll({top: 0, behavior:
+      // 'silent'}) when the momentum is still going will result in more scroll
+      // events and thus scroll effects. This seems to only apply when using
+      // document scrolling. Therefore, when should we remove the class from the
+      // document element?
 
       if (Polymer.AppLayout._scrollTimer) {
         window.cancelAnimationFrame(Polymer.AppLayout._scrollTimer);
@@ -147,10 +158,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       scrollTo(scrollLeft, scrollTop);
 
     } else {
-
       scrollTo(scrollLeft, scrollTop);
-
     }
   };
-
 </script>
