@@ -184,41 +184,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
+    Polymer({
 
-  Polymer({
+      is: 'recipe-detail',
 
-    is: 'recipe-detail',
+      properties: {
 
-    properties: {
+        recipe: {type: Object, observer: '__recipeChanged'},
 
-      recipe: {
-        type: Object,
-        observer: '__recipeChanged'
+        __favorite: {type: Boolean, value: false}
+
       },
 
-      __favorite: {
-        type: Boolean,
-        value: false
+      __recipeChanged: function(recipe) {
+        if (recipe) {
+          this.style.backgroundImage = 'url(' + recipe.imageUrl + ')';
+        }
+      },
+
+      __toggleFavorite: function(event, detail) {
+        this.__favorite = !this.__favorite;
+      },
+
+      __computeFavIcon: function(favorite) {
+        return favorite ? 'app:favorite' : 'app:favorite-border';
       }
 
-    },
-
-    __recipeChanged: function(recipe) {
-      if (recipe) {
-        this.style.backgroundImage = 'url(' + recipe.imageUrl + ')';
-      }
-    },
-
-    __toggleFavorite: function(event, detail) {
-      this.__favorite = !this.__favorite;
-    },
-
-    __computeFavIcon: function(favorite) {
-      return favorite ? 'app:favorite' : 'app:favorite-border';
-    }
-
-  });
-
+    });
   </script>
 
 </dom-module>

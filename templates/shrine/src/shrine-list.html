@@ -96,32 +96,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
+    Polymer({
 
-  Polymer({
+      is: 'shrine-list',
 
-    is: 'shrine-list',
+      properties: {
 
-    properties: {
+        items: {type: Array},
 
-      items: {
-        type: Array
+        featuredItem: {type: Object},
+
+        section: {type: String}
       },
 
-      featuredItem: {
-        type: Object
-      },
-
-      section: {
-        type: String
+      _sortItems: function() {
+        return Math.round(Math.random() * 3) - 1;
       }
-    },
 
-    _sortItems: function() {
-      return Math.round(Math.random()*3) - 1;
-    }
-
-  });
-
+    });
   </script>
 
 </dom-module>

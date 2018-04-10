@@ -12,8 +12,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
   /**
-   * Upon scrolling past a threshold, CSS transition the font size of a designated title element
-   * between two values.
+   * Upon scrolling past a threshold, CSS transition the font size of a designated
+   * title element between two values.
    */
   Polymer.AppLayout.registerEffect('resize-snapped-title', {
     /**
@@ -26,11 +26,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var fx = {};
 
       if (!condensedTitle) {
-        console.warn('Scroll effect `resize-snapped-title`: undefined `condensed-title`');
+        console.warn(
+            'Scroll effect `resize-snapped-title`: undefined `condensed-title`');
         return false;
       }
       if (!title) {
-        console.warn('Scroll effect `resize-snapped-title`: undefined `main-title`');
+        console.warn(
+            'Scroll effect `resize-snapped-title`: undefined `main-title`');
         return false;
       }
 

@@ -147,25 +147,18 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
     Polymer({
       is: 'app-header-layout',
 
-      behaviors: [
-        Polymer.AppLayoutBehavior
-      ],
+      behaviors: [Polymer.AppLayoutBehavior],
 
       properties: {
         /**
          * If true, the current element will have its own scrolling region.
          * Otherwise, it will use the document scroll to control the header.
          */
-        hasScrollingRegion: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        }
+        hasScrollingRegion:
+            {type: Boolean, value: false, reflectToAttribute: true}
       },
 
-      observers: [
-        'resetLayout(isAttached, hasScrollingRegion)'
-      ],
+      observers: ['resetLayout(isAttached, hasScrollingRegion)'],
 
       /**
        * A reference to the app-header element.
@@ -181,14 +174,15 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         if (!this.isAttached || !header) {
           return;
         }
-        // Remove the initializing class, which staticly positions the header and the content
-        // until the height of the header can be read.
+        // Remove the initializing class, which staticly positions the header and
+        // the content until the height of the header can be read.
         this.$.wrapper.classList.remove('initializing');
         // Update scroll target.
         header.scrollTarget = this.hasScrollingRegion ?
-            this.$.contentContainer : this.ownerDocument.documentElement;
-        // Get header height here so that style reads are batched together before style writes
-        // (i.e. getBoundingClientRect() below).
+            this.$.contentContainer :
+            this.ownerDocument.documentElement;
+        // Get header height here so that style reads are batched together before
+        // style writes (i.e. getBoundingClientRect() below).
         var headerHeight = header.offsetHeight;
         // Update the header position.
         if (!this.hasScrollingRegion) {
@@ -205,9 +199,9 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
         // Update the content container position.
         var containerStyle = this.$.contentContainer.style;
         if (header.fixed && !header.condenses && this.hasScrollingRegion) {
-          // If the header size does not change and we're using a scrolling region, exclude
-          // the header area from the scrolling region so that the header doesn't overlap
-          // the scrollbar.
+          // If the header size does not change and we're using a scrolling region,
+          // exclude the header area from the scrolling region so that the header
+          // doesn't overlap the scrollbar.
           containerStyle.marginTop = headerHeight + 'px';
           containerStyle.paddingTop = '';
         } else {

@@ -183,28 +183,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
+    Polymer({
 
-  Polymer({
+      is: 'shrine-featured-item',
 
-    is: 'shrine-featured-item',
+      properties: {
 
-    properties: {
+        item: {type: Object, observer: '_itemChanged'}
 
-      item: {
-        type: Object,
-        observer: '_itemChanged'
+      },
+
+      _itemChanged: function(item) {
+        this.style.visibility = item && item.title ? 'visible' : 'hidden';
+        this.$.img.src = '';
+        this.$.img.src = item ? item.imageUrl : '';
       }
 
-    },
-
-    _itemChanged: function(item) {
-      this.style.visibility = item && item.title ? 'visible' : 'hidden';
-      this.$.img.src = '';
-      this.$.img.src = item ? item.imageUrl : '';
-    }
-
-  });
-
+    });
   </script>
 
 </dom-module>

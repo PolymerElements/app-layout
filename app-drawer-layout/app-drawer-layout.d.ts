@@ -134,14 +134,14 @@ interface AppDrawerLayoutElement extends Polymer.Element, Polymer.AppLayoutBehav
   forceNarrow: boolean|null|undefined;
 
   /**
-   * If the viewport's width is smaller than this value, the panel will change to narrow
-   * layout. In the mode the drawer will be closed.
+   * If the viewport's width is smaller than this value, the panel will change
+   * to narrow layout. In the mode the drawer will be closed.
    */
   responsiveWidth: string|null|undefined;
 
   /**
-   * Returns true if it is in narrow layout. This is useful if you need to show/hide
-   * elements based on the layout.
+   * Returns true if it is in narrow layout. This is useful if you need to
+   * show/hide elements based on the layout.
    */
   readonly narrow: boolean|null|undefined;
 

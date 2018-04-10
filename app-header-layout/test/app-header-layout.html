@@ -65,7 +65,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </test-fixture>
 
   <script>
-
     suite('basic features', function() {
       var headerLayout, header, toolbar;
 
@@ -85,7 +84,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.dom.flush();
 
         flush(function() {
-          assert.isTrue(header.scrollTarget !== document.documentElement, 'scroller should not point to the document element');
+          assert.isTrue(
+              header.scrollTarget !== document.documentElement,
+              'scroller should not point to the document element');
           done();
         });
       });
@@ -96,7 +97,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         flush(function() {
           requestAnimationFrame(function() {
-            assert.equal(headerLayout.offsetWidth, header.offsetWidth,
+            assert.equal(
+                headerLayout.offsetWidth,
+                header.offsetWidth,
                 'should have the same width of app-header-layout');
 
             headerLayout.style.width = '200px';
@@ -105,8 +108,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             flush(function() {
               requestAnimationFrame(function() {
-                assert.equal(headerLayout.offsetWidth, header.offsetWidth,
-                  'should have the same width of app-header-layout even after setting a width');
+                assert.equal(
+                    headerLayout.offsetWidth,
+                    header.offsetWidth,
+                    'should have the same width of app-header-layout even after setting a width');
                 done();
               });
             });
@@ -117,7 +122,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('fullbleed', function() {
         headerLayout.setAttribute('fullbleed', '');
         Polymer.dom.flush();
-        assert.deepEqual(headerLayout.getBoundingClientRect(),
+        assert.deepEqual(
+            headerLayout.getBoundingClientRect(),
             headerLayout.offsetParent.getBoundingClientRect());
       });
 
@@ -149,13 +155,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.dom.flush();
         header.fire('app-reset-layout');
         flush(function() {
-          assert.equal(headerLayout.$.contentContainer.style.marginTop,
+          assert.equal(
+              headerLayout.$.contentContainer.style.marginTop,
               header.offsetHeight + 'px');
           done();
         });
       });
     });
-
   </script>
 
 </body>

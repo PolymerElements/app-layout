@@ -48,7 +48,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </test-fixture>
 
   <script>
-
     suite('basic features', function() {
       var container;
 
@@ -60,33 +59,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         flush(function() {
           container._updateScrollState(0);
 
-          assert.isTrue(sameCSS(container.$.mainTitle,
-              'transition-property: opacity; transition-duration: 0.2s; opacity: 1;'),
+          assert.isTrue(
+              sameCSS(
+                  container.$.mainTitle,
+                  'transition-property: opacity; transition-duration: 0.2s; opacity: 1;'),
               'main-title when progress = 0');
 
-          assert.isTrue(sameCSS(container.$.condensedTitle,
-              'transition-property: opacity; transition-duration: 0.2s;'),
+          assert.isTrue(
+              sameCSS(
+                  container.$.condensedTitle,
+                  'transition-property: opacity; transition-duration: 0.2s;'),
               'condensed-title when progress = 0');
 
           container.$.mainTitle.style.transition = 'none';
           container.$.condensedTitle.style.transition = 'none';
 
-          assert.isTrue(sameCSS(container.$.condensedTitle, 'opacity: 0'),
+          assert.isTrue(
+              sameCSS(container.$.condensedTitle, 'opacity: 0'),
               'condensed-title when progress = 0');
 
           container._updateScrollState(container.offsetHeight);
 
-          assert.isTrue(sameCSS(container.$.mainTitle, 'opacity: 0;'), 'main-title when progress = 1');
+          assert.isTrue(
+              sameCSS(container.$.mainTitle, 'opacity: 0;'),
+              'main-title when progress = 1');
 
-          assert.isTrue(sameCSS(container.$.condensedTitle, 'opacity: 1;'),
+          assert.isTrue(
+              sameCSS(container.$.condensedTitle, 'opacity: 1;'),
               'condensed-title when progress = 1');
 
           done();
         });
       });
-
     });
-
   </script>
 
 </body>
