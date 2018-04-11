@@ -48,7 +48,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </test-fixture>
 
   <script>
-
     suite('basic features', function() {
       var container;
 
@@ -60,25 +59,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         flush(function() {
           container._updateScrollState(0);
 
-          assert.isTrue(sameCSS(container.$.backgroundFrontLayer,
-              'transform: translate3d(0px, 0px, 0px);'), 'backgroundFrontLayer when progress = 0');
+          assert.isTrue(
+              sameCSS(
+                  container.$.backgroundFrontLayer,
+                  'transform: translate3d(0px, 0px, 0px);'),
+              'backgroundFrontLayer when progress = 0');
 
-          assert.isTrue(sameCSS(container.$.backgroundRearLayer,
-              'transform: translate3d(0px, 0px, 0px);'), 'backgroundRearLayer when progress = 0');
+          assert.isTrue(
+              sameCSS(
+                  container.$.backgroundRearLayer,
+                  'transform: translate3d(0px, 0px, 0px);'),
+              'backgroundRearLayer when progress = 0');
 
           container._updateScrollState(container.offsetHeight);
 
-          assert.isTrue(sameCSS(container.$.backgroundFrontLayer,
-              'transform: translate3d(0px, 200px, 0px);'), 'backgroundFrontLayer when progress = 1');
+          assert.isTrue(
+              sameCSS(
+                  container.$.backgroundFrontLayer,
+                  'transform: translate3d(0px, 200px, 0px);'),
+              'backgroundFrontLayer when progress = 1');
 
-          assert.isTrue(sameCSS(container.$.backgroundRearLayer,
-              'transform: translate3d(0px, 200px, 0px);'), 'backgroundRearLayer when progress = 1');
+          assert.isTrue(
+              sameCSS(
+                  container.$.backgroundRearLayer,
+                  'transform: translate3d(0px, 200px, 0px);'),
+              'backgroundRearLayer when progress = 1');
           done();
         });
       });
-
     });
-
   </script>
 
 </body>

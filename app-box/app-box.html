@@ -135,14 +135,9 @@ Mixin | Description | Default
     Polymer({
       is: 'app-box',
 
-      behaviors: [
-        Polymer.AppScrollEffectsBehavior,
-        Polymer.IronResizableBehavior
-      ],
+      behaviors: [Polymer.AppScrollEffectsBehavior, Polymer.IronResizableBehavior],
 
-      listeners: {
-        'iron-resize': '_resizeHandler'
-      },
+      listeners: {'iron-resize': '_resizeHandler'},
 
       /**
        * The current scroll progress.
@@ -167,7 +162,8 @@ Mixin | Description | Default
       },
 
       /**
-       * Resets the layout. This method is automatically called when the element is attached to the DOM.
+       * Resets the layout. This method is automatically called when the element is
+       * attached to the DOM.
        *
        * @method resetLayout
        */
@@ -205,7 +201,8 @@ Mixin | Description | Default
       _updateScrollState: function(scrollTop) {
         if (this.isOnScreen()) {
           var viewportTop = this._elementTop - scrollTop;
-          this._progress = 1 - (viewportTop + this._elementHeight) / this._cachedScrollTargetHeight;
+          this._progress = 1 -
+              (viewportTop + this._elementHeight) / this._cachedScrollTargetHeight;
           this._runEffects(this._progress, scrollTop);
         }
       },
@@ -218,8 +215,9 @@ Mixin | Description | Default
        * @return {boolean}
        */
       isOnScreen: function() {
-        return this._elementTop < this._scrollTop + this._cachedScrollTargetHeight
-            && this._elementTop + this._elementHeight > this._scrollTop;
+        return this._elementTop <
+            this._scrollTop + this._cachedScrollTargetHeight &&
+            this._elementTop + this._elementHeight > this._scrollTop;
       },
 
       _resizeHandler: function() {
@@ -242,7 +240,7 @@ Mixin | Description | Default
        * @return {Object}
        */
       getScrollState: function() {
-        return { progress: this._progress };
+        return {progress: this._progress};
       }
     });
   </script>

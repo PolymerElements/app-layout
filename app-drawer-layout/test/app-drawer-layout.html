@@ -55,12 +55,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script>
     HTMLImports.whenReady(function() {
-      Polymer({
-        is: 'x-resizeable',
-        behaviors: [
-          Polymer.IronResizableBehavior
-        ]
-      });
+      Polymer({is: 'x-resizeable', behaviors: [Polymer.IronResizableBehavior]});
     });
 
     suite('basic features', function() {
@@ -114,21 +109,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('drawer-toggle', function(done) {
         drawerLayout.responsiveWidth = '10000px';
-       
-        assert.isFalse(drawer.opened);
-
-        Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('p') });
 
         assert.isFalse(drawer.opened);
 
-        Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
+        Polymer.Base.fire(
+            'click', null /* detail */, {node: drawerLayout.querySelector('p')});
+
+        assert.isFalse(drawer.opened);
+
+        Polymer.Base.fire('click', null /* detail */, {
+          node: drawerLayout.querySelector('[drawer-toggle]')
+        });
 
         assert.isTrue(drawer.opened);
 
         drawerLayout.responsiveWidth = '0px';
 
         window.setTimeout(function() {
-          Polymer.Base.fire('click', null /* detail */, { node: drawerLayout.querySelector('[drawer-toggle]') });
+          Polymer.Base.fire('click', null /* detail */, {
+            node: drawerLayout.querySelector('[drawer-toggle]')
+          });
           assert.isTrue(drawer.opened);
           done();
         }, 150);
@@ -206,7 +206,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('app-drawer appended later', function(done) {
         assert.doesNotThrow(function() {
-          drawerLayout = document.body.appendChild(document.createElement('app-drawer-layout'));
+          drawerLayout = document.body.appendChild(
+              document.createElement('app-drawer-layout'));
         });
         Polymer.dom.flush();
 
@@ -232,7 +233,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }, 100);
       });
     });
-
   </script>
 
 </body>

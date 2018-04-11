@@ -59,7 +59,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </test-fixture>
 
   <script>
-
     suite('basic features', function() {
       var toolbar;
 
@@ -73,15 +72,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var title = Polymer.dom(toolbar).querySelector('[main-title]');
         var titleRect = title.getBoundingClientRect();
         var barRect = toolbar.getBoundingClientRect();
-        var bottomItem = document.elementFromPoint(0, barHeight-1);
+        var bottomItem = document.elementFromPoint(0, barHeight - 1);
 
         assert.isTrue(topItem.hasAttribute('top-item'));
         assert.isTrue(bottomItem.hasAttribute('bottom-item'));
         assert.isTrue(titleRect.top > 0 && barRect.bottom - titleRect.bottom > 0);
       });
-
     });
-
   </script>
 
 </body>

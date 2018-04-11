@@ -47,7 +47,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </test-fixture>
 
   <script>
-
     suite('basic features', function() {
       var container;
 
@@ -59,28 +58,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         flush(function() {
           container._updateScrollState(0);
           assert.isFalse(container.hasAttribute('shadow'));
-          container.isOnScreen = function() { return true; };
+          container.isOnScreen = function() {
+            return true;
+          };
 
           container._updateScrollState(0);
           assert.isFalse(container.hasAttribute('shadow'));
-          container.isContentBelow = function() { return true; };
+          container.isContentBelow = function() {
+            return true;
+          };
 
           container._updateScrollState(0);
           assert.isTrue(container.hasAttribute('shadow'));
-          container.isOnScreen = function() { return false; };
+          container.isOnScreen = function() {
+            return false;
+          };
 
           container._updateScrollState(0);
           assert.isFalse(container.hasAttribute('shadow'));
-          container.isContentBelow = function() { return false; };
+          container.isContentBelow = function() {
+            return false;
+          };
 
           container._updateScrollState(0);
           assert.isFalse(container.hasAttribute('shadow'));
           done();
         });
       });
-
     });
-
   </script>
 
 </body>

@@ -74,14 +74,15 @@ interface AppDrawerElement extends Polymer.Element {
   transitionDuration: number|null|undefined;
 
   /**
-   * The alignment of the drawer on the screen ('left', 'right', 'start' or 'end').
-   * 'start' computes to left and 'end' to right in LTR layout and vice versa in RTL
-   * layout.
+   * The alignment of the drawer on the screen ('left', 'right', 'start' or
+   * 'end'). 'start' computes to left and 'end' to right in LTR layout and
+   * vice versa in RTL layout.
    */
   align: string|null|undefined;
 
   /**
-   * The computed, read-only position of the drawer on the screen ('left' or 'right').
+   * The computed, read-only position of the drawer on the screen ('left' or
+   * 'right').
    */
   readonly position: string|null|undefined;
 
