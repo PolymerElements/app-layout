@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git://github.com/PolymerElements/app-layout"
   },
-  "main": "app-layout.html",
+  "main": ["app-layout.html", "app-scroll-effects/effects/waterfall.html"],
   "demos": {
     "Demos": "demo/index.html"
   },
