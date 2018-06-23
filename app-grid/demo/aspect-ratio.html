@@ -16,10 +16,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>Preserving aspect ratio using app-grid-style</title>
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-  <link rel="import" href="../../../polymer/polymer.html">
-  <link rel="import" href="../app-grid-style.html">
+  <script type="module" src="../../../polymer/polymer-legacy.js"></script>
+  <script type="module" src="../app-grid-style.js"></script>
 
   <style>
     body {
@@ -81,26 +81,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </template>
 
-    <script>
-      HTMLImports.whenReady(function() {
-        Polymer({
+    <script type="module">
+import '@polymer/polymer/polymer-legacy.js';
+import '../app-grid-style.js';
+import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
+Polymer({
 
-          is: 'x-app',
+  is: 'x-app',
 
-          attached: function() {
-            this._updateGridStyles = this._updateGridStyles || function() {
-              this.updateStyles();
-            }.bind(this);
-            window.addEventListener('resize', this._updateGridStyles);
-          },
+  attached: function() {
+    this._updateGridStyles = this._updateGridStyles || function() {
+      this.updateStyles();
+    }.bind(this);
+    window.addEventListener('resize', this._updateGridStyles);
+  },
 
-          detached: function() {
-            window.removeEventListener('resize', this._updateGridStyles);
-          }
+  detached: function() {
+    window.removeEventListener('resize', this._updateGridStyles);
+  }
 
-        });
-      });
-    </script>
+});
+</script>
   </dom-module>
 
   <x-app></x-app>

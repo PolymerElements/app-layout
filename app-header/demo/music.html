@@ -15,18 +15,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>Music Demo</title>
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-  <link rel="import" href="../../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../../iron-icons/av-icons.html">
-  <link rel="import" href="../../../iron-icon/iron-icon.html">
-  <link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
-  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../../../paper-fab/paper-fab.html">
-  <link rel="import" href="../../app-scroll-effects/app-scroll-effects.html">
-  <link rel="import" href="../../app-box/app-box.html">
-  <link rel="import" href="../../app-toolbar/app-toolbar.html">
-  <link rel="import" href="../app-header.html">
+  <script type="module" src="../../../iron-icons/iron-icons.js"></script>
+  <script type="module" src="../../../iron-icons/av-icons.js"></script>
+  <script type="module" src="../../../iron-icon/iron-icon.js"></script>
+  <script type="module" src="../../../iron-flex-layout/iron-flex-layout.js"></script>
+  <script type="module" src="../../../paper-icon-button/paper-icon-button.js"></script>
+  <script type="module" src="../../../paper-fab/paper-fab.js"></script>
+  <script type="module" src="../../app-scroll-effects/app-scroll-effects.js"></script>
+  <script type="module" src="../../app-box/app-box.js"></script>
+  <script type="module" src="../../app-toolbar/app-toolbar.js"></script>
+  <script type="module" src="../app-header.js"></script>
 
   <custom-style>
     <style is="custom-style">
@@ -318,20 +318,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </app-toolbar>
   </app-header>
 
-  <script>
-    addEventListener('WebComponentsReady', function() {
-      var appHeader = document.querySelector('app-header');
-      var appBox = document.querySelector('app-box');
-      var fadeBackgroundEffect = appHeader.createEffect('fade-background');
+  <script type="module">
+import '@polymer/iron-icons/iron-icons.js';
+import '@polymer/iron-icons/av-icons.js';
+import '@polymer/iron-icon/iron-icon.js';
+import '@polymer/iron-flex-layout/iron-flex-layout.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-fab/paper-fab.js';
+import '../../app-scroll-effects/app-scroll-effects.js';
+import '../../app-box/app-box.js';
+import '../../app-toolbar/app-toolbar.js';
+import '../app-header.js';
+var appHeader = document.querySelector('app-header');
+var appBox = document.querySelector('app-box');
+var fadeBackgroundEffect = appHeader.createEffect('fade-background');
 
-      window.addEventListener('scroll', function() {
-        var progress = appBox.getScrollState().progress;
-        var isCondensed = progress > 0.25;
-        fadeBackgroundEffect.run(isCondensed ? 1 : 0);
-        appHeader.shadow = isCondensed;
-      });
-    });
-  </script>
+window.addEventListener('scroll', function() {
+  var progress = appBox.getScrollState().progress;
+  var isCondensed = progress > 0.25;
+  fadeBackgroundEffect.run(isCondensed ? 1 : 0);
+  appHeader.shadow = isCondensed;
+});
+</script>
 
 </body>
 </html>

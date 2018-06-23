@@ -14,12 +14,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <title>test for the waterfall effect</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../../web-component-tester/browser.js"></script>
+  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="../../../../wct-browser-legacy/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
-  <link rel="import" href="../../../test-fixture/test-fixture.html">
-  <link rel="import" href="../app-scroll-effects.html">
-  <link rel="import" href="x-container.html">
+  <script type="module" src="../../../test-fixture/test-fixture.js"></script>
+  <script type="module" src="../app-scroll-effects.js"></script>
+  <script type="module" src="./x-container.js"></script>
 
   <style>
     body {
@@ -46,47 +46,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-  <script>
-    suite('basic features', function() {
-      var container;
+  <script type="module">
+import '@polymer/test-fixture/test-fixture.js';
+import '../app-scroll-effects.js';
+import './x-container.js';
+suite('basic features', function() {
+  var container;
 
-      setup(function() {
-        container = fixture('testHeader');
-      });
+  setup(function() {
+    container = fixture('testHeader');
+  });
 
-      test('show waterfall when needed', function(done) {
-        flush(function() {
-          container._updateScrollState(0);
-          assert.isFalse(container.hasAttribute('shadow'));
-          container.isOnScreen = function() {
-            return true;
-          };
+  test('show waterfall when needed', function(done) {
+    flush(function() {
+      container._updateScrollState(0);
+      assert.isFalse(container.hasAttribute('shadow'));
+      container.isOnScreen = function() {
+        return true;
+      };
 
-          container._updateScrollState(0);
-          assert.isFalse(container.hasAttribute('shadow'));
-          container.isContentBelow = function() {
-            return true;
-          };
+      container._updateScrollState(0);
+      assert.isFalse(container.hasAttribute('shadow'));
+      container.isContentBelow = function() {
+        return true;
+      };
 
-          container._updateScrollState(0);
-          assert.isTrue(container.hasAttribute('shadow'));
-          container.isOnScreen = function() {
-            return false;
-          };
+      container._updateScrollState(0);
+      assert.isTrue(container.hasAttribute('shadow'));
+      container.isOnScreen = function() {
+        return false;
+      };
 
-          container._updateScrollState(0);
-          assert.isFalse(container.hasAttribute('shadow'));
-          container.isContentBelow = function() {
-            return false;
-          };
+      container._updateScrollState(0);
+      assert.isFalse(container.hasAttribute('shadow'));
+      container.isContentBelow = function() {
+        return false;
+      };
 
-          container._updateScrollState(0);
-          assert.isFalse(container.hasAttribute('shadow'));
-          done();
-        });
-      });
+      container._updateScrollState(0);
+      assert.isFalse(container.hasAttribute('shadow'));
+      done();
     });
-  </script>
+  });
+});
+</script>
 
 </body>
 </html>

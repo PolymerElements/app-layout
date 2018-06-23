@@ -14,27 +14,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <title>registerEffect</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../../web-component-tester/browser.js"></script>
+  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="../../../../wct-browser-legacy/browser.js"></script>
   <script src="../../../test-fixture/test-fixture-mocha.js"></script>
-  <link rel="import" href="../../../test-fixture/test-fixture.html">
-  <link rel="import" href="../helpers.html">
+  <script type="module" src="../../../test-fixture/test-fixture.js"></script>
+  <script type="module" src="../helpers.js"></script>
 
 </head>
 <body>
 
-  <script>
-    suite('Polymer.AppLayout.registerEffect', function() {
-      test('should register the effects', function() {
-        Polymer.AppLayout.registerEffect(
-            'test', {setUp: Function(), run: Function(), tearDown: Function()});
+  <script type="module">
+import '@polymer/test-fixture/test-fixture.js';
+import { registerEffect, _scrollEffects } from '../helpers.js';
+suite('Polymer.AppLayout.registerEffect', function() {
+  test('should register the effects', function() {
+    registerEffect(
+        'test', {setUp: Function(), run: Function(), tearDown: Function()});
 
-        assert.isFunction(Polymer.AppLayout._scrollEffects.test.setUp);
-        assert.isFunction(Polymer.AppLayout._scrollEffects.test.run);
-        assert.isFunction(Polymer.AppLayout._scrollEffects.test.tearDown);
-      });
-    });
-  </script>
+    assert.isFunction(_scrollEffects.test.setUp);
+    assert.isFunction(_scrollEffects.test.run);
+    assert.isFunction(_scrollEffects.test.tearDown);
+  });
+});
+</script>
 
 </body>
 </html>
