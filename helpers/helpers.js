@@ -1,11 +1,12 @@
 /**
 @license
 Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+This code may only be used under the BSD style license found at
+http://polymer.github.io/LICENSE.txt The complete set of authors may be found at
+http://polymer.github.io/AUTHORS.txt The complete set of contributors may be
+found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
+part of the polymer project is also subject to an additional IP rights grant
+found at http://polymer.github.io/PATENTS.txt
 */
 import '@polymer/polymer/polymer-legacy.js';
 
@@ -24,8 +25,7 @@ export const scrollTimingFunction = function easeOutQuad(t, b, c, d) {
  * @param {string} effectName The effect name.
  * @param {Object} effectDef The effect definition.
  */
-export const registerEffect = function registerEffect(
-    effectName, effectDef) {
+export const registerEffect = function registerEffect(effectName, effectDef) {
   if (_scrollEffects[effectName] != null) {
     throw new Error('effect `' + effectName + '` is already registered.');
   }

@@ -17,13 +17,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>app-header demo that doesn't use any effects</title>
 
-  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
 
-  <script type="module" src="../../../iron-icons/iron-icons.js"></script>
-  <script type="module" src="../../../paper-icon-button/paper-icon-button.js"></script>
-  <script type="module" src="../../app-toolbar/app-toolbar.js"></script>
-  <script type="module" src="../../demo/sample-content.js"></script>
-  <script type="module" src="../app-header.js"></script>
+  <script type="module">
+    import '@polymer/iron-icons/iron-icons.js';
+    import '@polymer/paper-icon-button/paper-icon-button.js';
+    import '../../app-toolbar/app-toolbar.js';
+    import '../../demo/sample-content.js';
+    import '../app-header.js';
+  </script>
 
   <custom-style>
     <style is="custom-style">

@@ -16,24 +16,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>demo4</title>
 
-  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
 
   <!-- Promise polyfill needed for 1.0-hybrid mode since neither iron-request 2.x nor
     webcomponentsjs 0.x include the Promise polyfill. -->
-  <script src="../../../es6-promise/dist/es6-promise.auto.min.js"></script>
+  <script src="https://unpkg.com/es6-promise@4.2.4/dist/es6-promise.auto.min.js"></script>
 
-  <script type="module" src="../../iron-flex-layout/iron-flex-layout.js"></script>
-  <script type="module" src="../../iron-icons/iron-icons.js"></script>
-  <script type="module" src="../../paper-icon-button/paper-icon-button.js"></script>
-  <script type="module" src="../../iron-list/iron-list.js"></script>
-  <script type="module" src="../../iron-ajax/iron-ajax.js"></script>
-  <script type="module" src="../app-scroll-effects/app-scroll-effects.js"></script>
-  <script type="module" src="../app-header/app-header.js"></script>
-  <script type="module" src="../app-toolbar/app-toolbar.js"></script>
-  <script type="module" src="../app-drawer-layout/app-drawer-layout.js"></script>
-  <script type="module" src="../app-drawer/app-drawer.js"></script>
-  <script type="module" src="../app-header-layout/app-header-layout.js"></script>
-  <script type="module" src="./sample-content.js"></script>
+  <script type="module">
+    import '@polymer/iron-ajax/iron-ajax.js';
+    import '@polymer/iron-flex-layout/iron-flex-layout.js';
+    import '@polymer/iron-icons/iron-icons.js';
+    import '@polymer/iron-list/iron-list.js';
+    import '@polymer/paper-icon-button/paper-icon-button.js';
+    import '../app-drawer/app-drawer.js';
+    import '../app-drawer-layout/app-drawer-layout.js';
+    // Import effects before app-header.
+    import '../app-scroll-effects/app-scroll-effects.js';
+    import '../app-header/app-header.js';
+    import '../app-header-layout/app-header-layout.js';
+    import '../app-toolbar/app-toolbar.js';
+    import './sample-content.js';
+  </script>
 
   <style>
 
@@ -174,27 +177,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
 
     <script type="module">
-import '@polymer/iron-flex-layout/iron-flex-layout.js';
-import '@polymer/iron-icons/iron-icons.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/iron-list/iron-list.js';
-import '@polymer/iron-ajax/iron-ajax.js';
-import '../app-scroll-effects/app-scroll-effects.js';
-import '../app-header/app-header.js';
-import '../app-toolbar/app-toolbar.js';
-import '../app-drawer-layout/app-drawer-layout.js';
-import '../app-drawer/app-drawer.js';
-import '../app-header-layout/app-header-layout.js';
-import './sample-content.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-Polymer({
-  is: 'x-demo',
+      import '@polymer/iron-flex-layout/iron-flex-layout.js';
+      import '@polymer/iron-icons/iron-icons.js';
+      import '@polymer/paper-icon-button/paper-icon-button.js';
+      import '@polymer/iron-list/iron-list.js';
+      import '@polymer/iron-ajax/iron-ajax.js';
+      import '../app-scroll-effects/app-scroll-effects.js';
+      import '../app-header/app-header.js';
+      import '../app-toolbar/app-toolbar.js';
+      import '../app-drawer-layout/app-drawer-layout.js';
+      import '../app-drawer/app-drawer.js';
+      import '../app-header-layout/app-header-layout.js';
+      import './sample-content.js';
+      import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+      Polymer({
+        is: 'x-demo',
 
-  iconForItem: function(item) {
-    return item ? (item.integer < 50 ? 'star-border' : 'star') : '';
-  }
-});
-</script>
+        iconForItem: function(item) {
+          return item ? (item.integer < 50 ? 'star-border' : 'star') : '';
+        }
+      });
+    </script>
   </dom-module>
 
   <x-demo></x-demo>

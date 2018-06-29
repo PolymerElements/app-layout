@@ -16,15 +16,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>app-drawer-layout demo</title>
 
-  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
 
-  <script type="module" src="../../../font-roboto/roboto.js"></script>
-  <script type="module" src="../../../iron-icons/iron-icons.js"></script>
-  <script type="module" src="../../../paper-icon-button/paper-icon-button.js"></script>
-  <script type="module" src="../../demo/sample-content.js"></script>
-  <script type="module" src="../../app-toolbar/app-toolbar.js"></script>
-  <script type="module" src="../../app-drawer/app-drawer.js"></script>
-  <script type="module" src="../app-drawer-layout.js"></script>
+  <script type="module">
+    import '@polymer/font-roboto/roboto.js';
+    import '@polymer/iron-icons/iron-icons.js';
+    import '@polymer/paper-icon-button/paper-icon-button.js';
+    import '../../app-drawer/app-drawer.js';
+    import '../../app-toolbar/app-toolbar.js';
+    import '../../demo/sample-content.js';
+    import '../app-drawer-layout.js';
+  </script>
 
   <custom-style>
     <style is="custom-style">

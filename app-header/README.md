@@ -90,8 +90,8 @@ recommends effects that can be installed via the `effects` property. e.g.
 
 To use the scroll effects, you must explicitly import them in addition to `app-header`:
 
-```html
-<link rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+```js
+import '@polymer/app-layout/app-scroll-effects/app-scroll-effects.js';
 ```
 
 #### List of effects

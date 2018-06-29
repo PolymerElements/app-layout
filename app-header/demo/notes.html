@@ -15,16 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>Notes Demo</title>
 
-  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-
-  <script type="module" src="../../../iron-icons/iron-icons.js"></script>
-  <script type="module" src="../../../iron-icon/iron-icon.js"></script>
-  <script type="module" src="../../../iron-flex-layout/iron-flex-layout.js"></script>
-  <script type="module" src="../../../paper-icon-button/paper-icon-button.js"></script>
-  <script type="module" src="../../../paper-fab/paper-fab.js"></script>
-  <script type="module" src="../../app-toolbar/app-toolbar.js"></script>
-  <script type="module" src="../../app-scroll-effects/app-scroll-effects.js"></script>
-  <script type="module" src="../app-header.js"></script>
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
 
   <custom-style>
     <style is="custom-style">
@@ -145,34 +136,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </app-header>
 
   <script type="module">
-import '@polymer/iron-icons/iron-icons.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/iron-flex-layout/iron-flex-layout.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-fab/paper-fab.js';
-import '../../app-toolbar/app-toolbar.js';
-import '../../app-scroll-effects/app-scroll-effects.js';
-import '../app-header.js';
-var appHeader = document.querySelector('app-header');
-var bgHeader = document.querySelector('.bg-header');
-var appHeaderHeight = appHeader.offsetHeight;
-var bgHeaderHeight = bgHeader.offsetHeight;
+    import '@polymer/iron-icons/iron-icons.js';
+    import '@polymer/iron-icon/iron-icon.js';
+    import '@polymer/iron-flex-layout/iron-flex-layout.js';
+    import '@polymer/paper-icon-button/paper-icon-button.js';
+    import '@polymer/paper-fab/paper-fab.js';
+    import '../../app-toolbar/app-toolbar.js';
+    import '../../app-scroll-effects/app-scroll-effects.js';
+    import '../app-header.js';
+    var appHeader = document.querySelector('app-header');
+    var bgHeader = document.querySelector('.bg-header');
+    var appHeaderHeight = appHeader.offsetHeight;
+    var bgHeaderHeight = bgHeader.offsetHeight;
 
-var transformBgHeader =
-    function() {
-  var y = window.scrollY;
-  if (y <= bgHeaderHeight) {
-    y = 1.5 * y;
-  }
-  var s = bgHeader.style;
-  s.transform = s.webkitTransform = 'translate3d(0,' + -y + 'px,0)';
-  appHeader.shadow = y > bgHeaderHeight - appHeaderHeight;
-}
+    var transformBgHeader =
+        function() {
+      var y = window.scrollY;
+      if (y <= bgHeaderHeight) {
+        y = 1.5 * y;
+      }
+      var s = bgHeader.style;
+      s.transform = s.webkitTransform = 'translate3d(0,' + -y + 'px,0)';
+      appHeader.shadow = y > bgHeaderHeight - appHeaderHeight;
+    }
 
-transformBgHeader();
+    transformBgHeader();
 
-addEventListener('scroll', transformBgHeader);
-</script>
+    addEventListener('scroll', transformBgHeader);
+  </script>
 
 </body>
 </html>

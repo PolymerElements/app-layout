@@ -83,13 +83,13 @@ A collection of elements, along with guidelines and templates that can be used t
 ## Install
 
 ```bash
-$ bower install PolymerElements/app-layout --save
+$ npm install @polymer/app-layout --save
 ```
 
 ## Import
 
-```html
-<link rel="import" href="/bower_components/app-layout/app-layout.html">
+```js
+import '@polymer/app-layout/app-layout.js';
 ```
 
 ## What is inside

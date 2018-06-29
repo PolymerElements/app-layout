@@ -17,12 +17,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>app-box demo using the document scroll</title>
 
-  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
 
-  <script type="module" src="../../app-toolbar/app-toolbar.js"></script>
-  <script type="module" src="../../demo/sample-content.js"></script>
-  <script type="module" src="../../app-scroll-effects/effects/parallax-background.js"></script>
-  <script type="module" src="../app-box.js"></script>
+  <script type="module">
+    import '../../app-toolbar/app-toolbar.js';
+    import '../../demo/sample-content.js';
+    // Import effects before app-box.
+    import '../../app-scroll-effects/effects/parallax-background.js';
+    import '../app-box.js';
+  </script>
 
   <custom-style>
     <style is="custom-style">

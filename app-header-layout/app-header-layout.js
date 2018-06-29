@@ -1,15 +1,26 @@
 /**
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+This code may only be used under the BSD style license found at
+http://polymer.github.io/LICENSE.txt The complete set of authors may be found at
+http://polymer.github.io/AUTHORS.txt The complete set of contributors may be
+found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
+part of the polymer project is also subject to an additional IP rights grant
+found at http://polymer.github.io/PATENTS.txt
 */
+import '@polymer/polymer/polymer-legacy.js';
+import '@polymer/iron-flex-layout/iron-flex-layout.js';
+
+import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+
+import {AppLayoutBehavior} from '../app-layout-behavior/app-layout-behavior.js';
+
 /**
-app-header-layout is a wrapper element that positions an app-header and other content. This
-element uses the document scroll by default, but it can also define its own scrolling region.
+app-header-layout is a wrapper element that positions an app-header and other
+content. This element uses the document scroll by default, but it can also
+define its own scrolling region.
 
 Using the document scroll:
 
@@ -41,7 +52,8 @@ Using an own scrolling region:
 </app-header-layout>
 ```
 
-Add the `fullbleed` attribute to app-header-layout to make it fit the size of its container:
+Add the `fullbleed` attribute to app-header-layout to make it fit the size of
+its container:
 
 ```html
 <app-header-layout fullbleed>
@@ -56,18 +68,6 @@ Add the `fullbleed` attribute to app-header-layout to make it fit the size of it
 @demo app-header-layout/demo/music.html Music Demo
 @demo app-header-layout/demo/footer.html Footer Demo
 */
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
-import '@polymer/polymer/polymer-legacy.js';
-
-import '@polymer/iron-flex-layout/iron-flex-layout.js';
-import { AppLayoutBehavior } from '../app-layout-behavior/app-layout-behavior.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 Polymer({
   _template: html`
     <style>

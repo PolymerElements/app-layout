@@ -1,17 +1,28 @@
 /**
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+This code may only be used under the BSD style license found at
+http://polymer.github.io/LICENSE.txt The complete set of authors may be found at
+http://polymer.github.io/AUTHORS.txt The complete set of contributors may be
+found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
+part of the polymer project is also subject to an additional IP rights grant
+found at http://polymer.github.io/PATENTS.txt
 */
+import '@polymer/polymer/polymer-legacy.js';
+import '@polymer/iron-media-query/iron-media-query.js';
+
+import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import {afterNextRender} from '@polymer/polymer/lib/utils/render-status.js';
+
+import {AppLayoutBehavior} from '../app-layout-behavior/app-layout-behavior.js';
+
 /**
-app-drawer-layout is a wrapper element that positions an app-drawer and other content. When
-the viewport width is smaller than `responsiveWidth`, this element changes to narrow layout.
-In narrow layout, the drawer will be stacked on top of the main content. The drawer will slide
-in/out to hide/reveal the main content.
+app-drawer-layout is a wrapper element that positions an app-drawer and other
+content. When the viewport width is smaller than `responsiveWidth`, this element
+changes to narrow layout. In narrow layout, the drawer will be stacked on top of
+the main content. The drawer will slide in/out to hide/reveal the main content.
 
 By default the drawer is aligned to the start, which is left in LTR layouts:
 
@@ -59,7 +70,8 @@ With an app-header-layout:
 </app-drawer-layout>
 ```
 
-Add the `drawer-toggle` attribute to elements inside `app-drawer-layout` that toggle the drawer on click events:
+Add the `drawer-toggle` attribute to elements inside `app-drawer-layout` that
+toggle the drawer on click events:
 
 ```html
 <app-drawer-layout>
@@ -80,9 +92,9 @@ Add the `drawer-toggle` attribute to elements inside `app-drawer-layout` that to
 </app-drawer-layout>
 ```
 
-**NOTE:** With app-layout 2.0, the `drawer-toggle` element needs to be manually hidden
-when app-drawer-layout is not in narrow layout. To add this, add the following CSS rule where
-app-drawer-layout is used:
+**NOTE:** With app-layout 2.0, the `drawer-toggle` element needs to be manually
+hidden when app-drawer-layout is not in narrow layout. To add this, add the
+following CSS rule where app-drawer-layout is used:
 
 ```css
 app-drawer-layout:not([narrow]) [drawer-toggle] {
@@ -90,7 +102,8 @@ app-drawer-layout:not([narrow]) [drawer-toggle] {
 }
 ```
 
-Add the `fullbleed` attribute to app-drawer-layout to make it fit the size of its container:
+Add the `fullbleed` attribute to app-drawer-layout to make it fit the size of
+its container:
 
 ```html
 <app-drawer-layout fullbleed>
@@ -105,15 +118,17 @@ Add the `fullbleed` attribute to app-drawer-layout to make it fit the size of it
 
 ### Styling
 
-Custom property                          | Description                          | Default
+Custom property                          | Description | Default
 -----------------------------------------|--------------------------------------|---------
-`--app-drawer-width`                     | Width of the drawer                  | 256px
-`--app-drawer-layout-content-transition` | Transition for the content container | none
+`--app-drawer-width`                     | Width of the drawer | 256px
+`--app-drawer-layout-content-transition` | Transition for the content container
+| none
 
-**NOTE:** If you use <app-drawer> with <app-drawer-layout> and specify a value for
-`--app-drawer-width`, that value must be accessible by both elements. This can be done by
-defining the value on the `:host` that contains <app-drawer-layout> (or `html` if outside
-a shadow root):
+**NOTE:** If you use <app-drawer> with <app-drawer-layout> and specify a value
+for
+`--app-drawer-width`, that value must be accessible by both elements. This can
+be done by defining the value on the `:host` that contains <app-drawer-layout>
+(or `html` if outside a shadow root):
 
 ```css
 :host {
@@ -125,19 +140,6 @@ a shadow root):
 @element app-drawer-layout
 @demo app-drawer-layout/demo/index.html
 */
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
-import '@polymer/polymer/polymer-legacy.js';
-
-import '@polymer/iron-media-query/iron-media-query.js';
-import { AppLayoutBehavior } from '../app-layout-behavior/app-layout-behavior.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 Polymer({
   _template: html`
     <style>
