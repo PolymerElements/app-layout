@@ -8,6 +8,7 @@ found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
 part of the polymer project is also subject to an additional IP rights grant
 found at http://polymer.github.io/PATENTS.txt
 */
+import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
 
 import {html} from '@polymer/polymer/lib/utils/html-tag.js';

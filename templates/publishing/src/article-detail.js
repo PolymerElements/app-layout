@@ -8,6 +8,7 @@ found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
 part of the polymer project is also subject to an additional IP rights grant
 found at http://polymer.github.io/PATENTS.txt
 */
+import '@polymer/paper-fab/paper-fab.js';
 import './app-icons.js';
 
 import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
