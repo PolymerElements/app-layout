@@ -6,15 +6,17 @@ A collection of elements, along with guidelines and templates that can be used t
 ```
 <custom-element-demo height="368">
   <template>
-    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="app-drawer/app-drawer.html">
-    <link rel="import" href="app-header/app-header.html">
-    <link rel="import" href="app-toolbar/app-toolbar.html">
-    <link rel="import" href="demo/sample-content.html">
-    <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-    <link rel="import" href="../iron-icons/iron-icons.html">
-    <link rel="import" href="../paper-icon-button/paper-icon-button.html">
-    <link rel="import" href="../paper-progress/paper-progress.html">
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
+    <script type="module">
+      import '@polymer/app-layout/app-drawer/app-drawer.js';
+      import '@polymer/app-layout/app-header/app-header.js';
+      import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+      import '@polymer/app-layout/demo/sample-content.js';
+      import '@polymer/iron-flex-layout/iron-flex-layout.js';
+      import '@polymer/iron-icons/iron-icons.js';
+      import '@polymer/paper-icon-button/paper-icon-button.js';
+      import '@polymer/paper-progress/paper-progress.js';
+    </script>
     <custom-style>
       <style is="custom-style">
         html, body {
