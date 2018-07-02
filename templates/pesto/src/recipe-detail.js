@@ -124,7 +124,7 @@ Polymer({
 
           <paper-menu-button horizontal-align="right">
             <paper-icon-button icon="app:more-vert" slot="dropdown-trigger" alt="menu"></paper-icon-button>
-            <paper-listbox class="dropdown-content">
+            <paper-listbox slot="dropdown-content">
               <paper-icon-item>
                 <iron-icon icon="app:share" slot="item-icon"></iron-icon>
                 Tweet recipe
