@@ -1,3 +1,126 @@
+/**
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at
+http://polymer.github.io/LICENSE.txt The complete set of authors may be found at
+http://polymer.github.io/AUTHORS.txt The complete set of contributors may be
+found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
+part of the polymer project is also subject to an additional IP rights grant
+found at http://polymer.github.io/PATENTS.txt
+*/
+/**
+app-grid is a helper class useful for creating responsive, fluid grid layouts
+using custom properties. Because custom properties can be defined inside a
+`@media` rule, you can customize the grid layout for different responsive
+breakpoints.
+
+Example:
+
+Import `app-grid-style.html` and include `app-grid-style` in the style of an
+element's definition. Then, add the class `app-grid` to a container such as `ul`
+or `div`:
+
+```html
+<template>
+  <style include="app-grid-style">
+    :host {
+      --app-grid-columns: 3;
+      --app-grid-item-height: 100px;
+    }
+
+    ul {
+      padding: 0;
+      list-style: none;
+    }
+
+    .item {
+      background-color: white;
+    }
+  </style>
+  <ul class="app-grid">
+    <li class="item">1</li>
+    <li class="item">2</li>
+    <li class="item">3</li>
+  </ul>
+</template>
+```
+In the example above, the grid  will take 3 columns per row.
+
+### Expandible items
+
+In many cases, it's useful to expand an item more than 1 column. To achieve this
+type of layout, you can specify the number of columns the item should expand to
+by setting the custom property
+`--app-grid-expandible-item-columns`. To indicate which item should expand,
+apply the mixin
+`--app-grid-expandible-item` to a rule with a selector to the item. For example:
+
+<pre><code>
+&lt;template>
+  &lt;style include="app-grid-style">
+    :host {
+      --app-grid-columns: 3;
+      --app-grid-item-height: 100px;
+      --app-grid-expandible-item-columns: 3;
+    }
+
+    /* Only the first item should expand *\/
+    .item:first-child {
+      &#64;apply --app-grid-expandible-item;
+    }
+  &lt;/style>
+&lt;/template>
+</code></pre>
+
+### Preserving the aspect ratio
+
+When the size of a grid item should preserve the aspect ratio, you can add the
+`has-aspect-ratio` attribute to the element with the class `.app-grid`. Now,
+every item element becomes a wrapper around the item content. For example:
+
+```html
+<template>
+  <style include="app-grid-style">
+    :host {
+      --app-grid-columns: 3;
+      /* 50% the width of the item is equivalent to 2:1 aspect ratio*\/
+      --app-grid-item-height: 50%;
+    }
+
+    .item {
+      background-color: white;
+    }
+  </style>
+  <ul class="app-grid" has-aspect-ratio>
+    <li class="item">
+      <div>item 1</div>
+    </li>
+    <li class="item">
+      <div>item 2</div>
+    </li>
+    <li class="item">
+      <div>item 3</div>
+    </li>
+  </ul>
+</template>
+```
+
+### Styling
+
+Custom property                               | Description | Default
+----------------------------------------------|------------------------------------------------------------|------------------
+`--app-grid-columns`                          | The number of columns per row.
+| 1
+`--app-grid-gutter`                           | The space between two items. |
+0px
+`--app-grid-item-height`                      | The height of the items. | auto
+`--app-grid-expandible-item-columns`          | The number of columns an
+expandible item should expand to. | 1
+
+@group App Elements
+@pseudoElement app-grid
+@demo app-grid/demo/index.html
+*/
 import '@polymer/polymer/polymer-legacy.js';
 const $_documentContainer = document.createElement('template');
 $_documentContainer.setAttribute('style', 'display: none;');
@@ -79,125 +202,3 @@ $_documentContainer.innerHTML = `<dom-module id="app-grid-style">
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);
-
-/**
-@license
-Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-/**
-app-grid is a helper class useful for creating responsive, fluid grid layouts using custom properties.
-Because custom properties can be defined inside a `@media` rule, you can customize the grid layout
-for different responsive breakpoints.
-
-Example:
-
-Import `app-grid-style.html` and include `app-grid-style` in the style of an element's definition.
-Then, add the class `app-grid` to a container such as `ul` or `div`:
-
-```html
-<template>
-  <style include="app-grid-style">
-    :host {
-      --app-grid-columns: 3;
-      --app-grid-item-height: 100px;
-    }
-
-    ul {
-      padding: 0;
-      list-style: none;
-    }
-
-    .item {
-      background-color: white;
-    }
-  </style>
-  <ul class="app-grid">
-    <li class="item">1</li>
-    <li class="item">2</li>
-    <li class="item">3</li>
-  </ul>
-</template>
-```
-In the example above, the grid  will take 3 columns per row.
-
-### Expandible items
-
-In many cases, it's useful to expand an item more than 1 column. To achieve this type of layout,
-you can specify the number of columns the item should expand to by setting the custom property
-`--app-grid-expandible-item-columns`. To indicate which item should expand, apply the mixin
-`--app-grid-expandible-item` to a rule with a selector to the item. For example:
-
-<pre><code>
-&lt;template>
-  &lt;style include="app-grid-style">
-    :host {
-      --app-grid-columns: 3;
-      --app-grid-item-height: 100px;
-      --app-grid-expandible-item-columns: 3;
-    }
-
-    /* Only the first item should expand *\/
-    .item:first-child {
-      &#64;apply --app-grid-expandible-item;
-    }
-  &lt;/style>
-&lt;/template>
-</code></pre>
-
-### Preserving the aspect ratio
-
-When the size of a grid item should preserve the aspect ratio, you can add the `has-aspect-ratio`
-attribute to the element with the class `.app-grid`. Now, every item element becomes a wrapper around
-the item content. For example:
-
-```html
-<template>
-  <style include="app-grid-style">
-    :host {
-      --app-grid-columns: 3;
-      /* 50% the width of the item is equivalent to 2:1 aspect ratio*\/
-      --app-grid-item-height: 50%;
-    }
-
-    .item {
-      background-color: white;
-    }
-  </style>
-  <ul class="app-grid" has-aspect-ratio>
-    <li class="item">
-      <div>item 1</div>
-    </li>
-    <li class="item">
-      <div>item 2</div>
-    </li>
-    <li class="item">
-      <div>item 3</div>
-    </li>
-  </ul>
-</template>
-```
-
-### Styling
-
-Custom property                               | Description                                                | Default
-----------------------------------------------|------------------------------------------------------------|------------------
-`--app-grid-columns`                          | The number of columns per row.                             | 1
-`--app-grid-gutter`                           | The space between two items.                               | 0px
-`--app-grid-item-height`                      | The height of the items.                                   | auto
-`--app-grid-expandible-item-columns`          | The number of columns an expandible item should expand to. | 1
-
-@group App Elements
-@pseudoElement app-grid
-@demo app-grid/demo/index.html
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
-;

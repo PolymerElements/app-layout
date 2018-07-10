@@ -1,16 +1,17 @@
 /**
 @license
 Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+This code may only be used under the BSD style license found at
+http://polymer.github.io/LICENSE.txt The complete set of authors may be found at
+http://polymer.github.io/AUTHORS.txt The complete set of contributors may be
+found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
+part of the polymer project is also subject to an additional IP rights grant
+found at http://polymer.github.io/PATENTS.txt
 */
 import '@polymer/polymer/polymer-legacy.js';
 
-import { IronScrollTargetBehavior } from '@polymer/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
-import { _scrollEffects } from '../helpers/helpers.js';
+import {IronScrollTargetBehavior} from '@polymer/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
+import {_scrollEffects} from '../helpers/helpers.js';
 
 /**
  * `Polymer.AppScrollEffectsBehavior` provides an interface that allows an
@@ -19,19 +20,18 @@ import { _scrollEffects } from '../helpers/helpers.js';
  * ### Importing the app-layout effects
  *
  * app-layout provides a set of scroll effects that can be used by explicitly
- * importing `app-scroll-effects.html`:
+ * importing `app-scroll-effects.js`:
  *
- * ```html
- * <link rel="import"
- * href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+ * ```js
+ * import '@polymer/app-layout/app-scroll-effects/app-scroll-effects.js';
  * ```
  *
  * The scroll effects can also be used by individually importing
- * `app-layout/app-scroll-effects/effects/[effectName].html`. For example:
+ * `@polymer/app-layout/app-scroll-effects/effects/[effectName].js`. For
+ * example:
  *
- * ```html
- *  <link rel="import"
- * href="/bower_components/app-layout/app-scroll-effects/effects/waterfall.html">
+ * ```js
+ * import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
  * ```
  *
  * ### Consuming effects

@@ -14,8 +14,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <title>app-layout demos</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-  <script type="module" src="../../paper-styles/demo-pages.js"></script>
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
+  <script type="module">
+    import '@polymer/paper-styles/demo-pages.js';
+  </script>
   <style>
     a {
       display: block;

@@ -16,19 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <title>Material design grid layout using app-grid</title>
 
-  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-
-
-  <script type="module" src="../../../polymer/polymer-legacy.js"></script>
-  <script type="module" src="../../../iron-icons/iron-icons.js"></script>
-  <script type="module" src="../../../paper-styles/shadow.js"></script>
-  <script type="module" src="../../../paper-icon-button/paper-icon-button.js"></script>
-
-  <script type="module" src="../../app-header-layout/app-header-layout.js"></script>
-  <script type="module" src="../../app-scroll-effects/effects/waterfall.js"></script>
-  <script type="module" src="../../app-header/app-header.js"></script>
-  <script type="module" src="../../app-toolbar/app-toolbar.js"></script>
-  <script type="module" src="../app-grid-style.js"></script>
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
 
   <style>
 
@@ -130,31 +118,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
 
     <script type="module">
-import '@polymer/polymer/polymer-legacy.js';
-import '@polymer/iron-icons/iron-icons.js';
-import '@polymer/paper-styles/shadow.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '../../app-header-layout/app-header-layout.js';
-import '../../app-scroll-effects/effects/waterfall.js';
-import '../../app-header/app-header.js';
-import '../../app-toolbar/app-toolbar.js';
-import '../app-grid-style.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-Polymer({
-  is: 'x-grid',
+      import '@polymer/polymer/polymer-legacy.js';
+      import '@polymer/iron-icons/iron-icons.js';
+      import '@polymer/paper-styles/shadow.js';
+      import '@polymer/paper-icon-button/paper-icon-button.js';
+      import '../../app-header-layout/app-header-layout.js';
+      import '../../app-scroll-effects/effects/waterfall.js';
+      import '../../app-header/app-header.js';
+      import '../../app-toolbar/app-toolbar.js';
+      import '../app-grid-style.js';
+      import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+      Polymer({
+        is: 'x-grid',
 
-  attached: function() {
-    this._updateGridStyles = this._updateGridStyles || function() {
-      this.updateStyles();
-    }.bind(this);
-    window.addEventListener('resize', this._updateGridStyles);
-  },
+        attached: function() {
+          this._updateGridStyles = this._updateGridStyles || function() {
+            this.updateStyles();
+          }.bind(this);
+          window.addEventListener('resize', this._updateGridStyles);
+        },
 
-  detached: function() {
-    window.removeEventListener('resize', this._updateGridStyles);
-  }
-});
-</script>
+        detached: function() {
+          window.removeEventListener('resize', this._updateGridStyles);
+        }
+      });
+    </script>
   </dom-module>
 
   <x-grid></x-grid>

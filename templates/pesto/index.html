@@ -19,16 +19,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <link rel="manifest" href="manifest.json">
 
-  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-
-  <!-- Promise polyfill needed for 1.0-hybrid mode since neither iron-request 2.x nor
-    webcomponentsjs 0.x include the Promise polyfill. -->
-  <script src="bower_components/es6-promise/dist/es6-promise.auto.min.js"></script>
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
+  <!-- Import Web Animations polyfill -->
+  <script src="https://unpkg.com/web-animations-js@^2.0.0/web-animations-next-lite.min.js"></script>
 
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,700">
 
-  <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
-  <script type="module" src="./src/recipe-app.js"></script>
+  <script type="module">
+    import '@polymer/iron-ajax/iron-ajax.js';
+    import './src/recipe-app.js';
+  </script>
 
   <style>
 

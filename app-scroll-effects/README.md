@@ -4,17 +4,17 @@
 
 ### Importing the app-layout effects
 
-app-layout provides a set of scroll effects that can be used by explicitly importing `app-scroll-effects.html`:
+app-layout provides a set of scroll effects that can be used by explicitly importing `app-scroll-effects.js`:
 
-```html
-<link rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+```js
+import '@polymer/app-layout/app-scroll-effects/app-scroll-effects.js';
 ```
 
-The scroll effects can also be used by individually importing `app-layout/app-scroll-effects/effects/[effectName].html`.
-For example:
+The scroll effects can also be used by individually importing
+`@polymer/app-layout/app-scroll-effects/effects/[effectName].js`. For example:
 
-```html
-<link rel="import" href="/bower_components/app-layout/app-scroll-effects/effects/waterfall.html">
+```js
+import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 ```
 
 ### Consuming effects
