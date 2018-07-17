@@ -118,11 +118,10 @@ its container:
 
 ### Styling
 
-Custom property                          | Description | Default
+Custom property                          | Description                          | Default
 -----------------------------------------|--------------------------------------|---------
-`--app-drawer-width`                     | Width of the drawer | 256px
-`--app-drawer-layout-content-transition` | Transition for the content container
-| none
+`--app-drawer-width`                     | Width of the drawer                  | 256px
+`--app-drawer-layout-content-transition` | Transition for the content container | none
 
 **NOTE:** If you use <app-drawer> with <app-drawer-layout> and specify a value
 for

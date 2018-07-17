@@ -87,8 +87,7 @@ doesn't move away from the header.
 
 Mixin | Description | Default
 ----------------|-------------|----------
-`--app-box-background-front-layer` | Applies to the front layer of the
-background | {}
+`--app-box-background-front-layer` | Applies to the front layer of the background | {}
 
 @group App Elements
 @element app-box

@@ -214,18 +214,15 @@ effects.
 
 Attribute | Description         | Default
 ----------|---------------------|----------------------------------------
-`sticky` | Element that remains at the top when the header condenses. | The
-first app-toolbar in the light DOM.
+`sticky` | Element that remains at the top when the header condenses. | The first app-toolbar in the light DOM.
 
 
 ## Styling
 
 Mixin | Description | Default
 ------|-------------|----------
-`--app-header-background-front-layer` | Applies to the front layer of the
-background. | {}
-`--app-header-background-rear-layer` | Applies to the rear layer of the
-background. | {}
+`--app-header-background-front-layer` | Applies to the front layer of the background. | {}
+`--app-header-background-rear-layer` | Applies to the rear layer of the background. | {}
 `--app-header-shadow` | Applies to the shadow. | {}
 
 @group App Elements
