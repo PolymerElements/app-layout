@@ -107,15 +107,12 @@ every item element becomes a wrapper around the item content. For example:
 
 ### Styling
 
-Custom property                               | Description | Default
+Custom property                               | Description                                                | Default
 ----------------------------------------------|------------------------------------------------------------|------------------
-`--app-grid-columns`                          | The number of columns per row.
-| 1
-`--app-grid-gutter`                           | The space between two items. |
-0px
-`--app-grid-item-height`                      | The height of the items. | auto
-`--app-grid-expandible-item-columns`          | The number of columns an
-expandible item should expand to. | 1
+`--app-grid-columns`                          | The number of columns per row.                             | 1
+`--app-grid-gutter`                           | The space between two items.                               | 0px
+`--app-grid-item-height`                      | The height of the items.                                   | auto
+`--app-grid-expandible-item-columns`          | The number of columns an expandible item should expand to. | 1
 
 @group App Elements
 @pseudoElement app-grid
