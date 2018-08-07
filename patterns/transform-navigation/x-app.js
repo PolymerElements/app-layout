@@ -52,7 +52,7 @@ Polymer({
 
     </style>
 
-    <app-drawer-layout force-narrow="">
+    <app-drawer-layout force-narrow>
 
       <app-drawer id="drawer" slot="drawer">
 
@@ -71,7 +71,7 @@ Polymer({
         <app-header class="main-header" slot="header">
 
           <app-toolbar>
-            <paper-icon-button class="menu-button" icon="menu" drawer-toggle="" hidden\$="{{wideLayout}}"></paper-icon-button>
+            <paper-icon-button class="menu-button" icon="menu" drawer-toggle hidden\$="{{wideLayout}}"></paper-icon-button>
           </app-toolbar>
 
           <app-toolbar class="tabs-bar" hidden\$="{{!wideLayout}}">

@@ -201,13 +201,13 @@ Polymer({
 
     </style>
 
-    <app-location route="{{route}}" use-hash-as-path=""></app-location>
+    <app-location route="{{route}}" use-hash-as-path></app-location>
     <app-route route="{{route}}" pattern=":section" data="{{sectionData}}" tail="{{subRoute}}"></app-route>
     <app-route route="{{subRoute}}" pattern="/:id" data="{{idData}}" active="{{onDetailPage}}"></app-route>
 
     <iron-media-query query="max-width: 400px" query-matches="{{smallScreen}}"></iron-media-query>
 
-    <app-drawer-layout drawer-width="288px" force-narrow="">
+    <app-drawer-layout drawer-width="288px" force-narrow>
       <!-- navigation drawer for small screen sizes -->
       <app-drawer slot="drawer" id="drawer" swipe-open="[[smallScreen]]">
         <template is="dom-if" if="[[smallScreen]]">
@@ -229,7 +229,7 @@ Polymer({
         <app-header slot="header" effects="waterfall" fixed="[[smallScreen]]" condenses="[[!smallScreen]]" reveals="[[!smallScreen]]">
           <app-toolbar id="mainToolbar">
             <div class="navItem leftItem">
-              <paper-icon-button icon="menu" drawer-toggle="" alt="Toogle navigation menu"></paper-icon-button>
+              <paper-icon-button icon="menu" drawer-toggle alt="Toogle navigation menu"></paper-icon-button>
               <a href="#[[sectionData.section]]" tabindex="-1"><paper-icon-button icon="arrow-back" alt="Back to the home"></paper-icon-button></a>
             </div>
             <div class="spacer">
@@ -241,7 +241,7 @@ Polymer({
             </div>
           </app-toolbar>
           <template is="dom-if" if="[[_shouldShowTabs(onDetailPage, smallScreen)]]">
-            <paper-tabs selected="[[selectedTab]]" scrollable="" sticky\$="[[_shouldShowTabs(onDetailPage, smallScreen)]]">
+            <paper-tabs selected="[[selectedTab]]" scrollable sticky\$="[[_shouldShowTabs(onDetailPage, smallScreen)]]">
               <template is="dom-repeat" items="[[sections]]" as="section">
                 <paper-tab>
                   <a href="#[[section]]">[[section]]</a>

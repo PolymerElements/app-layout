@@ -250,7 +250,7 @@ Polymer({
               <option value="5">Quantity 5</option>
             </select>
           </div>
-          <paper-fab mini="" icon="add-shopping-cart" aria-label="add to the shopping cart"></paper-fab>
+          <paper-fab mini icon="add-shopping-cart" aria-label="add to the shopping cart"></paper-fab>
           <div class="store">
             <h3>[[item.storeName]]</h3>
             <p>[[item.storeDescription]]</p>

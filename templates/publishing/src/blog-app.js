@@ -143,7 +143,7 @@ Polymer({
     </style>
 
     <!-- setup routes -->
-    <app-location route="{{route}}" use-hash-as-path=""></app-location>
+    <app-location route="{{route}}" use-hash-as-path></app-location>
     <app-route route="{{route}}" pattern="/:category" data="{{categoryData}}" tail="{{subRoute}}"></app-route>
     <app-route route="{{subRoute}}" pattern="/:page" data="{{pageData}}" tail="{{subsubRoute}}"></app-route>
     <app-route route="{{subsubRoute}}" pattern="/:id" data="{{idData}}"></app-route>
@@ -152,9 +152,9 @@ Polymer({
 
       <!-- nav panel -->
       <app-drawer id="drawer" slot="drawer">
-        <app-header-layout has-scrolling-region="">
+        <app-header-layout has-scrolling-region>
 
-          <app-header fixed="" slot="header">
+          <app-header fixed slot="header">
 
             <!-- top toolbar -->
             <app-toolbar></app-toolbar>
@@ -179,12 +179,12 @@ Polymer({
       <!-- main panel -->
       <app-header-layout>
 
-        <app-header fixed="" effects="waterfall" class="main-header" slot="header">
+        <app-header fixed effects="waterfall" class="main-header" slot="header">
 
           <!-- top toolbar -->
           <app-toolbar>
             <!-- menu button -->
-            <paper-icon-button drawer-toggle="" icon="app:menu" hidden\$="[[_shouldHideMenuButton(pageData.page, narrow)]]"></paper-icon-button>
+            <paper-icon-button drawer-toggle icon="app:menu" hidden\$="[[_shouldHideMenuButton(pageData.page, narrow)]]"></paper-icon-button>
 
             <!-- back button -->
             <a href="#/[[categoryData.category]]/list" hidden\$="[[_equal(pageData.page, 'list')]]">

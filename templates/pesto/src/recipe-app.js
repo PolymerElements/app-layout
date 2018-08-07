@@ -93,17 +93,17 @@ Polymer({
     }
     </style>
 
-    <app-location route="{{_route}}" use-hash-as-path=""></app-location>
+    <app-location route="{{_route}}" use-hash-as-path></app-location>
     <app-route route="{{_route}}" pattern="/:page" data="{{_pageData}}" tail="{{_subRoute}}"></app-route>
     <app-route route="{{_subRoute}}" pattern="/:id" data="{{_idData}}"></app-route>
 
     <app-drawer-layout responsive-width="1280px">
 
       <!-- nav panel -->
-      <app-drawer id="drawer" swipe-open="" slot="drawer">
-        <app-header-layout has-scrolling-region="">
+      <app-drawer id="drawer" swipe-open slot="drawer">
+        <app-header-layout has-scrolling-region>
 
-          <app-header fixed="" slot="header">
+          <app-header fixed slot="header">
             <div class="avatar-container">
               <div class="image"></div>
             </div>
@@ -136,19 +136,19 @@ Polymer({
       <iron-pages selected="[[_selectedPage]]" attr-for-selected="name">
 
         <recipe-list name="home" recipes="[[recipes]]">
-          <paper-icon-button icon="app:menu" drawer-toggle="" slot="drawer-toggle"></paper-icon-button>
+          <paper-icon-button icon="app:menu" drawer-toggle slot="drawer-toggle"></paper-icon-button>
         </recipe-list>
 
         <recipe-list name="favorites">
-          <paper-icon-button icon="app:menu" drawer-toggle="" slot="drawer-toggle"></paper-icon-button>
+          <paper-icon-button icon="app:menu" drawer-toggle slot="drawer-toggle"></paper-icon-button>
         </recipe-list>
 
         <recipe-list name="saved">
-          <paper-icon-button icon="app:menu" drawer-toggle="" slot="drawer-toggle"></paper-icon-button>
+          <paper-icon-button icon="app:menu" drawer-toggle slot="drawer-toggle"></paper-icon-button>
         </recipe-list>
 
         <recipe-list name="trending">
-          <paper-icon-button icon="app:menu" drawer-toggle="" slot="drawer-toggle"></paper-icon-button>
+          <paper-icon-button icon="app:menu" drawer-toggle slot="drawer-toggle"></paper-icon-button>
         </recipe-list>
 
         <recipe-detail id="detailView" name="detail" recipe="[[_getRecipe(recipes, _idData.id)]]"></recipe-detail>

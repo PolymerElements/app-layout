@@ -145,13 +145,13 @@ Polymer({
     <!-- main panel -->
     <app-header-layout>
 
-      <app-header effects="resize-title" condenses="" fixed="" shadow="" slot="header">
+      <app-header effects="resize-title" condenses fixed shadow slot="header">
         <app-toolbar class="top-toolbar">
           <slot name="drawer-toggle"></slot>
-          <div condensed-title=""></div>
+          <div condensed-title></div>
         </app-toolbar>
         <app-toolbar class="bottom-toolbar">
-          <div main-title=""></div>
+          <div main-title></div>
         </app-toolbar>
       </app-header>
 
