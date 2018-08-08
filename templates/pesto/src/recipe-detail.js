@@ -111,7 +111,7 @@ Polymer({
     <!-- main panel -->
     <app-header-layout>
 
-      <app-header id="header" effects="waterfall fade-background" reveals="" slot="header">
+      <app-header id="header" effects="waterfall fade-background" reveals slot="header">
 
         <!-- top toolbar -->
         <app-toolbar>
@@ -120,7 +120,7 @@ Polymer({
             <paper-icon-button icon="app:arrow-back"></paper-icon-button>
           </a>
 
-          <div main-title=""></div>
+          <div main-title></div>
 
           <paper-menu-button horizontal-align="right">
             <paper-icon-button icon="app:more-vert" slot="dropdown-trigger" alt="menu"></paper-icon-button>

@@ -77,7 +77,7 @@ Polymer({
 
     <app-drawer-layout>
 
-      <app-drawer swipe-open="" slot="drawer">
+      <app-drawer swipe-open slot="drawer">
         <section>
           <h2>app-header Properties</h2>
           <paper-checkbox checked="{{condenses}}">
@@ -120,14 +120,14 @@ Polymer({
         <app-header condenses="[[condenses]]" fixed="[[fixed]]" reveals="[[reveals]]" shadow="[[shadow]]" effects="[[_computeEffects(blendBackground, fadeBackground, parallaxBackground, resizeSnappedTitle, resizeTitle, waterfall)]]" slot="header">
 
           <app-toolbar>
-            <paper-icon-button icon="app:menu" drawer-toggle=""></paper-icon-button>
-            <div condensed-title="">Test Drive app-header</div>
+            <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
+            <div condensed-title>Test Drive app-header</div>
           </app-toolbar>
 
           <app-toolbar></app-toolbar>
 
           <app-toolbar>
-            <div main-title="" spacer="">Test Drive</div>
+            <div main-title spacer>Test Drive</div>
           </app-toolbar>
 
         </app-header>

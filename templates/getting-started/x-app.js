@@ -47,10 +47,10 @@ Polymer({
 
       <app-header-layout>
 
-        <app-header slot="header" reveals="" effects="waterfall">
+        <app-header slot="header" reveals effects="waterfall">
           <app-toolbar>
-            <paper-icon-button icon="menu" drawer-toggle=""></paper-icon-button>
-            <div main-title="">Title</div>
+            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <div main-title>Title</div>
           </app-toolbar>
         </app-header>
 

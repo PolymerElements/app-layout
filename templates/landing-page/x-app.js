@@ -111,7 +111,7 @@ Polymer({
 
     <app-header-layout>
 
-      <app-header reveals="" effects="waterfall" slot="header">
+      <app-header reveals effects="waterfall" slot="header">
 
         <app-toolbar class="toolbar">
           <div class="tabs">
