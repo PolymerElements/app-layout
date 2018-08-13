@@ -18,8 +18,8 @@ import {Debouncer} from '@polymer/polymer/lib/utils/debounce.js';
 import {enqueueDebouncer} from '@polymer/polymer/lib/utils/flush.js';
 
 /**
- * @polymerBehavior Polymer.AppLayoutBehavior
- **/
+ * @polymerBehavior
+ */
 export const AppLayoutBehavior = [
   IronResizableBehavior,
   {
