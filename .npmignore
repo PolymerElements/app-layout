@@ -1,0 +1,7 @@
+*.tgz
+.github
+.travis.yml
+formatconfig.json
+gen-tsd.json
+test/
+wct.conf.json
