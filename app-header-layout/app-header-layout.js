@@ -156,8 +156,7 @@ Polymer({
      * If true, the current element will have its own scrolling region.
      * Otherwise, it will use the document scroll to control the header.
      */
-    hasScrollingRegion:
-        {type: Boolean, value: false, reflectToAttribute: true}
+    hasScrollingRegion: {type: Boolean, value: false, reflectToAttribute: true}
   },
 
   observers: ['resetLayout(isAttached, hasScrollingRegion)'],
