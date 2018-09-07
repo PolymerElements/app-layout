@@ -12,7 +12,6 @@ import '@polymer/polymer/polymer-legacy.js';
 
 import {IronResizableBehavior} from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
 import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
-import * as async from '@polymer/polymer/lib/utils/async.js';
 import {animationFrame} from '@polymer/polymer/lib/utils/async.js';
 import {Debouncer} from '@polymer/polymer/lib/utils/debounce.js';
 import {enqueueDebouncer} from '@polymer/polymer/lib/utils/flush.js';
@@ -53,18 +52,11 @@ export const AppLayoutBehavior = [
      * @method resetLayout
      */
     resetLayout: function() {
-      // Polymer v2.x
       var self = this;
       var cb = this._updateLayoutStates.bind(this);
-      if (async && animationFrame) {
-        this._layoutDebouncer =
-            Debouncer.debounce(this._layoutDebouncer, animationFrame, cb);
-        enqueueDebouncer(this._layoutDebouncer);
-      }
-      // Polymer v1.x
-      else {
-        this.debounce('resetLayout', cb);
-      }
+      this._layoutDebouncer =
+          Debouncer.debounce(this._layoutDebouncer, animationFrame, cb);
+      enqueueDebouncer(this._layoutDebouncer);
       this._notifyDescendantResize();
     },
 
