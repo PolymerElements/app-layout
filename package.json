@@ -32,7 +32,7 @@
   "scripts": {
     "format": "webmat",
     "generate-types": "gen-typescript-declarations --deleteExisting --outDir . --verify",
-    "prepack": "npm run generate-types"
+    "prepare": "npm run generate-types"
   },
   "version": "3.0.0-pre.25",
   "main": "app-layout.js",
