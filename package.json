@@ -34,7 +34,7 @@
     "generate-types": "gen-typescript-declarations --deleteExisting --outDir . --verify",
     "prepare": "npm run generate-types"
   },
-  "version": "3.0.0-pre.25",
+  "version": "3.0.0-pre.26",
   "main": "app-layout.js",
   "author": "The Polymer Authors",
   "dependencies": {
