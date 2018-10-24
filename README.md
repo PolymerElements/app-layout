@@ -76,19 +76,19 @@ A collection of elements, along with guidelines and templates that can be used t
 
 ### Elements
 
-- [app-box](/app-box) - A container element that can have scroll effects - visual effects based on scroll position.
+- [app-box](https://github.com/PolymerElements/app-layout/tree/master/app-box) - A container element that can have scroll effects - visual effects based on scroll position.
 
-- [app-drawer](/app-drawer) - A navigation drawer that can slide in from the left or right.
+- [app-drawer](https://github.com/PolymerElements/app-layout/tree/master/app-drawer) - A navigation drawer that can slide in from the left or right.
 
-- [app-drawer-layout](/app-drawer-layout) - A wrapper element that positions an app-drawer and other content.
+- [app-drawer-layout](https://github.com/PolymerElements/app-layout/tree/master/app-drawer-layout) - A wrapper element that positions an app-drawer and other content.
 
-- [app-grid](/app-grid) - A helper class useful for creating responsive, fluid grid layouts using custom properties.
+- [app-grid](https://github.com/PolymerElements/app-layout/tree/master/app-grid) - A helper class useful for creating responsive, fluid grid layouts using custom properties.
 
-- [app-header](/app-header) - A container element for app-toolbars at the top of the screen that can have scroll effects - visual effects based on scroll position.
+- [app-header](https://github.com/PolymerElements/app-layout/tree/master/app-header) - A container element for app-toolbars at the top of the screen that can have scroll effects - visual effects based on scroll position.
 
-- [app-header-layout](/app-header-layout) - A wrapper element that positions an app-header and other content.
+- [app-header-layout](https://github.com/PolymerElements/app-layout/tree/master/app-header-layout) - A wrapper element that positions an app-header and other content.
 
-- [app-toolbar](/app-toolbar) - A horizontal toolbar containing items that can be used for label, navigation, search and actions.
+- [app-toolbar](https://github.com/PolymerElements/app-layout/tree/master/app-toolbar) - A horizontal toolbar containing items that can be used for label, navigation, search and actions.
 
 ### Templates
 
