@@ -227,6 +227,10 @@ export const AppScrollEffectsBehavior = [
       return Math.max(0, this._scrollTop);
     },
 
+    attached: function() {
+      this._scrollStateChanged();
+    },
+
     detached: function() {
       this._tearDownEffects();
     },
@@ -368,6 +372,10 @@ export const AppScrollEffectsBehavior = [
      * Overrides the `_scrollHandler`.
      */
     _scrollHandler: function() {
+      this._scrollStateChanged();
+    },
+
+    _scrollStateChanged: function() {
       if (!this.disabled) {
         var scrollTop = this._clampedScrollTop;
         this._updateScrollState(scrollTop);
