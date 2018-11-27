@@ -9,6 +9,7 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "@polymer/font-roboto": "^3.0.1",
+    "@polymer/gen-typescript-declarations": "^1.5.1",
     "@polymer/iron-ajax": "^3.0.0-pre.26",
     "@polymer/iron-icon": "^3.0.0-pre.26",
     "@polymer/iron-icons": "^3.0.0-pre.26",
@@ -25,16 +26,15 @@
     "@polymer/paper-tabs": "^3.0.0-pre.26",
     "@polymer/test-fixture": "^4.0.1",
     "@webcomponents/webcomponentsjs": "^2.0.0",
-    "wct-browser-legacy": "^1.0.1",
-    "webmat": "^0.2.0",
-    "@polymer/gen-typescript-declarations": "^1.5.1"
+    "wct-browser-legacy": "^1.0.2",
+    "webmat": "^0.2.0"
   },
   "scripts": {
     "format": "webmat",
     "generate-types": "gen-typescript-declarations --deleteExisting --outDir . --verify",
     "prepare": "npm run generate-types"
   },
-  "version": "3.0.1",
+  "version": "3.0.2",
   "main": "app-layout.js",
   "author": "The Polymer Authors",
   "dependencies": {
