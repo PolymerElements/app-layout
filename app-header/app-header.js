@@ -57,6 +57,7 @@ is the first `app-toolbar that is an immediate child of app-header.
 ```html
 <app-header condenses>
   <app-toolbar> Sticky element </app-toolbar>
+  <app-toolbar></app-toolbar>
 </app-header>
 ```
 
