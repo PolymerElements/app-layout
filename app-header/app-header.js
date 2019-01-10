@@ -249,6 +249,7 @@ Polymer({
         transition-timing-function: linear;
         transition-property: -webkit-transform;
         transition-property: transform;
+        padding-top: 50px;
       }
 
       :host::before {
@@ -617,7 +618,9 @@ Polymer({
    * @param {number} y
    */
   _transformHeader: function(y) {
-    this.translate3d(0, (-y) + 'px', 0);
+    // Fix iOS bug when the application run in standalone mode
+    // This fix works is related to the css rule :host{ padding-top: 50px; }
+    this.translate3d(0, (-y) - 50 + 'px', 0);
     if (this._stickyEl) {
       this.translate3d(
           0,
