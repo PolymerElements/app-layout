@@ -135,11 +135,11 @@ be done by defining the value on the `:host` that contains <app-drawer-layout>
 }
 ```
 
-@group App Elements
 @element app-drawer-layout
 @demo app-drawer-layout/demo/index.html
 */
 Polymer({
+  /** @override */
   _template: html`
     <style>
       :host {
@@ -228,6 +228,7 @@ Polymer({
     return dom(this.$.drawerSlot).getDistributedNodes()[0];
   },
 
+  /** @override */
   attached: function() {
     // Disable drawer transitions until after app-drawer-layout sets the initial
     // opened state.
