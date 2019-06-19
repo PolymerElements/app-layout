@@ -10,14 +10,15 @@ found at http://polymer.github.io/PATENTS.txt
 */
 import '../app-scroll-effects-behavior.js';
 
-import {registerEffect} from '../../helpers/helpers.js';
+import {ElementWithBackground, registerEffect} from '../../helpers/helpers.js';
+
 /**
  * Vertically translate the background based on a factor of the scroll position.
  */
 registerEffect('parallax-background', {
   /**
    * @param {{scalar: string}} config
-   * @this Polymer.AppLayout.ElementWithBackground
+   * @this {ParallaxBackground}
    */
   setUp: function setUp(config) {
     var fx = {};
@@ -40,7 +41,7 @@ registerEffect('parallax-background', {
     }
     this._fxParallaxBackground = fx;
   },
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {ParallaxBackground} */
   run: function run(p, y) {
     var fx = this._fxParallaxBackground;
     this.transform(
@@ -52,8 +53,28 @@ registerEffect('parallax-background', {
           fx.backgroundRearLayer);
     }
   },
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {ParallaxBackground} */
   tearDown: function tearDown() {
     delete this._fxParallaxBackground;
   }
 });
+
+/**
+ * @interface
+ * @extends {ElementWithBackground}
+ */
+class ParallaxBackground {
+  constructor() {
+    /** @type {?number} */
+    this._dHeight;
+
+    /**
+     * @typedef {{
+     *   background: !HTMLElement,
+     *   backgroundFrontLayer: !HTMLElement,
+     *   backgroundRearLayer: !HTMLElement,
+     * }}
+     */
+    this._fxParallaxBackground;
+  }
+}

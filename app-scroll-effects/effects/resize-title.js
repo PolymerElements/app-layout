@@ -10,7 +10,8 @@ found at http://polymer.github.io/PATENTS.txt
 */
 import '../app-scroll-effects-behavior.js';
 
-import {registerEffect} from '../../helpers/helpers.js';
+import {ElementWithBackground, registerEffect} from '../../helpers/helpers.js';
+
 function interpolate(progress, points, fn, ctx) {
   fn.apply(ctx, points.map(function(point) {
     return point[0] + (point[1] - point[0]) * progress;
@@ -22,7 +23,7 @@ function interpolate(progress, points, fn, ctx) {
  * based on the scroll position.
  */
 registerEffect('resize-title', {
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {ResizeTitle} */
   setUp: function setUp() {
     var title = this._getDOMRef('mainTitle');
     var condensedTitle = this._getDOMRef('condensedTitle');
@@ -62,7 +63,7 @@ registerEffect('resize-title', {
 
     this._fxResizeTitle = fx;
   },
-  /** @this PolymerElement */
+  /** @this {ResizeTitle} */
   run: function run(p, y) {
     var fx = this._fxResizeTitle;
     if (!this.condenses) {
@@ -86,8 +87,30 @@ registerEffect('resize-title', {
         },
         this);
   },
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {ResizeTitle} */
   tearDown: function tearDown() {
     delete this._fxResizeTitle;
   }
 });
+
+/**
+ * @interface
+ * @extends {ElementWithBackground}
+ */
+class ResizeTitle {
+  constructor() {
+    /** @type {boolean} */
+    this.condenses;
+
+    /**
+     * @typedef {{
+     *   title: !HTMLElement,
+     *   condensedTitle: !HTMLElement,
+     *   scale: number,
+     *   titleDX: number,
+     *   titleDY: number,
+     * }}
+     */
+    this._fxResizeTitle;
+  }
+}

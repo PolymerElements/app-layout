@@ -10,15 +10,14 @@ found at http://polymer.github.io/PATENTS.txt
 */
 import '../app-scroll-effects-behavior.js';
 
-import {registerEffect} from '../../helpers/helpers.js';
+import {ElementWithBackground, registerEffect} from '../../helpers/helpers.js';
+
 /**
  * Upon scrolling past a threshold, fade in the rear background layer and fade
  * out the front background layer (opacity CSS transitioned over time).
- *
- *
  */
 registerEffect('fade-background', {
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {FadeBackground} */
   setUp: function setUp(config) {
     var fx = {};
     var duration = config.duration || '0.5s';
@@ -34,7 +33,7 @@ registerEffect('fade-background', {
     fx.backgroundRearLayer.style.transitionDuration = duration;
     this._fxFadeBackground = fx;
   },
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {FadeBackground} */
   run: function run(p, y) {
     var fx = this._fxFadeBackground;
     if (p >= 1) {
@@ -45,8 +44,24 @@ registerEffect('fade-background', {
       fx.backgroundRearLayer.style.opacity = 0;
     }
   },
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {FadeBackground} */
   tearDown: function tearDown() {
     delete this._fxFadeBackground;
   }
 });
+
+/**
+ * @interface
+ * @extends {ElementWithBackground}
+ */
+class FadeBackground {
+  constructor() {
+    /**
+     * @typedef {{
+     *   backgroundFrontLayer: !HTMLElement,
+     *   backgroundRearLayer: !HTMLElement,
+     * }}
+     */
+    this._fxFadeBackground;
+  }
+}

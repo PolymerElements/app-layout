@@ -155,3 +155,25 @@ export const scroll = function scroll(options) {
     scrollTo(scrollLeft, scrollTop);
   }
 };
+
+/**
+ * @interface
+ * @extends {Polymer_LegacyElementMixin}
+ */
+export class ElementWithBackground {
+  /** @return {boolean} True if there's content below the current element */
+  isContentBelow() {
+  }
+
+
+  /** @return {boolean} true if the element is on screen */
+  isOnScreen() {
+  }
+
+  /**
+   * @param {string} title
+   * @return {?Element} Element in local dom by id.
+   */
+  _getDOMRef(title) {
+  }
+}

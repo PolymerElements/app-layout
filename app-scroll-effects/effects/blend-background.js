@@ -10,13 +10,14 @@ found at http://polymer.github.io/PATENTS.txt
 */
 import '../app-scroll-effects-behavior.js';
 
-import {registerEffect} from '../../helpers/helpers.js';
+import {ElementWithBackground, registerEffect} from '../../helpers/helpers.js';
+
 /**
  * While scrolling down, fade in the rear background layer and fade out the
  * front background layer (opacity interpolated based on scroll position).
  */
 registerEffect('blend-background', {
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {BlendBackground} */
   setUp: function setUp() {
     var fx = {};
     fx.backgroundFrontLayer = this._getDOMRef('backgroundFrontLayer');
@@ -28,14 +29,30 @@ registerEffect('blend-background', {
     fx.backgroundRearLayer.style.opacity = 0;
     this._fxBlendBackground = fx;
   },
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {BlendBackground} */
   run: function run(p, y) {
     var fx = this._fxBlendBackground;
     fx.backgroundFrontLayer.style.opacity = 1 - p;
     fx.backgroundRearLayer.style.opacity = p;
   },
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {BlendBackground} */
   tearDown: function tearDown() {
     delete this._fxBlendBackground;
   }
 });
+
+/**
+ * @interface
+ * @extends {ElementWithBackground}
+ */
+class BlendBackground {
+  constructor() {
+    /**
+     * @typedef {{
+     *   backgroundFrontLayer: !HTMLElement,
+     *   backgroundRearLayer: !HTMLElement,
+     * }}
+     */
+    this._fxBlendBackground;
+  }
+}

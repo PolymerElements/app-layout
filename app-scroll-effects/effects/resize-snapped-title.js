@@ -10,15 +10,14 @@ found at http://polymer.github.io/PATENTS.txt
 */
 import '../app-scroll-effects-behavior.js';
 
-import {registerEffect} from '../../helpers/helpers.js';
+import {ElementWithBackground, registerEffect} from '../../helpers/helpers.js';
+
 /**
  * Upon scrolling past a threshold, CSS transition the font size of a designated
  * title element between two values.
  */
 registerEffect('resize-snapped-title', {
-  /**
-   * @this Polymer.AppLayout.ElementWithBackground
-   */
+  /** @this {ResizeSnappedTitle} */
   setUp: function setUp(config) {
     var title = this._getDOMRef('mainTitle');
     var condensedTitle = this._getDOMRef('condensedTitle');
@@ -44,7 +43,7 @@ registerEffect('resize-snapped-title', {
     fx.title = title;
     this._fxResizeSnappedTitle = fx;
   },
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {ResizeSnappedTitle} */
   run: function run(p, y) {
     var fx = this._fxResizeSnappedTitle;
     if (p > 0) {
@@ -55,7 +54,7 @@ registerEffect('resize-snapped-title', {
       fx.condensedTitle.style.opacity = 0;
     }
   },
-  /** @this Polymer.AppLayout.ElementWithBackground */
+  /** @this {ResizeSnappedTitle} */
   tearDown: function tearDown() {
     var fx = this._fxResizeSnappedTitle;
     fx.title.style.transition = '';
@@ -63,3 +62,19 @@ registerEffect('resize-snapped-title', {
     delete this._fxResizeSnappedTitle;
   }
 });
+
+/**
+ * @interface
+ * @extends {ElementWithBackground}
+ */
+class ResizeSnappedTitle {
+  constructor() {
+    /**
+     * @typedef {{
+     *   title: !HTMLElement,
+     *   condensedTitle: !HTMLElement,
+     * }}
+     */
+    this._fxResizeSnappedTitle;
+  }
+}
