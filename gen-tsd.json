@@ -3,6 +3,17 @@
     "index.html",
     "**/test/**",
     "**/demo/**",
-    "templates/**"
+    "templates/**",
+    "patterns/**"
+  ],
+  "excludeIdentifiers": [
+    "BlendBackground",
+    "ElementWithBackground",
+    "FadeBackground",
+    "Material",
+    "ParallaxBackground",
+    "ResizeSnappedTitle",
+    "ResizeTitle",
+    "Waterfall"
   ]
 }
