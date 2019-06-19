@@ -10,7 +10,8 @@ found at http://polymer.github.io/PATENTS.txt
 */
 import '../app-scroll-effects-behavior.js';
 
-import {registerEffect, ElementWithBackground} from '../../helpers/helpers.js';
+import {ElementWithBackground, registerEffect} from '../../helpers/helpers.js';
+
 /**
  * While scrolling down, fade in the rear background layer and fade out the
  * front background layer (opacity interpolated based on scroll position).

@@ -10,7 +10,8 @@ found at http://polymer.github.io/PATENTS.txt
 */
 import '../app-scroll-effects-behavior.js';
 
-import {registerEffect, ElementWithBackground} from '../../helpers/helpers.js';
+import {ElementWithBackground, registerEffect} from '../../helpers/helpers.js';
+
 /**
  * Upon scrolling past a threshold, CSS transition the font size of a designated
  * title element between two values.

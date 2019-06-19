@@ -10,7 +10,8 @@ found at http://polymer.github.io/PATENTS.txt
 */
 import '../app-scroll-effects-behavior.js';
 
-import {registerEffect, ElementWithBackground} from '../../helpers/helpers.js';
+import {ElementWithBackground, registerEffect} from '../../helpers/helpers.js';
+
 function interpolate(progress, points, fn, ctx) {
   fn.apply(ctx, points.map(function(point) {
     return point[0] + (point[1] - point[0]) * progress;

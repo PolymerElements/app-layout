@@ -162,15 +162,18 @@ export const scroll = function scroll(options) {
  */
 export class ElementWithBackground {
   /** @return {boolean} True if there's content below the current element */
-  isContentBelow(){}
+  isContentBelow() {
+  }
 
 
   /** @return {boolean} true if the element is on screen */
-  isOnScreen(){}
+  isOnScreen() {
+  }
 
   /**
    * @param {string} title
    * @return {?Element} Element in local dom by id.
    */
-  _getDOMRef(title){}
+  _getDOMRef(title) {
+  }
 }
