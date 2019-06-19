@@ -114,7 +114,6 @@ Custom property                               | Description                     
 `--app-grid-item-height`                      | The height of the items.                                   | auto
 `--app-grid-expandible-item-columns`          | The number of columns an expandible item should expand to. | 1
 
-@group App Elements
 @pseudoElement app-grid
 @demo app-grid/demo/index.html
 */

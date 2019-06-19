@@ -62,12 +62,12 @@ be done by defining the value on the `:host` that contains `<app-drawer-layout>`
 }
 ```
 
-@group App Elements
 @element app-drawer
 @demo app-drawer/demo/left-drawer.html Simple Left Drawer
 @demo app-drawer/demo/right-drawer.html Right Drawer with Icons
 */
 Polymer({
+  /** @override */
   _template: html`
     <style>
       :host {
@@ -247,6 +247,7 @@ Polymer({
   _firstTabStop: null,
   _lastTabStop: null,
 
+  /** @override */
   attached: function() {
     afterNextRender(this, function() {
       this._boundEscKeydownHandler = this._escKeydownHandler.bind(this);
@@ -261,6 +262,7 @@ Polymer({
     this.fire('app-reset-layout');
   },
 
+  /** @override */
   detached: function() {
     document.removeEventListener('keydown', this._boundEscKeydownHandler);
   },
