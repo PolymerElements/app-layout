@@ -105,7 +105,7 @@ Polymer({
         left: 0;
 
         width: var(--app-drawer-width, 256px);
-        padding: 120px 0;
+        padding: var(--app-drawer-content-padding, 120px 0);
 
         transition-property: -webkit-transform;
         transition-property: transform;
