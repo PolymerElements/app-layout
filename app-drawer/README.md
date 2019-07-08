@@ -33,6 +33,7 @@ Custom property                  | Description                            | Defa
 ---------------------------------|----------------------------------------|--------------------
 `--app-drawer-width`             | Width of the drawer                    | 256px
 `--app-drawer-content-container` | Mixin for the drawer content container | {}
+`--app-drawer-content-padding`   | Padding of the drawer content container| 120px 0
 `--app-drawer-scrim-background`  | Background for the scrim               | rgba(0, 0, 0, 0.5)
 
 **NOTE:** If you use `<app-drawer>` with `<app-drawer-layout>` and specify a value for
