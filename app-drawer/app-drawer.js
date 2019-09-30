@@ -72,6 +72,11 @@ Polymer({
     <style>
       :host {
         position: fixed;
+        /* Set a default z-index to handle most cases where the page content
+           that comes after <app-drawer> in the dom has a stacking context with
+           no z-index defined.
+        */
+        z-index: 1;
         top: -120px;
         right: 0;
         bottom: -120px;
