@@ -48,10 +48,7 @@ registerEffect('blend-background', {
 class BlendBackground {
   constructor() {
     /**
-     * @typedef {{
-     *   backgroundFrontLayer: !HTMLElement,
-     *   backgroundRearLayer: !HTMLElement,
-     * }}
+     * @type {?}
      */
     this._fxBlendBackground;
   }
