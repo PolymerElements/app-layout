@@ -69,11 +69,7 @@ class ParallaxBackground {
     this._dHeight;
 
     /**
-     * @typedef {{
-     *   background: !HTMLElement,
-     *   backgroundFrontLayer: !HTMLElement,
-     *   backgroundRearLayer: !HTMLElement,
-     * }}
+     * @type {?}
      */
     this._fxParallaxBackground;
   }

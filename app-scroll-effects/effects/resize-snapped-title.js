@@ -70,10 +70,7 @@ registerEffect('resize-snapped-title', {
 class ResizeSnappedTitle {
   constructor() {
     /**
-     * @typedef {{
-     *   title: !HTMLElement,
-     *   condensedTitle: !HTMLElement,
-     * }}
+     * @type {?}
      */
     this._fxResizeSnappedTitle;
   }

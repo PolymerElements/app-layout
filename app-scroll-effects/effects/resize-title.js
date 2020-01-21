@@ -103,13 +103,7 @@ class ResizeTitle {
     this.condenses;
 
     /**
-     * @typedef {{
-     *   title: !HTMLElement,
-     *   condensedTitle: !HTMLElement,
-     *   scale: number,
-     *   titleDX: number,
-     *   titleDY: number,
-     * }}
+     * @@type {?}
      */
     this._fxResizeTitle;
   }

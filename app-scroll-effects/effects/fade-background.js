@@ -57,10 +57,7 @@ registerEffect('fade-background', {
 class FadeBackground {
   constructor() {
     /**
-     * @typedef {{
-     *   backgroundFrontLayer: !HTMLElement,
-     *   backgroundRearLayer: !HTMLElement,
-     * }}
+     * @type {?}
      */
     this._fxFadeBackground;
   }
