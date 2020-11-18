@@ -368,6 +368,11 @@ Polymer({
   },
 
   _trackMove: function(event) {
+    if (!this._trackDetails) {
+      // Ignore any "track" events which occur before "start".
+      return;
+    }
+
     this._translateDrawer(event.detail.dx + this._translateOffset);
 
     // Use Date.now() since event.timeStamp is inconsistent across browsers
