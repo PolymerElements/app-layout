@@ -381,6 +381,11 @@ Polymer({
   },
 
   _trackEnd: function(event) {
+    if (!this._trackDetails) {
+      // Ignore any "track" events which occur before "start".
+      return;
+    }
+
     var x = event.detail.dx + this._translateOffset;
     var drawerWidth = this.getWidth();
     var isPositionLeft = this.position === 'left';
